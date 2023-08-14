@@ -1,10 +1,12 @@
 // Hooks.
 import { useForm } from "react-hook-form";
 import { useCreateUserMutation } from "../api/authApiSlice";
+// Components.
+//import CSRFToken from "../components/Security/CSRFToken"; 
 
 // Page.
 function SingUp() {
- const [createUser] = useCreateUserMutation()
+  //const [createUser] = useCreateUserMutation();
 
   // React hook form.
   const {
@@ -13,16 +15,18 @@ function SingUp() {
     watch,
     formState: { errors },
   } = useForm();
-
+  
   // Send user data.
   const onSubmit = handleSubmit((data) => {
-    createUser(data)
+    //createUser(data);
+    console.log(data)
   });
 
   return (
     <>
       {/* Create user form. */}
       <form onSubmit={onSubmit}>
+
         {/* Name. */}
         <label htmlFor="name">Name</label>
         <input
