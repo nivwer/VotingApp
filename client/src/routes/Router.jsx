@@ -1,17 +1,26 @@
 // React Router Components.
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+// Hooks.
+import { useSelector } from "react-redux";
 // Pages.
 import Home from "../pages/Home";
 import About from "../pages/About";
 import SingUp from "../pages/SingUp";
 import SingIn from "../pages/SingIn";
 import NotFoundPage from "../pages/NotFoundPage";
+import ViewPolls from "../pages/polls/ViewPolls";
+import NewPoll from "../pages/polls/NewPoll";
 // Components.
+import ProtectedRoute from "./ProtectedRoute";
+import Navbar from '../components/Navigation/Navbar'
 
 // Router.
 function Router() {
+  const data = useSelector((state) => state.session);
+
   return (
     <BrowserRouter>
+      <Navbar/>
       <Routes>
         {/* HomePage. */}
         <Route path="/home" element={<Home />} />
@@ -22,6 +31,12 @@ function Router() {
         {/* Authentication Page. */}
         <Route path="/singup" element={<SingUp />} />
         <Route path="/singin" element={<SingIn />} />
+
+        {/* User pages. */}
+        <Route element={<ProtectedRoute isAllowed={!!data.token} />}>
+          <Route path="/user/polls" element={<ViewPolls />} />
+          <Route path="/user/new" element={<NewPoll />} />
+        </Route>
 
         {/* Page 404. */}
         <Route path="*" element={<NotFoundPage />} />
