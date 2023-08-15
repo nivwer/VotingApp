@@ -7,18 +7,10 @@ export const authApiSlice = createApi({
     baseUrl: "http://localhost:8000/auth/",
   }),
   endpoints: (builder) => ({
-    // // GetCSRFToken.
-    // getCSRFToken: builder.query({
-    //   query: () => ({
-    //     url: "/token/csrf",
-    //     method: "GET",
-    //   }),
-    // }),
-
     // Create user.
     createUser: builder.mutation({
       query: (newUser) => ({
-        url: "/singup",
+        url: "signup/",
         method: "POST",
         body: newUser,
       }),
@@ -26,7 +18,7 @@ export const authApiSlice = createApi({
 
     loginUser: builder.mutation({
       query: (data) => ({
-        url: "token/",
+        url: "signin/",
         method: "POST",
         body: data,
       }),
@@ -45,7 +37,6 @@ export const authApiSlice = createApi({
 });
 
 export const {
-  useGetCSRFTokenQuery,
   useCreateUserMutation,
   useLoginUserMutation,
   useViewUserMutation,

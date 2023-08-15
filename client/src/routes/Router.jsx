@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 // Pages.
 import Home from "../pages/Home";
 import About from "../pages/About";
-import SingUp from "../pages/SingUp";
-import SingIn from "../pages/SingIn";
+import SignUp from "../pages/SignUp";
+import SignIn from "../pages/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
 import ViewPolls from "../pages/polls/ViewPolls";
 import NewPoll from "../pages/polls/NewPoll";
@@ -29,8 +29,8 @@ function Router() {
         <Route path="/about" element={<About />} />
 
         {/* Authentication Page. */}
-        <Route path="/singup" element={<SingUp />} />
-        <Route path="/singin" element={<SingIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
 
         {/* User pages. */}
         <Route element={<ProtectedRoute isAllowed={!!data.token} />}>
