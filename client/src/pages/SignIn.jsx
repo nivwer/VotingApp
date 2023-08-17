@@ -1,17 +1,17 @@
 // Hooks.
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { useLoginUserMutation } from "../api/authApiSlice";
 import { useNavigate } from "react-router-dom";
+import { useSignInMutation } from "../api/authApiSlice";
 // Actions.
 import { login } from "../features/auth/authSlice";
 //Components.
 
 // Page.
-function SingIn() {
-  const navigate = useNavigate()
+function SignIn() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [loginUser, { isLoading, isError }] = useLoginUserMutation();
+  const [signIn, { isLoading, isError }] = useSignInMutation();
 
   // React hook form.
   const {
@@ -23,19 +23,12 @@ function SingIn() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // Llama a la mutación con los datos del formulario
-      const res = await loginUser(data);
-
-      // result.data contiene los datos de la respuesta del servidor, como el token
-      console.log(data);
-      console.log(res.data.token);
+      const res = await signIn(data);
 
       dispatch(login({ token: res.data.token }));
 
-      navigate('/user/polls')
-      // Aquí puedes realizar redirecciones, actualizaciones de estado, etc., según la respuesta del servidor
+      navigate("/user/polls");
     } catch (error) {
-      // Manejo de errores si la mutación falla
       console.error(error);
     }
   });
@@ -80,4 +73,4 @@ function SingIn() {
   );
 }
 
-export default SingIn;
+export default SignIn;

@@ -1,12 +1,17 @@
 // Hooks.
 import { useForm } from "react-hook-form";
-import { useCreateUserMutation } from "../api/authApiSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useSignUpMutation } from "../api/authApiSlice";
+// Actions.
+import { login } from "../features/auth/authSlice";
 // Components.
-//import CSRFToken from "../components/Security/CSRFToken"; 
 
 // Page.
-function SingUp() {
-  //const [createUser] = useCreateUserMutation();
+function SignUp() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [signUp, { isLoading, isError }] = useSignUpMutation();
 
   // React hook form.
   const {
@@ -15,22 +20,26 @@ function SingUp() {
     watch,
     formState: { errors },
   } = useForm();
-  
+
   // Send user data.
-  const onSubmit = handleSubmit((data) => {
-    //createUser(data);
-    console.log(data)
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      const res = await signUp(data);
+      dispatch(login({ token: res.data.token }));
+      navigate("/user/polls");
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   return (
     <>
       {/* Create user form. */}
       <form onSubmit={onSubmit}>
-
         {/* Name. */}
-        <label htmlFor="name">Name</label>
+        <label htmlFor="username">Username</label>
         <input
-          {...register("name", {
+          {...register("username", {
             required: {
               value: true,
               message: "Name is required",
@@ -83,4 +92,4 @@ function SingUp() {
   );
 }
 
-export default SingUp;
+export default SignUp;
