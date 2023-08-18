@@ -74,10 +74,10 @@ def signin(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def user_view(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
+
