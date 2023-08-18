@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
-    'adrf', # Async Rest Framework support.
+    'adrf',  # Async Rest Framework support.
     "authentication",
     "polls"
 ]
@@ -54,7 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'config.middleware.mongo_middleware.MongoDBMiddleware', # MongoDB connection.
+    # MongoDB connection.
+    'config.middleware.mongo_middleware.MongoDBMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -84,9 +85,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'NAME': BASE_DIR / 'databases/default_db.sqlite3',
+    },
+    'users_db': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'databases/users_db.sqlite3',
+    },
+    # 'polls_db': {}
 }
+
+DATABASE_ROUTERS = [
+    'config.db_routers.auth_router.AuthRouter'
+]
 
 
 # Password validation
@@ -135,7 +145,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
-
+# REST Framework config.
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.BasicAuthentication',
