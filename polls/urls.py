@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('create/', views.create_poll, name='CreatePoll'),
-    path('ruta', views.ruta)
+    path('read/', views.read_poll, name='ReadPoll')
 ]

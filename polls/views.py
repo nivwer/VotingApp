@@ -14,13 +14,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 # Async Rest Framework support.
 from adrf.decorators import api_view
-from asgiref.sync import async_to_sync, sync_to_async
-# MongoDB.
-from pymongo.errors import PyMongoError 
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
+# MongoDB.
+from pymongo.errors import PyMongoError  
+from bson import json_util
+from bson.objectid import ObjectId
 # Serializers.
 from .serializers import PollSerializer
+
 
 # Load the virtual environment.
 load_dotenv()
@@ -40,8 +42,49 @@ class GetCollectionsMongoDB:
 
 # Views.
 
-async def get_poll(request):
-    return Response("Poll")
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+async def read_poll(request):
+    poll_id = request.data["poll_id"]
+    # If poll_id is undefined.
+    if not poll_id:
+        raise ValidationError(
+                {'poll_id': ["This field is required."]})
+    try:
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB('polls_db', ["polls"])
+        # Find the poll in the polls collection.
+        poll_bson = await polls_db.polls.find_one({"_id": ObjectId(poll_id)})
+
+        # If poll is not found.
+        if not poll_bson:
+            raise ValidationError(
+                {'poll_id': ["Poll is not found."]})
+
+        # Convert the BSON response to a JSON response.
+        poll_json = json_util._json_convert((poll_bson))
+        # Fix data.
+        poll_json["_id"] = str(poll_bson["_id"])
+        poll_json["creation_date"] = str(poll_bson["creation_date"])
+
+        # Return a JSON with the poll.
+        return Response({"poll": poll_json})
+    
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        print(f'MongoDB Error: {e}')
+        return Response({"error": "An error occurred while processing your request."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        print(f'Error: {e}')
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # Handles the creation procces for a news polls.
 @api_view(['POST'])
@@ -66,6 +109,9 @@ async def create_poll(request):
         if len(options) <= 1:
             raise ValidationError(
                 {'options': ["This field expects a list with two or more items."]})
+        elif len(options) >= 18:
+            raise ValidationError(
+                {'options': ["This field expects a list with less than 18 elements."]})
         
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -85,7 +131,7 @@ async def create_poll(request):
                         },
                         "title": title,
                         "description": description,
-                        "creation_date": datetime.now(),
+                        "creation_date": datetime.now().strftime("[%d/%b/%Y %H:%M:%S]"),
                         "total_votes": 0,
                         "voters": [],
                         "privacy": "public",
@@ -126,11 +172,12 @@ async def create_poll(request):
                     },
                     session=session
                 )
+
                 # Save transaction.
                 await session.commit_transaction()
 
                 # Response.
-                return Response('res', status=status.HTTP_201_CREATED)
+                return Response({"poll_id": str(poll_id)}, status=status.HTTP_201_CREATED)
 
     # Handle validation errors.
     except ValidationError as e:
