@@ -25,11 +25,6 @@ from .serializers import PollSerializer
 # Load the virtual environment.
 load_dotenv()
 
-async def ruta(request):
-    # async_serializer = sync_to_async(UserSerializer)(request.user)
-    # serialized_user = await async_serializer
-    # user = await User.objects.aget(username=request.data['username'])
-    return HttpResponse('res')
 
 # Helpers.
 
@@ -45,11 +40,14 @@ class GetCollectionsMongoDB:
 
 # Views.
 
+async def get_poll(request):
+    return Response("Poll")
+
 # Handles the creation procces for a news polls.
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def new_poll(request):
+async def create_poll(request):
     session = None
     try:
         # Initialize a PollSerializer instance with the provided data.
@@ -155,3 +153,10 @@ async def new_poll(request):
     finally:
         if session:
             await session.end_session()
+
+
+async def update_poll(request):
+    return Response("Poll Updated")
+
+async def delete_poll(request):
+    return Response("Poll removed")
