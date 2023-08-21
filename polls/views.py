@@ -286,4 +286,50 @@ async def update_poll(request):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def delete_poll(request):
-    return Response("poll deleted")
+    poll_id = request.data["poll_id"]
+    # If poll_id is undefined.
+    if not poll_id:
+        raise ValidationError(
+            {'poll_id': ["This field is required."]})
+
+    try:
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB('polls_db', ["polls"])
+        # Find the poll in the polls collection.
+        poll = await polls_db.polls.find_one({"_id": ObjectId(poll_id)})
+
+        # If poll is not found.
+        if not poll:
+            raise ValidationError(
+                {'poll_id': ["Poll is not found."]})
+
+        # If user is not authorized.
+        if poll["created_by"]["user_id"] != request.user.id:
+            raise PermissionDenied(
+                {"error": "You are not authorized to remove this poll."})
+
+        result = await polls_db.polls.delete_one({"_id": poll["_id"]})
+
+        if result.deleted_count == 0:
+            return Response({"message": "error."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Response.
+        return Response({"message": "Poll removed successfully."}, status=status.HTTP_200_OK)
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+     # Handle permission denied.
+    except PermissionDenied as e:
+        return Response({"error": e.detail}, status=status.HTTP_403_FORBIDDEN)
+
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        print(f'MongoDB Error: {e}')
+        return Response({"error": "An error occurred while processing your request."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        print(f'Error: {e}')
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
