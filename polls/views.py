@@ -64,7 +64,7 @@ async def read_poll(request):
 
         # If user is not authorized.
         if poll_bson["created_by"]["user_id"] != request.user.id:
-            raise ValidationError(
+            raise PermissionDenied(
                 {"error": "You are not authorized to read this poll."})
 
         # If privacy of poll is private. ?
@@ -244,8 +244,8 @@ async def update_poll(request):
 
         # If user is not authorized.
         if poll_bson["created_by"]["user_id"] != request.user.id:
-            raise ValidationError(
-                {"error": "You are not authorized to read this poll."})
+            raise PermissionDenied(
+                {"error": "You are not authorized to update this poll."})
 
         # Initialize a PollSerializer instance with the provided data.
         serializer = PollSerializer(data=request.data, partial=True)
@@ -265,6 +265,10 @@ async def update_poll(request):
     except ValidationError as e:
         return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Handle permission denied.
+    except PermissionDenied as e:
+        return Response({"error": e.detail}, status=status.HTTP_403_FORBIDDEN)
+
     # Handle MongoDB errors.
     except PyMongoError as e:
         print(f'MongoDB Error: {e}')
@@ -276,5 +280,10 @@ async def update_poll(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
+
+@api_view(['DELETE'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
 async def delete_poll(request):
-    return Response("Poll removed")
+    return Response("poll deleted")
