@@ -3,20 +3,25 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 // API Reducers.
 import { authApiSlice } from "../../api/authApiSlice";
+import { pollApiSlice } from "../../api/pollApiSlice";
 // Reducers.
 import authReducer from "../../features/auth/authSlice";
 
 // Store.
 export const store = configureStore({
   reducer: {
-    // Queries for the backend authentication API.
+    // Requests for the backend authentication API.
     authApi: authApiSlice.reducer,
+    // Request for the backend polls API.
+    pollsApi: pollApiSlice.reducer,
     // Session.
-    session: authReducer, 
+    session: authReducer,
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApiSlice.middleware),
+    getDefaultMiddleware()
+      .concat(authApiSlice.middleware)
+      .concat(pollApiSlice.middleware),
 });
 
 setupListeners(store.dispatch);
