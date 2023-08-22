@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('create/', views.create_poll, name='CreatePoll'),
-    path('read/', views.read_poll, name='ReadPoll'),
-    path('update/', views.update_poll, name='UpdatePoll'),
-    path('delete/', views.delete_poll, name='DeletePoll')
+    path('read/<str:poll_id>', views.read_poll, name='ReadPoll'),
+    path('update/<str:poll_id>', views.update_poll, name='UpdatePoll'),
+    path('delete/<str:poll_id>', views.delete_poll, name='DeletePoll')
 ]
