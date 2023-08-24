@@ -8,6 +8,9 @@ export const pollApiSlice = createApi({
     baseUrl: "http://localhost:8000/poll/",
   }),
   endpoints: (builder) => ({
+
+    // CRUD Poll. //
+
     // Create Poll.
     createPoll: builder.mutation({
       query: (data) => ({
@@ -48,7 +51,23 @@ export const pollApiSlice = createApi({
         body: data,
       }),
     }),
+    
+
+    // GET Polls. //
+
+    // User Polls.
+    userPolls: builder.mutation({
+      query: (data) => ({
+        url: `user/${data.username}`,
+        method: "GET",
+        headers: data.headers,
+      }),
+    }),
   }),
 });
 
-export const { useCreatePollMutation, useReadPollMutation } = pollApiSlice;
+export const {
+  useCreatePollMutation,
+  useReadPollMutation,
+  useUserPollsMutation,
+} = pollApiSlice;
