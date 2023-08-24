@@ -6,6 +6,7 @@ import { authApiSlice } from "../../api/authApiSlice";
 import { pollApiSlice } from "../../api/pollApiSlice";
 // Reducers.
 import authReducer from "../../features/auth/authSlice";
+import themeReducer from "../../features/theme/themeSlice";
 
 // Store.
 export const store = configureStore({
@@ -16,6 +17,8 @@ export const store = configureStore({
     pollsApi: pollApiSlice.reducer,
     // Session.
     session: authReducer,
+    // Theme Color.
+    theme: themeReducer,
   },
 
   middleware: (getDefaultMiddleware) =>
