@@ -5,6 +5,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 # Django.
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
@@ -14,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 # Async Rest Framework support.
 from adrf.decorators import api_view
+from asgiref.sync import async_to_sync, sync_to_async
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
 # MongoDB.
@@ -22,6 +25,7 @@ from bson import json_util
 from bson.objectid import ObjectId
 # Serializers.
 from .serializers import PollSerializer, OptionsSerializer
+from authentication.serializers import UserSerializer
 
 
 # Load the virtual environment.
@@ -42,11 +46,9 @@ class GetCollectionsMongoDB:
 
 # Views.
 
-
 # Handles the get process for the polls.
 @api_view(['GET'])
 async def read_poll(request, poll_id):
-    print(request.user.is_authenticated)
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ["polls"])
@@ -58,30 +60,30 @@ async def read_poll(request, poll_id):
             raise ValidationError(
                 {'message': "Poll is not found."})
 
-        # If privacy of poll is private. 
+        # If privacy of poll is private.
         if poll_bson["privacy"] == "private" and poll_bson["created_by"]["user_id"] != request.user.id:
             raise PermissionDenied(
-                {"error": "You are not authorized to read this poll."})
+                {"error": "This poll is private."})
 
         # If privacy of poll is friends_only. ?
 
         # Convert the BSON response to a JSON response.
         poll_json = json_util._json_convert((poll_bson))
         # Fix data.
-        poll_json["_id"] = str(poll_bson["_id"])
-        poll_json["creation_date"] = str(poll_bson["creation_date"])
+        poll_json["_id"] = poll_json["_id"]["$oid"]
+        poll_json["creation_date"] = poll_json["$date"]
 
         # If the user is not the owner of the poll.
         is_owner = False
         # If the user is the owner of the poll.
         if poll_bson["created_by"]["user_id"] == request.user.id:
             is_owner = True
-           
+
         return Response({
-                "is_owner": is_owner,
-                "poll": poll_json
-            })
-    
+            "is_owner": is_owner,
+            "poll": poll_json
+        })
+
     # Handle validation errors.
     except ValidationError as e:
         return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
@@ -225,6 +227,8 @@ async def create_poll(request):
             await session.end_session()
 
 # Handles the update process for the polls.
+
+
 @api_view(['PATCH'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -257,7 +261,6 @@ async def update_poll(request, poll_id):
             raise ValidationError(
                 {'privacy': [f"This field does not expect this value {str(privacy)}."]})
 
-
         # Get the updated fields.
         data = serializer.validated_data
         # Update poll document in polls collection.
@@ -286,6 +289,8 @@ async def update_poll(request, poll_id):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Handles the remove process for the polls.
+
+
 @api_view(['DELETE'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -331,8 +336,87 @@ async def delete_poll(request, poll_id):
     except Exception as e:
         print(f'Error: {e}')
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
+# Handles the get process for a user polls.
+@api_view(['GET'])
+async def user_polls(request, username):
+    try:
+        # If user not found. !!!
+
+        # async_serializer = sync_to_async(UserSerializer)(request.user)
+        # serialized_user = await async_serializer
+
+        # Get the user in the User table.
+        user = await User.objects.aget(username=username)
+
+        # If user not exist. !!!
+        if not user:
+            return Response("user not found")
+
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB('polls_db', ["polls"])
+
+        # Find the polls in the polls collection.
+        polls_cursor = polls_db.polls.find({"created_by.user_id": user.id})
+        polls_list = await polls_cursor.to_list(length=None)
+
+        # Convert the BSON response to a JSON response.
+        polls_list_json = json_util._json_convert(polls_list)
+
+        # Verify the privacy of polls.
+        polls = []
+        for poll in polls_list_json: 
+            # Fix data.
+            poll["_id"] =  poll["_id"]["$oid"]
+            poll["creation_date"] = poll["creation_date"]["$date"]
+            # If poll is public.
+            if poll["privacy"] == "public":
+                polls.append(poll)
+            # If poll is private.
+            if poll["privacy"] == "private" and poll["created_by"]["user_id"] == request.user.id:
+                polls.append(poll)
+
+            # If privacy of poll is friends_only. ?
+
+        # If polls not found.
+        if not polls:
+            return Response(
+                {'message': "This user does not have polls."}, status=status.HTTP_404_NOT_FOUND)
+
+        # If the user is not the owner of the poll.
+        is_owner = False
+        # If the user is the owner of the poll.
+        if user.id == request.user.id:
+            is_owner = True
+
+        # Response.
+        return Response({
+            "is_owner": is_owner,
+            "polls": polls
+        })
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle permission denied.
+    except PermissionDenied as e:
+        return Response({"error": e.detail}, status=status.HTTP_403_FORBIDDEN)
+
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        print(f'MongoDB Error: {e}')
+        return Response({"error": "An error occurred while processing your request."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        print(f'Error: {e}')
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 api_view(['GET', 'POST', 'PATCH', 'DELETE'])
+
+
 async def options_manager(request):
     return Response("options manager")
