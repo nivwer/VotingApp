@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     'adrf',  # Async Rest Framework support.
     "authentication",
+    "profiles",
     "polls"
 ]
 

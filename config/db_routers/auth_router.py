@@ -1,5 +1,5 @@
 class AuthRouter:
-    router_app_labels = {'auth', 'contenttypes', 'sessions', 'admin', 'authtoken'}
+    router_app_labels = {'auth', 'contenttypes', 'sessions', 'admin', 'authtoken', 'profiles'}
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.router_app_labels:
