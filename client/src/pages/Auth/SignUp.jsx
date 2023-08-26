@@ -2,34 +2,34 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useSignInMutation } from "../api/authApiSlice";
+import { useNavigate } from "react-router-dom";
+import { useSignUpMutation } from "../../api/authApiSlice";
 // Actions.
-import { login } from "../features/auth/authSlice";
-//Components.
+import { login } from "../../features/auth/authSlice";
+// Components.
 import {
-  Container,
-  Center,
-  Flex,
-  FormErrorMessage,
-  FormHelperText,
+  useColorMode,
   Box,
   Button,
+  Center,
+  Container,
+  Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
-  Stack,
-  Text,
-  useColorMode,
   InputGroup,
   InputRightElement,
   Progress,
+  Stack,
+  Text,
 } from "@chakra-ui/react";
+
 // Icons.
 import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 
 // Page.
-function SignIn() {
+function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // Theme color.
@@ -38,26 +38,29 @@ function SignIn() {
   // Theme mode.
   const { colorMode } = useColorMode();
   const isDark = colorMode === "dark";
-
-  // asd
-  const [signIn, { isLoading, isError }] = useSignInMutation();
+  // Request to the backend.
+  const [signUp, { isLoading, isError }] = useSignUpMutation();
 
   // React hook form.
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
     setError,
-  } = useForm();
+  } = useForm({
+    criteriaMode: "all",
+  });
 
-  // Show Password field.
+  // Show Password fields.
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const res = await signIn(data);
-      // If the authentication is valid.
+      const res = await signUp(data);
+      // If the registration is valid.
       if (res.data) {
         dispatch(
           login({
@@ -68,6 +71,7 @@ function SignIn() {
         navigate("/home");
       }
 
+      // If server error.
       if (res.error) {
         if (res.error.data.username) {
           setError("username", {
@@ -86,13 +90,13 @@ function SignIn() {
 
   return (
     <>
-      <Container maxW="md">
+      <Container maxW="xl">
         <Center minH="calc(100vh - 200px)">
           <Box
             w={"100%"}
-            bg={isDark ? `black` : `${color}.25`}
+            bg={isDark ? "black" : `${color}.bg-l-s`}
             outline={isDark ? "1px solid" : "2px solid"}
-            outlineColor={isDark ? `${color}.200` : `${color}.500`}
+            outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
             borderRadius="14px"
             textAlign="center"
           >
@@ -107,10 +111,11 @@ function SignIn() {
               />
             )}
             <Box p="14" pb="10" px="8%">
+              {/* Create user form. */}
               <form onSubmit={onSubmit}>
-                <Stack spacing={6}>
+                <Stack spacing={8}>
                   <Text fontSize="3xl" fontWeight="bold">
-                    Sign In
+                    Sign Up
                   </Text>
                   <Stack textAlign="start" spacing={3}>
                     {/* username. */}
@@ -122,14 +127,20 @@ function SignIn() {
                         Username
                       </FormLabel>
                       <Input
-                        focusBorderColor={
-                          isDark ? `${color}.200` : `${color}.500`
-                        }
+                        focusBorderColor={isDark ? `${color}.border-d` : `${color}.600`}
                         placeholder="Username"
                         {...register("username", {
                           required: {
                             value: true,
                             message: "Username is required.",
+                          },
+                          maxLength: {
+                            value: 32,
+                            message: "Max 32 digits.",
+                          },
+                          minLength: {
+                            value: 3,
+                            message: "Min 3 digits.",
                           },
                         })}
                         type="text"
@@ -151,14 +162,20 @@ function SignIn() {
                       </FormLabel>
                       <InputGroup size="md">
                         <Input
-                          focusBorderColor={
-                            isDark ? `${color}.200` : `${color}.500`
-                          }
+                          focusBorderColor={isDark ? `${color}.border-d` : `${color}.600`}
                           placeholder="Password"
                           {...register("password", {
                             required: {
                               value: true,
                               message: "Password is required.",
+                            },
+                            maxLength: {
+                              value: 96,
+                              message: "Max 96 digits.",
+                            },
+                            minLength: {
+                              value: 8,
+                              message: "Min 8 digits.",
                             },
                           })}
                           type={showPassword ? "text" : "password"}
@@ -184,6 +201,57 @@ function SignIn() {
                         </FormErrorMessage>
                       )}
                     </FormControl>
+                    {/* Password Validation. */}
+                    <FormControl
+                      isDisabled={isLoading}
+                      isInvalid={errors.passwordValidation}
+                    >
+                      <FormLabel
+                        fontWeight={"bold"}
+                        htmlFor="passwordValidation"
+                      >
+                        Confirm Password
+                      </FormLabel>
+                      <InputGroup>
+                        <Input
+                          focusBorderColor={isDark ? `${color}.border-d` : `${color}.600`}
+                          placeholder="Confirm password"
+                          {...register("passwordValidation", {
+                            required: {
+                              value: true,
+                              message: "Is required.",
+                            },
+                            validate: (value) =>
+                              value === watch("password") ||
+                              "Password not match.",
+                          })}
+                          type={showConfirmPassword ? "text" : "password"}
+                        />
+                        <InputRightElement width="3rem">
+                          <Button
+                            isDisabled={isLoading}
+                            colorScheme={color}
+                            variant={"unstyled"}
+                            h="1.75rem"
+                            size="sm"
+                            onClick={() => {
+                              setShowConfirmPassword(!showConfirmPassword);
+                            }}
+                          >
+                            {showConfirmPassword ? (
+                              <ViewIcon />
+                            ) : (
+                              <ViewOffIcon />
+                            )}
+                          </Button>
+                        </InputRightElement>
+                      </InputGroup>
+                      {errors.passwordValidation && (
+                        <FormErrorMessage>
+                          {errors.passwordValidation.message}
+                        </FormErrorMessage>
+                      )}
+                    </FormControl>
                   </Stack>
                   <Flex justifyContent="center">
                     <Button
@@ -191,8 +259,9 @@ function SignIn() {
                       type="submit"
                       colorScheme={color}
                       variant="solid"
+                      opacity={isDark ? 0.8 : 0.6}
                     >
-                      Sign In
+                      Sign Up
                     </Button>
                   </Flex>
                 </Stack>
@@ -205,4 +274,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;
