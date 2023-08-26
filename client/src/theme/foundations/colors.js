@@ -1,66 +1,175 @@
 const colors = {
   default: {
-    10: "#f8f8f8",
-    25: "#F2F2F2",
-    50: "#DBDBDB",
-    100: "#DBDBDB",
+    // Default.
+    "bg-l-p": "#f8f8f8", // Background Light Primary.
+    "bg-l-s": "#F2F2F2",  // Background Light Secondary.
+    "text-d-p": "#F2F2F2da", // Text Dark Primary.
+    "border-d": "#C4C4C4c4", // Border Dark.
+    50: "#DBDBDBda",
+    100: "#DBDBDBda",
     200: "#C4C4C4",
     300: "#ADADAD",
     400: "#969696",
     500: "#000000",
-    600: "#000000",
-    700: "#000000",
-    800: "#000000",
-    900: "#000000",
+    600: "#000000da",
+    700: "#000000da",
+    800: "#000000da",
+    900: "#000000da",
   },
 
   red: {
-    10: "#fff9f9",
-    25: "#FFF5F5",
-    50: "#FED7D7"
+    // Default.
+    "bg-l-p": "#fff9f9",
+    "bg-l-s": "#FFF5F5",
+    "text-d-p": "#FFF5F5da",
+    "border-d": "#FEB2B2c4",
+    50: "#FED7D7da",
+    100: "#FED7D7da",
+    200: "#FEB2B2",
+    300: "#FC8181",
+    400: "#F56565",
+    500: "#E53E3E",
+    600: "#C53030da",
+    700: "#9B2C2Cda",
+    800: "#822727da",
+    900: "#63171Bda",
   },
   orange: {
-    10: "#fffcf5",
-    25: "#FFFAF0",
-    50: "#FEEBC8"
+    // Default.
+    "bg-l-p": "#fffcf5",
+    "bg-l-s": "#FFFAF0",
+    "text-d-p": "#FFFAF0da",
+    "border-d": "#FBD38Dc4",
+    50: "#FEEBC8da",
+    100: "#FEEBC8da",
+    200: "#FBD38D",
+    300: "#F6AD55",
+    400: "#ED8936",
+    500: "#DD6B20",
+    600: "#C05621da",
+    700: "#9C4221da",
+    800: "#7B341Eda",
+    900: "#652B19da",
   },
   yellow: {
-    10: "#fffff6",
-    25: "#FFFFF0",
-    50: "#FEFCBF"
+    // Default.
+    "bg-l-p": "#fffff6",
+    "bg-l-s": "#FFFFF0",
+    "text-d-p": "#FFFFF0da",
+    "border-d": "#FAF089c4",
+    50: "#FEFCBFda",
+    100: "#FEFCBFda",
+    200: "#FAF089",
+    300: "#F6E05E",
+    400: "#ECC94B",
+    500: "#D69E2E",
+    600: "#B7791Fda",
+    700: "#975A16da",
+    800: "#744210da",
+    900: "#5F370Eda",
   },
   green: {
-    10: "#f5fff8",
-    25: "#F0FFF4",
-    50: "#C6F6D5"
+    // Default.
+    "bg-l-p": "#f5fff8",
+    "bg-l-s": "#F0FFF4",
+    "text-d-p": "#F0FFF4da",
+    "border-d": "#9AE6B4c4",
+    50: "#C6F6D5da",
+    100: "#C6F6D5da",
+    200: "#9AE6B4",
+    300: "#68D391",
+    400: "#48BB78",
+    500: "#38A169",
+    600: "#2F855Ada",
+    700: "#276749da",
+    800: "#22543Dda",
+    900: "#1C4532da",
   },
   teal: {
-    10: "#f2fffc",
-    25: "#E6FFFA",
-    50: "#B2F5EA"
+    // Default.
+    "bg-l-p": "#f2fffc",
+    "bg-l-s": "#E6FFFA",
+    "text-d-p": "#E6FFFAda",
+    "border-d": "#81E6D9c4",
+    50: "#B2F5EAda",
+    100: "#B2F5EAda",
+    200: "#81E6D9",
+    300: "#4FD1C5",
+    400: "#38B2AC",
+    500: "#319795",
+    600: "#2C7A7Bda",
+    700: "#285E61da",
+    800: "#234E52da",
+    900: "#1D4044da",
   },
   blue: {
-    10: "#f5fcff",
-    25: "#ebf8ff",
-    50: "#bee3f8"
+    // Default.
+    "bg-l-p": "#f5fcff",
+    "bg-l-s": "#ebf8ff",
+    "text-d-p": "#ebf8ffda",
+    "border-d": "#90cdf4c4",
+    50: "#bee3f8da",
+    100: "#bee3f8da",
+    200: "#90cdf4",
+    300: "#63b3ed",
+    400: "#4299e1",
+    500: "#3182ce",
+    600: "#2b6cb0da",
+    700: "#2c5282da",
+    800: "#2a4365da",
+    900: "#1A365Dda",
   },
   cyan: {
-    10: "#f5ffff",
-    25: "#EDFDFD",
-    50: "#C4F1F9"
+    // Default.
+    "bg-l-p": "#f5ffff",
+    "bg-l-s": "#EDFDFD",
+    "text-d-p": "#EDFDFDda",
+    "border-d": "#9DECF9c4",
+    50: "#C4F1F9da",
+    100: "#C4F1F9da",
+    200: "#9DECF9",
+    300: "#76E4F7",
+    400: "#0BC5EA",
+    500: "#00B5D8",
+    600: "#00A3C4da",
+    700: "#0987A0da",
+    800: "#086F83da",
+    900: "#065666da",
   },
   purple: {
-    10: "#fcf9ff",
-    25: "#FAF5FF",
-    50: "#E9D8FD"
+    // Default.
+    "bg-l-p": "#fcf9ff",
+    "bg-l-s": "#FAF5FF",
+    "text-d-p": "#FAF5FFda",
+    "border-d": "#D6BCFAc4",
+    50: "#E9D8FDda",
+    100: "#E9D8FDda",
+    200: "#D6BCFA",
+    300: "#B794F4",
+    400: "#9F7AEA",
+    500: "#805AD5",
+    600: "#6B46C1da",
+    700: "#553C9Ada",
+    800: "#44337Ada",
+    900: "#322659da",
   },
   pink: {
-    10: "#fff9fa",
-    25: "#FFF5F7",
-    50: "#FED7E2"
-  }
-  
-  
+    // Default.
+    "bg-l-p": "#fff9fa",
+    "bg-l-s": "#FFF5F7",
+    "text-d-p": "#FFF5F7da",
+    "border-d": "#FBB6CEc4",
+    50: "#FED7E2da",
+    100: "#FED7E2da",
+    200: "#FBB6CE",
+    300: "#F687B3",
+    400: "#ED64A6",
+    500: "#D53F8C",
+    600: "#B83280da",
+    700: "#97266Dda",
+    800: "#702459da",
+    900: "#521B41da",
+  },
 };
 
 export default colors;
