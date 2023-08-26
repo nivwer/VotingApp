@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useColorMode, useDisclosure, } from "@chakra-ui/react";
+import { useColorMode, useDisclosure } from "@chakra-ui/react";
 // Actions.
 import { logout } from "../../features/auth/authSlice";
 // CSS module.
 import styles from "./Navbar.module.css";
 // Components.
-import ToggleColorMode from "./ToggleColorMode.jsx";
+import ToggleColorMode from "./ToggleColorMode";
 import { NavLink } from "react-router-dom";
 import {
   Box,
@@ -28,6 +28,7 @@ import {
   Flex,
   Badge,
   Divider,
+  Heading,
 } from "@chakra-ui/react";
 
 // Component.
@@ -61,6 +62,11 @@ function Navbar() {
           link: `/${session.user.username}`,
           text: "Profile",
         },
+        {
+          page: "config_theme",
+          link: "/config/theme",
+          text: "Theme",
+        },
       ]);
     } else {
       setPages([]);
@@ -84,9 +90,9 @@ function Navbar() {
       <Box className={styles["navbar"]}>
         <Box
           className={styles["content"]}
-          bg={isDark ? "black" : `${color}.25`}
+          bg={isDark ? "black" : `${color}.bg-l-s`}
           outline={isDark ? "1px solid" : "2px solid"}
-          outlineColor={isDark ? `${color}.200` : `${color}.500`}
+          outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
         >
           {/* Logotipo. */}
           <Box>
@@ -94,10 +100,10 @@ function Navbar() {
               <Text
                 fontSize="xl"
                 as="b"
-                color={isDark ? `${color}.100` : `${color}.900`}
+                color={isDark ? `${color}.text-d-p` : `${color}.900`}
               >
                 VotingApp
-              </Text>{" "}
+              </Text>
             </NavLink>
           </Box>
 
@@ -108,7 +114,7 @@ function Navbar() {
                 <ButtonGroup spacing="0">
                   {pages.map((page, index) => (
                     <NavLink key={index} to={page.link}>
-                      <Button colorScheme={color} size="sm" variant={"ghost"}>
+                      <Button opacity={isDark ? 0.9 : 0.6} colorScheme={color} size="sm" variant={"ghost"}>
                         {page.text}
                       </Button>
                     </NavLink>
@@ -122,16 +128,12 @@ function Navbar() {
             ) : (
               <ButtonGroup spacing="1">
                 <NavLink to={"/signin"}>
-                  <Button colorScheme={color} size="sm" variant={"ghost"}>
+                  <Button  opacity={isDark ? 0.9 : 1} colorScheme={color} size="sm" variant={"ghost"}>
                     Sign In
                   </Button>
                 </NavLink>
                 <NavLink to={"/signup"}>
-                  <Button
-                    colorScheme={color}
-                    variant={isDark ? "outline" : undefined}
-                    size="sm"
-                  >
+                  <Button  opacity={isDark ? 0.9 : 1}  colorScheme={color} size="sm">
                     Sign Up
                   </Button>
                 </NavLink>
@@ -145,9 +147,9 @@ function Navbar() {
             <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
               <DrawerOverlay />
               <DrawerContent
-                bg={isDark ? "black" : `${color}.25`}
+                bg={isDark ? "black" : `${color}.bg-l-s`}
                 border={isDark ? "1px solid" : "2px solid"}
-                borderColor={isDark ? `${color}.200` : `${color}.500`}
+                borderColor={isDark ? `${color}.border-d` : `${color}.600`}
                 borderLeftRadius="14px"
               >
                 <DrawerCloseButton />
@@ -156,16 +158,17 @@ function Navbar() {
                 <DrawerHeader>
                   {/* User Avatar. */}
                   <Flex>
-                    <Avatar size="md" />
+                    <Avatar name={session.user.username} size="md" />
                     <Box
-                      color={isDark ? `${color}.100` : `${color}.900`}
+                      color={isDark ? `${color}.text-d-p` : `${color}.900`}
                       ml="4"
                     >
-                      <Text fontSize="md" fontWeight="bold">
-                        Apodo
-                      </Text>
-                      <Text opacity={0.5} fontSize="sm">
-                        {session.user.username}
+                      <Heading pt={"5px"} fontSize="md" fontWeight="bold">
+                        {session.user.first_name}
+                      </Heading>
+
+                      <Text opacity={0.5} fontWeight="hairline" fontSize="sm">
+                        @{session.user.username}
                       </Text>
                     </Box>
                   </Flex>
@@ -179,7 +182,7 @@ function Navbar() {
                 {/* Drawer Body. */}
                 <DrawerBody mt="2">
                   {/* User Pages. */}
-                  <Stack>
+                  <Stack spacing={0}>
                     {userPages.map((page, index) => (
                       <NavLink key={index} to={page.link}>
                         <Button
@@ -189,6 +192,7 @@ function Navbar() {
                           w="100%"
                           px="6"
                           justifyContent="start"
+                          opacity={isDark ? 0.8 : 0.6}
                         >
                           {page.text}
                         </Button>
@@ -209,6 +213,7 @@ function Navbar() {
                       w="100%"
                       px="6"
                       justifyContent="start"
+                      opacity={isDark ? 0.8 : 0.6}
                     >
                       Sign Out
                     </Button>

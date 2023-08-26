@@ -19,6 +19,7 @@ function ToggleColorMode() {
       <Button
         size="sm"
         colorScheme={color}
+        opacity={isDark ? 0.9 : 0.6}
         variant={"ghost"}
         onClick={() => toggleColorMode()}
       >
