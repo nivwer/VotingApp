@@ -95,6 +95,7 @@ function SignUp() {
           <Box
             w={"100%"}
             bg={isDark ? "black" : `${color}.bg-l-s`}
+            color={isDark ? `${color}.text-d-p` : `${color}.900`}
             outline={isDark ? "1px solid" : "2px solid"}
             outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
             borderRadius="14px"
@@ -259,7 +260,7 @@ function SignUp() {
                       type="submit"
                       colorScheme={color}
                       variant="solid"
-                      opacity={isDark ? 0.8 : 0.6}
+                      opacity={isDark ? 0.8 : 1}
                     >
                       Sign Up
                     </Button>
