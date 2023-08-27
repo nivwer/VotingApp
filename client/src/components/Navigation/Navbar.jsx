@@ -63,8 +63,8 @@ function Navbar() {
           text: "Profile",
         },
         {
-          page: "config_theme",
-          link: "/config/theme",
+          page: "settings_theme",
+          link: "/settings/theme",
           text: "Theme",
         },
       ]);
@@ -191,6 +191,9 @@ function Navbar() {
                           variant={"ghost"}
                           w="100%"
                           px="6"
+                          onClick={() => {
+                            onClose();
+                          }}
                           justifyContent="start"
                           opacity={isDark ? 0.8 : 0.6}
                         >
@@ -205,7 +208,7 @@ function Navbar() {
                       onClick={() => {
                         dispatch(logout());
                         onClose();
-                        navigate("/home");
+                        navigate("/signin");
                       }}
                       colorScheme={color}
                       size="sm"
