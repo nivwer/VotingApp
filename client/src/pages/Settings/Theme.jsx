@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // Components.
 import { Button } from "@chakra-ui/react";
-import ThemeSelector from "../../components/theme/ThemeSelector";
+import ThemeSelector from "../../components/Theme/ThemeSelector";
 
 function Theme() {
   const navigate = useNavigate();

@@ -72,7 +72,7 @@ function NewPoll() {
         {/* Handle errors. */}
         {errors.title && <span>{errors.title.message}</span>}
 
-        {/* Title. */}
+        {/* Description */}
         <label htmlFor="description">Description</label>
         <input
           {...register("description", {
