@@ -141,7 +141,7 @@ const colors = {
     "bg-d-dimmed": "#9DECF910",
     "text-d-p": "#EDFDFDda",
     "border-d": "#9DECF9c4",
-    50: "#C4F1F99",
+    50: "#C4F1F999",
     100: "#C4F1F9",
     200: "#9DECF9",
     300: "#76E4F7",
