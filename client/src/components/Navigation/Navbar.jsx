@@ -5,8 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useColorMode, useDisclosure } from "@chakra-ui/react";
 // Actions.
 import { logout } from "../../features/auth/authSlice";
-// CSS module.
-import styles from "./Navbar.module.css";
 // Components.
 import ToggleColorMode from "./ToggleColorMode";
 import { NavLink } from "react-router-dom";
@@ -26,7 +24,6 @@ import {
   DrawerContent,
   DrawerCloseButton,
   Flex,
-  Badge,
   Divider,
   Heading,
 } from "@chakra-ui/react";
@@ -87,12 +84,19 @@ function Navbar() {
         <NavLink to={'/user2'}>user2 </NavLink>
       </div> */}
 
-      <Box className={styles["navbar"]}>
+      <Box w={"100%"} pos={"fixed"} top={"26px"}>
         <Box
-          className={styles["content"]}
           bg={isDark ? "black" : `${color}.bg-l-s`}
           outline={isDark ? "1px solid" : "2px solid"}
           outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
+          w={"96%"}
+          minH={"57px"}
+          m={"auto"}
+          p={"4px 40px"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          display={"flex"}
+          borderRadius={"14px"}
         >
           {/* Logotipo. */}
           <Box>

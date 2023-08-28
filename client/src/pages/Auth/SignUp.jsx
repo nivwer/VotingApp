@@ -73,13 +73,13 @@ function SignUp() {
 
       // If server error.
       if (res.error) {
-        if (res.error.data.username) {
-          setError("username", {
-            message: res.error.data.username[0],
-          });
-        } else if (res.error.data.password) {
-          setError("password", {
-            message: res.error.data.password[0],
+        const errorData = res.error.data;
+
+        for (const fieldName in errorData) {
+          const errorMessage = errorData[fieldName][0];
+
+          setError(fieldName, {
+            message: errorMessage,
           });
         }
       }
@@ -133,15 +133,15 @@ function SignUp() {
                         {...register("username", {
                           required: {
                             value: true,
-                            message: "Username is required.",
+                            message: "This field is required.",
                           },
                           maxLength: {
                             value: 32,
-                            message: "Max 32 digits.",
+                            message: "Maximum 32 options allowed.",
                           },
                           minLength: {
                             value: 3,
-                            message: "Min 3 digits.",
+                            message: "Minimum 3 options allowed.",
                           },
                         })}
                         type="text"
@@ -168,15 +168,15 @@ function SignUp() {
                           {...register("password", {
                             required: {
                               value: true,
-                              message: "Password is required.",
+                              message: "This field is required.",
                             },
                             maxLength: {
                               value: 96,
-                              message: "Max 96 digits.",
+                              message: "Maximum 96 options allowed.",
                             },
                             minLength: {
                               value: 8,
-                              message: "Min 8 digits.",
+                              message: "Minimum 8 options allowed.",
                             },
                           })}
                           type={showPassword ? "text" : "password"}
@@ -220,7 +220,7 @@ function SignUp() {
                           {...register("passwordValidation", {
                             required: {
                               value: true,
-                              message: "Is required.",
+                              message: "This field is required.",
                             },
                             validate: (value) =>
                               value === watch("password") ||

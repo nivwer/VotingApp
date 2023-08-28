@@ -2,12 +2,13 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { useCreatePollMutation } from "../../api/pollApiSlice";
 // Components.
 import {
   Button,
+  Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
   Modal,
@@ -17,10 +18,12 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Progress,
   Radio,
   RadioGroup,
   Select,
   Stack,
+  Text,
   Textarea,
   useColorMode,
   useDisclosure,
@@ -30,7 +33,6 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 
 // Component.
 function PollModal() {
-  const navigate = useNavigate();
   const session = useSelector((state) => state.session);
   // Theme color.
   const theme = useSelector((state) => state.theme);
@@ -43,6 +45,7 @@ function PollModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // Options list.
   const [optionList, setOptionList] = useState([]);
+  // Privacy Radio.
   const [privacyValue, setPrivacyValue] = useState("public");
   // React hook form.
   const {
@@ -51,6 +54,7 @@ function PollModal() {
     watch,
     reset,
     formState: { errors },
+    setError,
   } = useForm();
 
   // Submit.
@@ -64,11 +68,31 @@ function PollModal() {
         options: optionList,
       };
 
-      await createPoll({
+      const res = await createPoll({
         poll: pollData,
         token: session.token,
       });
-      navigate("/home");
+
+      // If the values is valid.
+      if (res.data) {
+        onClose();
+        reset({ options: "", title: "", description: "" });
+        setOptionList([]);
+        setPrivacyValue("public");
+      }
+
+      // If server error.
+      if (res.error) {
+        const errorData = res.error.data;
+
+        for (const fieldName in errorData) {
+          const errorMessage = errorData[fieldName][0];
+
+          setError(fieldName, {
+            message: errorMessage,
+          });
+        }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -97,6 +121,16 @@ function PollModal() {
           outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
           borderRadius="14px"
         >
+          {isLoading && (
+            <Progress
+              colorScheme={color}
+              borderTopRadius="14px"
+              m="auto"
+              w={"98%"}
+              size="xs"
+              isIndeterminate
+            />
+          )}
           {/* Header. */}
           <ModalHeader>New poll</ModalHeader>
           <ModalCloseButton />
@@ -105,7 +139,7 @@ function PollModal() {
             <ModalBody pb={6}>
               <Stack textAlign="start" spacing={3}>
                 {/* Title. */}
-                <FormControl>
+                <FormControl isDisabled={isLoading} isInvalid={errors.title}>
                   <FormLabel fontWeight={"bold"} htmlFor="title">
                     Title
                   </FormLabel>
@@ -113,11 +147,11 @@ function PollModal() {
                     {...register("title", {
                       required: {
                         value: true,
-                        message: "Title is required.",
+                        message: "This field is required.",
                       },
                       maxLength: {
                         value: 113,
-                        message: "Max 113 digits",
+                        message: "Maximum 113 options allowed.",
                       },
                     })}
                     type="text"
@@ -127,11 +161,16 @@ function PollModal() {
                     }
                   />
                   {/* Handle errors. */}
-                  {errors.title && <span>{errors.title.message}</span>}
+                  {errors.title && (
+                    <FormErrorMessage>{errors.title.message}</FormErrorMessage>
+                  )}
                 </FormControl>
 
                 {/* Description */}
-                <FormControl>
+                <FormControl
+                  isDisabled={isLoading}
+                  isInvalid={errors.description}
+                >
                   <FormLabel fontWeight={"bold"} htmlFor="description">
                     Description
                   </FormLabel>
@@ -140,9 +179,10 @@ function PollModal() {
                       required: false,
                       maxLength: {
                         value: 513,
-                        message: "Max 513 digits",
+                        message: "Maximum 513 options allowed.",
                       },
                     })}
+                    resize={"none"}
                     placeholder="This is my description."
                     focusBorderColor={
                       isDark ? `${color}.border-d` : `${color}.600`
@@ -150,12 +190,14 @@ function PollModal() {
                   />
                   {/* Handle errors. */}
                   {errors.description && (
-                    <span>{errors.description.message}</span>
+                    <FormErrorMessage>
+                      {errors.description.message}
+                    </FormErrorMessage>
                   )}
                 </FormControl>
 
                 {/* Privacy. */}
-                <FormControl>
+                <FormControl isDisabled={isLoading} isInvalid={errors.privacy}>
                   <FormLabel fontWeight={"bold"} htmlFor="privacy">
                     Privacy
                   </FormLabel>
@@ -164,7 +206,7 @@ function PollModal() {
                     value={privacyValue}
                     defaultValue="public"
                   >
-                    <Stack direction="row">
+                    <Stack opacity={0.9} direction="row">
                       <Radio colorScheme={color} value="public">
                         Public
                       </Radio>
@@ -177,11 +219,9 @@ function PollModal() {
                     </Stack>
                   </RadioGroup>
                 </FormControl>
-                {/* Handle errors. */}
-                {errors.privacy && <span>{errors.privacy.message}</span>}
 
                 {/* Category. */}
-                <FormControl>
+                <FormControl isDisabled={isLoading} isInvalid={errors.category}>
                   <FormLabel fontWeight={"bold"} htmlFor="category">
                     Category
                   </FormLabel>
@@ -202,28 +242,46 @@ function PollModal() {
                     <option value="category3">Category3</option>
                   </Select>
                   {/* Handle errors. */}
-                  {errors.category && <span>{errors.category.message}</span>}
+                  {errors.category && (
+                    <FormErrorMessage>
+                      {errors.category.message}
+                    </FormErrorMessage>
+                  )}
                 </FormControl>
 
                 {/* Options */}
-                <FormControl>
+                <FormControl isDisabled={isLoading} isInvalid={errors.options}>
                   <FormLabel fontWeight={"bold"} htmlFor="options">
                     Options
                   </FormLabel>
                   <Input
                     {...register("options")}
                     type="text"
+                    placeholder="Add a option."
                     focusBorderColor={
                       isDark ? `${color}.border-d` : `${color}.600`
                     }
                   />
+                  {/* Handle errors. */}
+                  {errors.options && (
+                    <FormErrorMessage>
+                      {errors.options.message}
+                    </FormErrorMessage>
+                  )}
                 </FormControl>
                 <Button
+                  isDisabled={isLoading}
                   onClick={() => {
                     const optionValue = watch("options").trim();
                     if (optionValue.length >= 1) {
-                      setOptionList([...optionList, optionValue]);
-                      reset({ options: "" }); // Clear the input field
+                      if (optionValue.length >= 113) {
+                        setError("options", {
+                          message: "Maximum 113 options allowed.",
+                        });
+                      } else {
+                        setOptionList([...optionList, optionValue]);
+                        reset({ options: "" }); // Clear the input field
+                      }
                     }
                   }}
                   colorScheme={color}
@@ -234,27 +292,45 @@ function PollModal() {
                 >
                   Add Option
                 </Button>
-                {/* Handle errors. */}
-                {errors.options && <span>{errors.options.message}</span>}
 
-                <ul>
+                <Stack w={"100%"}>
                   {optionList.map((option, index) => (
-                    <li key={index}>
-                      {option}
-                      <button
+                    <Flex
+                      key={index}
+                      bg={
+                        isDark ? `${color}.bg-d-dimmed` : `${color}.bg-l-dimmed`
+                      }
+                      color={isDark ? `${color}.text-d-p` : `${color}.900`}
+                      justifyContent="space-between"
+                      variant="ghost"
+                      borderRadius={5}
+                      pr={0}
+                      opacity={isDark ? 0.8 : 0.6}
+                    >
+                      <Text
+                        px={4}
+                        py={2}
+                        wordBreak={"break-all"}
+                        fontWeight={"bold"}
+                      >
+                        {option}
+                      </Text>
+                      <Button
+                        isDisabled={isLoading}
                         type="button"
                         onClick={() => handleDeleteOption(index)}
                       >
-                        Delete
-                      </button>
-                    </li>
+                        X
+                      </Button>
+                    </Flex>
                   ))}
-                </ul>
+                </Stack>
               </Stack>
             </ModalBody>
             {/* Footer. */}
             <ModalFooter>
               <Button
+                isDisabled={isLoading}
                 type="submit"
                 colorScheme={color}
                 mr={3}
@@ -263,6 +339,7 @@ function PollModal() {
                 Save
               </Button>
               <Button
+                isDisabled={isLoading}
                 onClick={onClose}
                 colorScheme={color}
                 variant={"ghost"}

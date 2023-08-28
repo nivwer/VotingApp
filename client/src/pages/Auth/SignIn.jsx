@@ -68,14 +68,15 @@ function SignIn() {
         navigate("/home");
       }
 
+      // If server error.
       if (res.error) {
-        if (res.error.data.username) {
-          setError("username", {
-            message: res.error.data.username[0],
-          });
-        } else if (res.error.data.password) {
-          setError("password", {
-            message: res.error.data.password[0],
+        const errorData = res.error.data;
+
+        for (const fieldName in errorData) {
+          const errorMessage = errorData[fieldName][0];
+
+          setError(fieldName, {
+            message: errorMessage,
           });
         }
       }
@@ -132,7 +133,9 @@ function SignIn() {
                           },
                         })}
                         type="text"
-                        focusBorderColor={isDark ? `${color}.border-d` : `${color}.600`}
+                        focusBorderColor={
+                          isDark ? `${color}.border-d` : `${color}.600`
+                        }
                       />
                       {/* Handle errors. */}
                       {errors.username && (
@@ -159,7 +162,9 @@ function SignIn() {
                             },
                           })}
                           type={showPassword ? "text" : "password"}
-                          focusBorderColor={isDark ? `${color}.border-d` : `${color}.600`}
+                          focusBorderColor={
+                            isDark ? `${color}.border-d` : `${color}.600`
+                          }
                         />
                         <InputRightElement width="3rem">
                           <Button
