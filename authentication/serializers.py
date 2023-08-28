@@ -8,16 +8,16 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate_username(self, value):
         if len(value) < 3:  
-            raise serializers.ValidationError("Min 3 digits.")
+            raise serializers.ValidationError("Minimum 18 options allowed.")
         if len(value) > 32:  
-            raise serializers.ValidationError("Max 32 digits.")
+            raise serializers.ValidationError("Maximum 32 options allowed.")
         return value
 
     def validate_password(self, value):
         if len(value) < 8:
-            raise serializers.ValidationError("Min 8 digits.")
+            raise serializers.ValidationError("Minimum 8 options allowed.")
         if len(value) > 98:
-            raise serializers.ValidationError("Max 96 digits.")
+            raise serializers.ValidationError("Maximum 96 options allowed.")
         return value
     
     def validate_first_name(self, value):
