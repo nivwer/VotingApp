@@ -120,23 +120,10 @@ async def create_poll(request):
         # Fields requireds.
         title = poll_serializer.validated_data.get('title')
         options = options_serializer.validated_data.get('options')
-        # If the value is undefined, the value is null.
-        description = poll_serializer.validated_data.get('description')
         privacy = poll_serializer.validated_data.get('privacy')
         category = poll_serializer.validated_data.get('category')
-
-        # If the list options do not have a length of two or more items.
-        if len(options) <= 1:
-            raise ValidationError(
-                {'options': ["This field expects a list with two or more items."]})
-        elif len(options) >= 18:
-            raise ValidationError(
-                {'options': ["This field expects a list with less than 18 elements."]})
-
-        # If privacy is not valid or undefined.
-        privacy_list = ["public", "private", "friends_only"]
-        if not privacy in privacy_list:
-            privacy = "public"
+        # If the value is undefined, the value is null.
+        description = poll_serializer.validated_data.get('description')
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -152,7 +139,8 @@ async def create_poll(request):
                     {
                         "created_by": {
                             "user_id": request.user.id,
-                            "username": request.user.username
+                            "username": request.user.username,
+                            "first_name": request.user.first_name
                         },
                         "title": title,
                         "description": description,
@@ -206,7 +194,7 @@ async def create_poll(request):
 
     # Handle validation errors.
     except ValidationError as e:
-        return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle MongoDB errors.
     except PyMongoError as e:
@@ -366,9 +354,9 @@ async def user_polls(request, username):
 
         # Verify the privacy of polls.
         polls = []
-        for poll in polls_list_json: 
+        for poll in polls_list_json:
             # Fix data.
-            poll["_id"] =  poll["_id"]["$oid"]
+            poll["_id"] = poll["_id"]["$oid"]
             poll["creation_date"] = poll["creation_date"]["$date"]
             # If poll is public.
             if poll["privacy"] == "public":
