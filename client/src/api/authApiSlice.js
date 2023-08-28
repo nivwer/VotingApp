@@ -1,22 +1,24 @@
 // Redux Toolkit Query config.
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// Requests to Auth API.
 export const authApiSlice = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/auth/",
   }),
   endpoints: (builder) => ({
-    // Create user.
-    createUser: builder.mutation({
-      query: (newUser) => ({
+    // Register.
+    signUp: builder.mutation({
+      query: (data) => ({
         url: "signup/",
         method: "POST",
-        body: newUser,
+        body: data,
       }),
     }),
 
-    loginUser: builder.mutation({
+    // Login.
+    signIn: builder.mutation({
       query: (data) => ({
         url: "signin/",
         method: "POST",
@@ -24,6 +26,7 @@ export const authApiSlice = createApi({
       }),
     }),
 
+    // Info user.
     viewUser: builder.mutation({
       query: (data) => ({
         url: "user/",
@@ -37,7 +40,7 @@ export const authApiSlice = createApi({
 });
 
 export const {
-  useCreateUserMutation,
-  useLoginUserMutation,
+  useSignInMutation,
+  useSignUpMutation,
   useViewUserMutation,
 } = authApiSlice;
