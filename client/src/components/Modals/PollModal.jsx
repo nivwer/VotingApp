@@ -1,8 +1,14 @@
 // Hooks.
+import { useThemeInfo } from "../../hooks/Theme";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useCreatePollMutation } from "../../api/pollApiSlice";
+import {
+  useCreatePollMutation,
+  useUpdatePollMutation,
+} from "../../api/pollApiSlice";
+// Styles.
+import { getPollModalStyles } from "./PollModalStyles";
 // Components.
 import {
   Button,
@@ -25,28 +31,25 @@ import {
   Stack,
   Text,
   Textarea,
-  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 // Icons.
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 // Component.
-function PollModal() {
+function PollModal({ poll = false, buttonStyles }) {
+  const { ThemeColor, isDark } = useThemeInfo();
+  const styles = getPollModalStyles(ThemeColor, isDark);
+  // User session.
   const session = useSelector((state) => state.session);
-  // Theme color.
-  const theme = useSelector((state) => state.theme);
-  const color = theme.theme_color;
-  // Theme mode.
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === "dark";
   // Request to create polls.
-  const [createPoll, { isLoading, isError }] = useCreatePollMutation();
+  const [createPoll, { isLoading: isCreating }] = useCreatePollMutation();
+  // Request to update polls.
+  const [updatePoll, { isLoading: isUpdating }] = useUpdatePollMutation();
+
+  // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // Options list.
-  const [optionList, setOptionList] = useState([]);
-  // Privacy Radio.
-  const [privacyValue, setPrivacyValue] = useState("public");
+
   // React hook form.
   const {
     register,
@@ -56,6 +59,17 @@ function PollModal() {
     formState: { errors },
     setError,
   } = useForm();
+  // Options list.
+  const [optionList, setOptionList] = useState([]);
+  // Privacy Radio.
+  const [privacyValue, setPrivacyValue] = useState("public");
+
+  useEffect(() => {
+    if (poll) {
+      // setOptionList(poll.options);
+      setPrivacyValue(poll.privacy);
+    }
+  }, []);
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
@@ -68,28 +82,37 @@ function PollModal() {
         options: optionList,
       };
 
-      const res = await createPoll({
-        poll: pollData,
-        token: session.token,
-      });
+      let res = "";
 
-      // If the values is valid.
-      if (res.data) {
-        onClose();
-        reset({ options: "", title: "", description: "" });
-        setOptionList([]);
-        setPrivacyValue("public");
+      if (poll) {
+        res = await updatePoll({
+          poll_id: poll._id,
+          poll: pollData,
+          token: session.token,
+        });
+        // If the values is valid.
+        if (res.data) {
+          onClose();
+        }
+      } else {
+        res = await createPoll({
+          poll: pollData,
+          token: session.token,
+        });
+        // If the values is valid.
+        if (res.data) {
+          onClose();
+          reset({ options: "", title: "", description: "" });
+          setOptionList([]);
+          setPrivacyValue("public");
+        }
       }
 
       // If server error.
       if (res.error) {
-        const errorData = res.error.data;
-
-        for (const fieldName in errorData) {
-          const errorMessage = errorData[fieldName][0];
-
+        for (const fieldName in res.error.data) {
           setError(fieldName, {
-            message: errorMessage,
+            message: res.error.data[fieldName][0],
           });
         }
       }
@@ -109,21 +132,17 @@ function PollModal() {
   return (
     <>
       {/* Button to open the Modal. */}
-      <Button onClick={onOpen}>New Poll</Button>
+      <Button onClick={onOpen} {...buttonStyles}>
+        {poll ? "Edit poll" : "New poll"}
+      </Button>
 
       {/* Modal. */}
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent
-          bg={isDark ? "black" : `${color}.bg-l-s`}
-          color={isDark ? `${color}.text-d-p` : `${color}.900`}
-          outline={isDark ? "1px solid" : "2px solid"}
-          outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
-          borderRadius="14px"
-        >
-          {isLoading && (
+        <ModalContent {...styles.content}>
+          {(isCreating || isUpdating) && (
             <Progress
-              colorScheme={color}
+              colorScheme={ThemeColor}
               borderTopRadius="14px"
               m="auto"
               w={"98%"}
@@ -132,15 +151,18 @@ function PollModal() {
             />
           )}
           {/* Header. */}
-          <ModalHeader>New poll</ModalHeader>
+          <ModalHeader>{poll ? "Edit poll" : "New poll"}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={onSubmit}>
             {/* Body. */}
             <ModalBody pb={6}>
               <Stack textAlign="start" spacing={3}>
                 {/* Title. */}
-                <FormControl isDisabled={isLoading} isInvalid={errors.title}>
-                  <FormLabel fontWeight={"bold"} htmlFor="title">
+                <FormControl
+                  isDisabled={isCreating || isUpdating}
+                  isInvalid={errors.title}
+                >
+                  <FormLabel htmlFor="title" fontWeight={"bold"}>
                     Title
                   </FormLabel>
                   <Input
@@ -155,10 +177,9 @@ function PollModal() {
                       },
                     })}
                     type="text"
+                    defaultValue={poll ? poll.title : ""}
                     placeholder="This is my question."
-                    focusBorderColor={
-                      isDark ? `${color}.border-d` : `${color}.600`
-                    }
+                    focusBorderColor={styles.focusBorderColor}
                   />
                   {/* Handle errors. */}
                   {errors.title && (
@@ -168,10 +189,10 @@ function PollModal() {
 
                 {/* Description */}
                 <FormControl
-                  isDisabled={isLoading}
+                  isDisabled={isCreating || isUpdating}
                   isInvalid={errors.description}
                 >
-                  <FormLabel fontWeight={"bold"} htmlFor="description">
+                  <FormLabel htmlFor="description" fontWeight={"bold"}>
                     Description
                   </FormLabel>
                   <Textarea
@@ -182,11 +203,10 @@ function PollModal() {
                         message: "Maximum 513 options allowed.",
                       },
                     })}
-                    resize={"none"}
+                    defaultValue={poll ? poll.description : ""}
                     placeholder="This is my description."
-                    focusBorderColor={
-                      isDark ? `${color}.border-d` : `${color}.600`
-                    }
+                    focusBorderColor={styles.focusBorderColor}
+                    resize={"none"}
                   />
                   {/* Handle errors. */}
                   {errors.description && (
@@ -197,23 +217,26 @@ function PollModal() {
                 </FormControl>
 
                 {/* Privacy. */}
-                <FormControl isDisabled={isLoading} isInvalid={errors.privacy}>
-                  <FormLabel fontWeight={"bold"} htmlFor="privacy">
+                <FormControl
+                  isDisabled={isCreating || isUpdating}
+                  isInvalid={errors.privacy}
+                >
+                  <FormLabel htmlFor="privacy" fontWeight={"bold"}>
                     Privacy
                   </FormLabel>
                   <RadioGroup
                     onChange={setPrivacyValue}
                     value={privacyValue}
-                    defaultValue="public"
+                    defaultValue={poll ? poll.privacy : "public"}
                   >
                     <Stack opacity={0.9} direction="row">
-                      <Radio colorScheme={color} value="public">
+                      <Radio colorScheme={ThemeColor} value="public">
                         Public
                       </Radio>
-                      <Radio colorScheme={color} value="private">
+                      <Radio colorScheme={ThemeColor} value="private">
                         Private
                       </Radio>
-                      <Radio colorScheme={color} value="friends_only">
+                      <Radio colorScheme={ThemeColor} value="friends_only">
                         Friends
                       </Radio>
                     </Stack>
@@ -221,8 +244,11 @@ function PollModal() {
                 </FormControl>
 
                 {/* Category. */}
-                <FormControl isDisabled={isLoading} isInvalid={errors.category}>
-                  <FormLabel fontWeight={"bold"} htmlFor="category">
+                <FormControl
+                  isDisabled={isCreating || isUpdating}
+                  isInvalid={errors.category}
+                >
+                  <FormLabel htmlFor="category" fontWeight={"bold"}>
                     Category
                   </FormLabel>
                   <Select
@@ -232,10 +258,9 @@ function PollModal() {
                         message: "This field is required.",
                       },
                     })}
+                    defaultValue={poll ? poll.category : ""}
                     placeholder="Select a option"
-                    focusBorderColor={
-                      isDark ? `${color}.border-d` : `${color}.600`
-                    }
+                    focusBorderColor={styles.focusBorderColor}
                   >
                     <option value="category1">Category1</option>
                     <option value="category2">Category2</option>
@@ -249,18 +274,19 @@ function PollModal() {
                   )}
                 </FormControl>
 
-                {/* Options */}
-                <FormControl isDisabled={isLoading} isInvalid={errors.options}>
-                  <FormLabel fontWeight={"bold"} htmlFor="options">
+                {/* Options. */}
+                <FormControl
+                  isDisabled={isCreating || isUpdating}
+                  isInvalid={errors.options}
+                >
+                  <FormLabel htmlFor="options" fontWeight={"bold"}>
                     Options
                   </FormLabel>
                   <Input
                     {...register("options")}
                     type="text"
                     placeholder="Add a option."
-                    focusBorderColor={
-                      isDark ? `${color}.border-d` : `${color}.600`
-                    }
+                    focusBorderColor={styles.focusBorderColor}
                   />
                   {/* Handle errors. */}
                   {errors.options && (
@@ -269,8 +295,10 @@ function PollModal() {
                     </FormErrorMessage>
                   )}
                 </FormControl>
+                {/* Add options. */}
                 <Button
-                  isDisabled={isLoading}
+                  isDisabled={isCreating || isUpdating}
+                  {...styles.body.options.add_button}
                   onClick={() => {
                     const optionValue = watch("options").trim();
                     if (optionValue.length >= 1) {
@@ -280,43 +308,21 @@ function PollModal() {
                         });
                       } else {
                         setOptionList([...optionList, optionValue]);
-                        reset({ options: "" }); // Clear the input field
+                        reset({ options: "" }); // Clear the input field.
                       }
                     }
                   }}
-                  colorScheme={color}
-                  variant={"ghost"}
-                  bg={isDark ? `${color}.bg-d-dimmed` : `${color}.bg-l-dimmed`}
-                  color={isDark ? `${color}.text-d-p` : `${color}.900`}
-                  opacity={0.9}
                 >
                   Add Option
                 </Button>
 
+                {/* Options list. */}
                 <Stack w={"100%"}>
                   {optionList.map((option, index) => (
-                    <Flex
-                      key={index}
-                      bg={
-                        isDark ? `${color}.bg-d-dimmed` : `${color}.bg-l-dimmed`
-                      }
-                      color={isDark ? `${color}.text-d-p` : `${color}.900`}
-                      justifyContent="space-between"
-                      variant="ghost"
-                      borderRadius={5}
-                      pr={0}
-                      opacity={isDark ? 0.8 : 0.6}
-                    >
-                      <Text
-                        px={4}
-                        py={2}
-                        wordBreak={"break-all"}
-                        fontWeight={"bold"}
-                      >
-                        {option}
-                      </Text>
+                    <Flex key={index} {...styles.body.options.list}>
+                      <Text {...styles.body.options.item}>{option}</Text>
                       <Button
-                        isDisabled={isLoading}
+                        isDisabled={isCreating || isUpdating}
                         type="button"
                         onClick={() => handleDeleteOption(index)}
                       >
@@ -330,22 +336,16 @@ function PollModal() {
             {/* Footer. */}
             <ModalFooter>
               <Button
-                isDisabled={isLoading}
+                isDisabled={isCreating || isUpdating}
                 type="submit"
-                colorScheme={color}
-                mr={3}
-                opacity={isDark ? 0.9 : 1}
+                {...styles.footer.submit}
               >
                 Save
               </Button>
               <Button
-                isDisabled={isLoading}
+                isDisabled={isCreating || isUpdating}
                 onClick={onClose}
-                colorScheme={color}
-                variant={"ghost"}
-                bg={isDark ? `${color}.bg-d-dimmed` : `${color}.bg-l-dimmed`}
-                color={isDark ? `${color}.text-d-p` : `${color}.900`}
-                opacity={0.9}
+                {...styles.footer.cancel}
               >
                 Cancel
               </Button>
