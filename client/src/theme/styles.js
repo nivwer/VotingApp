@@ -1,12 +1,10 @@
 const styles = {
-  styles: {
-    global: {
-      // styles for the `body`
-      body: {
-        margin: 0,
-        "-webkit-font-smoothing": "antialised",
-        "-moz-osx-font-smoothing": "grayslace",
-      },
+  global: {
+    body: {
+      margin: 0,
+      WebkitFontSmoothing: "antialiased",
+      MozOsxFontSmoothing: "grayscale",
+      fontFamily: "Gothic A1, sans-serif",
     },
   },
 };
