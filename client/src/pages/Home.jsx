@@ -1,7 +1,7 @@
 // Hooks.
 import { useSelector } from "react-redux";
 // Components.
-import PollCard from "../components/Cards/PollCard";
+//import PollCard from "../components/Cards/PollCard/PollCard";
 import { useColorMode, Box, Container, Stack } from "@chakra-ui/react";
 // Icons
 
@@ -14,19 +14,18 @@ function Home() {
   const isDark = colorMode === "dark";
   return (
     <>
-        <Box
-          w={"100%"}
-          bg={isDark ? `black` : `${color}.bg-l-p`}
-          outline={isDark ? "1px solid" : "2px solid"}
-          outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
-          borderRadius="14px"
-          pt={"20px"}
-          pb={"20px"}
-        >
-          <Stack w={"100%"}>
-            <PollCard />
-          </Stack>
-        </Box>
+      <Box
+        w={"100%"}
+        bg={isDark ? `black` : `${color}.bg-l-p`}
+        outline={isDark ? "1px solid" : "2px solid"}
+        outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
+        borderRadius="14px"
+        pt={"20px"}
+        pb={"20px"}
+      >
+        <Stack w={"100%"}>
+        </Stack>
+      </Box>
     </>
   );
 }

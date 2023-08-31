@@ -14,8 +14,6 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.authtoken.models import Token
 # Models and Serializers.
 from .serializers import UserSerializer
-from profiles.models import UserProfile
-from profiles.serializers import UserProfilleSerializer
 
 
 # Views.
@@ -63,7 +61,7 @@ def signup(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Handles the user signin process.
+# Handles the user authentication process.
 @api_view(['POST'])
 @transaction.atomic
 def signin(request):

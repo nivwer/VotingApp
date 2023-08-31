@@ -30,7 +30,7 @@ class OptionsSerializer(serializers.Serializer):
             raise serializers.ValidationError("Maximum 18 options allowed.")
 
         return value
-
+    
 
 class OptionSerializer(serializers.Serializer):
     option_text = serializers.CharField(max_length=113, required=True)

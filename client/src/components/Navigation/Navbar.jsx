@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useColorMode, useDisclosure } from "@chakra-ui/react";
+import { Icon, useColorMode, useDisclosure } from "@chakra-ui/react";
 // Actions.
 import { logout } from "../../features/auth/authSlice";
 // Components.
@@ -27,6 +27,8 @@ import {
   Divider,
   Heading,
 } from "@chakra-ui/react";
+// Icons.
+import { FaHouse } from "react-icons/fa6";
 
 // Component.
 function Navbar() {
@@ -50,8 +52,8 @@ function Navbar() {
   useEffect(() => {
     if (session.user) {
       setPages([
-        { page: "home", link: "/home", text: "Home" },
-        { page: "about", link: "/about", text: "About" },
+        { page: "home", link: "/home", text: "Home", icon: <FaHouse /> },
+        { page: "about", link: "/about", text: "About", icon: <FaHouse /> },
       ]);
       setUserPages([
         {
@@ -118,7 +120,13 @@ function Navbar() {
                 <ButtonGroup spacing="0">
                   {pages.map((page, index) => (
                     <NavLink key={index} to={page.link}>
-                      <Button opacity={isDark ? 0.9 : 0.6} colorScheme={color} size="sm" variant={"ghost"}>
+                      <Button
+                        opacity={isDark ? 0.9 : 0.6}
+                        colorScheme={color}
+                        size="sm"
+                        variant={"ghost"}
+                      >
+                        {page.icon}
                         {page.text}
                       </Button>
                     </NavLink>
@@ -132,12 +140,21 @@ function Navbar() {
             ) : (
               <ButtonGroup spacing="1">
                 <NavLink to={"/signin"}>
-                  <Button  opacity={isDark ? 0.9 : 1} colorScheme={color} size="sm" variant={"ghost"}>
+                  <Button
+                    opacity={isDark ? 0.9 : 1}
+                    colorScheme={color}
+                    size="sm"
+                    variant={"ghost"}
+                  >
                     Sign In
                   </Button>
                 </NavLink>
                 <NavLink to={"/signup"}>
-                  <Button  opacity={isDark ? 0.9 : 1}  colorScheme={color} size="sm">
+                  <Button
+                    opacity={isDark ? 0.9 : 1}
+                    colorScheme={color}
+                    size="sm"
+                  >
                     Sign Up
                   </Button>
                 </NavLink>

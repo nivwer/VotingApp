@@ -7,8 +7,8 @@ export const pollApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/poll/",
   }),
+  tagTypes: ["Polls"],
   endpoints: (builder) => ({
-
     // CRUD Poll. //
 
     // Create Poll.
@@ -21,10 +21,11 @@ export const pollApiSlice = createApi({
           Authorization: `Token ${data.token}`,
         },
       }),
+      invalidatesTags: ["Polls"],
     }),
 
     // Read Poll.
-    readPoll: builder.mutation({
+    readPoll: builder.query({
       query: (data) => ({
         url: `read/${data.id}`,
         method: "GET",
@@ -37,37 +38,46 @@ export const pollApiSlice = createApi({
     // Update Poll.
     updatePoll: builder.mutation({
       query: (data) => ({
-        url: "update/",
+        url: `update/${data.poll_id}`,
         method: "PATCH",
-        body: data,
+        body: data.poll,
+        headers: {
+          Authorization: `Token ${data.token}`,
+        },
       }),
+      invalidatesTags: ["Polls"],
     }),
 
     // Delete Poll.
     deletePoll: builder.mutation({
       query: (data) => ({
-        url: "delete/",
+        url: `delete/${data.id}`,
         method: "DELETE",
-        body: data,
+        headers: {
+          Authorization: `Token ${data.token}`,
+        },
       }),
+      invalidatesTags: ["Polls"],
     }),
-    
 
     // GET Polls. //
 
-    // User Polls.
-    userPolls: builder.mutation({
+    // Get User Polls.
+    getUserPolls: builder.query({
       query: (data) => ({
         url: `user/${data.username}`,
         method: "GET",
         headers: data.headers,
       }),
+      providesTags: ["Polls"],
     }),
   }),
 });
 
 export const {
+  useGetUserPollsQuery,
   useCreatePollMutation,
   useReadPollMutation,
-  useUserPollsMutation,
+  useUpdatePollMutation,
+  useDeletePollMutation,
 } = pollApiSlice;

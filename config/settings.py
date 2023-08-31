@@ -41,9 +41,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     'adrf',  # Async Rest Framework support.
-    "authentication",
-    "profiles",
-    "polls"
+    "apps.accounts",
+    "apps.polls",
+    "apps.profiles",
+    "apps.settings",
 ]
 
 MIDDLEWARE = [
