@@ -115,14 +115,10 @@ async def create_poll(request):
         # Throws ValidationError if not valid.
         poll_serializer.is_valid(raise_exception=True)
         options_serializer.is_valid(raise_exception=True)
-
-        # Fields requireds.
-        title = poll_serializer.validated_data.get('title')
-        options = options_serializer.validated_data.get('options')
-        privacy = poll_serializer.validated_data.get('privacy')
-        category = poll_serializer.validated_data.get('category')
-        # If the value is undefined, the value is null.
-        description = poll_serializer.validated_data.get('description')
+        # Get poll data.
+        poll_data = poll_serializer.validated_data
+        # Get options list.
+        list_options = options_serializer.validated_data.get('options')
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -141,13 +137,13 @@ async def create_poll(request):
                             "username": request.user.username,
                             "first_name": request.user.first_name
                         },
-                        "title": title,
-                        "description": description,
+                        "title": poll_data['title'],
+                        "description": poll_data['description'],
                         "creation_date": datetime.now(),
                         "total_votes": 0,
                         "voters": [],
-                        "privacy": privacy,
-                        "category": category
+                        "privacy": poll_data['privacy'],
+                        "category": poll_data['category']
                     },
                     session=session
                 )
@@ -156,9 +152,9 @@ async def create_poll(request):
                 poll_id = poll.inserted_id
 
                 # Add the initial options in the options document.
-                list_options = []
-                for option in options:
-                    list_options.append(
+                options = []
+                for option in list_options:
+                    options.append(
                         {
                             "created_by": {
                                 "user_id": request.user.id,
@@ -172,7 +168,7 @@ async def create_poll(request):
                 await polls_db.options.insert_one(
                     {
                         "poll_id": poll_id,
-                        "options": list_options
+                        "options": options
                     },
                     session=session
                 )
@@ -281,7 +277,8 @@ async def delete_poll(request, poll_id):
 
         # If poll is not found.
         if not poll:
-            raise ValidationError("Poll is not found.", status=status.HTTP_404_NOT_FOUND)
+            raise ValidationError("Poll is not found.",
+                                  status=status.HTTP_404_NOT_FOUND)
 
         # If user is not authorized.
         if poll["created_by"]["user_id"] != request.user.id:

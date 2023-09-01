@@ -1,12 +1,5 @@
-# Standard.
-import os
-from datetime import datetime
 # Virtualenv.
 from dotenv import load_dotenv
-# Django.
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
@@ -16,7 +9,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 # Async Rest Framework support.
 from adrf.decorators import api_view
-from asgiref.sync import async_to_sync, sync_to_async
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
 # MongoDB.
@@ -24,7 +16,7 @@ from pymongo.errors import PyMongoError
 from bson import json_util
 from bson.objectid import ObjectId
 # Serializers.
-from ..serializers import PollSerializer, OptionSerializer
+from ..serializers import OptionSerializer
 
 
 # Load the virtual environment.
@@ -47,6 +39,8 @@ class GetCollectionsMongoDB:
 
 # Handles the adding and removing options in a poll.
 @api_view(['POST', 'DELETE'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
 async def option_manager(request, poll_id):
     try:
         # Get collections from the polls database.
@@ -138,8 +132,11 @@ async def option_manager(request, poll_id):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(['GET', 'POST', 'PATCH', 'DELETE'])
-async def options_manager(request, poll_id):
+
+
+# Handles the getting options document.
+@api_view(['GET'])
+async def get_options(request, poll_id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ["polls", "options"])
@@ -176,12 +173,6 @@ async def options_manager(request, poll_id):
                 "is_owner": is_owner,
                 "options": options_json
             })
-
-        # Method POST.
-
-        # Method PATCH.
-
-        # Method DELETE.
 
     # Handle validation errors.
     except ValidationError as e:

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-
+# Poll serializer.
 class PollSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=113, required=True)
     description = serializers.CharField(
@@ -17,6 +17,7 @@ class PollSerializer(serializers.Serializer):
         return value
 
 
+# Options serializer.
 class OptionsSerializer(serializers.Serializer):
     options = serializers.ListField(
         child=serializers.CharField(max_length=113, required=True),
@@ -31,6 +32,6 @@ class OptionsSerializer(serializers.Serializer):
 
         return value
     
-
+# Option serializer.
 class OptionSerializer(serializers.Serializer):
     option_text = serializers.CharField(max_length=113, required=True)

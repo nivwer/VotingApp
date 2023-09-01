@@ -13,6 +13,6 @@ urlpatterns = [
     # path('category/<str:category>', views.category_polls, name='CategoryPolls')
 
     # Options.
-    path('options/<str:poll_id>', options_views.options_manager),
+    path('options/<str:poll_id>', options_views.get_options),
     path('option/<str:poll_id>', options_views.option_manager),
 ]
