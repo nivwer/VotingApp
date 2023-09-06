@@ -10,9 +10,9 @@ class PollSerializer(serializers.Serializer):
 
     def validate_privacy(self, value):
         # If privacy is not valid or undefined.
-        privacy_list = ["public", "private", "friends_only"]
+        privacy_list = ['public', 'private', 'friends_only']
         if not value in privacy_list:
-            raise serializers.ValidationError("This field is required.")
+            raise serializers.ValidationError('This field is required.')
 
         return value
 
@@ -26,9 +26,9 @@ class OptionsSerializer(serializers.Serializer):
 
     def validate_options(self, value):
         if len(value) <= 1:
-            raise serializers.ValidationError("Minimum 2 options allowed.")
+            raise serializers.ValidationError('Minimum 2 options allowed.')
         elif len(value) >= 18:
-            raise serializers.ValidationError("Maximum 18 options allowed.")
+            raise serializers.ValidationError('Maximum 18 options allowed.')
 
         return value
     

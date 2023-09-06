@@ -44,16 +44,20 @@ class GetCollectionsMongoDB:
 async def option_manager(request, poll_id):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ["polls", "options"])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'options'])
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({"_id": ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)}
+        )
         # If poll is not found.
         if not poll_bson:
-            raise ValidationError("Poll is not found.")
+            raise ValidationError('Poll is not found.')
 
         # If privacy of poll is private.
-        if poll_bson["privacy"] == "private" and poll_bson["created_by"]["user_id"] != request.user.id:
-            raise PermissionDenied("This poll is private.")
+        is_private = poll_bson['privacy'] == 'private'
+        is_owner = poll_bson['created_by']['user_id'] != request.user.id
+        if not is_owner and is_private:
+            raise PermissionDenied('This poll is private.')
 
         # If privacy of poll is friends_only. ?
 
@@ -66,10 +70,15 @@ async def option_manager(request, poll_id):
         # Create the option object.
 
         # Find the poll options.
-        options = await polls_db.options.find_one({"poll_id": ObjectId(poll_id)})
+        options = await polls_db.options.find_one(
+            {'poll_id': ObjectId(poll_id)}
+        )
 
         # If the option already exist.
-        exist = option['option_text'] in options['options']
+        exist = False
+        for o in options['options']:
+            if o['option_text'] == option['option_text']:
+                exist = True
         is_owner = poll_bson['created_by']['user_id'] == request.user.id
 
         # Method POST.
@@ -77,21 +86,26 @@ async def option_manager(request, poll_id):
             if exist:
                 raise ValidationError('Option already exist.')
 
+            if not is_owner:
+                for o in options['options']:
+                    if o['created_by']['user_id'] == request.user.id:
+                        raise ValidationError('You can only add one option.')
+
             new_option = {
-                "created_by": {
-                    "user_id": request.user.id,
-                    "username": request.user.username
+                'created_by': {
+                    'user_id': request.user.id,
+                    'username': request.user.username
                 },
-                "option_text": option["option_text"],
-                "votes": 0
+                'option_text': option['option_text'],
+                'votes': 0
             }
             # Save the option object.
             await polls_db.options.update_one(
-                {"poll_id": ObjectId(poll_id)},
-                {"$push": {"options": new_option}})
+                {'poll_id': ObjectId(poll_id)},
+                {'$push': {'options': new_option}})
 
             # Response.
-            return Response("Option added successfully")
+            return Response('Option added successfully')
 
         # Method DELETE.
         if request.method == 'DELETE':
@@ -99,17 +113,19 @@ async def option_manager(request, poll_id):
                 raise ValidationError('Option not exist.')
 
             # If the user not authorized.
-            if poll_bson["created_by"]["user_id"] != request.user.id:
-                raise PermissionDenied("Not Authorized.")
+            if not is_owner:
+                raise PermissionDenied('Not Authorized.')
 
             # Remove the option.
             await polls_db.options.update_one(
-                {"poll_id": ObjectId(poll_id)},
-                {"$pull": {"options":
-                           {"option_text": option["option_text"]}}})
+                {'poll_id': ObjectId(poll_id)},
+                {'$pull': {'options':
+                           {'option_text': option['option_text']}}})
 
             # Response.
-            return Response("Option removed successfully")
+            return Response(
+                {'message': 'Option removed successfully'}
+            )
 
     # Handle validation errors.
     except ValidationError as e:
@@ -122,70 +138,13 @@ async def option_manager(request, poll_id):
     # Handle MongoDB errors.
     except PyMongoError as e:
         print(f'MongoDB Error: {e}')
-        return Response({"error": "An error occurred while processing your request."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {'error': 'An error occurred while processing your request.'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as e:
         print(f'Error: {e}')
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-# Handles the getting options document.
-@api_view(['GET'])
-async def get_options(request, poll_id):
-    try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ["polls", "options"])
-        # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({"_id": ObjectId(poll_id)})
-        # If poll is not found.
-        if not poll_bson:
-            raise ValidationError("Poll is not found.")
-
-        # If the user is not the owner of the poll.
-        is_owner = False
-        # If the user is the owner of the poll.
-        if poll_bson["created_by"]["user_id"] == request.user.id:
-            is_owner = True
-
-        # If privacy of poll is private.
-        if poll_bson["privacy"] == "private" and poll_bson["created_by"]["user_id"] != request.user.id:
-            raise PermissionDenied("This poll is private.")
-
-        # If privacy of poll is friends_only. ?
-
-        # Method GET.
-        if request.method == 'GET':
-            # Find the poll options in the options collection.
-            options_bson = await polls_db.options.find_one({"poll_id": ObjectId(poll_id)})
-            # If options is not found.
-            if not options_bson:
-                raise ValidationError("Options not found.")
-
-            # Convert the BSON response to a JSON response.
-            options_json = json_util._json_convert((options_bson))
-
-            return Response({
-                "is_owner": is_owner,
-                "options": options_json
-            })
-
-    # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-
-    # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
-
-    # Handle MongoDB errors.
-    except PyMongoError as e:
-        print(f'MongoDB Error: {e}')
-        return Response({"error": "An error occurred while processing your request."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # Handle other exceptions.
-    except Exception as e:
-        print(f'Error: {e}')
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
