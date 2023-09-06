@@ -1,7 +1,7 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 // Components.
-import { Button, useColorMode } from "@chakra-ui/react";
+import { Button} from "@chakra-ui/react";
 
 // Component.
 function CardOptionButton({ children }) {
@@ -14,6 +14,7 @@ function CardOptionButton({ children }) {
       color={isDark ? `${ThemeColor}.text-d-p` : `${ThemeColor}.900`}
       opacity={isDark ? 0.8 : 0.6}
       justifyContent="start"
+      wordBreak={'break-all'}
     >
       {children}
     </Button>

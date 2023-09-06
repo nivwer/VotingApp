@@ -6,7 +6,7 @@ import { useDeletePollMutation } from "../../../api/pollApiSlice";
 // Components.
 import CardOptionButton from "./CardOptionButton";
 import CardButton from "./CardButton";
-import PollModal from "../../Modals/PollModal";
+import PollModal from "../../Modals/PollModal/PollModal";
 import {
   Avatar,
   Box,
@@ -38,6 +38,7 @@ function PollCard({ poll }) {
   const session = useSelector((state) => state.session);
   // Request to delete polls.
   const [deletePoll, { isLoading, isError }] = useDeletePollMutation();
+
 
   const handleDeletePoll = async (poll_id) => {
     try {
@@ -96,8 +97,9 @@ function PollCard({ poll }) {
             <Heading {...styles.body.heading}>{poll.title}</Heading>
             <Text {...styles.body.text}>{poll.description}</Text>
             <Stack w={"100%"}>
-              <CardOptionButton>Like</CardOptionButton>
-              <CardOptionButton>Hola</CardOptionButton>
+              {poll.options.map((option, index) => (
+                <CardOptionButton key={index}>{option.option_text}</CardOptionButton>
+              ))}
             </Stack>
           </Stack>
         </CardBody>
