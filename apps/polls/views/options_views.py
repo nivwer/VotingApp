@@ -69,10 +69,8 @@ async def option_manager(request, poll_id):
         options = await polls_db.options.find_one({"poll_id": ObjectId(poll_id)})
 
         # If the option already exist.
-        exist = False
-        for o in options["options"]:
-            if o["option_text"] == option["option_text"]:
-                exist = True
+        exist = option['option_text'] in options['options']
+        is_owner = poll_bson['created_by']['user_id'] == request.user.id
 
         # Method POST.
         if request.method == 'POST':
