@@ -66,6 +66,7 @@ function SignUp() {
           login({
             token: res.data.token,
             user: res.data.user,
+            profile: res.data.profile,
           })
         );
         navigate("/home");

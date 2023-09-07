@@ -4,6 +4,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 // API Reducers.
 import { authApiSlice } from "../../api/authApiSlice";
 import { pollApiSlice } from "../../api/pollApiSlice";
+import { profileApiSlice } from "../../api/profileApiSlice";
 // Reducers.
 import authReducer from "../../features/auth/authSlice";
 import themeReducer from "../../features/theme/themeSlice";
@@ -15,6 +16,8 @@ export const store = configureStore({
     authApi: authApiSlice.reducer,
     // Request for the backend polls API.
     pollsApi: pollApiSlice.reducer,
+    // Request for the backend profile API.
+    profileApi: profileApiSlice.reducer,
     // Session.
     session: authReducer,
     // Theme Color.
@@ -24,7 +27,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(authApiSlice.middleware)
-      .concat(pollApiSlice.middleware),
+      .concat(pollApiSlice.middleware)
+      .concat(profileApiSlice.middleware),
 });
 
 setupListeners(store.dispatch);

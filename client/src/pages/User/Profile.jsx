@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useGetUserPollsQuery } from "../../api/pollApiSlice";
+import { useGetProfileQuery } from "../../api/profileApiSlice";
 // Components.
 import PollCard from "../../components/Cards/PollCard/PollCard";
 import { Avatar, Box, Flex, Heading, Stack, Text } from "@chakra-ui/react";
@@ -17,15 +18,29 @@ function Profile() {
 
   const { username } = useParams();
   const session = useSelector((state) => state.session);
-  // const [user, setUser] = useState(null);
-  //const [viewUser, { data: dataUser, error }] = useViewUserMutation();
 
-  
+  const [data, setData] = useState(false);
+  const [skip, setSkip] = useState(true);
+
+  // User Profile.
+  const [profile, setProfile] = useState(null);
+  const {
+    data: dataProfile,
+    isLoading: isLoadingProfile
+  } = useGetProfileQuery(data, {
+    skip,
+  });
+
   // User Polls.
   const [polls, setPolls] = useState(null);
-  const [data, setData] = useState(false);
-  const { data: dataPolls, error } = useGetUserPollsQuery(data);
+  const {
+    data: dataPolls,
+    isLoading: isGettingPolls,
+  } = useGetUserPollsQuery(data, {
+    skip,
+  });
 
+  // Update data to fetchs.
   useEffect(() => {
     if (session.token) {
       setData({
@@ -41,6 +56,23 @@ function Profile() {
     }
   }, [username, session.token]);
 
+  // Conditional fetching.
+  useEffect(() => {
+    if (data) {
+      setSkip(false);
+    } else {
+      setSkip(true);
+    }
+  }, [data]);
+
+  // Load Profile.
+  useEffect(() => {
+    if (dataProfile) {
+      setProfile(dataProfile.profile);
+    }
+  }, [dataProfile]);
+
+  // Load Polls.
   useEffect(() => {
     if (dataPolls) {
       setPolls(dataPolls.polls);
@@ -71,7 +103,9 @@ function Profile() {
       {/* Profile Body. */}
       <Box {...styles.body.content}>
         {polls ? (
-          polls.map((poll, index) => <PollCard key={index} poll={poll} />)
+          polls.map((poll, index) => (
+            <PollCard key={index} poll={poll} isOwner={dataPolls.is_owner} />
+          ))
         ) : (
           <p>No polls available.</p>
         )}
