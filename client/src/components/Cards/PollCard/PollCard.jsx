@@ -1,6 +1,5 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDeletePollMutation } from "../../../api/pollApiSlice";
 // Components.
@@ -29,16 +28,19 @@ import {
 import { FaEllipsis } from "react-icons/fa6";
 // Styles.
 import { getPollCardStyles } from "./PollCardStyles";
+import CustomProgress from "../../Progress/CustomProgress";
 
 // Component.
-function PollCard({ poll }) {
+function PollCard({ poll, isOwner }) {
   const { ThemeColor, isDark } = useThemeInfo();
   const styles = getPollCardStyles(ThemeColor, isDark);
   // User Session.
   const session = useSelector((state) => state.session);
   // Request to delete polls.
-  const [deletePoll, { isLoading, isError }] = useDeletePollMutation();
+  const [deletePoll, { isLoading: isRemoving, isError }] =
+    useDeletePollMutation();
 
+  const isLoading = isRemoving;
 
   const handleDeletePoll = async (poll_id) => {
     try {
@@ -54,10 +56,13 @@ function PollCard({ poll }) {
   return (
     <>
       <Card {...styles.card}>
+        {isLoading && <CustomProgress />}
         {/* Card Header. */}
         <CardHeader as={Flex} spacing={"4"}>
           <Flex {...styles.header.flex}>
-            <Avatar name={poll.created_by.username} />
+            <IconButton isDisabled={isLoading} variant={"unstyled"}>
+              <Avatar name={poll.created_by.username} />
+            </IconButton>
             <Box>
               <Heading {...styles.header.heading}>
                 {poll.created_by.first_name}
@@ -67,27 +72,36 @@ function PollCard({ poll }) {
           </Flex>
           <Menu>
             <MenuButton
+              isDisabled={isLoading}
               as={IconButton}
               aria-label={"Options"}
               icon={<FaEllipsis />}
               {...styles.header.menu.button}
             />
-            <MenuList {...styles.header.menu.list}>
-              <MenuItem
-                as={PollModal}
-                buttonStyles={styles.header.menu.item}
-                poll={poll}
-              >
-                Edit
-              </MenuItem>
-              <MenuItem
-                as={Button}
-                {...styles.header.menu.item}
-                onClick={() => handleDeletePoll(poll._id)}
-              >
-                Delete
-              </MenuItem>
-            </MenuList>
+            {isOwner ? (
+              <MenuList {...styles.header.menu.list}>
+                <MenuItem
+                  isDisabled={isLoading}
+                  as={PollModal}
+                  buttonStyles={styles.header.menu.item}
+                  poll={poll}
+                >
+                  Edit
+                </MenuItem>
+                <MenuItem
+                  isDisabled={isLoading}
+                  as={Button}
+                  {...styles.header.menu.item}
+                  onClick={() => handleDeletePoll(poll._id)}
+                >
+                  Delete
+                </MenuItem>
+              </MenuList>
+            ) : (
+              <MenuList>
+                <MenuItem>Hola</MenuItem>
+              </MenuList>
+            )}
           </Menu>
         </CardHeader>
 
@@ -98,7 +112,9 @@ function PollCard({ poll }) {
             <Text {...styles.body.text}>{poll.description}</Text>
             <Stack w={"100%"}>
               {poll.options.map((option, index) => (
-                <CardOptionButton key={index}>{option.option_text}</CardOptionButton>
+                <CardOptionButton key={index} isLoading={isLoading}>
+                  {option.option_text}
+                </CardOptionButton>
               ))}
             </Stack>
           </Stack>
@@ -106,9 +122,9 @@ function PollCard({ poll }) {
 
         {/* Card Footer. */}
         <CardFooter {...styles.footer}>
-          <CardButton>Button1</CardButton>
-          <CardButton>Button2</CardButton>
-          <CardButton>Button3</CardButton>
+          <CardButton isLoading={isLoading}>Share</CardButton>
+          <CardButton isLoading={isLoading}>Comment</CardButton>
+          <CardButton isLoading={isLoading}>Views</CardButton>
         </CardFooter>
       </Card>
     </>

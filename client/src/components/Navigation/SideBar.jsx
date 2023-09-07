@@ -1,5 +1,5 @@
 import { Box, Button } from "@chakra-ui/react"
-import PollModal from "../Modals/PollModal"
+import PollModal from "../Modals/PollModal/PollModal"
 
 function SideBar() {
   return (

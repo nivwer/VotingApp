@@ -179,13 +179,13 @@ function Navbar() {
                 <DrawerHeader>
                   {/* User Avatar. */}
                   <Flex>
-                    <Avatar name={session.user.username} size="md" />
+                    <Avatar name={session.profile.profile_name} size="md" />
                     <Box
                       color={isDark ? `${color}.text-d-p` : `${color}.900`}
                       ml="4"
                     >
                       <Heading pt={"5px"} fontSize="md" fontWeight="bold">
-                        {session.user.first_name}
+                        {session.profile.profile_name}
                       </Heading>
 
                       <Text opacity={0.5} fontWeight="hairline" fontSize="sm">

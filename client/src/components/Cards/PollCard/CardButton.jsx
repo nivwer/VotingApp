@@ -4,10 +4,10 @@ import { useThemeInfo } from "../../../hooks/Theme";
 import { Button, useColorMode } from "@chakra-ui/react";
 
 // Component.
-function CardButton({ children }) {
+function CardButton({ children, isLoading }) {
   const { ThemeColor, isDark } = useThemeInfo();
   return (
-    <Button flex="1" variant="ghost">
+    <Button flex="1" variant="ghost" isDisabled={isLoading}>
       {children}
     </Button>
   );

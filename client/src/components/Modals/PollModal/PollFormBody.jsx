@@ -30,7 +30,7 @@ function PollFormBody({
   privacyValue,
   setPrivacyValue,
   styles,
-  isDisabled,
+  isLoading,
 }) {
   const { ThemeColor, isDark } = useThemeInfo();
 
@@ -73,7 +73,7 @@ function PollFormBody({
     <>
       <Stack textAlign="start" spacing={3}>
         {/* Title. */}
-        <FormControl isDisabled={isDisabled} isInvalid={errors.title}>
+        <FormControl isDisabled={isLoading} isInvalid={errors.title}>
           <FormLabel htmlFor="title" fontWeight={"bold"}>
             Title
           </FormLabel>
@@ -100,7 +100,7 @@ function PollFormBody({
         </FormControl>
 
         {/* Description */}
-        <FormControl isDisabled={isDisabled} isInvalid={errors.description}>
+        <FormControl isDisabled={isLoading} isInvalid={errors.description}>
           <FormLabel htmlFor="description" fontWeight={"bold"}>
             Description
           </FormLabel>
@@ -124,7 +124,7 @@ function PollFormBody({
         </FormControl>
 
         {/* Privacy. */}
-        <FormControl isDisabled={isDisabled}>
+        <FormControl isDisabled={isLoading}>
           <FormLabel htmlFor="privacy" fontWeight={"bold"}>
             Privacy
           </FormLabel>
@@ -148,7 +148,7 @@ function PollFormBody({
         </FormControl>
 
         {/* Category. */}
-        <FormControl isDisabled={isDisabled} isInvalid={errors.category}>
+        <FormControl isDisabled={isLoading} isInvalid={errors.category}>
           <FormLabel htmlFor="category" fontWeight={"bold"}>
             Category
           </FormLabel>
@@ -174,7 +174,7 @@ function PollFormBody({
         </FormControl>
 
         {/* Options. */}
-        <FormControl isDisabled={isDisabled} isInvalid={errors.options}>
+        <FormControl isDisabled={isLoading} isInvalid={errors.options}>
           <FormLabel htmlFor="options" fontWeight={"bold"}>
             Options
           </FormLabel>
@@ -184,7 +184,7 @@ function PollFormBody({
               <Flex key={index} {...styles.body.options.list}>
                 <Text {...styles.body.options.item}>{option}</Text>
                 <Button
-                  isDisabled={isDisabled}
+                  isDisabled={isLoading}
                   type="button"
                   onClick={() => handleDeleteOption(index, option)}
                 >
@@ -206,7 +206,7 @@ function PollFormBody({
         </FormControl>
         {/* Add options. */}
         <Button
-          isDisabled={isDisabled}
+          isDisabled={isLoading}
           {...styles.body.options.add_button}
           onClick={() => {
             const option = watch("options").trim();

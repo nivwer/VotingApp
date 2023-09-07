@@ -37,6 +37,8 @@ function PollModal({ poll = false, buttonStyles }) {
   // Request to update polls.
   const [updatePoll, { isLoading: isUpdating }] = useUpdatePollMutation();
 
+  const isLoading = isCreating || isUpdating
+
   // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -141,7 +143,7 @@ function PollModal({ poll = false, buttonStyles }) {
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent {...styles.content}>
-          {(isCreating || isUpdating) && <CustomProgress />}
+          {(isLoading) && <CustomProgress />}
           {/* Header. */}
           <ModalHeader>{poll ? "Edit poll" : "New poll"}</ModalHeader>
           <ModalCloseButton />
@@ -160,20 +162,20 @@ function PollModal({ poll = false, buttonStyles }) {
                 privacyValue={privacyValue}
                 setPrivacyValue={setPrivacyValue}
                 styles={styles}
-                isDisabled={isCreating || isUpdating}
+                isLoading={isLoading}
               />
             </ModalBody>
             {/* Footer. */}
             <ModalFooter>
               <Button
-                isDisabled={isCreating || isUpdating}
+                isDisabled={isLoading}
                 type="submit"
                 {...styles.footer.submit}
               >
                 {poll ? "Save" : "Create"}
               </Button>
               <Button
-                isDisabled={isCreating || isUpdating}
+                isDisabled={isLoading}
                 onClick={onClose}
                 {...styles.footer.cancel}
               >

@@ -27,9 +27,7 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
           variant: "ghost",
           colorScheme: ThemeColor,
           color: isDark ? `${ThemeColor}.text-d-p` : `${ThemeColor}.900`,
-          bg: isDark
-            ? `${ThemeColor}.bg-d-dimmed`
-            : `${ThemeColor}.bg-l-dimmed`,
+          bg: "transparent"
         },
         list: {
           bg: isDark ? `black` : `${ThemeColor}.bg-l-p`,
