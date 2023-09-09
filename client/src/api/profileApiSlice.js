@@ -15,7 +15,19 @@ export const profileApiSlice = createApi({
         method: "GET",
       }),
     }),
+
+    // Update user profile.
+    updateProfile: builder.mutation({
+      query: (data) => ({
+        url: "update/",
+        method: "PATCH",
+        body: data.profile,
+        headers: {
+          Authorization: `Token ${data.token}`,
+        },
+      }),
+    }),
   }),
 });
 
-export const {useGetProfileQuery} = profileApiSlice;
+export const { useGetProfileQuery, useUpdateProfileMutation } = profileApiSlice;
