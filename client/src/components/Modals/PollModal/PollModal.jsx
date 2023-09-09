@@ -32,16 +32,8 @@ function PollModal({ poll = false, buttonStyles }) {
   const styles = getPollModalStyles(ThemeColor, isDark);
   // User session.
   const session = useSelector((state) => state.session);
-  // Request to create polls.
-  const [createPoll, { isLoading: isCreating }] = useCreatePollMutation();
-  // Request to update polls.
-  const [updatePoll, { isLoading: isUpdating }] = useUpdatePollMutation();
-
-  const isLoading = isCreating || isUpdating
-
   // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   // React hook form.
   const {
     register,
@@ -51,6 +43,12 @@ function PollModal({ poll = false, buttonStyles }) {
     formState: { errors },
     setError,
   } = useForm();
+  // Request to create polls.
+  const [createPoll, { isLoading: isCreating }] = useCreatePollMutation();
+  // Request to update polls.
+  const [updatePoll, { isLoading: isUpdating }] = useUpdatePollMutation();
+
+  const isLoading = isCreating || isUpdating;
 
   // Options list.
   const initialOptionsState = {
@@ -143,7 +141,7 @@ function PollModal({ poll = false, buttonStyles }) {
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent {...styles.content}>
-          {(isLoading) && <CustomProgress />}
+          {isLoading && <CustomProgress />}
           {/* Header. */}
           <ModalHeader>{poll ? "Edit poll" : "New poll"}</ModalHeader>
           <ModalCloseButton />

@@ -34,10 +34,6 @@ function PollFormBody({
 }) {
   const { ThemeColor, isDark } = useThemeInfo();
 
-  useEffect(() => {
-    console.log(options);
-  }, [options]);
-
   // Remove the options.
   const handleDeleteOption = (indexToDelete, option) => {
     const InDelOptions = options["del_options"].includes(option);
@@ -85,7 +81,7 @@ function PollFormBody({
               },
               maxLength: {
                 value: 113,
-                message: "Maximum 113 options allowed.",
+                message: "Maximum 113 characters allowed.",
               },
             })}
             type="text"
@@ -109,7 +105,7 @@ function PollFormBody({
               required: false,
               maxLength: {
                 value: 513,
-                message: "Maximum 513 options allowed.",
+                message: "Maximum 513 characters allowed.",
               },
             })}
             defaultValue={poll ? poll.description : ""}
@@ -215,7 +211,7 @@ function PollFormBody({
             if (option.length >= 1) {
               if (option.length >= 113) {
                 setError("options", {
-                  message: "Maximum 113 options allowed.",
+                  message: "Maximum 113 characters allowed.",
                 });
               } else if (InOptions) {
                 setError("options", {
