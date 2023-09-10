@@ -19,7 +19,7 @@ function App() {
         p={"0"}
         maxW="100vw"
         minH="100vh"
-        bg={isDark ? "black" : `${color}.bg-l-p`}
+        bg={isDark ? "black" : "white"}
         color={isDark ? `${color}.100` : `${color}.900`}
       >
         <Router />

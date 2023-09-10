@@ -13,7 +13,6 @@ class UserProfile(models.Model):
     social_link_three = models.URLField(max_length=200, blank=True)
 
     profile_picture = models.URLField(max_length=200, blank=True)
-    birthdate = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, choices=[(
         'male', 'Male'), ('female', 'Female'), ('other', 'Other')], blank=True)
     bio = models.TextField(max_length=513, blank=True)

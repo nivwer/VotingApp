@@ -2,10 +2,10 @@ export const getAuthStyles = (ThemeColor, isDark) => {
   return {
     content: {
       w: "100%",
-      bg: isDark ? "black" : `${color}.bg-l-s`,
-      color: isDark ? `${color}.text-d-p` : `${color}.900`,
-      outline: isDark ? "1px solid" : "2px solid",
-      outlineColor: isDark ? `${color}.border-d` : `${color}.600`,
+      bg: isDark ? "black" : "white",
+      color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
+      outline: "2px solid",
+      outlineColor: isDark ? "whiteAlpha.300" : "blackAlpha.600",
       borderRadius: "14px",
       textAlign: "center",
     },
@@ -14,6 +14,6 @@ export const getAuthStyles = (ThemeColor, isDark) => {
 
     footer: {},
 
-    focusBorderColor: isDark ? `${ThemeColor}.border-d` : `${ThemeColor}.600`,
+    focusBorderColor: isDark ? "whiteAlpha.300" : "blackAlpha.200",
   };
 };

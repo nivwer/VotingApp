@@ -1,5 +1,5 @@
 // Styles.
-export const getProfileStyles = (ThemeColor, isDark) => {
+export const getProfileStyles = (isDark) => {
   return {
     header: {
       content: {
@@ -7,8 +7,8 @@ export const getProfileStyles = (ThemeColor, isDark) => {
         p: "6",
         overflow: "hidden",
         w: "100%",
-        bg: isDark ? "black" : `${ThemeColor}.bg-l-p`,
-        color: isDark ? `${ThemeColor}.text-d-p` : `${ThemeColor}.900`,
+        bg: isDark ? "black" : "white",
+        color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
       },
       container: {
         spacing: "2",

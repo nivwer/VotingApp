@@ -9,10 +9,12 @@ import {
   GridItem,
   Container,
 } from "@chakra-ui/react";
-import Navbar from "../Navigation/Navbar";
+import Navbar from "../Navigation/NavBar/Navbar";
+import { useThemeInfo } from "../../hooks/Theme";
 
 // Component.
 function GridLayout({ isSimple = true }) {
+  const { ThemeColor, isDark } = useThemeInfo();
   // BreakPoints.
   const layoutType = useBreakpointValue({
     base: "simple",
@@ -25,19 +27,19 @@ function GridLayout({ isSimple = true }) {
     triple: {
       area: `"header header header header header"
                "l-none left main right r-none"`,
-      rows: "100px 1fr",
+      rows: "64px 1fr",
       columns: "1fr 295px 690px 295px 1fr",
     },
     double: {
       area: `"header header header header" 
               "l-none left main r-none"`,
-      rows: "100px 1fr",
+      rows: "64px 1fr",
       columns: "1fr 295px 690px 1fr",
     },
     simple: {
       area: `"header"
              "main"`,
-      rows: "100px 1fr",
+      rows: "64px 1fr",
       columns: "1fr",
     },
   };
@@ -53,7 +55,7 @@ function GridLayout({ isSimple = true }) {
       gridTemplateColumns={isSimple ? simple.columns : layout.columns}
     >
       {/* Header */}
-      <GridItem bg="orange.300" area={"header"}>
+      <GridItem zIndex={1000} area={"header"}>
         <Navbar />
       </GridItem>
 
@@ -61,13 +63,14 @@ function GridLayout({ isSimple = true }) {
       {!isSimple && (
         <GridItem
           display={{ base: "none", lg: "none", xl: "grid" }}
-          bg="pink.300"
           area={"right"}
+          borderLeft={isDark ? "1px solid" : "1px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
         ></GridItem>
       )}
 
       {/* Main */}
-      <GridItem bg="green.300" area={"main"}>
+      <GridItem area={"main"}>
         <Container p={0} maxW={"700px"}>
           <Outlet />
         </Container>
@@ -77,8 +80,9 @@ function GridLayout({ isSimple = true }) {
       {!isSimple && (
         <GridItem
           display={{ base: "none", lg: "grid", xl: "grid" }}
-          bg="blue.300"
           area={"left"}
+          borderRight={isDark ? "1px solid" : "1px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
         >
           <SideBar />
         </GridItem>

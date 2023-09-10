@@ -4,7 +4,7 @@ import PollModal from "../Modals/PollModal/PollModal"
 function SideBar() {
   return (
     <Box w={"295px"} >
-        <Box bg={"gray"} h={"calc(100vh - 100px)"}>
+        <Box h={"calc(100vh - 100px)"}>
             <PollModal/>
 
         </Box>

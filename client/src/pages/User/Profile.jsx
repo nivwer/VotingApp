@@ -29,8 +29,8 @@ import {
 // Page.
 function Profile() {
   const dispatch = useDispatch();
-  const { ThemeColor, isDark } = useThemeInfo();
-  const styles = getProfileStyles(ThemeColor, isDark);
+  const { isDark } = useThemeInfo();
+  const styles = getProfileStyles(isDark);
   // Session.
   const session = useSelector((state) => state.session);
   // Username param.
@@ -119,7 +119,11 @@ function Profile() {
           <>
             <Flex {...styles.header.container}>
               <Flex {...styles.header.flex}>
-                <Avatar size="2xl" name={profile.profile_name} />
+                <Box>
+                  <Box>
+                    <Avatar size="2xl" src={profile.profile_picture} />
+                  </Box>
+                </Box>
                 <ProfileModal
                   profile={profile}
                   setSelfProfileSkip={setSelfProfileSkip}

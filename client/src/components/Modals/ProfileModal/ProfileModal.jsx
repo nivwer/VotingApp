@@ -54,6 +54,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
       const profileData = {
         profile_name: data.profile_name,
         bio: data.bio,
+        profile_picture: data.profile_picture,
         website_link: data.website_link,
         social_link_one: data.social_link_one,
         social_link_two: data.social_link_two,

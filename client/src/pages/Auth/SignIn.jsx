@@ -1,4 +1,5 @@
 // Hooks.
+import { useThemeInfo } from "../../hooks/Theme";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -22,17 +23,19 @@ import {
   Text,
   InputGroup,
   InputRightElement,
+  IconButton,
 } from "@chakra-ui/react";
+// Styles.
+import { getAuthStyles } from "./AuthStyles";
 // Icons.
 import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
-import { useThemeInfo } from "../../hooks/Theme";
 
 // Page.
 function SignIn() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { ThemeColor, isDark } = useThemeInfo();
-
+  const styles = getAuthStyles(ThemeColor, isDark);
   // Request to the backend.
   const [signIn, { isLoading, isError }] = useSignInMutation();
 
@@ -111,7 +114,7 @@ function SignIn() {
                         })}
                         type="text"
                         placeholder="Username"
-                        focusBorderColor={{ ...styles.focusBorderColor }}
+                        focusBorderColor={styles.focusBorderColor}
                       />
                       {/* Handle errors. */}
                       {errors.username && (
@@ -136,14 +139,16 @@ function SignIn() {
                               message: "Password is required.",
                             },
                           })}
+                          fontFamily={"heading"}
                           type={showPassword ? "text" : "password"}
                           placeholder="Password"
-                          focusBorderColor={{ ...styles.focusBorderColor }}
+                          focusBorderColor={styles.focusBorderColor}
                         />
                         <InputRightElement width="3rem">
-                          <Button
+                          <IconButton
+                            borderRadius={"full"}
                             isDisabled={isLoading}
-                            colorScheme={ThemeColor}
+                            colorScheme={"default"}
                             variant={"unstyled"}
                             h="1.75rem"
                             size="sm"
@@ -152,7 +157,7 @@ function SignIn() {
                             }}
                           >
                             {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                          </Button>
+                          </IconButton>
                         </InputRightElement>
                       </InputGroup>
                       {errors.password && (
@@ -166,9 +171,9 @@ function SignIn() {
                     <Button
                       isDisabled={isLoading}
                       type="submit"
-                      colorScheme={ThemeColor}
+                      colorScheme={"default"}
                       variant="solid"
-                      opacity={isDark ? 0.8 : 1}
+                      opacity={isDark ? 0.9 : 1}
                     >
                       Sign In
                     </Button>

@@ -2,8 +2,8 @@
 export const getPollCardStyles = (ThemeColor, isDark) => {
   return {
     card: {
-      color: isDark ? `${ThemeColor}.text-d-p` : `${ThemeColor}.900`,
-      bg: isDark ? `black` : `${ThemeColor}.bg-l-p`,
+      color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
+      bg: isDark ? "black" : "white",
       w: "100%",
       maxW: "xl",
     },
@@ -25,14 +25,14 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
       menu: {
         button: {
           variant: "ghost",
-          colorScheme: ThemeColor,
-          color: isDark ? `${ThemeColor}.text-d-p` : `${ThemeColor}.900`,
-          bg: "transparent"
+          colorScheme: "default",
+          color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
+          bg: "transparent",
         },
         list: {
-          bg: isDark ? `black` : `${ThemeColor}.bg-l-p`,
-          outline: isDark ? "1px solid" : "2px solid",
-          outlineColor: isDark ? `${ThemeColor}.border-d` : `${ThemeColor}.600`,
+          bg: isDark ? "black" : "white",
+          outline: "1px solid",
+          outlineColor: isDark ? "whiteAlpha.100" : "blackAlpha.100",
           borderRadius: "14px",
         },
         item: {
@@ -42,11 +42,12 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
           px: 3,
           py: 2,
           borderRadius: 0,
-          colorScheme: ThemeColor,
-          color: isDark ? `${ThemeColor}.text-d-p` : `${ThemeColor}.900`,
-          bg: isDark ? `black` : `${ThemeColor}.bg-l-p`,
+          colorScheme: "default",
+          color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
+          bg: isDark ? "black" : "white",
           variant: "ghost",
           justifyContent: "start",
+          opacity: isDark ? 0.9 : 0.7,
         },
       },
     },

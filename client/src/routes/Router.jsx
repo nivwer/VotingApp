@@ -9,8 +9,6 @@ import SignUp from "../pages/Auth/SignUp";
 import SignIn from "../pages/Auth/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
 import Profile from "../pages/User/Profile";
-import ViewPoll from "../pages/Polls/ViewPoll";
-import NewPoll from "../pages/Polls/NewPoll";
 import Theme from "../pages/Settings/Theme";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
@@ -44,11 +42,11 @@ function Router() {
         {/* Profile page. */}
         <Route path="/:username" element={<Profile />} />
         {/* Poll page. */}
-        <Route path="/:username/:id" element={<ViewPoll />} />
+        {/* <Route path="/:username/:id" element={<ViewPoll />} /> */}
 
         {/* Poll pages. */}
         <Route element={<ProtectedRoute isAllowed={!!data.token} />}>
-          <Route path="/:username/new" element={<NewPoll />} />
+          {/* <Route path="/:username/new" element={<NewPoll />} /> */}
         </Route>
         {/* Config pages. */}
         <Route element={<ProtectedRoute isAllowed={!!data.token} />}>

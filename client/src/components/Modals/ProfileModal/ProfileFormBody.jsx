@@ -56,6 +56,13 @@ function ProfileFormBody({
     isCountry &&
     countries.find((country) => country.name === isCountry)?.cities;
 
+  const selectedPicture = watch("profile_picture");
+
+  const profilePicture =
+    selectedPicture || selectedPicture === ""
+      ? selectedPicture
+      : profile.profile_picture;
+
   const socialLinks = [
     {
       label: "Website Link",
@@ -87,13 +94,12 @@ function ProfileFormBody({
         <Flex w={"100%"} justifyContent={"space-between"}>
           <Box pr={"20px"}>
             <Avatar
-              size="3xl"
-              name="Christian Nwamba"
-              src="https://bit.ly/code-beast"
+              size="2xl"
+              src={profilePicture}
             />
           </Box>
           <Stack spacing={4} w={"100%"}>
-            {/* Title. */}
+            {/* Name. */}
             <FormControl isDisabled={isLoading} isInvalid={errors.profile_name}>
               <FormLabel htmlFor="profile_name" fontWeight={"bold"}>
                 Name
@@ -125,62 +131,33 @@ function ProfileFormBody({
                 </FormErrorMessage>
               )}
             </FormControl>
-            <HStack>
-              {/* Birthdate. */}
-              <FormControl isDisabled={isLoading} isInvalid={errors.birthdate}>
-                <FormLabel htmlFor="birthdate" fontWeight={"bold"}>
-                  Birthdate
-                </FormLabel>
-                <Input
-                  {...register("birthdate")}
-                  type="date"
-                  defaultValue={profile.birthdate}
-                  placeholder="Select your birthdate."
-                  focusBorderColor={styles.focusBorderColor}
-                />
-                {/* Handle errors. */}
-                {errors.birthdate && (
-                  <FormErrorMessage>
-                    {errors.birthdate.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
-              {/* Gender. */}
-              <FormControl isDisabled={isLoading} isInvalid={errors.gender}>
-                <FormLabel htmlFor="gender" fontWeight={"bold"}>
-                  Gender
-                </FormLabel>
-                <RadioGroup
-                  onChange={(value) => {
-                    setGender(value);
-                  }}
-                  value={gender}
-                >
-                  <Stack direction="row">
-                    <Radio value="male" colorScheme={ThemeColor}>
-                      Male
-                    </Radio>
-                    <Radio value="female" colorScheme={ThemeColor}>
-                      Female
-                    </Radio>
-                    <Radio value="other" colorScheme={ThemeColor}>
-                      Other
-                    </Radio>
-                    <Box as={Radio} value="other"  >
-                      <Button  colorScheme={ThemeColor}>
-                        <FaMars />
-                      </Button>
-                    </Box>
-                  </Stack>
-                </RadioGroup>
-                {/* Handle errors. */}
-                {errors.gender && (
-                  <FormErrorMessage>{errors.gender.message}</FormErrorMessage>
-                )}
-              </FormControl>
-            </HStack>
+
+            {/* Bio. */}
+            <FormControl isDisabled={isLoading} isInvalid={errors.bio}>
+              <FormLabel htmlFor="bio" fontWeight={"bold"}>
+                Biography
+              </FormLabel>
+              <Textarea
+                {...register("bio", {
+                  maxLength: {
+                    value: 513,
+                    message: "Maximum 513 characters allowed.",
+                  },
+                })}
+                type="text"
+                defaultValue={profile.bio}
+                placeholder="Enter your biography."
+                focusBorderColor={styles.focusBorderColor}
+                resize={"none"}
+              />
+              {/* Handle errors. */}
+              {errors.bio && (
+                <FormErrorMessage>{errors.bio.message}</FormErrorMessage>
+              )}
+            </FormControl>
           </Stack>
         </Flex>
+
         {/* Profile picture. */}
         <ProfileInputURL
           register={register}
@@ -192,30 +169,6 @@ function ProfileFormBody({
           errors={errors}
           styles={styles}
         />
-
-        {/* Bio. */}
-        <FormControl isDisabled={isLoading} isInvalid={errors.bio}>
-          <FormLabel htmlFor="bio" fontWeight={"bold"}>
-            Biography
-          </FormLabel>
-          <Textarea
-            {...register("bio", {
-              maxLength: {
-                value: 513,
-                message: "Maximum 513 characters allowed.",
-              },
-            })}
-            type="text"
-            defaultValue={profile.bio}
-            placeholder="Enter your biography."
-            focusBorderColor={styles.focusBorderColor}
-            resize={"none"}
-          />
-          {/* Handle errors. */}
-          {errors.bio && (
-            <FormErrorMessage>{errors.bio.message}</FormErrorMessage>
-          )}
-        </FormControl>
 
         {socialLinks.map((link, index) => (
           <ProfileInputURL
@@ -281,6 +234,35 @@ function ProfileFormBody({
             )}
           </FormControl>
         )}
+
+        {/* Gender. */}
+        <FormControl isDisabled={isLoading} isInvalid={errors.gender}>
+          <FormLabel htmlFor="gender" fontWeight={"bold"}>
+            Gender
+          </FormLabel>
+          <RadioGroup
+            onChange={(value) => {
+              setGender(value);
+            }}
+            value={gender}
+          >
+            <Stack direction="row">
+              <Radio value="male" colorScheme={ThemeColor}>
+                Male
+              </Radio>
+              <Radio value="female" colorScheme={ThemeColor}>
+                Female
+              </Radio>
+              <Radio value="other" colorScheme={ThemeColor}>
+                Other
+              </Radio>
+            </Stack>
+          </RadioGroup>
+          {/* Handle errors. */}
+          {errors.gender && (
+            <FormErrorMessage>{errors.gender.message}</FormErrorMessage>
+          )}
+        </FormControl>
       </Stack>
     </>
   );

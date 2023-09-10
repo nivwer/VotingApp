@@ -18,6 +18,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  IconButton,
   Input,
   InputGroup,
   InputRightElement,
@@ -25,7 +26,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 // Styles.
-import getAuthStyles from "./AuthStyles";
+import { getAuthStyles } from "./AuthStyles";
 // Icons.
 import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 
@@ -126,7 +127,7 @@ function SignUp() {
                         })}
                         type="text"
                         placeholder="Username"
-                        focusBorderColor={{ ...styles.focusBorderColor }}
+                        focusBorderColor={styles.focusBorderColor}
                       />
                       {/* Handle errors. */}
                       {errors.username && (
@@ -159,14 +160,16 @@ function SignUp() {
                               message: "Minimum 8 options allowed.",
                             },
                           })}
+                          fontFamily={"sans-serif"}
                           placeholder="Password"
                           type={showPassword ? "text" : "password"}
-                          focusBorderColor={{ ...styles.focusBorderColor }}
+                          focusBorderColor={styles.focusBorderColor}
                         />
                         <InputRightElement width="3rem">
-                          <Button
+                          <IconButton
+                            borderRadius={"full"}
                             isDisabled={isLoading}
-                            colorScheme={ThemeColor}
+                            colorScheme={"default"}
                             variant={"unstyled"}
                             h="1.75rem"
                             size="sm"
@@ -175,7 +178,7 @@ function SignUp() {
                             }}
                           >
                             {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                          </Button>
+                          </IconButton>
                         </InputRightElement>
                       </InputGroup>
                       {errors.password && (
@@ -206,14 +209,16 @@ function SignUp() {
                               value === watch("password") ||
                               "Password not match.",
                           })}
+                          fontFamily={"sans-serif"}
                           placeholder="Confirm password"
                           type={showConfirmPassword ? "text" : "password"}
-                          focusBorderColor={{ ...styles.focusBorderColor }}
+                          focusBorderColor={styles.focusBorderColor}
                         />
                         <InputRightElement width="3rem">
-                          <Button
+                          <IconButton
+                            borderRadius={"full"}
                             isDisabled={isLoading}
-                            colorScheme={ThemeColor}
+                            colorScheme={"default"}
                             variant={"unstyled"}
                             h="1.75rem"
                             size="sm"
@@ -226,7 +231,7 @@ function SignUp() {
                             ) : (
                               <ViewOffIcon />
                             )}
-                          </Button>
+                          </IconButton>
                         </InputRightElement>
                       </InputGroup>
                       {errors.passwordValidation && (
@@ -240,7 +245,7 @@ function SignUp() {
                     <Button
                       isDisabled={isLoading}
                       type="submit"
-                      colorScheme={ThemeColor}
+                      colorScheme={"default"}
                       variant="solid"
                       opacity={isDark ? 0.8 : 1}
                     >
