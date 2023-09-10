@@ -6,7 +6,7 @@ import { authApiSlice } from "../../api/authApiSlice";
 import { pollApiSlice } from "../../api/pollApiSlice";
 import { profileApiSlice } from "../../api/profileApiSlice";
 // Reducers.
-import authReducer from "../../features/auth/authSlice";
+import sessionReducer from "../../features/auth/sessionSlice";
 import themeReducer from "../../features/theme/themeSlice";
 
 // Store.
@@ -19,7 +19,7 @@ export const store = configureStore({
     // Request for the backend profile API.
     profileApi: profileApiSlice.reducer,
     // Session.
-    session: authReducer,
+    session: sessionReducer,
     // Theme Color.
     theme: themeReducer,
   },
