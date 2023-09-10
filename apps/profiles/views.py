@@ -4,54 +4,34 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
-from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-# Async Rest Framework support.
-from adrf.decorators import api_view
 # Serializers.
 from .models import UserProfile
 from .serializers import UserProfileSerializer
-from apps.accounts.serializers import UserSerializer
-from asgiref.sync import sync_to_async, async_to_sync
+
 
 # Views.
 
-# Handles the getting users profiles.
+
+# Handles the read user self profiles.
 @api_view(['GET'])
-async def get_profile(request, username):
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def read_profile(request):
     try:
-        # Get the user instance based on username.
-        #user_object = await sync_to_async(User.objects.get)(username=username)
-        user = await User.objects.aget(username=username)
-        # print(user_object)
-        user_serializer = UserSerializer(instance=user).data
-        #user_pk = user_serializer.instance.pk
-        user_pk = user.pk
-
-        #user_data = user_serializer.data
-
-        print(user_serializer)
-
-
+        # Fetch the user object based on user id.
+        user = User.objects.get(id=request.user.id)
 
         # Get the profile instance based on user pk.
-        #profile_object = await sync_to_async(UserProfile.objects.get)(user=user_pk)
-        profile_object = await UserProfile.objects.aget(user=user_pk)
+        profile_object = UserProfile.objects.get(user=user.pk)
         profile_data = UserProfileSerializer(
-             instance=profile_object).data
-
-        #profile_data['username'] = user_data.username
-
-        # Is owner.
-        #is_owner = user_data.username == request.user.username
+            instance=profile_object).data
 
         # Response.
         return Response(
-            {
-               # 'is_owner': is_owner,
-                #'profile': profile_data
-            },
+            {'profile': profile_data},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.
@@ -61,7 +41,7 @@ async def get_profile(request, username):
     # Handle if the user is not found.
     except User.DoesNotExist:
         return Response({'username': ['User is not found.']}, status=status.HTTP_404_NOT_FOUND)
-    
+
     # Handle if the user is not found.
     except UserProfile.DoesNotExist:
         return Response(
@@ -80,27 +60,26 @@ async def get_profile(request, username):
 @api_view(['PATCH'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def update_profile(request, user_id):
+def update_profile(request):
     try:
-        # Fetch the user instance based on user_id.
-        user = await User.objects.aget(id=user_id)
-
-        # If user is not authorized.
-        is_owner = user.id == request.user.id
-        if not is_owner:
-            raise PermissionDenied('Not Authorized.')
+        # Fetch the user object based on user id.
+        user = User.objects.get(id=request.user.id)
+        # Fetch the profile object based on user pk.
+        profile = UserProfile.objects.get(pk=user.pk)
 
         # Initialize a UserSerializer instance with the provided data.
-        profile_serializer = UserProfileSerializer(user, data=request.data)
+        profile_serializer = UserProfileSerializer(
+            profile, data=request.data, partial=True)
         # Throws ValidationError if not valid.
-        profile_serializer.is_valid(reaise_exception=True)
-        await profile_serializer.save()
+        profile_serializer.is_valid(raise_exception=True)
+        profile_serializer.save()
 
         # Response.
         return Response('Profile updated successfully')
 
     # Handle validation errors.
     except ValidationError as e:
+        print(e.detail)
         return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
@@ -113,6 +92,54 @@ async def update_profile(request, user_id):
 
     # Handle other exceptions.
     except Exception as e:
+        print(str(e))
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Handles the getting user public profiles.
+@api_view(['GET'])
+def get_profile(request, username):
+    try:
+        # Get the user object.
+        user = User.objects.get(username=username)
+
+        # Get the profile instance based on user pk.
+        profile_object = UserProfile.objects.get(user=user.pk)
+        profile_data = UserProfileSerializer(
+            instance=profile_object).data
+
+        profile_data['username'] = user.username
+
+        # Is owner.
+        is_owner = user.username == request.user.username
+
+        # Response.
+        return Response(
+            {
+                'is_owner': is_owner,
+                'profile': profile_data
+            },
+            status=status.HTTP_200_OK)
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle if the user is not found.
+    except User.DoesNotExist:
+        return Response({'username': ['User is not found.']}, status=status.HTTP_404_NOT_FOUND)
+
+    # Handle if the user is not found.
+    except UserProfile.DoesNotExist:
+        return Response(
+            {'username': ['Profile is not found.']},
+            status=status.HTTP_404_NOT_FOUND)
+
+    # Handle other exceptions.
+    except Exception as e:
+        print(str(e))
         return Response(
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -443,6 +443,10 @@ async def delete_poll(request, poll_id):
     except ValidationError as e:
         return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
+    # Handle permission denied.
+    except PermissionDenied as e:
+        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+
     # Handle MongoDB errors.
     except PyMongoError as e:
         print(f'MongoDB Error: {e}')
@@ -472,12 +476,6 @@ async def user_polls(request, username):
     try:
         # Get the user in the User table.
         user = await User.objects.aget(username=username)
-
-        # If user not exist. !!!
-        if not user:
-            raise ValidationError(
-                'User not exist.',
-                status=status.HTTP_404_NOT_FOUND)
 
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'options'])
@@ -536,6 +534,12 @@ async def user_polls(request, username):
     # Handle validation errors.
     except ValidationError as e:
         return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle if the user is not found.
+    except User.DoesNotExist:
+        return Response(
+            {'username': ['User is not found.']},
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle permission denied.
     except PermissionDenied as e:
