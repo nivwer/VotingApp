@@ -7,13 +7,16 @@ export const profileApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/profile/",
   }),
+  tagTypes: ["Profile"],
   endpoints: (builder) => ({
-    // Get user profile.
-    getProfile: builder.query({
+    // Read user profile.
+    readProfile: builder.query({
       query: (data) => ({
-        url: `get/${data.username}`,
+        url: "read/",
         method: "GET",
+        headers: data.headers
       }),
+      providesTags: ["Profile"],
     }),
 
     // Update user profile.
@@ -22,12 +25,25 @@ export const profileApiSlice = createApi({
         url: "update/",
         method: "PATCH",
         body: data.profile,
-        headers: {
-          Authorization: `Token ${data.token}`,
-        },
+        headers: data.headers
       }),
+      invalidatesTags: ["Profile"],
+    }),
+
+    // Get user public profile.
+    getProfile: builder.query({
+      query: (data) => ({
+        url: `get/${data.username}`,
+        method: "GET",
+        headers: data.headers
+      }),
+      providesTags: ["Profile"],
     }),
   }),
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation } = profileApiSlice;
+export const {
+  useReadProfileQuery,
+  useUpdateProfileMutation,
+  useGetProfileQuery,
+} = profileApiSlice;
