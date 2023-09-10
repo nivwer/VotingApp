@@ -6,13 +6,13 @@ from django.db import models
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_name= models.CharField(max_length=32, blank=True)
+    profile_name = models.CharField(max_length=32, blank=True)
     website_link = models.URLField(max_length=200, blank=True)
     social_link_one = models.URLField(max_length=200, blank=True)
     social_link_two = models.URLField(max_length=200, blank=True)
     social_link_three = models.URLField(max_length=200, blank=True)
 
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    profile_picture = models.URLField(max_length=200, blank=True)
     birthdate = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, choices=[(
         'male', 'Male'), ('female', 'Female'), ('other', 'Other')], blank=True)

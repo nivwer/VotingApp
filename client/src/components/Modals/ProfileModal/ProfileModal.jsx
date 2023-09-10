@@ -97,7 +97,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
       </Button>
 
       {/* Modal. */}
-      <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
+      <Modal size={"3xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent {...styles.content}>
           {isLoading && <CustomProgress />}

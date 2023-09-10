@@ -1,19 +1,18 @@
 // Hooks.
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSignInMutation } from "../../api/authApiSlice";
 // Actions.
-import { login } from "../../features/auth/authSlice";
+import { login } from "../../features/auth/sessionSlice";
 //Components.
+import CustomProgress from "../../components/Progress/CustomProgress";
 import {
-  useColorMode,
   Container,
   Center,
   Flex,
   FormErrorMessage,
-  FormHelperText,
   Box,
   Button,
   FormControl,
@@ -23,21 +22,16 @@ import {
   Text,
   InputGroup,
   InputRightElement,
-  Progress,
 } from "@chakra-ui/react";
 // Icons.
 import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
+import { useThemeInfo } from "../../hooks/Theme";
 
 // Page.
 function SignIn() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // Theme color.
-  const theme = useSelector((state) => state.theme);
-  const color = theme.theme_color;
-  // Theme mode.
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === "dark";
+  const { ThemeColor, isDark } = useThemeInfo();
 
   // Request to the backend.
   const [signIn, { isLoading, isError }] = useSignInMutation();
@@ -90,25 +84,8 @@ function SignIn() {
     <>
       <Container maxW="md">
         <Center minH="calc(100vh - 200px)">
-          <Box
-            w={"100%"}
-            bg={isDark ? "black" : `${color}.bg-l-s`}
-            color={isDark ? `${color}.text-d-p` : `${color}.900`}
-            outline={isDark ? "1px solid" : "2px solid"}
-            outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
-            borderRadius="14px"
-            textAlign="center"
-          >
-            {isLoading && (
-              <Progress
-                colorScheme={color}
-                borderTopRadius="14px"
-                m="auto"
-                w={"98%"}
-                size="xs"
-                isIndeterminate
-              />
-            )}
+          <Box {...styles.content}>
+            {isLoading && <CustomProgress />}
             <Box p="14" pb="10" px="8%">
               {/* Login user form. */}
               <form onSubmit={onSubmit}>
@@ -126,7 +103,6 @@ function SignIn() {
                         Username
                       </FormLabel>
                       <Input
-                        placeholder="Username"
                         {...register("username", {
                           required: {
                             value: true,
@@ -134,9 +110,8 @@ function SignIn() {
                           },
                         })}
                         type="text"
-                        focusBorderColor={
-                          isDark ? `${color}.border-d` : `${color}.600`
-                        }
+                        placeholder="Username"
+                        focusBorderColor={{ ...styles.focusBorderColor }}
                       />
                       {/* Handle errors. */}
                       {errors.username && (
@@ -155,7 +130,6 @@ function SignIn() {
                       </FormLabel>
                       <InputGroup size="md">
                         <Input
-                          placeholder="Password"
                           {...register("password", {
                             required: {
                               value: true,
@@ -163,14 +137,13 @@ function SignIn() {
                             },
                           })}
                           type={showPassword ? "text" : "password"}
-                          focusBorderColor={
-                            isDark ? `${color}.border-d` : `${color}.600`
-                          }
+                          placeholder="Password"
+                          focusBorderColor={{ ...styles.focusBorderColor }}
                         />
                         <InputRightElement width="3rem">
                           <Button
                             isDisabled={isLoading}
-                            colorScheme={color}
+                            colorScheme={ThemeColor}
                             variant={"unstyled"}
                             h="1.75rem"
                             size="sm"
@@ -193,7 +166,7 @@ function SignIn() {
                     <Button
                       isDisabled={isLoading}
                       type="submit"
-                      colorScheme={color}
+                      colorScheme={ThemeColor}
                       variant="solid"
                       opacity={isDark ? 0.8 : 1}
                     >

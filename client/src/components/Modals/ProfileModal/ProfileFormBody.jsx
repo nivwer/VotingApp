@@ -4,16 +4,25 @@ import { useThemeInfo } from "../../../hooks/Theme";
 // Components.
 import ProfileInputURL from "./ProfileInputURL";
 import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
+  Icon,
   Input,
   Radio,
   RadioGroup,
   Select,
   Stack,
   Textarea,
+  useRadio,
 } from "@chakra-ui/react";
+// Icons.
+import { FaMars, FaVenus } from "react-icons/fa6";
 // Countries
 import countriesData from "../../../../public/countries.json";
 
@@ -75,36 +84,114 @@ function ProfileFormBody({
   return (
     <>
       <Stack textAlign="start" spacing={3}>
-        {/* Title. */}
-        <FormControl isDisabled={isLoading} isInvalid={errors.profile_name}>
-          <FormLabel htmlFor="profile_name" fontWeight={"bold"}>
-            Name
-          </FormLabel>
-          <Input
-            {...register("profile_name", {
-              required: {
-                value: true,
-                message: "This field is required.",
-              },
-              minLength: {
-                value: 3,
-                message: "Minimum 3 characters allowed.",
-              },
-              maxLength: {
-                value: 32,
-                message: "Maximum 32 characters allowed.",
-              },
-            })}
-            type="text"
-            defaultValue={profile.profile_name}
-            placeholder="Enter your name."
-            focusBorderColor={styles.focusBorderColor}
-          />
-          {/* Handle errors. */}
-          {errors.profile_name && (
-            <FormErrorMessage>{errors.profile_name.message}</FormErrorMessage>
-          )}
-        </FormControl>
+        <Flex w={"100%"} justifyContent={"space-between"}>
+          <Box pr={"20px"}>
+            <Avatar
+              size="3xl"
+              name="Christian Nwamba"
+              src="https://bit.ly/code-beast"
+            />
+          </Box>
+          <Stack spacing={4} w={"100%"}>
+            {/* Title. */}
+            <FormControl isDisabled={isLoading} isInvalid={errors.profile_name}>
+              <FormLabel htmlFor="profile_name" fontWeight={"bold"}>
+                Name
+              </FormLabel>
+              <Input
+                {...register("profile_name", {
+                  required: {
+                    value: true,
+                    message: "This field is required.",
+                  },
+                  minLength: {
+                    value: 3,
+                    message: "Minimum 3 characters allowed.",
+                  },
+                  maxLength: {
+                    value: 32,
+                    message: "Maximum 32 characters allowed.",
+                  },
+                })}
+                type="text"
+                defaultValue={profile.profile_name}
+                placeholder="Enter your name."
+                focusBorderColor={styles.focusBorderColor}
+              />
+              {/* Handle errors. */}
+              {errors.profile_name && (
+                <FormErrorMessage>
+                  {errors.profile_name.message}
+                </FormErrorMessage>
+              )}
+            </FormControl>
+            <HStack>
+              {/* Birthdate. */}
+              <FormControl isDisabled={isLoading} isInvalid={errors.birthdate}>
+                <FormLabel htmlFor="birthdate" fontWeight={"bold"}>
+                  Birthdate
+                </FormLabel>
+                <Input
+                  {...register("birthdate")}
+                  type="date"
+                  defaultValue={profile.birthdate}
+                  placeholder="Select your birthdate."
+                  focusBorderColor={styles.focusBorderColor}
+                />
+                {/* Handle errors. */}
+                {errors.birthdate && (
+                  <FormErrorMessage>
+                    {errors.birthdate.message}
+                  </FormErrorMessage>
+                )}
+              </FormControl>
+              {/* Gender. */}
+              <FormControl isDisabled={isLoading} isInvalid={errors.gender}>
+                <FormLabel htmlFor="gender" fontWeight={"bold"}>
+                  Gender
+                </FormLabel>
+                <RadioGroup
+                  onChange={(value) => {
+                    setGender(value);
+                  }}
+                  value={gender}
+                >
+                  <Stack direction="row">
+                    <Radio value="male" colorScheme={ThemeColor}>
+                      Male
+                    </Radio>
+                    <Radio value="female" colorScheme={ThemeColor}>
+                      Female
+                    </Radio>
+                    <Radio value="other" colorScheme={ThemeColor}>
+                      Other
+                    </Radio>
+                    <Box as={Radio} value="other"  >
+                      <Button  colorScheme={ThemeColor}>
+                        <FaMars />
+                      </Button>
+                    </Box>
+                  </Stack>
+                </RadioGroup>
+                {/* Handle errors. */}
+                {errors.gender && (
+                  <FormErrorMessage>{errors.gender.message}</FormErrorMessage>
+                )}
+              </FormControl>
+            </HStack>
+          </Stack>
+        </Flex>
+        {/* Profile picture. */}
+        <ProfileInputURL
+          register={register}
+          label="Profile Picture"
+          name="profile_picture"
+          placeholder="Enter your image URL."
+          defaultValue={profile.profile_picture}
+          isLoading={isLoading}
+          errors={errors}
+          styles={styles}
+        />
 
         {/* Bio. */}
         <FormControl isDisabled={isLoading} isInvalid={errors.bio}>
@@ -143,53 +230,6 @@ function ProfileFormBody({
             styles={styles}
           />
         ))}
-
-        {/* Birthdate. */}
-        <FormControl isDisabled={isLoading} isInvalid={errors.birthdate}>
-          <FormLabel htmlFor="birthdate" fontWeight={"bold"}>
-            Birthdate
-          </FormLabel>
-          <Input
-            {...register("birthdate")}
-            type="date"
-            defaultValue={profile.birthdate}
-            placeholder="Select your birthdate."
-            focusBorderColor={styles.focusBorderColor}
-          />
-          {/* Handle errors. */}
-          {errors.birthdate && (
-            <FormErrorMessage>{errors.birthdate.message}</FormErrorMessage>
-          )}
-        </FormControl>
-
-        {/* Gender. */}
-        <FormControl isDisabled={isLoading} isInvalid={errors.gender}>
-          <FormLabel htmlFor="gender" fontWeight={"bold"}>
-            Gender
-          </FormLabel>
-          <RadioGroup
-            onChange={(value) => {
-              setGender(value);
-            }}
-            value={gender}
-          >
-            <Stack direction="row">
-              <Radio value="male" colorScheme={ThemeColor}>
-                Male
-              </Radio>
-              <Radio value="female" colorScheme={ThemeColor}>
-                Female
-              </Radio>
-              <Radio value="other" colorScheme={ThemeColor}>
-                Other
-              </Radio>
-            </Stack>
-          </RadioGroup>
-          {/* Handle errors. */}
-          {errors.gender && (
-            <FormErrorMessage>{errors.gender.message}</FormErrorMessage>
-          )}
-        </FormControl>
 
         {/* Country. */}
         {countries && (
@@ -233,7 +273,7 @@ function ProfileFormBody({
                   <option key={index} value={city}>
                     {city}
                   </option>
-                ))} 
+                ))}
             </Select>
             {/* Handle errors. */}
             {errors.city && (

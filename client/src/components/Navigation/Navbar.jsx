@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Icon, useColorMode, useDisclosure } from "@chakra-ui/react";
 // Actions.
-import { logout } from "../../features/auth/authSlice";
+import { logout } from "../../features/auth/sessionSlice";
 // Components.
 import ToggleColorMode from "./ToggleColorMode";
 import { NavLink } from "react-router-dom";

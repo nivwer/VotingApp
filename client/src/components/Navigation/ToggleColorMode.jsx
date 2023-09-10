@@ -9,7 +9,7 @@ import { SunIcon, MoonIcon } from "@chakra-ui/icons";
 function ToggleColorMode() {
   // Theme color.
   const theme = useSelector((state) => state.theme);
-  const color = theme.theme_color;
+  const ThemeColor = theme.theme_color;
   // Theme mode.
   const { colorMode, toggleColorMode } = useColorMode();
   const isDark = colorMode === "dark";
@@ -18,7 +18,7 @@ function ToggleColorMode() {
     <>
       <Button
         size="sm"
-        colorScheme={color}
+        colorScheme={ThemeColor}
         opacity={isDark ? 0.9 : 0.6}
         variant={"ghost"}
         onClick={() => toggleColorMode()}
