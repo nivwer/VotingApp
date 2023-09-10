@@ -6,6 +6,7 @@ export const getProfileModalStyles = (ThemeColor, isDark) => {
       outline: isDark ? "1px solid" : "2px solid",
       outlineColor: isDark ? `${ThemeColor}.border-d` : `${ThemeColor}.600`,
       borderRadius: "14px",
+      p: "5px"
     },
 
     body: {},

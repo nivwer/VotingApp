@@ -1,17 +1,77 @@
 // Hooks.
-import { FormControl, FormErrorMessage, FormLabel, Input, Stack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { useThemeInfo } from "../../../hooks/Theme";
 // Components.
+import ProfileInputURL from "./ProfileInputURL";
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  Stack,
+  Textarea,
+} from "@chakra-ui/react";
+// Countries
+import countriesData from "../../../../public/countries.json";
 
 // Component.
 function ProfileFormBody({
   profile,
   register,
   errors,
+  gender,
+  watch,
+  setGender,
   styles,
   isLoading,
 }) {
   const { ThemeColor, isDark } = useThemeInfo();
+
+  const [countries, setCountries] = useState(false);
+
+  useEffect(() => {
+    setCountries(countriesData["countries"]);
+  }, []);
+
+  const selectedCountry = watch("country");
+  const isCountry =
+    selectedCountry || selectedCountry === ""
+      ? selectedCountry
+      : profile.country;
+
+  const filteredCities =
+    countries &&
+    isCountry &&
+    countries.find((country) => country.name === isCountry)?.cities;
+
+  const socialLinks = [
+    {
+      label: "Website Link",
+      name: "website_link",
+      placeholder: "Enter your website URL.",
+      default_value: profile.website_link,
+    },
+    {
+      label: "Social Links",
+      name: "social_link_one",
+      placeholder: "Enter your social media URL.",
+      default_value: profile.social_link_one,
+    },
+    {
+      name: "social_link_two",
+      placeholder: "Enter your social media URL.",
+      default_value: profile.social_link_two,
+    },
+    {
+      name: "social_link_three",
+      placeholder: "Enter your social media URL.",
+      default_value: profile.social_link_two,
+    },
+  ];
+
   return (
     <>
       <Stack textAlign="start" spacing={3}>
@@ -45,6 +105,142 @@ function ProfileFormBody({
             <FormErrorMessage>{errors.profile_name.message}</FormErrorMessage>
           )}
         </FormControl>
+
+        {/* Bio. */}
+        <FormControl isDisabled={isLoading} isInvalid={errors.bio}>
+          <FormLabel htmlFor="bio" fontWeight={"bold"}>
+            Biography
+          </FormLabel>
+          <Textarea
+            {...register("bio", {
+              maxLength: {
+                value: 513,
+                message: "Maximum 513 characters allowed.",
+              },
+            })}
+            type="text"
+            defaultValue={profile.bio}
+            placeholder="Enter your biography."
+            focusBorderColor={styles.focusBorderColor}
+            resize={"none"}
+          />
+          {/* Handle errors. */}
+          {errors.bio && (
+            <FormErrorMessage>{errors.bio.message}</FormErrorMessage>
+          )}
+        </FormControl>
+
+        {socialLinks.map((link, index) => (
+          <ProfileInputURL
+            key={index}
+            register={register}
+            label={link.label}
+            name={link.name}
+            placeholder={link.placeholder}
+            defaultValue={link.default_value}
+            isLoading={isLoading}
+            errors={errors}
+            styles={styles}
+          />
+        ))}
+
+        {/* Birthdate. */}
+        <FormControl isDisabled={isLoading} isInvalid={errors.birthdate}>
+          <FormLabel htmlFor="birthdate" fontWeight={"bold"}>
+            Birthdate
+          </FormLabel>
+          <Input
+            {...register("birthdate")}
+            type="date"
+            defaultValue={profile.birthdate}
+            placeholder="Select your birthdate."
+            focusBorderColor={styles.focusBorderColor}
+          />
+          {/* Handle errors. */}
+          {errors.birthdate && (
+            <FormErrorMessage>{errors.birthdate.message}</FormErrorMessage>
+          )}
+        </FormControl>
+
+        {/* Gender. */}
+        <FormControl isDisabled={isLoading} isInvalid={errors.gender}>
+          <FormLabel htmlFor="gender" fontWeight={"bold"}>
+            Gender
+          </FormLabel>
+          <RadioGroup
+            onChange={(value) => {
+              setGender(value);
+            }}
+            value={gender}
+          >
+            <Stack direction="row">
+              <Radio value="male" colorScheme={ThemeColor}>
+                Male
+              </Radio>
+              <Radio value="female" colorScheme={ThemeColor}>
+                Female
+              </Radio>
+              <Radio value="other" colorScheme={ThemeColor}>
+                Other
+              </Radio>
+            </Stack>
+          </RadioGroup>
+          {/* Handle errors. */}
+          {errors.gender && (
+            <FormErrorMessage>{errors.gender.message}</FormErrorMessage>
+          )}
+        </FormControl>
+
+        {/* Country. */}
+        {countries && (
+          <FormControl isDisabled={isLoading} isInvalid={errors.country}>
+            <FormLabel htmlFor="country" fontWeight={"bold"}>
+              Country
+            </FormLabel>
+            <Select
+              {...register("country")}
+              defaultValue={profile.country}
+              placeholder="Select your country"
+              focusBorderColor={styles.focusBorderColor}
+            >
+              {countries.map((country, index) => (
+                <option key={index} value={country.name}>
+                  {country.name}
+                </option>
+              ))}
+            </Select>
+            {/* Handle errors. */}
+            {errors.country && (
+              <FormErrorMessage>{errors.country.message}</FormErrorMessage>
+            )}
+          </FormControl>
+        )}
+
+        {/* City. */}
+        {countries && isCountry && (
+          <FormControl isDisabled={isLoading} isInvalid={errors.city}>
+            <FormLabel htmlFor="city" fontWeight={"bold"}>
+              City
+            </FormLabel>
+            <Select
+              {...register("city")}
+              defaultValue={profile.city}
+              placeholder="Select your city"
+              focusBorderColor={styles.focusBorderColor}
+            >
+              {filteredCities &&
+                filteredCities.map((city, index) => (
+                  <option key={index} value={city}>
+                    {city}
+                  </option>
+                ))} 
+            </Select>
+            {/* Handle errors. */}
+            {errors.city && (
+              <FormErrorMessage>{errors.city.message}</FormErrorMessage>
+            )}
+          </FormControl>
+        )}
       </Stack>
     </>
   );

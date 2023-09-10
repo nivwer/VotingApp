@@ -20,9 +20,10 @@ import {
 } from "@chakra-ui/react";
 import { FaBedPulse } from "react-icons/fa6";
 import { useUpdateProfileMutation } from "../../../api/profileApiSlice";
+import { useState } from "react";
 
 // Component.
-function ProfileModal({ profile = false, buttonStyles }) {
+function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
   const { ThemeColor, isDark } = useThemeInfo();
   const styles = getProfileModalStyles(ThemeColor, isDark);
   // Modal.
@@ -44,20 +45,35 @@ function ProfileModal({ profile = false, buttonStyles }) {
   // Request to update profile.
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
+  // Gender
+  const [gender, setGender] = useState(profile.gender ? profile.gender : "");
+
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
     try {
       const profileData = {
         profile_name: data.profile_name,
+        bio: data.bio,
+        website_link: data.website_link,
+        social_link_one: data.social_link_one,
+        social_link_two: data.social_link_two,
+        social_link_three: data.social_link_three,
+        birthdate: data.birthdate,
+        gender: gender,
+        country: data.country,
+        city: data.city,
       };
 
       const res = await updateProfile({
         profile: profileData,
-        token: session.token,
+        headers: {
+          Authorization: `Token ${session.token}`,
+        },
       });
 
       if (res.data) {
         onClose();
+        setSelfProfileSkip(false);
       }
 
       // If server error.
@@ -95,6 +111,9 @@ function ProfileModal({ profile = false, buttonStyles }) {
                 profile={profile}
                 register={register}
                 errors={errors}
+                watch={watch}
+                gender={gender}
+                setGender={setGender}
                 styles={styles}
                 isLoading={isLoading}
               />
