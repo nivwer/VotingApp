@@ -13,8 +13,11 @@ class UserProfile(models.Model):
     social_link_three = models.URLField(max_length=200, blank=True)
 
     profile_picture = models.URLField(max_length=200, blank=True)
-    gender = models.CharField(max_length=10, choices=[(
-        'male', 'Male'), ('female', 'Female'), ('other', 'Other')], blank=True)
+    pronouns = models.CharField(max_length=10, choices=[
+        ('they/them', 'They/Them'),
+        ('she/her', 'She/Her'),
+        ('he/him', 'He/Him'),
+    ], blank=True)
     bio = models.TextField(max_length=513, blank=True)
     country = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=50, blank=True)
