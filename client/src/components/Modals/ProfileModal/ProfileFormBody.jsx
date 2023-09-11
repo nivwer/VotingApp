@@ -5,26 +5,20 @@ import { useThemeInfo } from "../../../hooks/Theme";
 import ProfileInputURL from "./ProfileInputURL";
 import {
   Avatar,
-  Box,
-  Button,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
-  Icon,
   Input,
   InputGroup,
   InputRightElement,
-  Radio,
-  RadioGroup,
   Select,
   Stack,
   Textarea,
-  useRadio,
 } from "@chakra-ui/react";
 // Icons.
-import { FaMars, FaVenus, FaImage, FaLink } from "react-icons/fa6";
+import { FaImage, FaLink } from "react-icons/fa6";
 // Countries
 import countriesData from "../../../../public/countries.json";
 
@@ -34,28 +28,39 @@ function ProfileFormBody({
   register,
   errors,
   watch,
+  reset,
   styles,
   isLoading,
 }) {
-  const { ThemeColor, isDark } = useThemeInfo();
+  const { isDark } = useThemeInfo();
 
+  // Countries.
   const [countries, setCountries] = useState(false);
 
   useEffect(() => {
     setCountries(countriesData["countries"]);
   }, []);
 
+  // Country.
   const selectedCountry = watch("country");
-  const isCountry =
-    selectedCountry || selectedCountry === ""
-      ? selectedCountry
-      : profile.country;
+  const [country, setCountry] = useState(profile.country);
 
-  const filteredCities =
-    countries &&
-    isCountry &&
-    countries.find((country) => country.name === isCountry)?.cities;
+  useEffect(() => {
+    setCountry(selectedCountry);
+  }, [selectedCountry]);
 
+  // City.
+  const [filteredCities, setFilteredCities] = useState(false);
+
+  useEffect(() => {
+    if (countries && country) {
+      setFilteredCities(countries.find((c) => c.name === country)?.cities);
+    } else {
+      setFilteredCities(false);
+    }
+  }, [country, countries]);
+
+  // Profile Picture.
   const selectedPicture = watch("profile_picture");
 
   const profilePicture =
@@ -63,6 +68,7 @@ function ProfileFormBody({
       ? selectedPicture
       : profile.profile_picture;
 
+  // Social Links.
   const socialLinks = [
     {
       label: "Website Link",
@@ -222,6 +228,9 @@ function ProfileFormBody({
               defaultValue={profile.country}
               placeholder="Don't specify"
               focusBorderColor={styles.focusBorderColor}
+              onChange={() => {
+                reset({ city: "" });
+              }}
             >
               {countries.map((country, index) => (
                 <option key={index} value={country.name}>
@@ -237,7 +246,7 @@ function ProfileFormBody({
         )}
 
         {/* City. */}
-        {countries && isCountry && (
+        {countries && country !== "" && (
           <FormControl isDisabled={isLoading} isInvalid={errors.city}>
             <FormLabel htmlFor="city" fontWeight={"bold"}>
               City

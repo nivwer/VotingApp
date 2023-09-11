@@ -110,6 +110,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
                 register={register}
                 errors={errors}
                 watch={watch}
+                reset={reset}
                 styles={styles}
                 isLoading={isLoading}
               />

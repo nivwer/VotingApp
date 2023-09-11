@@ -26,6 +26,8 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+// Icons.
+import { FaRegCalendar, FaLocationDot } from "react-icons/fa6";
 
 // Page.
 function Profile() {
@@ -139,21 +141,60 @@ function Profile() {
                     <Heading opacity={isDark ? 1 : 0.9} size="md">
                       {profile.profile_name}
                     </Heading>
-                    <Text opacity={0.5} fontWeight="medium" fontSize="md" >{profile.pronouns}</Text>
+                    <Text opacity={0.5} fontWeight="medium" fontSize="md">
+                      {profile.pronouns}
+                    </Text>
                   </HStack>
                   <Text opacity={0.5} fontWeight="normal" fontSize="md">
                     @{profile.username}
                   </Text>
                 </Box>
-                <Text opacity={0.9} fontWeight="medium" >{profile.bio}</Text>
-                <Link>{profile.website_link}</Link>
-                <Link>{profile.social_link_one}</Link>
-                <Link>{profile.social_link_two}</Link>
-                <Link>{profile.social_link_three}</Link>
-                <Text opacity={0.7}>Joined September 2022</Text>
-
-                <Text>{profile.country}</Text>
-                <Text>{profile.city}</Text>
+                <Stack>
+                  <Text opacity={0.9} fontWeight="medium">
+                    {profile.bio}
+                  </Text>
+                  {profile.website_link && <Link>{profile.website_link}</Link>}
+                  {profile.social_link_one && (
+                    <Link>{profile.social_link_one}</Link>
+                  )}
+                  {profile.social_link_two && (
+                    <Link>{profile.social_link_two}</Link>
+                  )}{" "}
+                  {profile.social_link_three && (
+                    <Link>{profile.social_link_three}</Link>
+                  )}
+                </Stack>
+                <HStack spacing={5}>
+                  <HStack spacing={1} fontSize={"md"} opacity={0.5}>
+                    <FaRegCalendar />
+                    <Text
+                      fontWeight={"medium"}
+                      display={"flex"}
+                      h={"100%"}
+                      mt={"4px"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                    >
+                      Joined September 2022
+                    </Text>
+                  </HStack>
+                  {profile.country && (
+                    <HStack spacing={1} fontSize={"md"} opacity={0.5}>
+                      <FaLocationDot />
+                      <Text
+                        fontWeight={"medium"}
+                        display={"flex"}
+                        h={"100%"}
+                        mt={"4px"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                      >
+                        {profile.country} 
+                        {profile.city && ` (${profile.city})`}
+                      </Text>
+                    </HStack>
+                  )}
+                </HStack>
                 <Text>{profile.timezone}</Text>
               </Stack>
             </Flex>

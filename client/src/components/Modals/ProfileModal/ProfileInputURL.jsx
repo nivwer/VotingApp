@@ -1,3 +1,5 @@
+// Hooks.
+import { useThemeInfo } from "../../../hooks/Theme";
 // Components.
 import {
   Box,
@@ -21,15 +23,23 @@ function ProfileInputURL({
   styles,
   icon,
 }) {
+  const { isDark } = useThemeInfo();
   return (
     <FormControl isDisabled={isLoading} isInvalid={errors[name]}>
       {label && (
-        <FormLabel  htmlFor="website_link" fontWeight={"bold"}>
+        <FormLabel htmlFor="website_link" fontWeight={"bold"}>
           {label}
         </FormLabel>
       )}
       <InputGroup>
-      <Flex alignItems={"center"} opacity={0.7} px={"10px"} fontSize={"lg"} >{icon && icon}</Flex>
+        <Flex
+          alignItems={"center"}
+          opacity={isDark ? 0.8 : 0.5}
+          px={"10px"}
+          fontSize={"lg"}
+        >
+          {icon && icon}
+        </Flex>
         <Input
           {...register(name, {
             maxLength: {
