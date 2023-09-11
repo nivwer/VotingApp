@@ -139,7 +139,7 @@ function SignIn() {
                               message: "Password is required.",
                             },
                           })}
-                          fontFamily={"heading"}
+                          fontFamily={"sans-serif"}
                           type={showPassword ? "text" : "password"}
                           placeholder="Password"
                           focusBorderColor={styles.focusBorderColor}

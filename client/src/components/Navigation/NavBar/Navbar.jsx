@@ -105,14 +105,17 @@ function Navbar() {
                 <ToggleColorMode />
                 <Button variant={"unstyled"} onClick={onOpen}>
                   <Box>
-                    <Avatar size="sm" src={session.profile.profile_picture} />
+                    <Avatar
+                      bg={"gray.400"}
+                      size="sm"
+                      src={session.profile.profile_picture}
+                    />
                   </Box>
                 </Button>
               </HStack>
             ) : (
               <HStack spacing="3">
                 <ButtonGroup spacing="1">
-                  
                   <NavLink to={"/signin"}>
                     <Button colorScheme={"default"} size="sm" variant={"ghost"}>
                       Sign In

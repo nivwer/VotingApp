@@ -19,6 +19,7 @@ import {
   Avatar,
   Box,
   Flex,
+  HStack,
   Heading,
   Link,
   Spinner,
@@ -120,9 +121,11 @@ function Profile() {
             <Flex {...styles.header.container}>
               <Flex {...styles.header.flex}>
                 <Box>
-                  <Box>
-                    <Avatar size="2xl" src={profile.profile_picture} />
-                  </Box>
+                  <Avatar
+                    bg={"gray.400"}
+                    size="2xl"
+                    src={profile.profile_picture}
+                  />
                 </Box>
                 <ProfileModal
                   profile={profile}
@@ -132,19 +135,22 @@ function Profile() {
 
               <Stack>
                 <Box>
-                  <Heading size="md">{profile.profile_name}</Heading>
-                  <Text opacity={0.5} fontWeight="hairline" fontSize="md">
+                  <HStack spacing={2}>
+                    <Heading opacity={isDark ? 1 : 0.9} size="md">
+                      {profile.profile_name}
+                    </Heading>
+                    <Text opacity={0.5} fontWeight="medium" fontSize="md" >{profile.pronouns}</Text>
+                  </HStack>
+                  <Text opacity={0.5} fontWeight="normal" fontSize="md">
                     @{profile.username}
                   </Text>
                 </Box>
-                <Text opacity={0.9}>{profile.bio}</Text>
-                <Text opacity={0.7}>Joined September 2022</Text>
-                <Text>{profile.birthdate}</Text>
-                <Text>{profile.gender}</Text>
+                <Text opacity={0.9} fontWeight="medium" >{profile.bio}</Text>
                 <Link>{profile.website_link}</Link>
                 <Link>{profile.social_link_one}</Link>
                 <Link>{profile.social_link_two}</Link>
                 <Link>{profile.social_link_three}</Link>
+                <Text opacity={0.7}>Joined September 2022</Text>
 
                 <Text>{profile.country}</Text>
                 <Text>{profile.city}</Text>

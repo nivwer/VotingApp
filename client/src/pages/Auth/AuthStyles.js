@@ -14,6 +14,6 @@ export const getAuthStyles = (ThemeColor, isDark) => {
 
     footer: {},
 
-    focusBorderColor: isDark ? "whiteAlpha.300" : "blackAlpha.200",
+    focusBorderColor: isDark ? "whiteAlpha.600" : "blackAlpha.700",
   };
 };

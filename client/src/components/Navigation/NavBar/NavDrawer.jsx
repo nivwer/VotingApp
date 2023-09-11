@@ -47,14 +47,14 @@ function NavDrawer({ session, userPages, isOpen, onClose }) {
             {/* User Avatar. */}
             <Flex>
               <Box>
-                <Avatar size="md" src={session.profile.profile_picture} />
+                <Avatar bg={"gray.400"} size="md" src={session.profile.profile_picture} />
               </Box>
               <Box color={isDark ? "whiteAlpha.900" : "blackAlpha.900"} ml="4">
-                <Heading pt={"5px"} fontSize="md" fontWeight="bold">
+                <Heading opacity={isDark ? 1 : 0.8} pt={"5px"} fontSize="md" fontWeight="bold">
                   {session.profile.profile_name}
                 </Heading>
 
-                <Text opacity={0.5} fontWeight="semibold" fontSize="sm">
+                <Text  opacity={0.5} fontWeight="medium" fontSize="sm">
                   @{session.user.username}
                 </Text>
               </Box>

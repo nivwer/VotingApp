@@ -24,6 +24,7 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
       },
       menu: {
         button: {
+          borderRadius: "full",
           variant: "ghost",
           colorScheme: "default",
           color: isDark ? "whiteAlpha.900" : "blackAlpha.900",

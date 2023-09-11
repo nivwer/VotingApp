@@ -45,9 +45,6 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
   // Request to update profile.
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
 
-  // Gender
-  const [gender, setGender] = useState(profile.gender ? profile.gender : "");
-
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -60,7 +57,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
         social_link_two: data.social_link_two,
         social_link_three: data.social_link_three,
         birthdate: data.birthdate,
-        gender: gender,
+        pronouns: data.pronouns,
         country: data.country,
         city: data.city,
       };
@@ -98,7 +95,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
       </Button>
 
       {/* Modal. */}
-      <Modal size={"3xl"} isOpen={isOpen} onClose={onClose}>
+      <Modal size={"2xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent {...styles.content}>
           {isLoading && <CustomProgress />}
@@ -113,8 +110,6 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
                 register={register}
                 errors={errors}
                 watch={watch}
-                gender={gender}
-                setGender={setGender}
                 styles={styles}
                 isLoading={isLoading}
               />
