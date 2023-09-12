@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import poll_views, options_views
+from .views import poll_views, options_views, voting_views
 
 urlpatterns = [
     # CRUD Poll.
@@ -14,4 +14,8 @@ urlpatterns = [
 
     # Options.
     path('option/<str:poll_id>', options_views.option_manager),
+
+    # Votes.
+    path('vote/<str:poll_id>', voting_views.voting_manager),
+
 ]
