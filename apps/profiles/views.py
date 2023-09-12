@@ -15,7 +15,7 @@ from .serializers import UserProfileSerializer
 # Views.
 
 
-# Handles the read user self profiles.
+# Handles the read to user self profile. (private data)
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -98,7 +98,7 @@ def update_profile(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Handles the getting user public profiles.
+# Handles the getting user public profiles. (public data)
 @api_view(['GET'])
 def get_profile(request, username):
     try:

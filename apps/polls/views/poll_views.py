@@ -44,7 +44,7 @@ class GetCollectionsMongoDB:
 
 # Views.
 
-# Handles the get process for the polls.
+# Handles the read to a polls.
 @api_view(['GET'])
 async def read_poll(request, poll_id):
     try:
@@ -114,7 +114,7 @@ async def read_poll(request, poll_id):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Handles the creation process for a news polls.
+# Handles the creation process for the polls.
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
