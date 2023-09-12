@@ -4,15 +4,17 @@ import { useThemeInfo } from "../../../hooks/Theme";
 import { Button } from "@chakra-ui/react";
 
 // Component.
-function CardOptionButton({ children, isLoading }) {
+function CardOptionButton({ value, children, vote, setVote, isLoading }) {
   const { ThemeColor, isDark } = useThemeInfo();
   return (
     <Button
+      onClick={() => {
+        setVote(value);
+      }}
       isDisabled={isLoading}
-      variant="outline"
-      colorScheme={"default"}
+      variant={vote === value ? "solid" : "outline"}
+      colorScheme={vote === value ? ThemeColor : "default"}
       borderRadius={"full"}
-      color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
       borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.400"}
       opacity={0.8}
       justifyContent="start"

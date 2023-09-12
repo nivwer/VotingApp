@@ -314,7 +314,6 @@ function Profile() {
                   <PollCard
                     key={index}
                     poll={poll}
-                    isOwner={dataPolls.is_owner}
                   />
                 ))}
             </Box>
@@ -337,7 +336,6 @@ function Profile() {
                   <PollCard
                     key={index}
                     poll={poll}
-                    isOwner={dataPolls.is_owner}
                   />
                 ))}
             </Box>

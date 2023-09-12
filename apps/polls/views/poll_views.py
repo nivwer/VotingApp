@@ -20,8 +20,10 @@ from utils.mongo_connection import MongoDBSingleton
 from pymongo.errors import PyMongoError
 from bson import json_util
 from bson.objectid import ObjectId
-# Serializers.
+# Models and Serializers.
 from ..serializers import PollSerializer, OptionsSerializer
+from apps.profiles.models import UserProfile
+from apps.profiles.serializers import UserProfileSerializer
 
 
 # Load the virtual environment.
@@ -145,11 +147,7 @@ async def create_poll(request):
                 # Create poll document in polls collection.
                 poll = await polls_db.polls.insert_one(
                     {
-                        'created_by': {
-                            'user_id': request.user.id,
-                            'username': request.user.username,
-                            'first_name': request.user.first_name
-                        },
+                        'created_by': {'user_id': request.user.id, },
                         'title': poll_data['title'],
                         'description': poll_data['description'],
                         'creation_date': datetime.now(),
@@ -169,10 +167,7 @@ async def create_poll(request):
                 for option in list_options:
                     options.append(
                         {
-                            'created_by': {
-                                'user_id': request.user.id,
-                                'username': request.user.username
-                            },
+                            'created_by': {'user_id': request.user.id, },
                             'option_text': option,
                             'votes': 0
                         })
@@ -314,7 +309,6 @@ async def update_poll(request, poll_id):
                         new_option = {
                             'created_by': {
                                 'user_id': request.user.id,
-                                'username': request.user.username
                             },
                             'option_text': option,
                             'votes': 0
@@ -481,18 +475,33 @@ async def user_polls(request, username):
         polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'options'])
 
         # Find the polls in the polls collection.
-        polls_cursor = polls_db.polls.find({'created_by.user_id': user.id})
+        polls_cursor = polls_db.polls.find(
+            {'created_by.user_id': user.id})
         polls_list = await polls_cursor.to_list(length=None)
 
         # Convert the BSON response to a JSON response.
         polls_list_json = json_util._json_convert(polls_list)
 
+        # Filter the polls.
         polls = []
         for poll in polls_list_json:
+            # Get the user in the User table.
+            user_data = await User.objects.aget(
+                id=poll['created_by']['user_id'])
+            # Get the user profile in the UserProfile table.
+            user_profile = await UserProfile.objects.aget(
+                pk=user_data.pk)
+            # Initialize a UserProfileSerializer instance.
+            profile_data = UserProfileSerializer(
+                instance=user_profile).data
+            # Add user data to user profile.
+            profile_data['username'] = user_data.username
+            # Add user profile in the poll object.
+            poll['profile'] = profile_data
+
             # Find the poll options in the options collection.
             options_bson = await polls_db.options.find_one(
-                {'poll_id': ObjectId(poll['_id']['$oid'])}
-            )
+                {'poll_id': ObjectId(poll['_id']['$oid'])})
             # If options is not found.
             if not options_bson:
                 raise ValidationError('Options not found.')
@@ -501,13 +510,16 @@ async def user_polls(request, username):
             # Add options in the poll object.
             poll['options'] = options_json['options']
 
-            # Fix data.
+            # Fix poll data.
             poll['_id'] = poll['_id']['$oid']
             poll['creation_date'] = poll['creation_date']['$date']
+
             # Verify the privacy of polls.
             is_public = poll['privacy'] == 'public'
             is_private = poll['privacy'] == 'private'
             is_owner = poll['created_by']['user_id'] == request.user.id
+            # Add if is owner in the poll object.
+            poll['is_owner'] = is_owner
 
             # If poll is public.
             if is_public:
@@ -526,7 +538,6 @@ async def user_polls(request, username):
         # Response.
         return Response(
             {
-                'is_owner': user.id == request.user.id,
                 'polls': polls
             },
             status=status.HTTP_200_OK)

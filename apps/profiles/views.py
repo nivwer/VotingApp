@@ -113,7 +113,7 @@ def get_profile(request, username):
         profile_data['username'] = user.username
 
         # Is owner.
-        is_owner = user.username == request.user.username
+        is_owner = user.id == request.user.id
 
         # Response.
         return Response(

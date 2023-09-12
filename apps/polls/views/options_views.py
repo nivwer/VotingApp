@@ -94,7 +94,6 @@ async def option_manager(request, poll_id):
             new_option = {
                 'created_by': {
                     'user_id': request.user.id,
-                    'username': request.user.username
                 },
                 'option_text': option['option_text'],
                 'votes': 0
