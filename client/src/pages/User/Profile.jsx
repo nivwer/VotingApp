@@ -24,15 +24,21 @@ import {
   Link,
   Spinner,
   Stack,
+  Tab,
+  TabIndicator,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
 } from "@chakra-ui/react";
 // Icons.
-import { FaRegCalendar, FaLocationDot } from "react-icons/fa6";
+import { FaRegCalendar, FaLocationDot, FaLink } from "react-icons/fa6";
 
 // Page.
 function Profile() {
   const dispatch = useDispatch();
-  const { isDark } = useThemeInfo();
+  const { ThemeColor, isDark } = useThemeInfo();
   const styles = getProfileStyles(isDark);
   // Session.
   const session = useSelector((state) => state.session);
@@ -114,6 +120,19 @@ function Profile() {
     }
   }, [dataPolls]);
 
+  const socialLinksList = profile && [
+    profile.social_link_one,
+    profile.social_link_two,
+    profile.social_link_three,
+  ];
+  const isSocialLink =
+    profile &&
+    profile.social_link_one &&
+    profile.social_link_two &&
+    profile.social_link_three
+      ? true
+      : false;
+
   return (
     <>
       {/* Profile Header. */}
@@ -122,6 +141,7 @@ function Profile() {
           <>
             <Flex {...styles.header.container}>
               <Flex {...styles.header.flex}>
+                {/* Avatar. */}
                 <Box>
                   <Avatar
                     bg={"gray.400"}
@@ -129,58 +149,95 @@ function Profile() {
                     src={profile.profile_picture}
                   />
                 </Box>
+                {/* Button to edit the profile. */}
                 <ProfileModal
                   profile={profile}
                   setSelfProfileSkip={setSelfProfileSkip}
                 />
               </Flex>
 
-              <Stack>
+              <Stack spacing={4}>
                 <Box>
                   <HStack spacing={2}>
+                    {/* Profile name. */}
                     <Heading opacity={isDark ? 1 : 0.9} size="md">
                       {profile.profile_name}
                     </Heading>
+                    {/* Pronouns. */}
                     <Text opacity={0.5} fontWeight="medium" fontSize="md">
                       {profile.pronouns}
                     </Text>
                   </HStack>
+                  {/* Username. */}
                   <Text opacity={0.5} fontWeight="normal" fontSize="md">
                     @{profile.username}
                   </Text>
                 </Box>
-                <Stack>
-                  <Text opacity={0.9} fontWeight="medium">
-                    {profile.bio}
-                  </Text>
-                  {profile.website_link && <Link>{profile.website_link}</Link>}
-                  {profile.social_link_one && (
-                    <Link>{profile.social_link_one}</Link>
+                <Stack spacing={2}>
+                  {/* Biography. */}
+                  {profile.bio && (
+                    <Box>
+                      <Text opacity={0.9} fontWeight="medium" fontSize={"md"}>
+                        {profile.bio}
+                      </Text>
+                    </Box>
                   )}
-                  {profile.social_link_two && (
-                    <Link>{profile.social_link_two}</Link>
-                  )}{" "}
-                  {profile.social_link_three && (
-                    <Link>{profile.social_link_three}</Link>
+
+                  {/* Links. */}
+                  {isSocialLink && profile.website_link && (
+                    <Stack spacing={0}>
+                      {/* Website Link. */}
+                      {profile.website_link && (
+                        <HStack
+                          opacity={0.6}
+                          spacing={1}
+                          fontWeight={"semibold"}
+                          fontSize={"md"}
+                        >
+                          <FaLink />
+                          <Link
+                            color={
+                              isDark ? `${ThemeColor}.100` : `${ThemeColor}.600`
+                            }
+                          >
+                            {
+                              profile.website_link
+                                .replace(/(https:\/\/)|(www\.)/g, "")
+                                .split("/")[0]
+                            }
+                          </Link>
+                        </HStack>
+                      )}
+                      {/* Social Links. */}
+                      {isSocialLink && (
+                        <HStack
+                          color={
+                            isDark ? `${ThemeColor}.100` : `${ThemeColor}.600`
+                          }
+                          opacity={0.6}
+                          spacing={2}
+                          fontSize={"md"}
+                        >
+                          {socialLinksList &&
+                            socialLinksList.map((socialLink, index) => (
+                              <Link key={index}>
+                                {
+                                  socialLink
+                                    .replace(/(https:\/\/)|(www\.)/g, "")
+                                    .split("/")[0]
+                                }
+                              </Link>
+                            ))}
+                        </HStack>
+                      )}
+                    </Stack>
                   )}
-                </Stack>
-                <HStack spacing={5}>
-                  <HStack spacing={1} fontSize={"md"} opacity={0.5}>
-                    <FaRegCalendar />
-                    <Text
-                      fontWeight={"medium"}
-                      display={"flex"}
-                      h={"100%"}
-                      mt={"4px"}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                    >
-                      Joined September 2022
-                    </Text>
-                  </HStack>
-                  {profile.country && (
-                    <HStack spacing={1} fontSize={"md"} opacity={0.5}>
-                      <FaLocationDot />
+
+                  {/* Tags. */}
+                  <HStack spacing={5}>
+                    {/* Joined date. */}
+                    <HStack spacing={1} fontSize={"md"} opacity={0.6}>
+                      <FaRegCalendar />
                       <Text
                         fontWeight={"medium"}
                         display={"flex"}
@@ -189,36 +246,104 @@ function Profile() {
                         justifyContent={"center"}
                         alignItems={"center"}
                       >
-                        {profile.country} 
-                        {profile.city && ` (${profile.city})`}
+                        Joined September 2022
                       </Text>
                     </HStack>
-                  )}
-                </HStack>
-                <Text>{profile.timezone}</Text>
+                    {/* Location. */}
+                    {profile.country && (
+                      <HStack spacing={1} fontSize={"md"} opacity={0.6}>
+                        <FaLocationDot />
+                        <Text
+                          fontWeight={"medium"}
+                          display={"flex"}
+                          h={"100%"}
+                          mt={"4px"}
+                          justifyContent={"center"}
+                          alignItems={"center"}
+                        >
+                          {profile.country}
+                          {profile.city && ` (${profile.city})`}
+                        </Text>
+                      </HStack>
+                    )}
+                  </HStack>
+                </Stack>
               </Stack>
             </Flex>
           </>
         )}
       </Box>
-      {/* Profile Body. */}
-      <Box {...styles.body.content}>
-        {isGettingPolls && (
-          <Flex
-            h={"100px"}
-            w={"100%"}
-            alignItems={"center"}
-            justifyContent={"center"}
-          >
-            <Spinner size="md" />
-          </Flex>
-        )}
 
-        {polls &&
-          polls.map((poll, index) => (
-            <PollCard key={index} poll={poll} isOwner={dataPolls.is_owner} />
-          ))}
-      </Box>
+      {/* Profile Body. */}
+      <Tabs isFitted position="relative" variant="unstyled">
+        <TabList
+          borderBottom={"1px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+        >
+          <Tab opacity={isDark ? 0.9 : 0.6} fontWeight={"bold"}>
+            Polls
+          </Tab>
+          <Tab opacity={isDark ? 0.9 : 0.6} fontWeight={"bold"}>
+            Votes
+          </Tab>
+        </TabList>
+        <TabIndicator
+          mt="-1.5px"
+          height="3px"
+          bg={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
+          borderRadius="3px"
+          opacity={0.7}
+        />
+        <TabPanels>
+          <TabPanel px={0}>
+            <Box {...styles.body.content}>
+              {isGettingPolls && (
+                <Flex
+                  h={"100px"}
+                  w={"100%"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <Spinner size="md" />
+                </Flex>
+              )}
+
+              {polls &&
+                polls.map((poll, index) => (
+                  <PollCard
+                    key={index}
+                    poll={poll}
+                    isOwner={dataPolls.is_owner}
+                  />
+                ))}
+            </Box>
+          </TabPanel>
+          <TabPanel px={0}>
+            <Box {...styles.body.content}>
+              {isGettingPolls && (
+                <Flex
+                  h={"100px"}
+                  w={"100%"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <Spinner size="md" />
+                </Flex>
+              )}
+
+              {polls &&
+                polls.map((poll, index) => (
+                  <PollCard
+                    key={index}
+                    poll={poll}
+                    isOwner={dataPolls.is_owner}
+                  />
+                ))}
+            </Box>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </>
   );
 }

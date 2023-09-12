@@ -5,21 +5,24 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
       color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
       bg: isDark ? "black" : "white",
       w: "100%",
-      maxW: "xl",
+      maxW: "100%",
+      borderRadius: "0",
+      borderBottom: "1px solid",
+      borderColor: isDark ? "whiteAlpha.300" : "blackAlpha.200",
     },
 
     // Card Header.
     header: {
       flex: {
         flex: "1",
-        gap: "4",
+        gap: "3",
         alignItems: "center",
         flexWrap: "wrap",
       },
-      heading: { size: "sm" },
+      heading: { size: "sm", opacity: isDark ? 1 : 0.9 },
       text: {
         opacity: 0.5,
-        fontWeight: "hairline",
+        fontWeight: "medium",
         fontSize: "sm",
       },
       menu: {
@@ -58,6 +61,7 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
       heading: {
         textAlign: "center",
         size: "md",
+        opacity: 0.9
       },
       text: {
         textAlign: "center",

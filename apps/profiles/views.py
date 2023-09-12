@@ -1,5 +1,3 @@
-# Standard.
-import pytz
 # Django.
 from django.contrib.auth.models import User
 # Rest Framework.
@@ -63,23 +61,6 @@ def read_profile(request):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
-    # Timezone field.
-    country = request.data['country']
-    city = request.data['city']
-    if country:
-        try:
-            #timezone = pytz.timezone()
-            print(' '.join(pytz.country_timezones['ar']))
-            # timezone = pytz.country_timezones[country][0]
-            #request.data['timezone'] = timezone
-            #print(timezone)
-        except (KeyError, IndexError):
-            pass
-
-    # request.data['timezone'] = "Agua"
-    print(country)
-    print(city)
-
     try:
         # Fetch the user object based on user id.
         user = User.objects.get(id=request.user.id)

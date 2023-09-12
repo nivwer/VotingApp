@@ -28,13 +28,13 @@ function GridLayout({ isSimple = true }) {
       area: `"header header header header header"
                "l-none left main right r-none"`,
       rows: "64px 1fr",
-      columns: "1fr 295px 690px 295px 1fr",
+      columns: "1fr 295px 664px 295px 1fr",
     },
     double: {
       area: `"header header header header" 
               "l-none left main r-none"`,
       rows: "64px 1fr",
-      columns: "1fr 295px 690px 1fr",
+      columns: "1fr 295px 664px 1fr",
     },
     simple: {
       area: `"header"

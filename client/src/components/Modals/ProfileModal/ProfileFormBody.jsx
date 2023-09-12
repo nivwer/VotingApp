@@ -20,7 +20,7 @@ import {
 // Icons.
 import { FaImage, FaLink } from "react-icons/fa6";
 // Countries
-import countriesData from "../../../../public/countries.json";
+import countriesData from "../../../assets/countries.json";
 
 // Component.
 function ProfileFormBody({
@@ -29,6 +29,7 @@ function ProfileFormBody({
   errors,
   watch,
   reset,
+  setValue,
   styles,
   isLoading,
 }) {
@@ -46,7 +47,12 @@ function ProfileFormBody({
   const [country, setCountry] = useState(profile.country);
 
   useEffect(() => {
-    setCountry(selectedCountry);
+    if (selectedCountry || selectedCountry === "") {
+      setCountry(selectedCountry);
+      if (selectedCountry !== country) {
+        setValue("city", "");
+      }
+    }
   }, [selectedCountry]);
 
   // City.
@@ -59,6 +65,8 @@ function ProfileFormBody({
       setFilteredCities(false);
     }
   }, [country, countries]);
+
+  const isCities = countries && filteredCities && country !== "";
 
   // Profile Picture.
   const selectedPicture = watch("profile_picture");
@@ -228,9 +236,6 @@ function ProfileFormBody({
               defaultValue={profile.country}
               placeholder="Don't specify"
               focusBorderColor={styles.focusBorderColor}
-              onChange={() => {
-                reset({ city: "" });
-              }}
             >
               {countries.map((country, index) => (
                 <option key={index} value={country.name}>
@@ -246,7 +251,7 @@ function ProfileFormBody({
         )}
 
         {/* City. */}
-        {countries && country !== "" && (
+        {isCities && (
           <FormControl isDisabled={isLoading} isInvalid={errors.city}>
             <FormLabel htmlFor="city" fontWeight={"bold"}>
               City
@@ -258,12 +263,11 @@ function ProfileFormBody({
               placeholder="Don't specify"
               focusBorderColor={styles.focusBorderColor}
             >
-              {filteredCities &&
-                filteredCities.map((city, index) => (
-                  <option key={index} value={city}>
-                    {city}
-                  </option>
-                ))}
+              {filteredCities.map((city, index) => (
+                <option key={index} value={city}>
+                  {city}
+                </option>
+              ))}
             </Select>
 
             {/* Handle errors. */}

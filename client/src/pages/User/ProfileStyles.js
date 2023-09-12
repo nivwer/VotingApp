@@ -4,7 +4,8 @@ export const getProfileStyles = (isDark) => {
     header: {
       content: {
         minHeight: "328px",
-        p: "6",
+        p: "7",
+        pb: "10",
         overflow: "hidden",
         w: "100%",
         bg: isDark ? "black" : "white",

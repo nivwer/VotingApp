@@ -40,6 +40,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
     reset,
     formState: { errors },
     setError,
+    setValue
   } = useForm();
 
   // Request to update profile.
@@ -111,6 +112,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
                 errors={errors}
                 watch={watch}
                 reset={reset}
+                setValue={setValue}
                 styles={styles}
                 isLoading={isLoading}
               />

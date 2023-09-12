@@ -9,13 +9,15 @@ function CardOptionButton({ children, isLoading }) {
   return (
     <Button
       isDisabled={isLoading}
-      variant="ghost"
-      colorScheme={ThemeColor}
-      bg={isDark ? `${ThemeColor}.bg-d-dimmed` : `${ThemeColor}.bg-l-dimmed`}
-      color={isDark ? `${ThemeColor}.text-d-p` : `${ThemeColor}.900`}
-      opacity={isDark ? 0.8 : 0.6}
+      variant="outline"
+      colorScheme={"default"}
+      borderRadius={"full"}
+      color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.400"}
+      opacity={0.8}
       justifyContent="start"
       wordBreak={"break-all"}
+      pl={"5"}
     >
       {children}
     </Button>
