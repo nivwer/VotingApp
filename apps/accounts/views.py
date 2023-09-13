@@ -97,7 +97,7 @@ def signin(request):
         # Realiza la autenticación del usuario
         user = authenticate(
             request, username=request.data['username'], password=request.data['password'])
-        
+
         if user is not None:
             # Inicia la sesión del usuario
             login(request, user)
@@ -114,13 +114,11 @@ def signin(request):
             user_profile = UserProfile.objects.get(user=user)
             profile_data = UserProfileSerializer(instance=user_profile).data
 
-
             # Crear o actualizar la sesión en la cookie personalizada
             session_key = request.session.session_key
             if not session_key:
                 request.session.save()
                 session_key = request.session.session_key
-
 
             # Asocia la sesión a la cookie personalizada
             response = JsonResponse(
@@ -145,7 +143,8 @@ def signin(request):
             return response
 
         # Maneja la autenticación fallida
-        raise AuthenticationFailed({'password': ['Invalid username or password']})
+        raise AuthenticationFailed(
+            {'password': ['Invalid username or password']})
 
     # Handle validation errors.
     except ValidationError as e:
@@ -160,66 +159,6 @@ def signin(request):
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# # Handles the user authentication process.
-# @api_view(['POST'])
-# @transaction.atomic
-# def signin(request):
-#     try:
-#         # If not exist the user return a 404 NOT FOUND response.
-#         user = User.objects.get(username=request.data['username'])
-
-#         # Check if the password matches the user's stored password.
-#         if not user.check_password(request.data['password']):
-#             # If the password does not match return the 401 response.
-#             raise AuthenticationFailed(
-#                 {'password': ['Invalid password.']})
-
-#         # Get token associated with the user, or create a new token.
-#         token, created = Token.objects.get_or_create(user=user)
-
-#         # Initialize a UserSerializer instance.
-#         user_serializer = UserSerializer(instance=user)
-#         user_pk = user_serializer.instance.pk
-#         # Remove the 'password' field to the response.
-#         user_data = user_serializer.data
-#         user_data.pop('password')
-
-#         # Get user profile.
-#         user_profile = UserProfile.objects.get(user=user_pk)
-#         # Initialize a ProfileSerializer instance.
-#         profile_data = UserProfileSerializer(
-#             instance=user_profile).data
-
-#         # Response.
-#         return Response(
-#             {
-#                 'token': token.key,
-#                 'user': user_data,
-#                 'profile': profile_data,
-#             },
-#             status=status.HTTP_200_OK)
-
-#     # Handle validation errors.
-#     except ValidationError as e:
-#         return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-
-#     # Handle Authentication errors.
-#     except AuthenticationFailed as e:
-#         return Response(e.detail, status=status.HTTP_401_UNAUTHORIZED)
-
-#     # Handle if the user is not found.
-#     except User.DoesNotExist:
-#         return Response(
-#             {'username': ['User is not found.']},
-#             status=status.HTTP_404_NOT_FOUND)
-
-#     # Handle other exceptions.
-#     except Exception as e:
-#         return Response(
-#             {'error': str(e)},
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
