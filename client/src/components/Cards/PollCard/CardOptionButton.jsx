@@ -1,5 +1,7 @@
 // Hooks.
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useThemeInfo } from "../../../hooks/Theme";
 import {
   useAddUserVoteMutation,
@@ -7,10 +9,17 @@ import {
 } from "../../../api/pollApiSlice";
 // Components.
 import { Button } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 
 // Component.
-function CardOptionButton({ poll, value, children, vote, setVote, isLoading }) {
+function CardOptionButton({
+  poll,
+  value,
+  children,
+  vote,
+  setVote,
+  isDisabled,
+  setIsDisabled
+}) {
   const navigate = useNavigate();
   const { ThemeColor, isDark } = useThemeInfo();
   // Session.
@@ -22,10 +31,12 @@ function CardOptionButton({ poll, value, children, vote, setVote, isLoading }) {
   const [updateUserVote, { isLoading: isLoadingUpdateVote }] =
     useUpdateUserVoteMutation();
 
+  const isLoading = isLoadingAddVote || isLoadingUpdateVote;
+
   const handleUserVote = async (value) => {
     if (!session.token) {
       navigate("/signin");
-    } else {
+    } else if (value != vote) {
       const oldVote = vote;
       setVote(value);
       let res = "";
@@ -49,13 +60,26 @@ function CardOptionButton({ poll, value, children, vote, setVote, isLoading }) {
       } catch (error) {
         console.log(error);
       }
+    } else {
+      console.log("delete vote");
     }
   };
+
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsDisabled(true)
+    } else {
+      setIsDisabled(false)
+    }
+  }, [isLoading])
 
   return (
     <Button
       onClick={() => handleUserVote(value)}
-      isDisabled={isLoading}
+      isDisabled={isLoading ? false : isDisabled}
+      isLoading={isLoading}
+      loadingText={value}
       variant={vote === value ? "solid" : "outline"}
       colorScheme={vote === value ? ThemeColor : "default"}
       borderRadius={"full"}

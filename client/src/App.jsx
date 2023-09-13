@@ -3,16 +3,12 @@ import { useSelector } from "react-redux";
 // Components..
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
-import {  useColorMode, Container } from "@chakra-ui/react";
+import { useColorMode, Container } from "@chakra-ui/react";
+import { useThemeInfo } from "./hooks/Theme";
 
 // App.
 function App() {
-  // Theme color.
-  const theme = useSelector((state) => state.theme);
-  const color = theme.theme_color;
-  // Theme mode.
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === "dark";
+  const { isDark } = useThemeInfo();
   return (
     <BrowserRouter>
       <Container
@@ -20,7 +16,7 @@ function App() {
         maxW="100vw"
         minH="100vh"
         bg={isDark ? "black" : "white"}
-        color={isDark ? `${color}.100` : `${color}.900`}
+        color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
       >
         <Router />
       </Container>

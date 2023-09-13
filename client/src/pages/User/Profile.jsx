@@ -189,7 +189,7 @@ function Profile() {
                       {/* Website Link. */}
                       {profile.website_link && (
                         <HStack
-                          opacity={0.6}
+                          opacity={ThemeColor === "default" ? 0.6 : 0.8}
                           spacing={1}
                           fontWeight={"semibold"}
                           fontSize={"md"}
@@ -214,7 +214,7 @@ function Profile() {
                           color={
                             isDark ? `${ThemeColor}.100` : `${ThemeColor}.600`
                           }
-                          opacity={0.6}
+                          opacity={ThemeColor === "default" ? 0.6 : 0.8}
                           spacing={2}
                           fontSize={"md"}
                         >

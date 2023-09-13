@@ -40,6 +40,8 @@ function PollCard({ poll }) {
   // Vote.
   const [vote, setVote] = useState(poll.user_vote);
 
+  const [isDisabled, setIsDisabled] = useState(false)
+
   // Request to delete polls.
   const [deletePoll, { isLoading: isRemovingPoll, isError }] =
     useDeletePollMutation();
@@ -81,46 +83,50 @@ function PollCard({ poll }) {
                 <Text {...styles.header.text}>@{poll.profile.username}</Text>
               </Stack>
             </Flex>
-            <Menu>
-              <MenuButton
-                isDisabled={isLoading}
-                as={IconButton}
-                aria-label={"Options"}
-                icon={<FaEllipsis />}
-                {...styles.header.menu.button}
-              />
-              {poll.is_owner ? (
-                <MenuList {...styles.header.menu.list}>
-                  <MenuItem
-                    isDisabled={isLoading}
-                    as={PollModal}
-                    buttonStyles={styles.header.menu.item}
-                    poll={poll}
-                  >
-                    Edit
-                  </MenuItem>
-                  <MenuItem
-                    isDisabled={isLoading}
-                    as={Button}
-                    {...styles.header.menu.item}
-                    onClick={() => handleDeletePoll(poll._id)}
-                  >
-                    Delete
-                  </MenuItem>
-                </MenuList>
-              ) : (
-                <MenuList>
-                  <MenuItem>Hola</MenuItem>
-                </MenuList>
-              )}
-            </Menu>
+            {session.token && (
+              <Menu>
+                <MenuButton
+                  isDisabled={isLoading}
+                  as={IconButton}
+                  aria-label={"Options"}
+                  icon={<FaEllipsis />}
+                  {...styles.header.menu.button}
+                />
+                {poll.is_owner ? (
+                  <MenuList {...styles.header.menu.list}>
+                    <MenuItem
+                      isDisabled={isLoading}
+                      as={PollModal}
+                      buttonStyles={styles.header.menu.item}
+                      poll={poll}
+                    >
+                      Edit
+                    </MenuItem>
+                    <MenuItem
+                      isDisabled={isLoading}
+                      as={Button}
+                      {...styles.header.menu.item}
+                      onClick={() => handleDeletePoll(poll._id)}
+                    >
+                      Delete
+                    </MenuItem>
+                  </MenuList>
+                ) : (
+                  <MenuList>
+                    <MenuItem>Hola</MenuItem>
+                  </MenuList>
+                )}
+              </Menu>
+            )}
           </CardHeader>
 
           {/* Card Body. */}
           <CardBody>
-            <Stack spacing={3}>
-              <Heading {...styles.body.heading}>{poll.title}</Heading>
-              <Text {...styles.body.text}>{poll.description}</Text>
+            <Stack spacing={6}>
+              <Stack>
+                <Heading {...styles.body.heading}>{poll.title}</Heading>
+                <Text {...styles.body.text}>{poll.description}</Text>
+              </Stack>
               <Flex justifyContent={"center"}>
                 <Stack w={"90%"}>
                   {poll.options.map((option, index) => (
@@ -130,7 +136,8 @@ function PollCard({ poll }) {
                       setVote={setVote}
                       value={option.option_text}
                       key={index}
-                      isLoading={isLoading}
+                      isDisabled={isLoading || isDisabled}
+                      setIsDisabled={setIsDisabled}
                     >
                       {option.option_text}
                     </CardOptionButton>

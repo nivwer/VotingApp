@@ -6,6 +6,7 @@ export const authApiSlice = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/auth/",
+    credentials: 'include',
   }),
   endpoints: (builder) => ({
     // Register.
