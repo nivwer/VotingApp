@@ -43,9 +43,12 @@ class GetCollectionsMongoDB:
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def voting_manager(request, poll_id):
-
-    # Get the user in the User table.
-    # user = await User.objects.aget(username=username)
+    session = None
+    add_vote_value = request.data['vote']
+    del_vote_value = None
+    add_user_voted_polls = False
+    add_user_vote = False
+    is_update_vote = False
 
     try:
         # Get collections from the polls database.
@@ -80,51 +83,79 @@ async def voting_manager(request, poll_id):
                 if v['poll_id'] == poll_id:
                     return Response({'vote': v['vote']})
 
+                # Method POST.
+        if request.method == 'POST':
+            # If the user has not voted a poll.
+            if not user_voted_polls:
+                add_user_voted_polls = True
+
+            if user_voted_polls:
+                # Convert the BSON object to a JSON object.
+                user_voted_polls_json = json_util._json_convert(
+                    (user_voted_polls))
+
+                # If the user has already voted in this poll.
+                for v in user_voted_polls_json['voted_polls']:
+                    if v['poll_id'] == poll_id:
+                        raise ValidationError(
+                            'The user has already voted in this poll.')
+
+                # Add the user vote in the votes object.
+                add_user_vote = True
+
+        # Method PATCH.
+        if request.method == 'PATCH':
+            if not user_voted_polls:
+                raise ValidationError(
+                    'The user has not voted in this poll.')
+
+            if user_voted_polls:
+                # Convert the BSON object to a JSON object.
+                user_voted_polls_json = json_util._json_convert(
+                    (user_voted_polls))
+
+                # If the user has already voted in this poll.
+                for v in user_voted_polls_json['voted_polls']:
+                    if v['poll_id'] == poll_id:
+                        del_vote_value = v['vote']
+                        is_update_vote = True
+
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                # Method POST.
-                if request.method == 'POST':
-                    # If the user has not voted a poll.
-                    if not user_voted_polls:
-                        await users_db.voted_polls.insert_one(
-                            {
-                                'user_id': request.user.id,
-                                'voted_polls': [
-                                    {
-                                        'poll_id': poll_id,
-                                        'vote': request.data['add_vote_option_text']
-                                    }
-                                ]
-                            },
-                            session=session)
+                if add_user_voted_polls:
+                    await users_db.voted_polls.insert_one(
+                        {
+                            'user_id': request.user.id,
+                            'voted_polls': [
+                                {
+                                    'poll_id': poll_id,
+                                    'vote': add_vote_value
+                                }
+                            ]
+                        },
+                        session=session)
 
-                    if user_voted_polls:
-                        # Convert the BSON object to a JSON object.
-                        user_voted_polls_json = json_util._json_convert(
-                            (user_voted_polls))
+                if add_user_vote:
+                    await users_db.voted_polls.update_one(
+                        {'user_id': request.user.id},
+                        {'$push':
+                         {'voted_polls': {
+                             'poll_id': poll_id,
+                             'vote': add_vote_value}
+                          }},
+                        session=session)
 
-                        # If the user has already voted in this poll.
-                        for v in user_voted_polls_json['voted_polls']:
-                            if v['poll_id'] == poll_id:
-                                raise ValidationError(
-                                    'The user has already voted in this poll.')
-
-                        # Add the user vote in the votes object.
-                        await users_db.voted_polls.update_one(
-                            {'user_id': request.user.id},
-                            {'$push':
-                             {'voted_polls': {
-                                 'poll_id': poll_id,
-                                 'vote': request.data['add_vote_option_text']}}}, session=session)
-
-                # Method PATCH.
-                if request.method == 'PATCH':
-                    if not user_voted_polls:
-                        raise ValidationError(
-                            'The user has not voted in this poll.')
+                if is_update_vote:
+                    # Add the user vote in the votes object.
+                    await users_db.voted_polls.update_one(
+                        {'user_id': request.user.id,
+                         'voted_polls.poll_id': poll_id},
+                        {'$set':
+                         {'voted_polls.$.vote': add_vote_value}},
+                        session=session)
 
                 # Convert the BSON object to a JSON object.
                 poll_json = json_util._json_convert((poll_bson))
@@ -134,27 +165,25 @@ async def voting_manager(request, poll_id):
                     if v == request.user.id:
                         is_voter = True
 
-                print(is_voter)
-
                 # If the user is not voter.
                 if not is_voter:
                     # Save the user id in poll voters list.
                     await polls_db.polls.update_one(
                         {'_id': ObjectId(poll_id)},
-                        {'$push': {'voters': request.user.id}}, 
+                        {'$push': {'voters': request.user.id}},
                         session=session)
 
                     # Save the user id in poll voters list.
                     await polls_db.polls.update_one(
                         {'_id': ObjectId(poll_id)},
-                        {'$inc': {'total_votes': 1}}, 
+                        {'$inc': {'total_votes': 1}},
                         session=session)
 
                 # If the user is voter.
                 if is_voter:
                     await polls_db.options.update_one(
                         {'poll_id': ObjectId(poll_id),
-                         'options.option_text': request.data['del_vote_option_text']},
+                         'options.option_text': del_vote_value},
                         {'$inc': {'options.$.votes': -1}},
                         session=session
                     )
@@ -162,7 +191,7 @@ async def voting_manager(request, poll_id):
                 # Add a vote in the option.
                 await polls_db.options.update_one(
                     {'poll_id': ObjectId(poll_id),
-                     'options.option_text': request.data['add_vote_option_text']},
+                     'options.option_text': add_vote_value},
                     {'$inc': {'options.$.votes': 1}},
                     session=session
                 )
@@ -175,6 +204,8 @@ async def voting_manager(request, poll_id):
 
     # Handle validation errors.
     except ValidationError as e:
+        if session:
+            await session.abort_transaction()
         return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle MongoDB errors.
@@ -188,7 +219,7 @@ async def voting_manager(request, poll_id):
 
     # Handle other exceptions.
     except Exception as e:
-        print(f'Error: {e}')
+        print(f'Error: {str(e)}')
         if session:
             await session.abort_transaction()
         return Response(
