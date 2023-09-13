@@ -49,6 +49,7 @@ async def voting_manager(request, poll_id):
     add_user_voted_polls = False
     add_user_vote = False
     is_update_vote = False
+    is_remove_vote = False
 
     try:
         # Get collections from the polls database.
@@ -120,6 +121,22 @@ async def voting_manager(request, poll_id):
                         del_vote_value = v['vote']
                         is_update_vote = True
 
+        if request.method == 'DELETE':
+            if not user_voted_polls:
+                raise ValidationError(
+                    'The user has not voted in this poll.')
+
+            if user_voted_polls:
+                # Convert the BSON object to a JSON object.
+                user_voted_polls_json = json_util._json_convert(
+                    (user_voted_polls))
+
+                # If the user has already voted in this poll.
+                for v in user_voted_polls_json['voted_polls']:
+                    if v['poll_id'] == poll_id:
+                        del_vote_value = v['vote']
+                        is_remove_vote = True
+
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
@@ -157,6 +174,28 @@ async def voting_manager(request, poll_id):
                          {'voted_polls.$.vote': add_vote_value}},
                         session=session)
 
+                if is_remove_vote:
+                    # Remove the user vote in the votes object.
+                    await users_db.voted_polls.update_one(
+                        {'user_id': request.user.id},
+                        {'$pull': {'voted_polls': {'poll_id': poll_id}}},
+                        session=session
+                    )
+
+                    # Remove the user id in poll voters list.
+                    await polls_db.polls.update_one(
+                        {'_id': ObjectId(poll_id)},
+                        {'$pull': {'voters': request.user.id}},
+                        session=session
+                    )
+                    
+                    # Remove the user id in poll voters list.
+                    await polls_db.polls.update_one(
+                        {'_id': ObjectId(poll_id)},
+                        {'$inc': {'total_votes': -1}},
+                        session=session
+                    )
+
                 # Convert the BSON object to a JSON object.
                 poll_json = json_util._json_convert((poll_bson))
 
@@ -188,13 +227,14 @@ async def voting_manager(request, poll_id):
                         session=session
                     )
 
-                # Add a vote in the option.
-                await polls_db.options.update_one(
-                    {'poll_id': ObjectId(poll_id),
-                     'options.option_text': add_vote_value},
-                    {'$inc': {'options.$.votes': 1}},
-                    session=session
-                )
+                if not is_remove_vote:
+                    # Add a vote in the option.
+                    await polls_db.options.update_one(
+                        {'poll_id': ObjectId(poll_id),
+                         'options.option_text': add_vote_value},
+                        {'$inc': {'options.$.votes': 1}},
+                        session=session
+                    )
 
                 # Save transaction.
                 await session.commit_transaction()
