@@ -467,12 +467,16 @@ async def delete_poll(request, poll_id):
 # Handles the get process for a user polls.
 @api_view(['GET'])
 async def user_polls(request, username):
+    is_login = False
+    if request.user:
+        is_login = True
     try:
         # Get the user in the User table.
         user = await User.objects.aget(username=username)
 
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'options', 'users_voted'])
 
         # Find the polls in the polls collection.
         polls_cursor = polls_db.polls.find(
@@ -481,6 +485,12 @@ async def user_polls(request, username):
 
         # Convert the BSON response to a JSON response.
         polls_list_json = json_util._json_convert(polls_list)
+
+        # Find the user voted polls in the voted_polls collection.
+        user_voted_polls = ''
+        if is_login:
+            user_voted_polls = await polls_db.users_voted.find_one(
+                {'user_id': request.user.id})
 
         # Filter the polls.
         polls = []
@@ -498,6 +508,28 @@ async def user_polls(request, username):
             profile_data['username'] = user_data.username
             # Add user profile in the poll object.
             poll['profile'] = profile_data
+
+
+            is_user_vote = False
+            if is_login:
+                # If the user has not voted a poll.
+                if not user_voted_polls:
+                    poll['user_vote'] = ''
+                    is_user_vote = True
+                else:
+                    # Convert the BSON object to a JSON object.
+                    user_voted_polls_json = json_util._json_convert(
+                        (user_voted_polls))
+
+                    # Get vote in the user voted polls object.
+                    for v in user_voted_polls_json['voted_polls']:
+                        if v['poll_id'] == poll['_id']['$oid']:
+                            poll['user_vote'] = v['vote']
+                            is_user_vote = True
+                            break
+
+            if not is_user_vote:
+                poll['user_vote'] = ''
 
             # Find the poll options in the options collection.
             options_bson = await polls_db.options.find_one(
@@ -565,7 +597,7 @@ async def user_polls(request, username):
 
     # Handle other exceptions.
     except Exception as e:
-        print(f'Error: {e}')
+        print(f'Error: {str(e)}')
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

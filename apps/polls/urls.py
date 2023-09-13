@@ -15,7 +15,6 @@ urlpatterns = [
     # Options.
     path('option/<str:poll_id>', options_views.option_manager),
 
-    # Votes.
+    # CRUD Vote.
     path('vote/<str:poll_id>', voting_views.voting_manager),
-
 ]

@@ -1,13 +1,6 @@
-# Standard.
-import os
-from datetime import datetime
-# Virtualenv.
-from dotenv import load_dotenv
-# Django.
-from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -20,8 +13,6 @@ from utils.mongo_connection import MongoDBSingleton
 from pymongo.errors import PyMongoError
 from bson import json_util
 from bson.objectid import ObjectId
-# Serializers.
-from ..serializers import PollSerializer
 
 
 # Helpers.
@@ -38,26 +29,26 @@ class GetCollectionsMongoDB:
 
 # Views.
 
-
+# Handles the CRUD of the vote.
 @api_view(['GET', 'POST', 'PATCH', 'DELETE'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def voting_manager(request, poll_id):
     session = None
-    add_vote_value = request.data['vote']
+    add_vote_value = False
     del_vote_value = None
     add_user_voted_polls = False
     add_user_vote = False
     is_update_vote = False
     is_remove_vote = False
 
+    if request.method != 'GET' and request.method != 'DELETE':
+        add_vote_value = request.data['vote']
+
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'options'])
-        # Get collections from the users database.
-        users_db = GetCollectionsMongoDB(
-            'users_db', ['voted_polls'])
+            'polls_db', ['polls', 'options', 'users_voted'])
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -67,7 +58,7 @@ async def voting_manager(request, poll_id):
             raise ValidationError('Poll is not found.')
 
         # Find the user voted polls in the voted_polls collection.
-        user_voted_polls = await users_db.voted_polls.find_one(
+        user_voted_polls = await polls_db.users_voted.find_one(
             {'user_id': request.user.id})
 
         # Method GET.
@@ -84,7 +75,7 @@ async def voting_manager(request, poll_id):
                 if v['poll_id'] == poll_id:
                     return Response({'vote': v['vote']})
 
-                # Method POST.
+        # Method POST.
         if request.method == 'POST':
             # If the user has not voted a poll.
             if not user_voted_polls:
@@ -121,6 +112,7 @@ async def voting_manager(request, poll_id):
                         del_vote_value = v['vote']
                         is_update_vote = True
 
+        # Method DELETE.
         if request.method == 'DELETE':
             if not user_voted_polls:
                 raise ValidationError(
@@ -137,13 +129,23 @@ async def voting_manager(request, poll_id):
                         del_vote_value = v['vote']
                         is_remove_vote = True
 
+        # Convert the BSON object to a JSON object.
+        poll_json = json_util._json_convert((poll_bson))
+        # Is voter.
+        is_voter = False
+        for v in poll_json['voters']:
+            if v == request.user.id:
+                is_voter = True
+
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
+                # Method POST.
+                # If the user never voted for a poll.
                 if add_user_voted_polls:
-                    await users_db.voted_polls.insert_one(
+                    await polls_db.users_voted.insert_one(
                         {
                             'user_id': request.user.id,
                             'voted_polls': [
@@ -155,8 +157,10 @@ async def voting_manager(request, poll_id):
                         },
                         session=session)
 
+                # Method POST.
+                # If the user never voted for this poll.
                 if add_user_vote:
-                    await users_db.voted_polls.update_one(
+                    await polls_db.users_voted.update_one(
                         {'user_id': request.user.id},
                         {'$push':
                          {'voted_polls': {
@@ -165,46 +169,8 @@ async def voting_manager(request, poll_id):
                           }},
                         session=session)
 
-                if is_update_vote:
-                    # Add the user vote in the votes object.
-                    await users_db.voted_polls.update_one(
-                        {'user_id': request.user.id,
-                         'voted_polls.poll_id': poll_id},
-                        {'$set':
-                         {'voted_polls.$.vote': add_vote_value}},
-                        session=session)
-
-                if is_remove_vote:
-                    # Remove the user vote in the votes object.
-                    await users_db.voted_polls.update_one(
-                        {'user_id': request.user.id},
-                        {'$pull': {'voted_polls': {'poll_id': poll_id}}},
-                        session=session
-                    )
-
-                    # Remove the user id in poll voters list.
-                    await polls_db.polls.update_one(
-                        {'_id': ObjectId(poll_id)},
-                        {'$pull': {'voters': request.user.id}},
-                        session=session
-                    )
-                    
-                    # Remove the user id in poll voters list.
-                    await polls_db.polls.update_one(
-                        {'_id': ObjectId(poll_id)},
-                        {'$inc': {'total_votes': -1}},
-                        session=session
-                    )
-
-                # Convert the BSON object to a JSON object.
-                poll_json = json_util._json_convert((poll_bson))
-
-                is_voter = False
-                for v in poll_json['voters']:
-                    if v == request.user.id:
-                        is_voter = True
-
-                # If the user is not voter.
+                # Method POST.
+                # If the user is not voter for this poll.
                 if not is_voter:
                     # Save the user id in poll voters list.
                     await polls_db.polls.update_one(
@@ -218,7 +184,43 @@ async def voting_manager(request, poll_id):
                         {'$inc': {'total_votes': 1}},
                         session=session)
 
-                # If the user is voter.
+                # Method PATCH.
+                # If the user changed the vote in this poll.
+                if is_update_vote:
+                    # Add the user vote in the votes object.
+                    await polls_db.users_voted.update_one(
+                        {'user_id': request.user.id,
+                         'voted_polls.poll_id': poll_id},
+                        {'$set':
+                         {'voted_polls.$.vote': add_vote_value}},
+                        session=session)
+
+                # Method DELETE.
+                # If the user remove the vote in this poll.
+                if is_remove_vote:
+                    # Remove the user vote in the votes object.
+                    await polls_db.users_voted.update_one(
+                        {'user_id': request.user.id},
+                        {'$pull': {'voted_polls': {'poll_id': poll_id}}},
+                        session=session
+                    )
+
+                    # Remove the user id in poll voters list.
+                    await polls_db.polls.update_one(
+                        {'_id': ObjectId(poll_id)},
+                        {'$pull': {'voters': request.user.id}},
+                        session=session
+                    )
+
+                    # Remove the user id in poll voters list.
+                    await polls_db.polls.update_one(
+                        {'_id': ObjectId(poll_id)},
+                        {'$inc': {'total_votes': -1}},
+                        session=session
+                    )
+
+                # Method PATCH and DELETE.
+                # Remove the previous vote. ( Except: If The Method is POST )
                 if is_voter:
                     await polls_db.options.update_one(
                         {'poll_id': ObjectId(poll_id),
@@ -227,6 +229,8 @@ async def voting_manager(request, poll_id):
                         session=session
                     )
 
+                # Method POST and PATCH.
+                # Add the new vote. ( Except: If The Method is DELETE )
                 if not is_remove_vote:
                     # Add a vote in the option.
                     await polls_db.options.update_one(

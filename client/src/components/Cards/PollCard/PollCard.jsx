@@ -10,7 +10,6 @@ import PollModal from "../../Modals/PollModal/PollModal";
 import CustomProgress from "../../Progress/CustomProgress";
 import {
   Avatar,
-  Box,
   Card,
   CardBody,
   CardFooter,
@@ -39,14 +38,14 @@ function PollCard({ poll }) {
   const session = useSelector((state) => state.session);
 
   // Vote.
-  const [vote, setVote] = useState(false);
+  const [vote, setVote] = useState(poll.user_vote);
 
   // Request to delete polls.
   const [deletePoll, { isLoading: isRemovingPoll, isError }] =
     useDeletePollMutation();
 
   // Conditional isLoading.
-  const isLoading = isRemovingPoll
+  const isLoading = isRemovingPoll;
 
   // Delete poll.
   const handleDeletePoll = async (poll_id) => {
@@ -73,18 +72,13 @@ function PollCard({ poll }) {
                 isDisabled={isLoading}
                 variant={"unstyled"}
               >
-                <Avatar
-                  bg={"gray.400"}
-                  src={poll.profile.profile_picture}
-                />
+                <Avatar bg={"gray.400"} src={poll.profile.profile_picture} />
               </IconButton>
               <Stack spacing={0}>
                 <Heading {...styles.header.heading}>
                   {poll.profile.profile_name}
                 </Heading>
-                <Text {...styles.header.text}>
-                  @{poll.profile.username}
-                </Text>
+                <Text {...styles.header.text}>@{poll.profile.username}</Text>
               </Stack>
             </Flex>
             <Menu>
@@ -131,6 +125,7 @@ function PollCard({ poll }) {
                 <Stack w={"90%"}>
                   {poll.options.map((option, index) => (
                     <CardOptionButton
+                      poll={poll}
                       vote={vote}
                       setVote={setVote}
                       value={option.option_text}

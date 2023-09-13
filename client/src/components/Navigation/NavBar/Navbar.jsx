@@ -16,8 +16,6 @@ import { FaHouse, FaUser, FaPaintbrush } from "react-icons/fa6";
 
 // Component.
 function Navbar() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { ThemeColor, isDark } = useThemeInfo();
   const styles = getNavBarStyles(ThemeColor, isDark);
   // User session.

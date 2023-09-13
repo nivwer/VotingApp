@@ -71,6 +71,28 @@ export const pollApiSlice = createApi({
       }),
       providesTags: ["Polls"],
     }),
+
+    // Add user vote.
+    addUserVote: builder.mutation({
+      query: (data) => ({
+        url: `vote/${data.poll_id}`,
+        method: "POST",
+        headers: data.headers,
+        body: data.body,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
+
+    // Update user vote.
+    updateUserVote: builder.mutation({
+      query: (data) => ({
+        url: `vote/${data.poll_id}`,
+        method: "PATCH",
+        headers: data.headers,
+        body: data.body,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
   }),
 });
 
@@ -80,4 +102,6 @@ export const {
   useReadPollMutation,
   useUpdatePollMutation,
   useDeletePollMutation,
+  useAddUserVoteMutation,
+  useUpdateUserVoteMutation,
 } = pollApiSlice;
