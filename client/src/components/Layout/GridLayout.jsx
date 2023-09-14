@@ -1,5 +1,3 @@
-// Hooks.
-import { useEffect, useState } from "react";
 // Components.
 import SideBar from "../Navigation/SideBar";
 import { Outlet } from "react-router-dom";
@@ -14,7 +12,7 @@ import { useThemeInfo } from "../../hooks/Theme";
 
 // Component.
 function GridLayout({ isSimple = true }) {
-  const { ThemeColor, isDark } = useThemeInfo();
+  const { isDark } = useThemeInfo();
   // BreakPoints.
   const layoutType = useBreakpointValue({
     base: "simple",

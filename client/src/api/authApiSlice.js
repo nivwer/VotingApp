@@ -6,7 +6,7 @@ export const authApiSlice = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/auth/",
-    credentials: 'include',
+    credentials: "include",
   }),
   endpoints: (builder) => ({
     // Register.
@@ -27,21 +27,15 @@ export const authApiSlice = createApi({
       }),
     }),
 
-    // Info user.
-    viewUser: builder.mutation({
-      query: (data) => ({
-        url: "user/",
+    // Check the user session.
+    checkSession: builder.query({
+      query: () => ({
+        url: "check-session/",
         method: "GET",
-        headers: {
-          Authorization: `Token ${data.token}`,
-        },
       }),
     }),
   }),
 });
 
-export const {
-  useSignInMutation,
-  useSignUpMutation,
-  useViewUserMutation,
-} = authApiSlice;
+export const { useSignInMutation, useSignUpMutation, useCheckSessionQuery } =
+  authApiSlice;

@@ -12,8 +12,5 @@ const theme = extendTheme({
   config,
   styles,
   colors,
-  // components: {
-  //   Button,
-  // },
 });
 export default theme;

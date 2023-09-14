@@ -72,6 +72,8 @@ export const pollApiSlice = createApi({
       providesTags: ["Polls"],
     }),
 
+    // Vote manager //
+
     // Add user vote.
     addUserVote: builder.mutation({
       query: (data) => ({

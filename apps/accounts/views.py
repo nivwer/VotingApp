@@ -26,10 +26,11 @@ from apps.profiles.serializers import UserProfileSerializer
 
 # Handles the registration process for new users.
 @api_view(['POST'])
+@permission_classes([AllowAny])
 @transaction.atomic
 def signup(request):
     try:
-        # Config the data object.
+        # Create the user data object.
         user_object = {
             'username': request.data['username'],
             'password': request.data['password'],
@@ -38,7 +39,6 @@ def signup(request):
 
         # Initialize a UserSerializer instance with the provided data.
         user_serializer = UserSerializer(data=user_object)
-        # Throws ValidationError if not valid.
         user_serializer.is_valid(raise_exception=True)
         user_instance = user_serializer.save()
 
@@ -67,14 +67,33 @@ def signup(request):
         profile_serializer.save()
         profile_data = profile_serializer.data
 
-        # Response.
-        return Response(
+        # Crear o actualizar la sesión en la cookie
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.save()
+            session_key = request.session.session_key
+
+        # Asocia la sesión a la cookie
+        response = JsonResponse(
             {
                 'token': token.key,
                 'user': user_data,
                 'profile': profile_data,
             },
-            status=status.HTTP_201_CREATED)
+            status=status.HTTP_200_OK,
+        )
+
+        response.set_cookie(
+            key='user_auth_session_cookie',
+            value=session_key,
+            httponly=True,
+            secure=True,
+            samesite='Lax',
+            max_age=30*24*60*60  # d*h*m*seconds
+        )
+
+        # Response.
+        return response
 
     # Handle validation errors.
     except ValidationError as e:
@@ -136,7 +155,7 @@ def signin(request):
                 httponly=True,
                 secure=True,
                 samesite='Lax',
-                max_age=3600
+                max_age=30*24*60*60  # d*h*m*seconds
             )
 
             # Response.
@@ -159,6 +178,40 @@ def signin(request):
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Handles the session if the user is authenticated.
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def check_session(request):
+    try:
+        # The user is authenticated due to the 'IsAuthenticated' decorator.
+        user = request.user
+
+        # Get token associated with the user, or create a new token.
+        token, created = Token.objects.get_or_create(user=user)
+
+        # Get user data.
+        user_serializer = UserSerializer(instance=user)
+        user_data = user_serializer.data
+        user_data.pop('password')
+
+        # Get user profile data.
+        user_profile = UserProfile.objects.get(user=user)
+        profile_data = UserProfileSerializer(instance=user_profile).data
+
+        # Response.
+        return Response(
+            {
+                'token': token.key,
+                'user': user_data,
+                'profile': profile_data,
+            },
+            status=status.HTTP_200_OK,)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])

@@ -9,7 +9,7 @@ export const profileApiSlice = createApi({
   }),
   tagTypes: ["Profile"],
   endpoints: (builder) => ({
-    // Read user profile.
+    // Read user private profile.
     readProfile: builder.query({
       query: (data) => ({
         url: "read/",
