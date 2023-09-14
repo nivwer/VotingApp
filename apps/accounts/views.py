@@ -3,18 +3,15 @@ from datetime import datetime
 # Django.
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.contrib.sessions.models import Session
-from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 # Rest Framework.
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 # Models and Serializers.
 from apps.profiles.models import UserProfile
@@ -24,11 +21,11 @@ from apps.profiles.serializers import UserProfileSerializer
 
 # Views.
 
-# Handles the registration process for new users.
+# Handle the user registration process.
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @transaction.atomic
-def signup(request):
+def sign_up(request):
     try:
         # Create the user data object.
         user_object = {
@@ -48,9 +45,6 @@ def signup(request):
         user_object.set_password(user_serializer.data['password'])
         user_object.save()
 
-        # Create a new Token instance associated with the user.
-        token = Token.objects.create(user=user_object)
-
         # Remove the 'password' field to the response.
         user_data = user_serializer.data
         user_data.pop('password')
@@ -67,33 +61,48 @@ def signup(request):
         profile_serializer.save()
         profile_data = profile_serializer.data
 
-        # Crear o actualizar la sesión en la cookie
-        session_key = request.session.session_key
-        if not session_key:
-            request.session.save()
+        # Realiza la autenticación del usuario
+        user = authenticate(
+            request, username=request.data['username'], password=request.data['password'])
+
+        if user is not None:
+            # Inicia la sesión del usuario
+            login(request, user)
+
+            # Create a new Token instance associated with the user.
+            token = Token.objects.create(user=user_object)
+
+            # Crear o actualizar la sesión en la cookie
             session_key = request.session.session_key
+            if not session_key:
+                request.session.save()
+                session_key = request.session.session_key
 
-        # Asocia la sesión a la cookie
-        response = JsonResponse(
-            {
-                'token': token.key,
-                'user': user_data,
-                'profile': profile_data,
-            },
-            status=status.HTTP_200_OK,
-        )
+            # Asocia la sesión a la cookie
+            response = JsonResponse(
+                {
+                    'token': token.key,
+                    'user': user_data,
+                    'profile': profile_data,
+                },
+                status=status.HTTP_200_OK,
+            )
 
-        response.set_cookie(
-            key='user_auth_session_cookie',
-            value=session_key,
-            httponly=True,
-            secure=True,
-            samesite='Lax',
-            max_age=30*24*60*60  # d*h*m*seconds
-        )
+            response.set_cookie(
+                key='session',
+                value=session_key,
+                httponly=True,
+                secure=False,
+                samesite='Lax',
+                max_age=30*24*60*60  # d*h*m*seconds
+            )
 
-        # Response.
-        return response
+            # Response.
+            return response
+
+        # Maneja la autenticación fallida
+        raise AuthenticationFailed(
+            {'password': ['Invalid username or password']})
 
     # Handle validation errors.
     except ValidationError as e:
@@ -108,10 +117,10 @@ def signup(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Handles the user authentication process.
+# Handles the user login process.
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def signin(request):
+def sign_in(request):
     try:
         # Realiza la autenticación del usuario
         user = authenticate(
@@ -150,10 +159,10 @@ def signin(request):
             )
 
             response.set_cookie(
-                key='user_auth_session_cookie',
+                key='session',
                 value=session_key,
                 httponly=True,
-                secure=True,
+                secure=False,
                 samesite='Lax',
                 max_age=30*24*60*60  # d*h*m*seconds
             )
@@ -178,6 +187,22 @@ def signin(request):
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Handle the user logout process.
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def sign_out(request):
+    try:
+        # Logout.
+        logout(request)
+
+        # Response.
+        return Response({'message': 'Logout..'},
+                        status=status.HTTP_200_OK)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # Handles the session if the user is authenticated.

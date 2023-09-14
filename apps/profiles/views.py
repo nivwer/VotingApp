@@ -89,6 +89,12 @@ def update_profile(request):
     # Handle if the user is not found.
     except User.DoesNotExist:
         return Response({'username': ['User is not found.']}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Handle if the user is not found.
+    except UserProfile.DoesNotExist:
+        return Response(
+            {'username': ['Profile is not found.']},
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle other exceptions.
     except Exception as e:

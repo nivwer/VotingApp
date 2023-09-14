@@ -1,8 +1,7 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 // Components.
 import NavDrawer from "./NavDrawer";
 import ToggleColorMode from "../../Toggles/Theme/ToggleColorMode";

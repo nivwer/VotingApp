@@ -2,6 +2,7 @@
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useSignOutMutation } from "../../../api/authApiSlice";
 // Actions.
 import { logout } from "../../../features/auth/sessionSlice";
 // Components.
@@ -25,11 +26,38 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+import Cookies from "js-cookie";
+
 // Component.
 function NavDrawer({ session, userPages, isOpen, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isDark } = useThemeInfo();
+
+  const csrftoken = Cookies.get("csrftoken");
+
+  // Request to the backend.
+  const [signOut, { isLoading: isLoggingOut }] = useSignOutMutation();
+
+  const handleLogout = async () => {
+    console.log(csrftoken);
+    try {
+      const res = await signOut({
+        headers: {
+          "X-CSRFToken": csrftoken,
+        },
+      });
+      // If the logout is successful.
+      if (res.data) {
+        dispatch(logout());
+        onClose();
+        navigate("/signin");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
@@ -47,14 +75,23 @@ function NavDrawer({ session, userPages, isOpen, onClose }) {
             {/* User Avatar. */}
             <Flex>
               <Box>
-                <Avatar bg={"gray.400"} size="md" src={session.profile.profile_picture} />
+                <Avatar
+                  bg={"gray.400"}
+                  size="md"
+                  src={session.profile.profile_picture}
+                />
               </Box>
               <Box color={isDark ? "whiteAlpha.900" : "blackAlpha.900"} ml="4">
-                <Heading opacity={isDark ? 1 : 0.8} pt={"5px"} fontSize="md" fontWeight="bold">
+                <Heading
+                  opacity={isDark ? 1 : 0.8}
+                  pt={"5px"}
+                  fontSize="md"
+                  fontWeight="bold"
+                >
                   {session.profile.profile_name}
                 </Heading>
 
-                <Text  opacity={0.5} fontWeight="medium" fontSize="sm">
+                <Text opacity={0.5} fontWeight="medium" fontSize="sm">
                   @{session.user.username}
                 </Text>
               </Box>
@@ -104,11 +141,7 @@ function NavDrawer({ session, userPages, isOpen, onClose }) {
 
             <Stack>
               <Button
-                onClick={() => {
-                  dispatch(logout());
-                  onClose();
-                  navigate("/signin");
-                }}
+                onClick={handleLogout}
                 colorScheme={"default"}
                 size="sm"
                 variant={"ghost"}

@@ -18,10 +18,10 @@ function CardOptionButton({
   vote,
   setVote,
   isDisabled,
-  setIsDisabled
+  setIsDisabled,
 }) {
   const navigate = useNavigate();
-  const { ThemeColor, isDark } = useThemeInfo();
+  const { isDark, ThemeColor } = useThemeInfo();
   // Session.
   const session = useSelector((state) => state.session);
 
@@ -40,24 +40,22 @@ function CardOptionButton({
       const oldVote = vote;
       setVote(value);
       let res = "";
+      const data = {
+        poll_id: poll._id,
+        headers: { Authorization: `Token ${session.token}` },
+        body: { vote: value },
+      };
       try {
         if (vote === "") {
-          res = await addUserVote({
-            poll_id: poll._id,
-            headers: { Authorization: `Token ${session.token}` },
-            body: { vote: value },
-          });
+          res = await addUserVote(data);
         } else {
-          res = await updateUserVote({
-            poll_id: poll._id,
-            headers: { Authorization: `Token ${session.token}` },
-            body: { vote: value },
-          });
+          res = await updateUserVote(data);
         }
         if (res.error) {
           setVote(oldVote);
         }
       } catch (error) {
+        setVote(oldVote);
         console.log(error);
       }
     } else {
@@ -65,14 +63,13 @@ function CardOptionButton({
     }
   };
 
-
   useEffect(() => {
     if (isLoading) {
-      setIsDisabled(true)
+      setIsDisabled(true);
     } else {
-      setIsDisabled(false)
+      setIsDisabled(false);
     }
-  }, [isLoading])
+  }, [isLoading]);
 
   return (
     <Button

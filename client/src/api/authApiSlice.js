@@ -27,6 +27,15 @@ export const authApiSlice = createApi({
       }),
     }),
 
+    // Logout.
+    signOut: builder.mutation({
+      query: (data) => ({
+        url: "signout/",
+        method: "POST",
+        headers: data.headers,
+      }),
+    }),
+
     // Check the user session.
     checkSession: builder.query({
       query: () => ({
@@ -37,5 +46,9 @@ export const authApiSlice = createApi({
   }),
 });
 
-export const { useSignInMutation, useSignUpMutation, useCheckSessionQuery } =
-  authApiSlice;
+export const {
+  useSignInMutation,
+  useSignUpMutation,
+  useSignOutMutation,
+  useCheckSessionQuery,
+} = authApiSlice;

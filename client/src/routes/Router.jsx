@@ -16,14 +16,14 @@ import GridLayout from "../components/Layout/GridLayout";
 
 // Router.
 function Router() {
-  const data = useSelector((state) => state.session);
+  const session = useSelector((state) => state.session);
 
   return (
     <Routes>
       {/* Simple Layout. */}
       <Route element={<GridLayout />}>
         {/* Authentication Pages. */}
-        <Route element={<ProtectedRoute isAllowed={!data.token} />}>
+        <Route element={<ProtectedRoute isAllowed={!session.token} />}>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
         </Route>
@@ -44,12 +44,8 @@ function Router() {
         {/* Poll page. */}
         {/* <Route path="/:username/:id" element={<ViewPoll />} /> */}
 
-        {/* Poll pages. */}
-        <Route element={<ProtectedRoute isAllowed={!!data.token} />}>
-          {/* <Route path="/:username/new" element={<NewPoll />} /> */}
-        </Route>
         {/* Config pages. */}
-        <Route element={<ProtectedRoute isAllowed={!!data.token} />}>
+        <Route element={<ProtectedRoute isAllowed={!!session.token} />}>
           {/*  <Route path="/settings" element={<Settings />} /> */}
           <Route path="/settings/theme" element={<Theme />} />
         </Route>

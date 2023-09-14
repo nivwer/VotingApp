@@ -1,5 +1,7 @@
+const localColorMode = localStorage.getItem("chakra-ui-color-mode");
+
 const config = {
-  initialColorMode: "dark",
+  initialColorMode: localColorMode || "dark",
   useSystemColorMode: true,
 };
 

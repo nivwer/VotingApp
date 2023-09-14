@@ -40,7 +40,7 @@ function PollCard({ poll }) {
   // Vote.
   const [vote, setVote] = useState(poll.user_vote);
 
-  const [isDisabled, setIsDisabled] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false);
 
   // Request to delete polls.
   const [deletePoll, { isLoading: isRemovingPoll, isError }] =

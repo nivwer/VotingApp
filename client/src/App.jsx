@@ -1,14 +1,30 @@
 // Hooks.
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useThemeInfo } from "./hooks/Theme";
+import { useCheckSessionQuery } from "./api/authApiSlice";
+import { useDispatch } from "react-redux";
+// Actions.
+import { login } from "./features/auth/sessionSlice";
 // Components..
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
-import { useColorMode, Container } from "@chakra-ui/react";
-import { useThemeInfo } from "./hooks/Theme";
+import InitialSpinner from "./components/Spinners/InitialSpinner";
+import { Container } from "@chakra-ui/react";
 
 // App.
 function App() {
+  const dispatch = useDispatch();
   const { isDark } = useThemeInfo();
+
+  // Check the user session.
+  const { data, isLoading } = useCheckSessionQuery();
+
+  useEffect(() => {
+    if (data) {
+      dispatch(login(data));
+    }
+  }, [data]);
+
   return (
     <BrowserRouter>
       <Container
@@ -18,7 +34,7 @@ function App() {
         bg={isDark ? "black" : "white"}
         color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
       >
-        <Router />
+        {isLoading ? <InitialSpinner /> : <Router />}
       </Container>
     </BrowserRouter>
   );
