@@ -2,7 +2,7 @@
 import { Button } from "@chakra-ui/react";
 
 // Component.
-function CardButton({ children, isLoading }) {
+function PollCardButton({ children, isLoading }) {
   return (
     <Button flex="1" variant="ghost" isDisabled={isLoading}>
       {children}
@@ -10,4 +10,4 @@ function CardButton({ children, isLoading }) {
   );
 }
 
-export default CardButton;
+export default PollCardButton;

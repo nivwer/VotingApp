@@ -6,7 +6,7 @@ import { useSignUpMutation } from "../../api/authApiSlice";
 // Actions.
 import { login } from "../../features/auth/sessionSlice";
 // Components.
-import AuthForm from "./AuthForm";
+import AuthForm from "./components/AuthForm";
 import { Center, Container } from "@chakra-ui/react";
 
 // Page.

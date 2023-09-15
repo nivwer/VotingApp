@@ -11,7 +11,7 @@ import {
 import { Button } from "@chakra-ui/react";
 
 // Component.
-function CardOptionButton({
+function PollCardOptionButton({
   poll,
   value,
   children,
@@ -91,4 +91,4 @@ function CardOptionButton({
   );
 }
 
-export default CardOptionButton;
+export default PollCardOptionButton;

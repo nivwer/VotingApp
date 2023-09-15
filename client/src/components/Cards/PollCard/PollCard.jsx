@@ -1,11 +1,11 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useDeletePollMutation } from "../../../api/pollApiSlice";
 // Components.
-import CardOptionButton from "./CardOptionButton";
-import CardButton from "./CardButton";
+import PollCardOptionButton from "./PollCardOptionButton";
+import PollCardButton from "./PollCardButton";
 import PollModal from "../../Modals/PollModal/PollModal";
 import CustomProgress from "../../Progress/CustomProgress";
 import {
@@ -34,7 +34,6 @@ import { getPollCardStyles } from "./PollCardStyles";
 function PollCard({ poll }) {
   const { ThemeColor, isDark } = useThemeInfo();
   const styles = getPollCardStyles(ThemeColor, isDark);
-  // User Session.
   const session = useSelector((state) => state.session);
 
   // Vote.
@@ -130,7 +129,7 @@ function PollCard({ poll }) {
               <Flex justifyContent={"center"}>
                 <Stack w={"90%"}>
                   {poll.options.map((option, index) => (
-                    <CardOptionButton
+                    <PollCardOptionButton
                       poll={poll}
                       vote={vote}
                       setVote={setVote}
@@ -140,7 +139,7 @@ function PollCard({ poll }) {
                       setIsDisabled={setIsDisabled}
                     >
                       {option.option_text}
-                    </CardOptionButton>
+                    </PollCardOptionButton>
                   ))}
                 </Stack>
               </Flex>
@@ -149,9 +148,9 @@ function PollCard({ poll }) {
 
           {/* Card Footer. */}
           <CardFooter {...styles.footer}>
-            <CardButton isLoading={isLoading}>Share</CardButton>
-            <CardButton isLoading={isLoading}>Comment</CardButton>
-            <CardButton isLoading={isLoading}>Views</CardButton>
+            <PollCardButton isLoading={isLoading}>Share</PollCardButton>
+            <PollCardButton isLoading={isLoading}>Comment</PollCardButton>
+            <PollCardButton isLoading={isLoading}>Views</PollCardButton>
           </CardFooter>
         </Card>
       )}

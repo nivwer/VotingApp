@@ -7,9 +7,9 @@ function CustomProgress() {
     <>
       <Progress
         colorScheme={"default"}
-        borderTopRadius="14px"
+        borderBottomRadius="14px"
         m="auto"
-        w={"98%"}
+        w={"95%"}
         size="xs"
         isIndeterminate
       />

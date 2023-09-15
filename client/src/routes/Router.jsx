@@ -8,7 +8,7 @@ import About from "../pages/About";
 import SignUp from "../pages/Auth/SignUp";
 import SignIn from "../pages/Auth/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
-import Profile from "../pages/User/Profile";
+import Profile from "../pages/Profile/Profile";
 import Theme from "../pages/Settings/Theme";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";

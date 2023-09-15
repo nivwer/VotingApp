@@ -1,8 +1,8 @@
 // Hooks.
-import { useThemeInfo } from "../../hooks/Theme";
+import { useThemeInfo } from "../../../hooks/Theme";
 import { useState } from "react";
 // Components.
-import CustomProgress from "../../components/Progress/CustomProgress";
+import CustomProgress from "../../../components/Progress/CustomProgress";
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 // Styles.
-import { getAuthStyles } from "./AuthStyles";
+import { getAuthStyles } from "../AuthStyles";
 // Icons.
 import ToggleShowPassword from "./ToggleShowPassword";
 

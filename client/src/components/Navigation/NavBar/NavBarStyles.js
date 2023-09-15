@@ -6,6 +6,7 @@ export const getNavBarStyles = (ThemeColor, isDark) => {
       pos: "fixed",
       borderBottom: isDark ? "1px solid" : "1px solid",
       borderColor: isDark ? "whiteAlpha.300" : "blackAlpha.200",
+      color: isDark ? "whiteAlpha.900" : "blackAlpha.800",
     },
     content: {
       w: "100%",

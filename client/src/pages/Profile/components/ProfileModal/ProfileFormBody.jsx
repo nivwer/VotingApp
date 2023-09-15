@@ -1,6 +1,6 @@
 // Hooks.
 import { useEffect, useState } from "react";
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import ProfileInputURL from "./ProfileInputURL";
 import {
@@ -20,7 +20,7 @@ import {
 // Icons.
 import { FaImage, FaLink } from "react-icons/fa6";
 // Countries
-import countriesData from "../../../assets/countries.json";
+import countriesData from "../../../../assets/countries.json";
 
 // Component.
 function ProfileFormBody({

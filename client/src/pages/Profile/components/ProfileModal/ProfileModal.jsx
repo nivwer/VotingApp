@@ -1,12 +1,13 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
+import { useUpdateProfileMutation } from "../../../../api/profileApiSlice";
 // Styles
 import { getProfileModalStyles } from "./ProfileModalStyles";
 // Components.
+import CustomProgress from "../../../../components/Progress/CustomProgress";
 import ProfileFormBody from "./ProfileFormBody";
-import CustomProgress from "../../Progress/CustomProgress";
 import {
   Button,
   Modal,
@@ -18,9 +19,8 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
+// Icons.
 import { FaBedPulse } from "react-icons/fa6";
-import { useUpdateProfileMutation } from "../../../api/profileApiSlice";
-import { useState } from "react";
 
 // Component.
 function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
@@ -40,7 +40,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
     reset,
     formState: { errors },
     setError,
-    setValue
+    setValue,
   } = useForm();
 
   // Request to update profile.
