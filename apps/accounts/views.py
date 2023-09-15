@@ -61,24 +61,24 @@ def sign_up(request):
         profile_serializer.save()
         profile_data = profile_serializer.data
 
-        # Realiza la autenticación del usuario
+        # Authentication.
         user = authenticate(
             request, username=request.data['username'], password=request.data['password'])
 
         if user is not None:
-            # Inicia la sesión del usuario
+            # Login.
             login(request, user)
 
             # Create a new Token instance associated with the user.
             token = Token.objects.create(user=user_object)
 
-            # Crear o actualizar la sesión en la cookie
+             # Create or update the session in the cookie.
             session_key = request.session.session_key
             if not session_key:
                 request.session.save()
                 session_key = request.session.session_key
 
-            # Asocia la sesión a la cookie
+            # Associate the session with the cookie.
             response = JsonResponse(
                 {
                     'token': token.key,
@@ -100,9 +100,9 @@ def sign_up(request):
             # Response.
             return response
 
-        # Maneja la autenticación fallida
+        # Handle failed authentication.
         raise AuthenticationFailed(
-            {'password': ['Invalid username or password']})
+            {'password': ['Failed authentication.']})
 
     # Handle validation errors.
     except ValidationError as e:
@@ -122,12 +122,12 @@ def sign_up(request):
 @permission_classes([AllowAny])
 def sign_in(request):
     try:
-        # Realiza la autenticación del usuario
+        # Authentication.
         user = authenticate(
             request, username=request.data['username'], password=request.data['password'])
 
         if user is not None:
-            # Inicia la sesión del usuario
+            # Login.
             login(request, user)
 
             # Get token associated with the user, or create a new token.
@@ -142,13 +142,13 @@ def sign_in(request):
             user_profile = UserProfile.objects.get(user=user)
             profile_data = UserProfileSerializer(instance=user_profile).data
 
-            # Crear o actualizar la sesión en la cookie personalizada
+            # Create or update the session in the cookie.
             session_key = request.session.session_key
             if not session_key:
                 request.session.save()
                 session_key = request.session.session_key
 
-            # Asocia la sesión a la cookie personalizada
+            # Associate the session with the cookie
             response = JsonResponse(
                 {
                     'token': token.key,
@@ -170,9 +170,9 @@ def sign_in(request):
             # Response.
             return response
 
-        # Maneja la autenticación fallida
+        # Handle failed authentication.
         raise AuthenticationFailed(
-            {'password': ['Invalid username or password']})
+            {'password': ['Invalid username or password.']})
 
     # Handle validation errors.
     except ValidationError as e:
