@@ -1,5 +1,4 @@
 # Standard.
-import os
 from datetime import datetime
 # Virtualenv.
 from dotenv import load_dotenv
@@ -10,8 +9,8 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authentication import TokenAuthentication
 # Async Rest Framework support.
 from adrf.decorators import api_view
 # MongoDB connection.
@@ -25,6 +24,8 @@ from ..serializers import PollSerializer, OptionsSerializer
 from apps.profiles.models import UserProfile
 from apps.profiles.serializers import UserProfileSerializer
 
+from django.http import JsonResponse
+from utils.categorys import CATEGORIAS
 
 # Load the virtual environment.
 load_dotenv()
@@ -42,14 +43,20 @@ class GetCollectionsMongoDB:
             setattr(self, collection, db[collection])
 
 
+def categorys(request):
+    return JsonResponse(CATEGORIAS)
+
+
 # Views.
 
 # Handles the read to a polls.
 @api_view(['GET'])
+@permission_classes([AllowAny])
 async def read_poll(request, poll_id):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'options'])
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(poll_id)})
@@ -101,14 +108,12 @@ async def read_poll(request, poll_id):
 
     # Handle MongoDB errors.
     except PyMongoError as e:
-        print(f'MongoDB Error: {e}')
         return Response(
-            {'error': 'An error occurred while processing your request.'},
+            {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as e:
-        print(f'Error: {e}')
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -116,7 +121,7 @@ async def read_poll(request, poll_id):
 
 # Handles the creation process for the polls.
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def create_poll(request):
     session = None
@@ -170,7 +175,8 @@ async def create_poll(request):
                             'created_by': {'user_id': request.user.id, },
                             'option_text': option,
                             'votes': 0
-                        })
+                        }
+                    )
 
                 # Create options document in options collection.
                 await polls_db.options.insert_one(
@@ -207,16 +213,14 @@ async def create_poll(request):
 
     # Handle MongoDB errors.
     except PyMongoError as e:
-        print(f'MongoDB Error: {e}')
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': 'An error occurred while processing your request.'},
+            {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as e:
-        print(f'Error: {e}')
         if session:
             await session.abort_transaction()
         return Response(
@@ -230,21 +234,24 @@ async def create_poll(request):
 
 # Handles the update process for the polls.
 @api_view(['PATCH'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def update_poll(request, poll_id):
     session = None
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'options'])
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(poll_id)})
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')
+
         # If user is not authorized.
-        if poll_bson['created_by']['user_id'] != request.user.id:
+        is_owner = poll_bson['created_by']['user_id'] == request.user.id
+        if not is_owner:
             raise PermissionDenied(
                 'You are not authorized to update this poll.')
 
@@ -257,8 +264,7 @@ async def update_poll(request, poll_id):
 
         # Find the poll options.
         options = await polls_db.options.find_one(
-            {'poll_id': ObjectId(poll_id)}
-        )
+            {'poll_id': ObjectId(poll_id)})
 
         validate_options = {'options': []}
         for option in options['options']:
@@ -300,6 +306,7 @@ async def update_poll(request, poll_id):
                         for o in options['options']:
                             if o['option_text'] == option:
                                 exist = True
+                                break
 
                         if exist:
                             await session.abort_transaction()
@@ -328,6 +335,7 @@ async def update_poll(request, poll_id):
                         for o in options['options']:
                             if o['option_text'] == option:
                                 exist = True
+                                break
 
                         if not exist:
                             await session.abort_transaction()
@@ -356,16 +364,14 @@ async def update_poll(request, poll_id):
 
     # Handle MongoDB errors.
     except PyMongoError as e:
-        print(f'MongoDB Error: {e}')
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': 'An error occurred while processing your request.'},
+            {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as e:
-        print(f'Error: {e}')
         if session:
             await session.abort_transaction()
         return Response(
@@ -379,23 +385,25 @@ async def update_poll(request, poll_id):
 
 # Handles the remove process for the polls.
 @api_view(['DELETE'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
+@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def delete_poll(request, poll_id):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'options'])
         # Find the poll in the polls collection.
-        poll = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
 
         # If poll is not found.
         if not poll:
-            raise ValidationError(
-                'Poll is not found.',
-                status=status.HTTP_404_NOT_FOUND)
+            raise ValidationError('Poll is not found.',
+                                  status=status.HTTP_404_NOT_FOUND)
 
         # If user is not authorized.
-        if poll['created_by']['user_id'] != request.user.id:
+        is_owner = poll['created_by']['user_id'] != request.user.id
+        if not is_owner:
             raise PermissionDenied(
                 'You are not authorized to remove this poll.')
 
@@ -407,15 +415,15 @@ async def delete_poll(request, poll_id):
                 # Remove the poll.
                 poll_result = await polls_db.polls.delete_one(
                     {'_id': poll['_id']},
-                    session=session
-                )
+                    session=session)
+
                 is_poll_removed = poll_result.deleted_count == 0
 
                 # Remove the options.
                 options_result = await polls_db.options.delete_one(
                     {'poll_id': poll['_id']},
-                    session=session
-                )
+                    session=session)
+
                 is_options_removed = options_result.deleted_count == 0
 
                 # If not removed.
@@ -443,16 +451,14 @@ async def delete_poll(request, poll_id):
 
     # Handle MongoDB errors.
     except PyMongoError as e:
-        print(f'MongoDB Error: {e}')
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': 'An error occurred while processing your request.'},
+            {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as e:
-        print(f'Error: {e}')
         if session:
             await session.abort_transaction()
         return Response(
@@ -466,10 +472,11 @@ async def delete_poll(request, poll_id):
 
 # Handles the get process for a user polls.
 @api_view(['GET'])
+@permission_classes([AllowAny])
 async def user_polls(request, username):
-    is_login = False
-    if request.user:
-        is_login = True
+    # If user is login.
+    is_login = True if request.user else False
+
     try:
         # Get the user in the User table.
         user = await User.objects.aget(username=username)
@@ -481,6 +488,7 @@ async def user_polls(request, username):
         # Find the polls in the polls collection.
         polls_cursor = polls_db.polls.find(
             {'created_by.user_id': user.id})
+
         polls_list = await polls_cursor.to_list(length=None)
 
         # Convert the BSON response to a JSON response.
@@ -491,6 +499,10 @@ async def user_polls(request, username):
         if is_login:
             user_voted_polls = await polls_db.users_voted.find_one(
                 {'user_id': request.user.id})
+
+        # Convert the BSON object to a JSON object.
+        user_voted_polls_json = json_util._json_convert(
+            (user_voted_polls))
 
         # Filter the polls.
         polls = []
@@ -509,7 +521,7 @@ async def user_polls(request, username):
             # Add user profile in the poll object.
             poll['profile'] = profile_data
 
-
+            # If the user not voted in this poll.
             is_user_vote = False
             if is_login:
                 # If the user has not voted a poll.
@@ -517,10 +529,6 @@ async def user_polls(request, username):
                     poll['user_vote'] = ''
                     is_user_vote = True
                 else:
-                    # Convert the BSON object to a JSON object.
-                    user_voted_polls_json = json_util._json_convert(
-                        (user_voted_polls))
-
                     # Get vote in the user voted polls object.
                     for v in user_voted_polls_json['voted_polls']:
                         if v['poll_id'] == poll['_id']['$oid']:
@@ -590,14 +598,12 @@ async def user_polls(request, username):
 
     # Handle MongoDB errors.
     except PyMongoError as e:
-        print(f'MongoDB Error: {e}')
         return Response(
-            {'error': 'An error occurred while processing your request.'},
+            {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as e:
-        print(f'Error: {str(e)}')
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

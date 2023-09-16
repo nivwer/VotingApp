@@ -77,7 +77,7 @@ export const pollApiSlice = createApi({
     // Add user vote.
     addUserVote: builder.mutation({
       query: (data) => ({
-        url: `vote/${data.poll_id}`,
+        url: `vote/add/${data.poll_id}`,
         method: "POST",
         headers: data.headers,
         body: data.body,
@@ -88,7 +88,7 @@ export const pollApiSlice = createApi({
     // Update user vote.
     updateUserVote: builder.mutation({
       query: (data) => ({
-        url: `vote/${data.poll_id}`,
+        url: `vote/update/${data.poll_id}`,
         method: "PATCH",
         headers: data.headers,
         body: data.body,

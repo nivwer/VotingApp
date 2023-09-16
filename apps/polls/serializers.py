@@ -4,7 +4,7 @@ from rest_framework import serializers
 class PollSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=113, required=True)
     description = serializers.CharField(
-        max_length=513, required=False, allow_blank=True)
+        max_length=313, required=False, allow_blank=True)
     privacy = serializers.CharField(max_length=14, required=True)
     category = serializers.CharField(max_length=50, required=True)
 
