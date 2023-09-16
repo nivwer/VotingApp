@@ -72,7 +72,7 @@ def sign_up(request):
             # Create a new Token instance associated with the user.
             token = Token.objects.create(user=user_object)
 
-             # Create or update the session in the cookie.
+            # Create or update the session in the cookie.
             session_key = request.session.session_key
             if not session_key:
                 request.session.save()
@@ -111,7 +111,6 @@ def sign_up(request):
 
     # Handle other exceptions.
     except Exception as e:
-        print(str(e))
         return Response(
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -199,10 +198,14 @@ def sign_out(request):
         logout(request)
 
         # Response.
-        return Response({'message': 'Logout..'},
-                        status=status.HTTP_200_OK)
+        return Response(
+            {'message': 'Logout..'},
+            status=status.HTTP_200_OK)
+
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # Handles the session if the user is authenticated.
@@ -236,7 +239,9 @@ def check_session(request):
             status=status.HTTP_200_OK,)
 
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
