@@ -31,6 +31,11 @@ export const getProfileStyles = (isDark, ThemeColor) => {
         spacing: 0,
         fontSize: "md",
       },
+
+      box_icon: {
+        color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
+        opacity: ThemeColor === "default" ? 1 : 0.8,
+      },
     },
 
     body: {
@@ -47,7 +52,11 @@ export const getProfileStyles = (isDark, ThemeColor) => {
         color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
         // Tab component.
         sx: {
-          "& > button": { opacity: isDark ? 0.9 : 0.6, fontWeight: "bold" },
+          "& > button": {
+            opacity: 0.4,
+            fontWeight: "bold",
+            _selected: { opacity: "0.9", fontWeight: "black" },
+          },
         },
       },
 

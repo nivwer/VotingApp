@@ -170,7 +170,9 @@ function Profile() {
                     {/* Website Link. */}
                     {profile.website_link && (
                       <HStack spacing={1} fontWeight={"semibold"}>
-                        <FaLink />
+                        <Box {...styles.header.box_icon}>
+                          <FaLink />
+                        </Box>
                         <ProfileLink link={profile.website_link} />
                       </HStack>
                     )}
