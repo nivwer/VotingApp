@@ -121,13 +121,13 @@ function PollCard({ poll }) {
 
           {/* Card Body. */}
           <CardBody>
-            <Stack spacing={6}>
-              <Stack>
-                <Heading {...styles.body.heading}>{poll.title}</Heading>
-                <Text {...styles.body.text}>{poll.description}</Text>
-              </Stack>
-              <Flex justifyContent={"center"}>
-                <Stack w={"90%"}>
+            <Flex justifyContent={"center"}>
+              <Stack spacing={6} w={"90%"}>
+                <Stack>
+                  <Heading {...styles.body.title}>{poll.title}</Heading>
+                  <Text {...styles.body.description}>{poll.description}</Text>
+                </Stack>
+                <Stack px={4}>
                   {poll.options.map((option, index) => (
                     <PollCardOptionButton
                       poll={poll}
@@ -142,8 +142,8 @@ function PollCard({ poll }) {
                     </PollCardOptionButton>
                   ))}
                 </Stack>
-              </Flex>
-            </Stack>
+              </Stack>
+            </Flex>
           </CardBody>
 
           {/* Card Footer. */}

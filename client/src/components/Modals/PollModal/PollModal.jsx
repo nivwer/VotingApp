@@ -23,14 +23,11 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-// Icons.
-import { ChevronDownIcon } from "@chakra-ui/icons";
 
 // Component.
 function PollModal({ poll = false, buttonStyles }) {
   const { ThemeColor, isDark } = useThemeInfo();
   const styles = getPollModalStyles(ThemeColor, isDark);
-  // User session.
   const session = useSelector((state) => state.session);
   // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,12 +40,13 @@ function PollModal({ poll = false, buttonStyles }) {
     formState: { errors },
     setError,
   } = useForm();
-  // Request to create polls.
-  const [createPoll, { isLoading: isCreating }] = useCreatePollMutation();
-  // Request to update polls.
-  const [updatePoll, { isLoading: isUpdating }] = useUpdatePollMutation();
 
-  const isLoading = isCreating || isUpdating;
+  // Request to create polls.
+  const [createPoll, { isLoading: isCreateLoading }] = useCreatePollMutation();
+  // Request to update polls.
+  const [updatePoll, { isLoading: isUpdateLoading }] = useUpdatePollMutation();
+
+  const isLoading = isCreateLoading || isUpdateLoading;
 
   // Options list.
   const initialOptionsState = {
@@ -80,20 +78,15 @@ function PollModal({ poll = false, buttonStyles }) {
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const pollData = {
-        title: data.title,
-        description: data.description,
-        privacy: privacyValue,
-        category: data.category,
-        options: options,
-      };
+      data["privacy"] = privacyValue;
+      data["options"] = options;
 
       let res = "";
 
       if (poll) {
         res = await updatePoll({
           poll_id: poll._id,
-          poll: pollData,
+          poll: data,
           token: session.token,
         });
         // If the values is valid.
@@ -107,7 +100,7 @@ function PollModal({ poll = false, buttonStyles }) {
         }
       } else {
         res = await createPoll({
-          poll: pollData,
+          poll: data,
           token: session.token,
         });
         // If the values is valid.
@@ -147,9 +140,9 @@ function PollModal({ poll = false, buttonStyles }) {
           <ModalCloseButton />
           <form onSubmit={onSubmit}>
             {/* Body. */}
-            <ModalBody pb={6}>
+            <ModalBody maxH={"calc(100vh - 300px)"} overflow={"auto"} pb={6}>
               <PollFormBody
-                poll={poll}
+                poll={poll && poll}
                 register={register}
                 watch={watch}
                 reset={reset}

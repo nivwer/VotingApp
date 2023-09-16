@@ -58,12 +58,12 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
 
     // Card Body.
     body: {
-      heading: {
+      title: {
         textAlign: "center",
         size: "md",
-        opacity: 0.9
+        opacity: 0.9,
       },
-      text: {
+      description: {
         textAlign: "center",
         fontSize: "md",
         opacity: 0.8,
