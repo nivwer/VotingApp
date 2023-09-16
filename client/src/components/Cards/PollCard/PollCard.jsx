@@ -24,6 +24,7 @@ import {
   MenuList,
   MenuItem,
   Button,
+  HStack,
 } from "@chakra-ui/react";
 // Icons.
 import { FaEllipsis } from "react-icons/fa6";
@@ -65,6 +66,11 @@ function PollCard({ poll }) {
       {poll && (
         <Card {...styles.card}>
           {isLoading && <CustomProgress />}
+          <HStack>
+            <div> {poll.creation_date}</div>
+            <div> {poll.voters}</div>
+            <div> {poll.total_votes}</div>
+          </HStack>
           {/* Card Header. */}
           <CardHeader as={Flex} spacing={"4"}>
             <Flex {...styles.header.flex}>
@@ -139,6 +145,7 @@ function PollCard({ poll }) {
                       setIsDisabled={setIsDisabled}
                     >
                       {option.option_text}
+                      {option.votes}
                     </PollCardOptionButton>
                   ))}
                 </Stack>
