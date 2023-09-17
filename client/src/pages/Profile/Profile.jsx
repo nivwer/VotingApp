@@ -166,15 +166,15 @@ function Profile() {
                       </HStack>
                     )}
                     {/* Social Links. */}
-                    {profile.social_link_one &&
-                      profile.social_link_two &&
-                      profile.social_link_three && (
-                        <HStack spacing={2}>
-                          <ProfileLink link={profile.social_link_one} />
-                          <ProfileLink link={profile.social_link_two} />
-                          <ProfileLink link={profile.social_link_three} />
-                        </HStack>
-                      )}
+                    {(profile.social_link_one ||
+                      profile.social_link_two ||
+                      profile.social_link_three) && (
+                      <HStack spacing={2}>
+                        <ProfileLink link={profile.social_link_one} />
+                        <ProfileLink link={profile.social_link_two} />
+                        <ProfileLink link={profile.social_link_three} />
+                      </HStack>
+                    )}
                   </Stack>
 
                   {/* Tags. */}
@@ -206,7 +206,7 @@ function Profile() {
         </TabList>
         <TabIndicator {...styles.body.tab_indicator} />
         <TabPanels>
-          <TabPanel px={0}>
+          <TabPanel py={"3px"} px={0}>
             <Box {...styles.body.content}>
               {isPollsLoading && <ProfileSpinner />}
               {polls ? (

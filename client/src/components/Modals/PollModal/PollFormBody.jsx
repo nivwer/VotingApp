@@ -18,6 +18,8 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
+// Icons.
+import { FaPlus, FaTrash } from "react-icons/fa6";
 
 // Component.
 function PollFormBody({
@@ -31,10 +33,11 @@ function PollFormBody({
   setOptions,
   privacyValue,
   setPrivacyValue,
+  categories,
   styles,
   isLoading,
 }) {
-  const { ThemeColor } = useThemeInfo();
+  const { isDark, ThemeColor } = useThemeInfo();
 
   // Add the options.
   const handleAddOption = () => {
@@ -120,6 +123,8 @@ function PollFormBody({
             },
           })}
           type="text"
+          fontWeight={"medium"}
+          opacity={"0.9"}
           defaultValue={poll ? poll.title : ""}
           placeholder="This is my question."
           focusBorderColor={styles.focusBorderColor}
@@ -143,6 +148,8 @@ function PollFormBody({
               message: "Maximum 313 characters allowed.",
             },
           })}
+          fontWeight={"medium"}
+          opacity={"0.9"}
           defaultValue={poll ? poll.description : ""}
           placeholder="This is my description."
           focusBorderColor={styles.focusBorderColor}
@@ -151,6 +158,34 @@ function PollFormBody({
         {/* Handle errors. */}
         {errors.description && (
           <FormErrorMessage>{errors.description.message}</FormErrorMessage>
+        )}
+      </FormControl>
+
+      {/* Category. */}
+      <FormControl isDisabled={isLoading} isInvalid={errors.category}>
+        <FormLabel htmlFor="category" fontWeight={"bold"}>
+          Category
+        </FormLabel>
+        <Select
+          {...register("category", {
+            required: "This field is required.",
+          })}
+          opacity={isDark ? 0.9 : 0.7}
+          fontWeight={"semibold"}
+          variant={"filled"}
+          borderRadius={"xl"}
+          defaultValue={poll ? poll.category : ""}
+          placeholder="Category..."
+          focusBorderColor={styles.focusBorderColor}
+        >
+          {categories &&
+            categories.map((category, index) => (
+              <option value={category.value}>{category.text}</option>
+            ))}
+        </Select>
+        {/* Handle errors. */}
+        {errors.category && (
+          <FormErrorMessage>{errors.category.message}</FormErrorMessage>
         )}
       </FormControl>
 
@@ -164,7 +199,7 @@ function PollFormBody({
           value={privacyValue}
           defaultValue={poll ? poll.privacy : "public"}
         >
-          <Stack opacity={0.9} direction="row">
+          <Stack opacity={0.8} direction="row" fontWeight={"semibold"}>
             <Radio value="public" colorScheme={ThemeColor}>
               Public
             </Radio>
@@ -176,29 +211,6 @@ function PollFormBody({
             </Radio>
           </Stack>
         </RadioGroup>
-      </FormControl>
-
-      {/* Category. */}
-      <FormControl isDisabled={isLoading} isInvalid={errors.category}>
-        <FormLabel htmlFor="category" fontWeight={"bold"}>
-          Category
-        </FormLabel>
-        <Select
-          {...register("category", {
-            required: "This field is required.",
-          })}
-          defaultValue={poll ? poll.category : ""}
-          placeholder="Category..."
-          focusBorderColor={styles.focusBorderColor}
-        >
-          <option value="category1">Category1</option>
-          <option value="category2">Category2</option>
-          <option value="category3">Category3</option>
-        </Select>
-        {/* Handle errors. */}
-        {errors.category && (
-          <FormErrorMessage>{errors.category.message}</FormErrorMessage>
-        )}
       </FormControl>
 
       {/* Options. */}
@@ -214,7 +226,12 @@ function PollFormBody({
               {...styles.body.options.item}
               opacity={isLoading ? 0.4 : 1}
             >
-              <Text wordBreak={"break-all"} px={"15px"} py={"4px"}>
+              <Text
+                opacity={0.7}
+                wordBreak={"break-all"}
+                px={"15px"}
+                py={"4px"}
+              >
                 {option}
               </Text>
               <Box>
@@ -222,8 +239,12 @@ function PollFormBody({
                   isDisabled={isLoading}
                   borderRadius={"full"}
                   size={"sm"}
+                  variant={"ghost"}
+                  opacity={0.6}
                   onClick={() => handleDeleteOption(index, option)}
-                ></IconButton>
+                >
+                  <FaTrash />
+                </IconButton>
               </Box>
             </Flex>
           ))}
@@ -242,8 +263,11 @@ function PollFormBody({
                 isDisabled={isLoading}
                 borderRadius={"full"}
                 size={"sm"}
+                opacity={0.9}
                 onClick={() => handleAddOption()}
-              ></IconButton>
+              >
+                <FaPlus />
+              </IconButton>
             </InputRightElement>
           </InputGroup>
         </Stack>

@@ -52,18 +52,6 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Polls"],
     }),
 
-    // GET Polls. //
-
-    // Get User Polls.
-    getUserPolls: builder.query({
-      query: (data) => ({
-        url: `user/${data.username}`,
-        method: "GET",
-        headers: data.headers,
-      }),
-      providesTags: ["Polls"],
-    }),
-
     // Vote manager //
 
     // Add user vote.
@@ -87,6 +75,26 @@ export const pollApiSlice = createApi({
       }),
       invalidatesTags: ["Polls"],
     }),
+
+    // GET Polls. //
+
+    // Get User Polls.
+    getUserPolls: builder.query({
+      query: (data) => ({
+        url: `user/${data.username}`,
+        method: "GET",
+        headers: data.headers,
+      }),
+      providesTags: ["Polls"],
+    }),
+
+    // Others.
+    getPollCategories: builder.query({
+      query: () => ({
+        url: "categories/",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -98,4 +106,5 @@ export const {
   useDeletePollMutation,
   useAddUserVoteMutation,
   useUpdateUserVoteMutation,
+  useGetPollCategoriesQuery,
 } = pollApiSlice;

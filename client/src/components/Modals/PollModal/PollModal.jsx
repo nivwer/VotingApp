@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   useCreatePollMutation,
+  useGetPollCategoriesQuery,
   useUpdatePollMutation,
 } from "../../../api/pollApiSlice";
 // Styles.
@@ -22,6 +23,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Heading,
 } from "@chakra-ui/react";
 
 // Component.
@@ -41,12 +43,16 @@ function PollModal({ poll = false, buttonStyles }) {
     setError,
   } = useForm();
 
+  const { data: categoriesData, isLoading: isCategoriesLoading } =
+    useGetPollCategoriesQuery();
+
   // Request to create polls.
   const [createPoll, { isLoading: isCreateLoading }] = useCreatePollMutation();
   // Request to update polls.
   const [updatePoll, { isLoading: isUpdateLoading }] = useUpdatePollMutation();
 
-  const isLoading = isCreateLoading || isUpdateLoading;
+  // Is loading.
+  const isLoading = isCreateLoading || isUpdateLoading || isCategoriesLoading;
 
   // Options list.
   const initialOptionsState = {
@@ -57,13 +63,17 @@ function PollModal({ poll = false, buttonStyles }) {
   const [options, setOptions] = useState(initialOptionsState);
   // Privacy Radio.
   const [privacyValue, setPrivacyValue] = useState("public");
+  // Poll categories.
+  const [categories, setCategories] = useState(false);
 
+  // Default PollModal values.
   const useDefaultValues = () => {
     reset({ options: "", title: "", description: "" });
     setOptions(initialOptionsState);
     setPrivacyValue("public");
   };
 
+  // Load poll options if exist.
   useEffect(() => {
     if (poll) {
       const pollOptions = [];
@@ -74,6 +84,11 @@ function PollModal({ poll = false, buttonStyles }) {
       setPrivacyValue(poll.privacy);
     }
   }, []);
+
+  // Load poll categories.
+  useEffect(() => {
+    categoriesData ? setCategories(categoriesData.list) : setCategories(false);
+  }, [categoriesData]);
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
@@ -140,11 +155,20 @@ function PollModal({ poll = false, buttonStyles }) {
         <ModalContent {...styles.content}>
           {isLoading && <CustomProgress />}
           {/* Header. */}
-          <ModalHeader>{poll ? "Edit poll" : "New poll"}</ModalHeader>
+          <ModalHeader>
+            <Heading fontSize={"2xl"}>
+              {poll ? "Edit poll" : "New poll"}
+            </Heading>
+          </ModalHeader>
           <ModalCloseButton />
           <form onSubmit={onSubmit}>
             {/* Body. */}
-            <ModalBody maxH={"calc(100vh - 300px)"} overflow={"auto"} pb={6}>
+            <ModalBody
+              maxH={"calc(100vh - 300px)"}
+              overflow={"auto"}
+              
+              pb={6}
+            >
               <PollFormBody
                 poll={poll && poll}
                 register={register}
@@ -156,6 +180,7 @@ function PollModal({ poll = false, buttonStyles }) {
                 setOptions={setOptions}
                 privacyValue={privacyValue}
                 setPrivacyValue={setPrivacyValue}
+                categories={categories}
                 styles={styles}
                 isLoading={isLoading}
               />

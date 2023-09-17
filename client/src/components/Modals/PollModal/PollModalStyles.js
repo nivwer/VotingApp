@@ -6,7 +6,7 @@ export const getPollModalStyles = (ThemeColor, isDark) => {
       border: "2px solid",
       borderColor: isDark ? "whiteAlpha.300" : "blackAlpha.200",
       borderRadius: "14px",
-      p: "5px",
+      
     },
 
     body: {

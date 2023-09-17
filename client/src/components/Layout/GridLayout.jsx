@@ -11,13 +11,17 @@ import Navbar from "../Navigation/NavBar/Navbar";
 import { useThemeInfo } from "../../hooks/Theme";
 
 // Component.
-function GridLayout({ isSimple = true }) {
+function GridLayout({ layout = "simple", section = "main" }) {
   const { isDark } = useThemeInfo();
+
+  const isSimple = layout === "simple";
+  const isDouble = layout === "double";
+
   // BreakPoints.
-  const layoutType = useBreakpointValue({
+  const layoutBreakPoint = useBreakpointValue({
     base: "simple",
-    lg: "double",
-    xl: "triple",
+    lg: isSimple ? "simple" : "double",
+    xl: isSimple ? "simple" : isDouble ? "double" : "triple",
   });
 
   // Layouts
@@ -42,15 +46,11 @@ function GridLayout({ isSimple = true }) {
     },
   };
 
-  // Selected.
-  const layout = layouts[layoutType];
-  const simple = layouts["simple"];
-
   return (
     <Grid
-      templateAreas={isSimple ? simple.area : layout.area}
-      gridTemplateRows={isSimple ? simple.rows : layout.rows}
-      gridTemplateColumns={isSimple ? simple.columns : layout.columns}
+      templateAreas={layouts[layoutBreakPoint].area}
+      gridTemplateRows={layouts[layoutBreakPoint].rows}
+      gridTemplateColumns={layouts[layoutBreakPoint].columns}
     >
       {/* Header */}
       <GridItem zIndex={1000} area={"header"}>
@@ -58,7 +58,7 @@ function GridLayout({ isSimple = true }) {
       </GridItem>
 
       {/* Right Side */}
-      {!isSimple && (
+      {!isSimple && !isDouble && (
         <GridItem
           display={{ base: "none", lg: "none", xl: "grid" }}
           area={"right"}
@@ -69,7 +69,7 @@ function GridLayout({ isSimple = true }) {
 
       {/* Main */}
       <GridItem area={"main"}>
-        <Container p={0} maxW={"700px"}>
+        <Container p={0} maxW={"664px"}>
           <Outlet />
         </Container>
       </GridItem>
@@ -82,7 +82,7 @@ function GridLayout({ isSimple = true }) {
           borderRight={isDark ? "1px solid" : "1px solid"}
           borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
         >
-          <SideBar />
+          <SideBar section={section} />
         </GridItem>
       )}
     </Grid>

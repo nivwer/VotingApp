@@ -20,8 +20,10 @@ function Router() {
 
   return (
     <Routes>
-      {/* Simple Layout. */}
-      <Route element={<GridLayout />}>
+      {/* ### MAIN SECTION ### */}
+
+      {/* Simple Column Layout. */}
+      <Route element={<GridLayout layout="simple" section="main" />}>
         {/* Authentication Pages. */}
         <Route element={<ProtectedRoute isAllowed={!session.token} />}>
           <Route path="/signup" element={<SignUp />} />
@@ -36,15 +38,26 @@ function Router() {
       </Route>
 
       {/* Triple Columns Layout. */}
-      <Route element={<GridLayout isSimple={false} />}>
+      <Route element={<GridLayout layout="triple" section="main" />}>
         {/* Home page. */}
         <Route path="/home" element={<Home />} />
+      </Route>
+
+      {/* ### USER SECTION ### */}
+
+      {/* Triple Columns Layout. */}
+      <Route element={<GridLayout layout="triple" section="user" />}>
         {/* Profile page. */}
         <Route path="/:username" element={<Profile />} />
         {/* Poll page. */}
         {/* <Route path="/:username/:id" element={<ViewPoll />} /> */}
+      </Route>
 
-        {/* Config pages. */}
+      {/* ### SETTINGS SECTION ### */}
+
+      {/* Triple Columns Layout. */}
+      <Route element={<GridLayout layout="triple" section="settings" />}>
+        {/* Settings pages. */}
         <Route element={<ProtectedRoute isAllowed={!!session.token} />}>
           {/*  <Route path="/settings" element={<Settings />} /> */}
           <Route path="/settings/theme" element={<Theme />} />

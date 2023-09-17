@@ -67,10 +67,12 @@ function PollCardOptionButton({
   };
 
   useEffect(() => {
-    {
-      isLoading ? setIsDisabled(true) : setIsDisabled(false);
-    }
+    isLoading ? setIsDisabled(true) : setIsDisabled(false);
   }, [isLoading]);
+
+  useEffect(() => {
+    setVote(poll.user_vote);
+  }, [poll]);
 
   return (
     <Button
