@@ -3,10 +3,9 @@ from . import views
 from .app_views import poll_views, options_views, voting_views
 
 
-
 urlpatterns = [
     # Utils.
-    path('categories/', views.polls_categories),
+    path('categories/', views.polls_categories, name="RCategories"),
 
     # CRUD Poll.
     path('poll/create/', poll_views.create_poll, name='CPoll'),

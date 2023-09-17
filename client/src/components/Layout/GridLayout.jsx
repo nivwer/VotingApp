@@ -1,5 +1,5 @@
 // Components.
-import SideBar from "../Navigation/SideBar";
+import SideBar from "../Navigation/SideBar/SideBar";
 import { Outlet } from "react-router-dom";
 import {
   useBreakpointValue,

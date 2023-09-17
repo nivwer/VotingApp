@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import {
   useCreatePollMutation,
   useGetPollCategoriesQuery,
+  useGetPollCategoriesTTLQuery,
   useUpdatePollMutation,
 } from "../../../api/pollApiSlice";
 // Styles.
@@ -44,7 +45,7 @@ function PollModal({ poll = false, buttonStyles }) {
   } = useForm();
 
   const { data: categoriesData, isLoading: isCategoriesLoading } =
-    useGetPollCategoriesQuery();
+    useGetPollCategoriesTTLQuery();
 
   // Request to create polls.
   const [createPoll, { isLoading: isCreateLoading }] = useCreatePollMutation();
@@ -163,12 +164,7 @@ function PollModal({ poll = false, buttonStyles }) {
           <ModalCloseButton />
           <form onSubmit={onSubmit}>
             {/* Body. */}
-            <ModalBody
-              maxH={"calc(100vh - 300px)"}
-              overflow={"auto"}
-              
-              pb={6}
-            >
+            <ModalBody maxH={"calc(100vh - 300px)"} overflow={"auto"} pb={6}>
               <PollFormBody
                 poll={poll && poll}
                 register={register}

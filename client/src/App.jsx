@@ -15,7 +15,7 @@ import { Container } from "@chakra-ui/react";
 function App() {
   const dispatch = useDispatch();
   const { isDark } = useThemeInfo();
-
+  
   // Check the user session.
   const { data, isLoading } = useCheckSessionQuery();
 
