@@ -3,14 +3,12 @@ from . import views
 
 # Auth urls.
 urlpatterns = [
-    # Register.
+    # Sign Up/In/Out.
     path('signup/', views.sign_up, name="signup"),
-    # Login.
     path('signin/', views.sign_in, name='signin'),
-    # Logout.
     path('signout/', views.sign_out, name='signout'),
-    # Check user session.
-    path('check-session/', views.check_session, name='check_session'),
     # User data.
-    path('user/', views.user_view, name="user"),
+    path('user/data/', views.user_view, name="user"),
+    # User Session.
+    path('user/session/check/', views.check_session, name='check_session'),
 ]

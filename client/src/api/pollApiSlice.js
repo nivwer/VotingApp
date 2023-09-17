@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const pollApiSlice = createApi({
   reducerPath: "pollsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/poll/",
+    baseUrl: "http://localhost:8000/polls/",
   }),
   tagTypes: ["Polls"],
   endpoints: (builder) => ({
@@ -14,12 +14,10 @@ export const pollApiSlice = createApi({
     // Create Poll.
     createPoll: builder.mutation({
       query: (data) => ({
-        url: "create/",
+        url: "poll/create/",
         method: "POST",
         body: data.poll,
-        headers: {
-          Authorization: `Token ${data.token}`,
-        },
+        headers: data.headers,
       }),
       invalidatesTags: ["Polls"],
     }),
@@ -27,23 +25,19 @@ export const pollApiSlice = createApi({
     // Read Poll.
     readPoll: builder.query({
       query: (data) => ({
-        url: `read/${data.id}`,
+        url: `poll/read/${data.id}`,
         method: "GET",
-        headers: {
-          Authorization: `Token ${data.token}`,
-        },
+        headers: data.headers,
       }),
     }),
 
     // Update Poll.
     updatePoll: builder.mutation({
       query: (data) => ({
-        url: `update/${data.poll_id}`,
+        url: `poll/update/${data.poll_id}`,
         method: "PATCH",
         body: data.poll,
-        headers: {
-          Authorization: `Token ${data.token}`,
-        },
+        headers: data.headers,
       }),
       invalidatesTags: ["Polls"],
     }),
@@ -51,11 +45,9 @@ export const pollApiSlice = createApi({
     // Delete Poll.
     deletePoll: builder.mutation({
       query: (data) => ({
-        url: `delete/${data.id}`,
+        url: `poll/delete/${data.id}`,
         method: "DELETE",
-        headers: {
-          Authorization: `Token ${data.token}`,
-        },
+        headers: data.headers,
       }),
       invalidatesTags: ["Polls"],
     }),
@@ -77,7 +69,7 @@ export const pollApiSlice = createApi({
     // Add user vote.
     addUserVote: builder.mutation({
       query: (data) => ({
-        url: `vote/add/${data.poll_id}`,
+        url: `poll/vote/add/${data.poll_id}`,
         method: "POST",
         headers: data.headers,
         body: data.body,
@@ -88,7 +80,7 @@ export const pollApiSlice = createApi({
     // Update user vote.
     updateUserVote: builder.mutation({
       query: (data) => ({
-        url: `vote/update/${data.poll_id}`,
+        url: `poll/vote/update/${data.poll_id}`,
         method: "PATCH",
         headers: data.headers,
         body: data.body,

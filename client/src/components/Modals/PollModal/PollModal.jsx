@@ -87,7 +87,9 @@ function PollModal({ poll = false, buttonStyles }) {
         res = await updatePoll({
           poll_id: poll._id,
           poll: data,
-          token: session.token,
+          headers: {
+            Authorization: `Token ${session.token}`,
+          },
         });
         // If the values is valid.
         if (res.data) {
@@ -101,7 +103,9 @@ function PollModal({ poll = false, buttonStyles }) {
       } else {
         res = await createPoll({
           poll: data,
-          token: session.token,
+          headers: {
+            Authorization: `Token ${session.token}`,
+          },
         });
         // If the values is valid.
         if (res.data) {

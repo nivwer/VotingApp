@@ -25,13 +25,15 @@ function PollCardOptionButton({
   // Session.
   const session = useSelector((state) => state.session);
 
-  const [addUserVote, { isLoading: isLoadingAddVote }] =
+  // Add user vote.
+  const [addUserVote, { isLoading: isAddVoteLoading }] =
     useAddUserVoteMutation();
 
-  const [updateUserVote, { isLoading: isLoadingUpdateVote }] =
+  // Update user vote.
+  const [updateUserVote, { isLoading: isUpdateVoteLoading }] =
     useUpdateUserVoteMutation();
 
-  const isLoading = isLoadingAddVote || isLoadingUpdateVote;
+  const isLoading = isAddVoteLoading || isUpdateVoteLoading;
 
   const handleUserVote = async (value) => {
     if (!session.token) {
@@ -51,6 +53,7 @@ function PollCardOptionButton({
         } else {
           res = await updateUserVote(data);
         }
+
         if (res.error) {
           setVote(oldVote);
         }
@@ -64,10 +67,8 @@ function PollCardOptionButton({
   };
 
   useEffect(() => {
-    if (isLoading) {
-      setIsDisabled(true);
-    } else {
-      setIsDisabled(false);
+    {
+      isLoading ? setIsDisabled(true) : setIsDisabled(false);
     }
   }, [isLoading]);
 

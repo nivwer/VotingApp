@@ -20,9 +20,7 @@ function App() {
   const { data, isLoading } = useCheckSessionQuery();
 
   useEffect(() => {
-    if (data) {
-      dispatch(login(data));
-    }
+    data && dispatch(login(data));
   }, [data]);
 
   return (

@@ -40,8 +40,7 @@ def sign_up(request):
         user_instance = user_serializer.save()
 
         # Set the password for the user using the provided password.
-        user_object = User.objects.get(
-            username=user_serializer.data['username'])
+        user_object = User.objects.get(username=user_serializer.data['username'])
         user_object.set_password(user_serializer.data['password'])
         user_object.save()
 

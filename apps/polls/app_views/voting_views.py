@@ -45,6 +45,8 @@ async def get_user_vote(request, poll_id):
         if not poll_bson:
             raise ValidationError('Poll is not found.')
 
+# / Refactor ?
+
         # Find the user voted polls in the voted_polls collection.
         user_votes_object = await polls_db.users_voted.find_one(
             {'user_id': request.user.id})
@@ -60,6 +62,8 @@ async def get_user_vote(request, poll_id):
         for v in user_votes_object_json['voted_polls']:
             if v['poll_id'] == poll_id:
                 return Response({'vote': v['vote']})
+
+# Refactor ? /
 
     # Handle validation errors.
     except ValidationError as e:
@@ -209,7 +213,7 @@ async def update_user_vote(request, poll_id):
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-# / Refactorizar ?
+# / Refactor ?
 
         # Find the user voted polls in the voted_polls collection.
         user_votes_object = await polls_db.users_voted.find_one(
@@ -232,7 +236,7 @@ async def update_user_vote(request, poll_id):
                     del_vote_value = v['vote']
                     break
 
-# Refactorizar ? /
+# Refactor ? /
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -246,9 +250,7 @@ async def update_user_vote(request, poll_id):
                         'voted_polls.poll_id': poll_id
                     },
                     {
-                        '$set': {
-                            'voted_polls.$.vote': add_vote_value
-                        }
+                        '$set': {'voted_polls.$.vote': add_vote_value}
                     },
                     session=session)
 
@@ -337,7 +339,7 @@ async def delete_user_vote(request, poll_id):
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-# / Refactorizar ?
+# / Refactor ?
 
         # Find the user voted polls in the voted_polls collection.
         user_votes_object = await polls_db.users_voted.find_one(
@@ -360,7 +362,7 @@ async def delete_user_vote(request, poll_id):
                     del_vote_value = v['vote']
                     break
 
-#  Refactorizar ? /
+#  Refactor ? /
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -371,11 +373,7 @@ async def delete_user_vote(request, poll_id):
                 await polls_db.users_voted.update_one(
                     {'user_id': request.user.id},
                     {
-                        '$pull': {
-                            'voted_polls': {
-                                'poll_id': poll_id
-                            }
-                        }
+                        '$pull': {'voted_polls': {'poll_id': poll_id}}
                     },
                     session=session
                 )

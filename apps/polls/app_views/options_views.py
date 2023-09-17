@@ -60,11 +60,9 @@ async def option_manager(request, poll_id):
 
         # If privacy of poll is friends_only. ?
 
-        # Initialize a OptionSerializer instance with the provided data.
+        # Initialize a OptionSerializer instance.
         option_serializer = OptionSerializer(data=request.data, partial=True)
-        # Throws ValidationError if not valid.
         option_serializer.is_valid(raise_exception=True)
-        # Get the option text.
         option = option_serializer.validated_data
 
         # Find the poll options.
@@ -89,16 +87,18 @@ async def option_manager(request, poll_id):
                         raise ValidationError('You can only add one option.')
 
             new_option = {
-                'created_by': {
-                    'user_id': request.user.id,
-                },
+                'created_by': {'user_id': request.user.id},
                 'option_text': option['option_text'],
                 'votes': 0
             }
+
             # Save the option object.
             await polls_db.options.update_one(
                 {'poll_id': ObjectId(poll_id)},
-                {'$push': {'options': new_option}})
+                {
+                    '$push': {'options': new_option}
+                }
+            )
 
             # Response.
             return Response(
@@ -119,8 +119,10 @@ async def option_manager(request, poll_id):
             # Remove the option.
             await polls_db.options.update_one(
                 {'poll_id': ObjectId(poll_id)},
-                {'$pull': {'options':
-                           {'option_text': option['option_text']}}})
+                {
+                    '$pull': {'options': {'option_text': option['option_text']}}
+                }
+            )
 
             # Response.
             return Response(

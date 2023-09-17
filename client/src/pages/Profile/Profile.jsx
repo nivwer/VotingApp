@@ -74,47 +74,33 @@ function Profile() {
   useEffect(() => {
     if (session.token) {
       setData({
-        headers: {
-          Authorization: `Token ${session.token}`,
-        },
+        headers: { Authorization: `Token ${session.token}` },
         username: username,
       });
     } else {
-      setData({
-        username: username,
-      });
+      setData({ username: username });
     }
   }, [username, session.token]);
 
   // Conditional fetching.
   useEffect(() => {
-    {
-      data ? setSkip(false) : setSkip(true);
-    }
+    data ? setSkip(false) : setSkip(true);
   }, [data]);
 
   // Load Profile.
   useEffect(() => {
-    {
-      dataProfile && setProfile(dataProfile.profile);
-    }
+    dataProfile && setProfile(dataProfile.profile);
   }, [dataProfile]);
 
   // Load Polls.
   useEffect(() => {
-    {
-      dataPolls && setPolls(dataPolls.polls);
-    }
+    dataPolls && setPolls(dataPolls.polls);
   }, [dataPolls]);
 
   // Load Self Profile.
   useEffect(() => {
     if (dataSelfProfile && username === session.user.username) {
-      dispatch(
-        updateProfile({
-          profile: dataSelfProfile.profile,
-        })
-      );
+      dispatch(updateProfile({ profile: dataSelfProfile.profile }));
       setSelfProfileSkip(true);
     }
   }, [dataSelfProfile]);
@@ -134,10 +120,13 @@ function Profile() {
                   src={profile.profile_picture}
                 />
                 {/* Button to edit the profile. */}
-                <ProfileModal
-                  profile={profile}
-                  setSelfProfileSkip={setSelfProfileSkip}
-                />
+                {session.token &&
+                  session.user.username === profile.username && (
+                    <ProfileModal
+                      profile={profile}
+                      setSelfProfileSkip={setSelfProfileSkip}
+                    />
+                  )}
               </Flex>
 
               <Stack spacing={4}>

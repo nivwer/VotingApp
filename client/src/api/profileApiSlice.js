@@ -5,14 +5,14 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const profileApiSlice = createApi({
   reducerPath: "profileApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/profile/",
+    baseUrl: "http://localhost:8000/profiles/",
   }),
   tagTypes: ["Profile"],
   endpoints: (builder) => ({
     // Read user private profile.
     readProfile: builder.query({
       query: (data) => ({
-        url: "read/",
+        url: "profile/read/",
         method: "GET",
         headers: data.headers
       }),
@@ -22,7 +22,7 @@ export const profileApiSlice = createApi({
     // Update user profile.
     updateProfile: builder.mutation({
       query: (data) => ({
-        url: "update/",
+        url: "profile/update/",
         method: "PATCH",
         body: data.profile,
         headers: data.headers
@@ -33,7 +33,7 @@ export const profileApiSlice = createApi({
     // Get user public profile.
     getProfile: builder.query({
       query: (data) => ({
-        url: `get/${data.username}`,
+        url: `profile/get/${data.username}`,
         method: "GET",
         headers: data.headers
       }),

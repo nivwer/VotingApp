@@ -43,18 +43,20 @@ function PollCard({ poll }) {
   const [isDisabled, setIsDisabled] = useState(false);
 
   // Request to delete polls.
-  const [deletePoll, { isLoading: isRemovingPoll, isError }] =
+  const [deletePoll, { isLoading: isDeletePollLoading}] =
     useDeletePollMutation();
 
   // Conditional isLoading.
-  const isLoading = isRemovingPoll;
+  const isLoading = isDeletePollLoading;
 
   // Delete poll.
   const handleDeletePoll = async (poll_id) => {
     try {
       const res = await deletePoll({
         id: poll_id,
-        token: session.token,
+        headers: {
+          Authorization: `Token ${session.token}`,
+        },
       });
     } catch (error) {
       console.log(error);

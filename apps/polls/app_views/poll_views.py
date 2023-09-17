@@ -24,8 +24,6 @@ from ..serializers import PollSerializer, OptionsSerializer
 from apps.profiles.models import UserProfile
 from apps.profiles.serializers import UserProfileSerializer
 
-from django.http import JsonResponse
-from utils.categorys import CATEGORIAS
 
 # Load the virtual environment.
 load_dotenv()
@@ -41,10 +39,6 @@ class GetCollectionsMongoDB:
         # Get collections.
         for collection in collections:
             setattr(self, collection, db[collection])
-
-
-def categorys(request):
-    return JsonResponse(CATEGORIAS)
 
 
 # Views.
@@ -129,15 +123,14 @@ async def create_poll(request):
         'options': request.data['options']['add_options']
     }
     try:
-        # Initialize a Serializers instance with the provided data.
+        # Initialize a Poll Serializer instance.
         poll_serializer = PollSerializer(data=request.data)
-        options_serializer = OptionsSerializer(data=options_object)
-        # Throws ValidationError if not valid.
         poll_serializer.is_valid(raise_exception=True)
-        options_serializer.is_valid(raise_exception=True)
-        # Get poll data.
         poll_data = poll_serializer.validated_data
-        # Get options list.
+
+        # Initialize a Options Serializer instance.
+        options_serializer = OptionsSerializer(data=options_object)
+        options_serializer.is_valid(raise_exception=True)
         list_options = options_serializer.validated_data.get('options')
 
         # Initialize a MongoDB session.
@@ -152,7 +145,7 @@ async def create_poll(request):
                 # Create poll document in polls collection.
                 poll = await polls_db.polls.insert_one(
                     {
-                        'created_by': {'user_id': request.user.id, },
+                        'created_by': {'user_id': request.user.id},
                         'title': poll_data['title'],
                         'description': poll_data['description'],
                         'creation_date': datetime.now(),
@@ -172,7 +165,7 @@ async def create_poll(request):
                 for option in list_options:
                     options.append(
                         {
-                            'created_by': {'user_id': request.user.id, },
+                            'created_by': {'user_id': request.user.id},
                             'option_text': option,
                             'votes': 0
                         }
@@ -255,11 +248,9 @@ async def update_poll(request, poll_id):
             raise PermissionDenied(
                 'You are not authorized to update this poll.')
 
-        # Initialize a Serializers instance with the provided data.
+        # Initialize a Poll Serializers instance.
         poll_serializer = PollSerializer(data=request.data, partial=True)
-        # Throws ValidationError if not valid.
         poll_serializer.is_valid(raise_exception=True)
-        # Get the updated fields.
         data = poll_serializer.validated_data
 
         # Find the poll options.
@@ -283,9 +274,8 @@ async def update_poll(request, poll_id):
             for option in del_options:
                 validate_options['options'].remove(option)
 
-        # Initialize a Serializers instance with the provided data.
+        # Initialize a Options Serializers instance.
         options_serializer = OptionsSerializer(data=validate_options)
-        # Throws ValidationError if not valid.
         options_serializer.is_valid(raise_exception=True)
 
         # Initialize a MongoDB session.
@@ -296,7 +286,10 @@ async def update_poll(request, poll_id):
                 # Update poll document in polls collection.
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(poll_id)},
-                    {'$set': data}, session=session)
+                    {
+                        '$set': data
+                    },
+                    session=session)
 
                 # If there options to add in the options document.
                 if request.data['options']['add_options']:
@@ -314,9 +307,7 @@ async def update_poll(request, poll_id):
                                 f"This options '{option}' already exist.")
 
                         new_option = {
-                            'created_by': {
-                                'user_id': request.user.id,
-                            },
+                            'created_by': {'user_id': request.user.id},
                             'option_text': option,
                             'votes': 0
                         }
@@ -324,7 +315,9 @@ async def update_poll(request, poll_id):
                         # Save the option object.
                         await polls_db.options.update_one(
                             {'poll_id': ObjectId(poll_id)},
-                            {'$push': {'options': new_option}},
+                            {
+                                '$push': {'options': new_option}
+                            },
                             session=session)
 
                 # If there options to remove in the options document.
@@ -345,8 +338,9 @@ async def update_poll(request, poll_id):
                         # Remove the option.
                         await polls_db.options.update_one(
                             {'poll_id': ObjectId(poll_id)},
-                            {'$pull': {'options':
-                                       {'option_text': option}}},
+                            {
+                                '$pull': {'options': {'option_text': option}}
+                            },
                             session=session)
 
                 # Response.
@@ -398,8 +392,8 @@ async def delete_poll(request, poll_id):
 
         # If poll is not found.
         if not poll:
-            raise ValidationError('Poll is not found.',
-                                  status=status.HTTP_404_NOT_FOUND)
+            raise ValidationError(
+                'Poll is not found.', status=status.HTTP_404_NOT_FOUND)
 
         # If user is not authorized.
         is_owner = poll['created_by']['user_id'] != request.user.id

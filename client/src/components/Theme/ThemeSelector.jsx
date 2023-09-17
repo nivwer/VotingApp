@@ -10,29 +10,23 @@ function ThemeSelector() {
   const theme = useSelector((state) => state.theme);
 
   const handleColorChange = (color) => {
-    dispatch(
-      changeColor({
-        theme_color: color,
-      })
-    );
+    dispatch(changeColor({ theme_color: color }));
   };
 
   return (
-    <>
-      <Box>
-        {theme.available_theme_colors.map((color, index) => (
-          <Button
-            key={index}
-            colorScheme={color}
-            size={"sm"}
-            variant={"outline"}
-            onClick={() => handleColorChange(color)}
-          >
-            {color}
-          </Button>
-        ))}
-      </Box>
-    </>
+    <Box>
+      {theme.available_theme_colors.map((color, index) => (
+        <Button
+          key={index}
+          colorScheme={color}
+          size={"sm"}
+          variant={"outline"}
+          onClick={() => handleColorChange(color)}
+        >
+          {color}
+        </Button>
+      ))}
+    </Box>
   );
 }
 

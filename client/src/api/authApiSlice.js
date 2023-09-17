@@ -39,7 +39,7 @@ export const authApiSlice = createApi({
     // Check the user session.
     checkSession: builder.query({
       query: () => ({
-        url: "check-session/",
+        url: "user/session/check/",
         method: "GET",
       }),
     }),

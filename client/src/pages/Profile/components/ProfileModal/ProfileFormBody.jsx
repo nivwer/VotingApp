@@ -128,10 +128,7 @@ function ProfileFormBody({
                 <InputGroup size="md">
                   <Input
                     {...register("profile_name", {
-                      required: {
-                        value: true,
-                        message: "This field is required.",
-                      },
+                      required: "This field is required.",
                       minLength: {
                         value: 3,
                         message: "Minimum 3 characters allowed.",

@@ -1,32 +1,23 @@
 // Hooks.
-import { useSelector } from "react-redux";
+import { useThemeInfo } from "../hooks/Theme";
 // Components.
-//import PollCard from "../components/Cards/PollCard/PollCard";
-import { useColorMode, Box, Container, Stack } from "@chakra-ui/react";
+import { Box, Stack } from "@chakra-ui/react";
 // Icons
 
 function Home() {
-  // Theme color.
-  const theme = useSelector((state) => state.theme);
-  const color = theme.theme_color;
-  // Theme mode.
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === "dark";
+  const { isDark, ThemeColor } = useThemeInfo();
   return (
-    <>
-      <Box
-        w={"100%"}
-        bg={isDark ? `black` : `${color}.bg-l-p`}
-        outline={isDark ? "1px solid" : "2px solid"}
-        outlineColor={isDark ? `${color}.border-d` : `${color}.600`}
-        borderRadius="14px"
-        pt={"20px"}
-        pb={"20px"}
-      >
-        <Stack w={"100%"}>
-        </Stack>
-      </Box>
-    </>
+    <Box
+      w={"100%"}
+      bg={isDark ? `black` : `${ThemeColor}.bg-l-p`}
+      outline={isDark ? "1px solid" : "2px solid"}
+      outlineColor={isDark ? `${ThemeColor}.border-d` : `${ThemeColor}.600`}
+      borderRadius="14px"
+      pt={"20px"}
+      pb={"20px"}
+    >
+      <Stack w={"100%"}></Stack>
+    </Box>
   );
 }
 

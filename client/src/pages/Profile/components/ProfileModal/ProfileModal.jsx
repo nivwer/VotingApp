@@ -19,8 +19,6 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
-// Icons.
-import { FaBedPulse } from "react-icons/fa6";
 
 // Component.
 function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
@@ -49,22 +47,8 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const profileData = {
-        profile_name: data.profile_name,
-        bio: data.bio,
-        profile_picture: data.profile_picture,
-        website_link: data.website_link,
-        social_link_one: data.social_link_one,
-        social_link_two: data.social_link_two,
-        social_link_three: data.social_link_three,
-        birthdate: data.birthdate,
-        pronouns: data.pronouns,
-        country: data.country,
-        city: data.city,
-      };
-
       const res = await updateProfile({
-        profile: profileData,
+        profile: data,
         headers: {
           Authorization: `Token ${session.token}`,
         },

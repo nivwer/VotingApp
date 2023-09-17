@@ -26,8 +26,7 @@ def read_profile(request):
 
         # Get the profile instance based on user pk.
         profile_object = UserProfile.objects.get(user=user.pk)
-        profile_data = UserProfileSerializer(
-            instance=profile_object).data
+        profile_data = UserProfileSerializer(instance=profile_object).data
 
         # Response.
         return Response(
@@ -40,7 +39,9 @@ def read_profile(request):
 
     # Handle if the user is not found.
     except User.DoesNotExist:
-        return Response({'username': ['User is not found.']}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {'username': ['User is not found.']},
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle if the user is not found.
     except UserProfile.DoesNotExist:
@@ -88,8 +89,10 @@ def update_profile(request):
 
     # Handle if the user is not found.
     except User.DoesNotExist:
-        return Response({'username': ['User is not found.']}, status=status.HTTP_404_NOT_FOUND)
-    
+        return Response(
+            {'username': ['User is not found.']},
+            status=status.HTTP_404_NOT_FOUND)
+
     # Handle if the user is not found.
     except UserProfile.DoesNotExist:
         return Response(
@@ -113,8 +116,7 @@ def get_profile(request, username):
 
         # Get the profile instance based on user pk.
         profile_object = UserProfile.objects.get(user=user.pk)
-        profile_data = UserProfileSerializer(
-            instance=profile_object).data
+        profile_data = UserProfileSerializer(instance=profile_object).data
 
         profile_data['username'] = user.username
 
@@ -135,7 +137,9 @@ def get_profile(request, username):
 
     # Handle if the user is not found.
     except User.DoesNotExist:
-        return Response({'username': ['User is not found.']}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {'username': ['User is not found.']},
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle if the user is not found.
     except UserProfile.DoesNotExist:
