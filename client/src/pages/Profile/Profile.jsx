@@ -3,7 +3,7 @@ import { useThemeInfo } from "../../hooks/Theme";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useGetUserPollsQuery } from "../../api/pollApiSlice";
+import { useGetUserPollsQuery, useGetUserVotedPollsQuery } from "../../api/pollApiSlice";
 import {
   useGetProfileQuery,
   useReadProfileQuery,
@@ -65,6 +65,13 @@ function Profile() {
     { skip }
   );
 
+  // User voted Polls.
+  const [votedPolls, setVotedPolls] = useState(null);
+  const { data: dataVotedPolls, isLoading: isVotedPollsLoading } = useGetUserVotedPollsQuery(
+    data,
+    { skip }
+  );
+
   // Query to update the profile data in the global state.
   const { data: dataSelfProfile } = useReadProfileQuery(data, {
     skip: selfProfileSkip,
@@ -96,6 +103,11 @@ function Profile() {
   useEffect(() => {
     dataPolls && setPolls(dataPolls.polls);
   }, [dataPolls]);
+
+  // Load Voted Polls.
+  useEffect(() => {
+    dataVotedPolls && setVotedPolls(dataVotedPolls.polls);
+  }, [dataVotedPolls]);
 
   // Load Self Profile.
   useEffect(() => {
@@ -218,10 +230,10 @@ function Profile() {
           </TabPanel>
           <TabPanel px={0}>
             <Box {...styles.body.content}>
-              {isPollsLoading && <ProfileSpinner />}
+              {isVotedPollsLoading && <ProfileSpinner />}
 
-              {polls &&
-                polls.map((poll, index) => (
+              {votedPolls &&
+                votedPolls.map((poll, index) => (
                   <PollCard key={index} poll={poll} />
                 ))}
             </Box>

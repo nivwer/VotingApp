@@ -88,6 +88,16 @@ export const pollApiSlice = createApi({
       providesTags: ["Polls"],
     }),
 
+    // Get User voted Polls.
+    getUserVotedPolls: builder.query({
+      query: (data) => ({
+        url: `user/voted/${data.username}`,
+        method: "GET",
+        headers: data.headers,
+      }),
+      providesTags: ["Polls"],
+    }),
+
     // Others.
     getPollCategories: builder.query({
       query: () => ({
@@ -101,6 +111,7 @@ export const pollApiSlice = createApi({
 
 export const {
   useGetUserPollsQuery,
+  useGetUserVotedPollsQuery,
   useCreatePollMutation,
   useReadPollMutation,
   useUpdatePollMutation,

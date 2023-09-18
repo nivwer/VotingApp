@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .app_views import poll_views, options_views, voting_views
+from .app_views import poll_views, options_views, voting_views, user_polls_views
 
 
 urlpatterns = [
@@ -19,11 +19,15 @@ urlpatterns = [
     # CRUD Vote.
     path('poll/vote/add/<str:poll_id>', voting_views.add_user_vote, name='CVote'),
     path('poll/vote/get/<str:poll_id>', voting_views.get_user_vote, name='RVote'),
-    path('poll/vote/update/<str:poll_id>', voting_views.update_user_vote, name='UVote'),
-    path('poll/vote/delete/<str:poll_id>', voting_views.delete_user_vote, name='DVote'),
+    path('poll/vote/update/<str:poll_id>',
+         voting_views.update_user_vote, name='UVote'),
+    path('poll/vote/delete/<str:poll_id>',
+         voting_views.delete_user_vote, name='DVote'),
 
-    # GET Polls.
-    path('user/<str:username>', poll_views.user_polls, name='UserPolls'),
+    # User Polls.
+    path('user/<str:username>', user_polls_views.user_polls, name='UserPolls'),
+    path('user/voted/<str:username>',
+         user_polls_views.user_voted_polls, name='UserVotedPolls')
     # path('category/<str:category>', views.category_polls, name='CategoryPolls')
 
 ]
