@@ -180,7 +180,9 @@ function PollFormBody({
         >
           {categories &&
             categories.map((category, index) => (
-              <option value={category.value}>{category.text}</option>
+              <option key={index} value={category.value}>
+                {category.text}
+              </option>
             ))}
         </Select>
         {/* Handle errors. */}

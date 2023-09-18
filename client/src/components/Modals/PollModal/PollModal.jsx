@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 import {
   useCreatePollMutation,
   useGetPollCategoriesQuery,
-  useGetPollCategoriesTTLQuery,
   useUpdatePollMutation,
 } from "../../../api/pollApiSlice";
 // Styles.
@@ -44,9 +43,9 @@ function PollModal({ poll = false, buttonStyles }) {
     setError,
   } = useForm();
 
+  // Request to get poll categories.
   const { data: categoriesData, isLoading: isCategoriesLoading } =
-    useGetPollCategoriesTTLQuery();
-
+    useGetPollCategoriesQuery();
   // Request to create polls.
   const [createPoll, { isLoading: isCreateLoading }] = useCreatePollMutation();
   // Request to update polls.
