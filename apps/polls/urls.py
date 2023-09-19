@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .app_views import poll_views, options_views, voting_views, user_polls_views
+from .app_views import poll_views, options_views, voting_views, user_polls_views, categories_polls_views
 
 
 urlpatterns = [
@@ -24,10 +24,16 @@ urlpatterns = [
     path('poll/vote/delete/<str:poll_id>',
          voting_views.delete_user_vote, name='DVote'),
 
+    ### Search Polls. ###
+
     # User Polls.
     path('user/<str:username>', user_polls_views.user_polls, name='UserPolls'),
     path('user/voted/<str:username>',
-         user_polls_views.user_voted_polls, name='UserVotedPolls')
+         user_polls_views.user_voted_polls, name='UserVotedPolls'),
     # path('category/<str:category>', views.category_polls, name='CategoryPolls')
+
+    # Category Polls.
+    path('category/<str:category>', categories_polls_views.category_polls, name='CategoryPolls'),
+
 
 ]

@@ -15,6 +15,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
 import ProfileUserPolls from "../pages/Profile/ProfileUserPolls";
 import ProfileVotedPolls from "../pages/Profile/ProfileVotedPolls";
+import PollResults from "./Results/PollResults";
 
 // Router.
 function Router() {
@@ -43,6 +44,7 @@ function Router() {
       <Route element={<GridLayout layout="triple" section="main" />}>
         {/* Home page. */}
         <Route path="/home" element={<Home />} />
+        <Route path="/results" element={<PollResults />} />
       </Route>
 
       {/* ### USER SECTION ### */}

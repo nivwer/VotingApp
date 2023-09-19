@@ -7,7 +7,7 @@ export const pollApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/polls/",
   }),
-  tagTypes: ["Polls", "Categories"],
+  tagTypes: ["Polls", "Categories", "Category"],
   endpoints: (builder) => ({
     // CRUD Poll. //
 
@@ -106,6 +106,16 @@ export const pollApiSlice = createApi({
       }),
       providesTags: ["Categories"],
     }),
+
+    // Others.
+    getPollsCategory: builder.query({
+      query: (data) => ({
+        url: `category/${data.category}`,
+        method: "GET",
+        headers: data.headers,
+      }),
+      providesTags: ["Polls"],
+    }),
   }),
 });
 
@@ -119,4 +129,5 @@ export const {
   useAddUserVoteMutation,
   useUpdateUserVoteMutation,
   useGetPollCategoriesQuery,
+  useGetPollsCategoryQuery,
 } = pollApiSlice;

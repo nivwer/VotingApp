@@ -76,7 +76,10 @@ function SideBar({ section }) {
             <Stack w={"85%"} spacing={0}>
               {categories &&
                 categories.map((category, index) => (
-                  <NavLink key={index}>
+                  <NavLink
+                    to={`/results/?category=${category.value}`}
+                    key={index}
+                  >
                     <Button
                       variant={"ghost"}
                       justifyContent={"start"}
@@ -93,9 +96,9 @@ function SideBar({ section }) {
         <GridItem bg="blue.300" area={"footer"}>
           Footer
           {/* New Poll button. */}
-          {/* <Box bg={"yellow"} h={"200px"} overflow={"auto"}>
+          <Box bg={"yellow"} h={"200px"} overflow={"auto"}>
             <PollModal />
-          </Box> */}
+          </Box>
         </GridItem>
       </Grid>
     </Box>
