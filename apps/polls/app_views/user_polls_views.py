@@ -150,9 +150,7 @@ async def user_polls(request, username):
 
         # Response.
         return Response(
-            {
-                'polls': polls
-            },
+            {'polls': polls},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.
@@ -299,9 +297,7 @@ async def user_voted_polls(request, username):
 
         # Response.
         return Response(
-            {
-                'polls': polls
-            },
+            {'polls': polls},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.
@@ -329,4 +325,3 @@ async def user_voted_polls(request, username):
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-

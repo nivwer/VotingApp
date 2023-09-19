@@ -1,36 +1,25 @@
 // Hooks.
 import { useThemeInfo } from "../../hooks/Theme";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { useGetUserPollsQuery, useGetUserVotedPollsQuery } from "../../api/pollApiSlice";
-import {
-  useGetProfileQuery,
-  useReadProfileQuery,
-} from "../../api/profileApiSlice";
-// Actions.
-import { updateProfile } from "../../features/auth/sessionSlice";
+import { useSelector } from "react-redux";
+import { NavLink, Outlet, useParams } from "react-router-dom";
+import { useGetProfileQuery } from "../../api/profileApiSlice";
 // Styles.
 import { getProfileStyles } from "./ProfileStyles";
 // Components.
 import ProfileModal from "./components/ProfileModal/ProfileModal";
 import ProfileLink from "./components/ProfileLink";
 import ProfileTags from "./components/ProfileTags";
-import ProfileSpinner from "./components/ProfileSpinner";
-import PollCard from "../../components/Cards/PollCard/PollCard";
 import {
   Avatar,
   Box,
+  Button,
   Flex,
+  Grid,
+  GridItem,
   HStack,
   Heading,
   Stack,
-  Tab,
-  TabIndicator,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
 } from "@chakra-ui/react";
 // Icons.
@@ -38,43 +27,16 @@ import { FaRegCalendar, FaLocationDot, FaLink } from "react-icons/fa6";
 
 // Page.
 function Profile() {
-  const dispatch = useDispatch();
   const { isDark, ThemeColor } = useThemeInfo();
   const styles = getProfileStyles(isDark, ThemeColor);
-  // Session.
   const session = useSelector((state) => state.session);
-  // Username param.
   const { username } = useParams();
-
-  // Querys or mutations.
   const [data, setData] = useState(false);
-  const [skip, setSkip] = useState(true);
-  const [selfProfileSkip, setSelfProfileSkip] = useState(true);
 
-  // User Profile.
+  // Query to get User Profile.
   const [profile, setProfile] = useState(null);
-  const { data: dataProfile, isLoading: isProfileLoading } = useGetProfileQuery(
-    data,
-    { skip }
-  );
-
-  // User Polls.
-  const [polls, setPolls] = useState(null);
-  const { data: dataPolls, isLoading: isPollsLoading } = useGetUserPollsQuery(
-    data,
-    { skip }
-  );
-
-  // User voted Polls.
-  const [votedPolls, setVotedPolls] = useState(null);
-  const { data: dataVotedPolls, isLoading: isVotedPollsLoading } = useGetUserVotedPollsQuery(
-    data,
-    { skip }
-  );
-
-  // Query to update the profile data in the global state.
-  const { data: dataSelfProfile } = useReadProfileQuery(data, {
-    skip: selfProfileSkip,
+  const { data: dataProfile } = useGetProfileQuery(data, {
+    skip: data ? false : true,
   });
 
   // Update data to fetchs.
@@ -89,33 +51,10 @@ function Profile() {
     }
   }, [username, session.token]);
 
-  // Conditional fetching.
-  useEffect(() => {
-    data ? setSkip(false) : setSkip(true);
-  }, [data]);
-
   // Load Profile.
   useEffect(() => {
     dataProfile && setProfile(dataProfile.profile);
   }, [dataProfile]);
-
-  // Load Polls.
-  useEffect(() => {
-    dataPolls && setPolls(dataPolls.polls);
-  }, [dataPolls]);
-
-  // Load Voted Polls.
-  useEffect(() => {
-    dataVotedPolls && setVotedPolls(dataVotedPolls.polls);
-  }, [dataVotedPolls]);
-
-  // Load Self Profile.
-  useEffect(() => {
-    if (dataSelfProfile && username === session.user.username) {
-      dispatch(updateProfile({ profile: dataSelfProfile.profile }));
-      setSelfProfileSkip(true);
-    }
-  }, [dataSelfProfile]);
 
   return (
     <>
@@ -134,10 +73,7 @@ function Profile() {
                 {/* Button to edit the profile. */}
                 {session.token &&
                   session.user.username === profile.username && (
-                    <ProfileModal
-                      profile={profile}
-                      setSelfProfileSkip={setSelfProfileSkip}
-                    />
+                    <ProfileModal profile={profile} />
                   )}
               </Flex>
 
@@ -149,19 +85,19 @@ function Profile() {
                       {profile.profile_name}
                     </Heading>
                     {/* Pronouns. */}
-                    <Text opacity={0.5} fontWeight="medium" fontSize="md">
+                    <Text opacity={0.5} fontWeight="medium">
                       {profile.pronouns}
                     </Text>
                   </HStack>
                   {/* Username. */}
-                  <Text opacity={0.5} fontWeight="normal" fontSize="md">
+                  <Text opacity={0.5} fontWeight="normal">
                     @{profile.username}
                   </Text>
                 </Box>
                 <Stack spacing={2}>
                   {/* Biography. */}
                   {profile.bio && (
-                    <Text opacity={0.9} fontWeight="medium" fontSize={"md"}>
+                    <Text opacity={0.9} fontWeight="medium">
                       {profile.bio}
                     </Text>
                   )}
@@ -210,36 +146,28 @@ function Profile() {
         )}
       </Box>
 
-      {/* Profile Body. */}
-      <Tabs isFitted position="relative" variant="unstyled">
-        <TabList {...styles.body.tab_list}>
-          <Tab>Polls</Tab>
-          <Tab>Votes</Tab>
-        </TabList>
-        <TabIndicator {...styles.body.tab_indicator} />
-        <TabPanels>
-          <TabPanel py={"3px"} px={0}>
-            <Box {...styles.body.content}>
-              {isPollsLoading && <ProfileSpinner />}
-              {polls ? (
-                polls.map((poll, index) => <PollCard key={index} poll={poll} />)
-              ) : (
-                <div>user has not polls</div>
-              )}
-            </Box>
-          </TabPanel>
-          <TabPanel px={0}>
-            <Box {...styles.body.content}>
-              {isVotedPollsLoading && <ProfileSpinner />}
+      {/* Profile Tabs. */}
+      <Grid templateColumns="repeat(2, 1fr)" {...styles.body.tab_list}>
+        <GridItem>
+          <NavLink to={`/${username}`}>
+            <Button w={"100%"} variant={"ghost"}>
+              Polls
+            </Button>
+          </NavLink>
+        </GridItem>
+        <GridItem>
+          <NavLink to={`/${username}/votes`}>
+            <Button w={"100%"} variant={"ghost"}>
+              Votes
+            </Button>
+          </NavLink>
+        </GridItem>
+      </Grid>
 
-              {votedPolls &&
-                votedPolls.map((poll, index) => (
-                  <PollCard key={index} poll={poll} />
-                ))}
-            </Box>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+      {/* Profile Body. */}
+      <Flex>
+        <Outlet />
+      </Flex>
     </>
   );
 }

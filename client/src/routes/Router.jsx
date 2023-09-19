@@ -13,6 +13,8 @@ import Theme from "../pages/Settings/Theme";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
+import ProfileUserPolls from "../pages/Profile/ProfileUserPolls";
+import ProfileVotedPolls from "../pages/Profile/ProfileVotedPolls";
 
 // Router.
 function Router() {
@@ -48,7 +50,11 @@ function Router() {
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="user" />}>
         {/* Profile page. */}
-        <Route path="/:username" element={<Profile />} />
+        <Route element={<Profile />}>
+          <Route path="/:username" element={<ProfileUserPolls />} />
+
+          <Route path="/:username/votes" element={<ProfileVotedPolls />} />
+        </Route>
         {/* Poll page. */}
         {/* <Route path="/:username/:id" element={<ViewPoll />} /> */}
       </Route>

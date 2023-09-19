@@ -11,6 +11,7 @@ export const getProfileStyles = (isDark, ThemeColor) => {
         bg: isDark ? "black" : "white",
         color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
       },
+
       container: {
         spacing: "2",
         flex: "1",
@@ -18,6 +19,7 @@ export const getProfileStyles = (isDark, ThemeColor) => {
         alignItems: "start",
         flexWrap: "wrap",
       },
+
       flex: {
         justifyContent: "space-between",
         w: "100%",
@@ -39,33 +41,10 @@ export const getProfileStyles = (isDark, ThemeColor) => {
     },
 
     body: {
-      content: {
-        w: "100%",
-        display: "flex",
-        flexDir: "column",
-        alignItems: "center",
-      },
-
       tab_list: {
         borderBottom: "1px solid",
         borderColor: isDark ? "whiteAlpha.300" : "blackAlpha.200",
         color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
-        // Tab component.
-        sx: {
-          "& > button": {
-            opacity: 0.4,
-            fontWeight: "bold",
-            _selected: { opacity: "0.9", fontWeight: "black" },
-          },
-        },
-      },
-
-      tab_indicator: {
-        mt: "-1.5px",
-        height: "3px",
-        bg: isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`,
-        borderRadius: "3px",
-        opacity: 0.7,
       },
     },
   };

@@ -90,7 +90,7 @@ function PollCard({ poll }) {
                 <Text {...styles.header.text}>@{poll.profile.username}</Text>
               </Stack>
             </Flex>
-            {session.token && (
+            {/* {session.token && (
               <Menu>
                 <MenuButton
                   isDisabled={isLoading}
@@ -124,7 +124,7 @@ function PollCard({ poll }) {
                   </MenuList>
                 )}
               </Menu>
-            )}
+            )} */}
           </CardHeader>
 
           {/* Card Body. */}

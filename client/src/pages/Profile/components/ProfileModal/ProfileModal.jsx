@@ -1,8 +1,15 @@
 // Hooks.
+import { useEffect, useState } from "react";
 import { useThemeInfo } from "../../../../hooks/Theme";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { useUpdateProfileMutation } from "../../../../api/profileApiSlice";
+import { useParams } from "react-router-dom";
+import {
+  useReadProfileQuery,
+  useUpdateProfileMutation,
+} from "../../../../api/profileApiSlice";
+// Actions.
+import { updateProfile } from "../../../../features/auth/sessionSlice";
 // Styles
 import { getProfileModalStyles } from "./ProfileModalStyles";
 // Components.
@@ -21,14 +28,16 @@ import {
 } from "@chakra-ui/react";
 
 // Component.
-function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
+function ProfileModal({ profile = false, buttonStyles }) {
+  const dispatch = useDispatch();
   const { ThemeColor, isDark } = useThemeInfo();
   const styles = getProfileModalStyles(ThemeColor, isDark);
+  const session = useSelector((state) => state.session);
+  const { username } = useParams();
+  const [data, setData] = useState(false);
+
   // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // User session.
-  const session = useSelector((state) => state.session);
 
   // React hook form.
   const {
@@ -40,6 +49,10 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
     setError,
     setValue,
   } = useForm();
+
+  // Query to update the profile data in the global state.
+  const [skip, setSkip] = useState(true);
+  const { data: dataProfile } = useReadProfileQuery(data, { skip });
 
   // Request to update profile.
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
@@ -56,7 +69,7 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
 
       if (res.data) {
         onClose();
-        setSelfProfileSkip(false);
+        setSkip(false);
       }
 
       // If server error.
@@ -71,6 +84,26 @@ function ProfileModal({ profile = false, buttonStyles, setSelfProfileSkip }) {
       console.error(error);
     }
   });
+
+  // Update data to fetchs.
+  useEffect(() => {
+    if (session.token) {
+      setData({
+        headers: { Authorization: `Token ${session.token}` },
+        username: username,
+      });
+    } else {
+      setData({ username: username });
+    }
+  }, [username, session.token]);
+
+  // Update Profile.
+  useEffect(() => {
+    if (dataProfile && username === session.user.username) {
+      dispatch(updateProfile({ profile: dataProfile.profile }));
+      setSkip(true);
+    }
+  }, [dataProfile]);
 
   return (
     <>

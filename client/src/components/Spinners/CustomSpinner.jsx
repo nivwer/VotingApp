@@ -2,7 +2,7 @@
 import { Flex, Spinner } from "@chakra-ui/react";
 
 // Component.
-function ProfileSpinner() {
+function CustomSpinner() {
   return (
     <Flex
       h={"100px"}
@@ -15,4 +15,4 @@ function ProfileSpinner() {
   );
 }
 
-export default ProfileSpinner;
+export default CustomSpinner;
