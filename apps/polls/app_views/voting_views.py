@@ -321,7 +321,7 @@ async def delete_vote(request, poll_id):
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-         # Find the user voted polls in the user_votes collection.
+        # Find the user voted polls in the user_votes collection.
         user_vote = await polls_db.user_votes.find_one(
             {
                 'user_id': request.user.id,
@@ -334,7 +334,7 @@ async def delete_vote(request, poll_id):
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-         # If the user has voted a poll.
+        # If the user has voted a poll.
         del_vote_value = user_vote['voted_polls'][0]['vote']
 
         # Initialize a MongoDB session.

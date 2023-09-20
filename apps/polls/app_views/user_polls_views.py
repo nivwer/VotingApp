@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
-from rest_framework.decorators import  permission_classes
-from rest_framework.permissions import  AllowAny
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 # Async Rest Framework support.
 from adrf.decorators import api_view
 # MongoDB connection.
@@ -47,11 +47,17 @@ async def user_polls(request, username):
     is_login = True if request.user else False
 
     try:
-        # Get the user in the User table.
+        # Get the user data.
         user = await User.objects.aget(username=username)
+        user_profile = await UserProfile.objects.aget(pk=user.pk)
+        # Initialize a UserProfileSerializer instance.
+        profile_data = UserProfileSerializer(instance=user_profile).data
+        # Add user data to user profile data.
+        profile_data['username'] = user.username
 
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'user_votes'])
 
         # Find the polls in the polls collection.
         polls_cursor = polls_db.polls.find({'created_by.user_id': user.id})
@@ -60,50 +66,9 @@ async def user_polls(request, username):
         # Convert the BSON response to a JSON response.
         polls_list_json = json_util._json_convert(polls_list)
 
-        # Find the user voted polls in the voted_polls collection.
-        user_voted_polls = ''
-        if is_login:
-            user_voted_polls = await polls_db.user_votes.find_one(
-                {'user_id': request.user.id})
-
-        # Convert the BSON object to a JSON object.
-        user_voted_polls_json = json_util._json_convert((user_voted_polls))
-
         # Filter the polls.
         polls = []
         for poll in polls_list_json:
-            # Get the user data.
-            user_data = await User.objects.aget(id=poll['created_by']['user_id'])
-            user_profile = await UserProfile.objects.aget(pk=user_data.pk)
-            # Initialize a UserProfileSerializer instance.
-            profile_data = UserProfileSerializer(instance=user_profile).data
-            # Add user data to user profile data.
-            profile_data['username'] = user_data.username
-            # Add user profile data in the poll object.
-            poll['profile'] = profile_data
-
-            # If the user not voted in this poll.
-            is_user_vote = False
-            if is_login:
-                # If the user has not voted a poll.
-                if not user_voted_polls:
-                    poll['user_vote'] = ''
-                    is_user_vote = True
-                else:
-                    # Get vote in the user voted polls object.
-                    for v in user_voted_polls_json['voted_polls']:
-                        if v['poll_id'] == poll['_id']['$oid']:
-                            poll['user_vote'] = v['vote']
-                            is_user_vote = True
-                            break
-
-            if not is_user_vote:
-                poll['user_vote'] = ''
-
-            # Fix poll data.
-            poll['_id'] = poll['_id']['$oid']
-            poll['creation_date'] = poll['creation_date']['$date']
-
             # Verify the privacy of polls.
             is_public = poll['privacy'] == 'public'
             is_private = poll['privacy'] == 'private'
@@ -111,14 +76,37 @@ async def user_polls(request, username):
             # Add if is owner in the poll object.
             poll['is_owner'] = is_owner
 
-            # If poll is public.
-            if is_public:
-                polls.append(poll)
-            # If poll is private.
-            if is_private and is_owner:
-                polls.append(poll)
+            # If poll is public or private and is owner.
+            if is_public or (is_private and is_owner):
+                # Fix poll data.
+                poll['_id'] = poll['_id']['$oid']
+                poll['creation_date'] = poll['creation_date']['$date']
+                # Add user profile data in the poll object.
+                poll['profile'] = profile_data
 
-            # If privacy of poll is friends_only. ?
+                # Get user vote.
+                if is_login:
+                    is_voter = request.user.id in poll['voters']
+                    if is_voter:
+                        # Find the vote in the user_votes collection.
+                        user_vote = await polls_db.user_votes.find_one(
+                            {
+                                'user_id': request.user.id,
+                                'voted_polls.poll_id': poll['_id']
+                            },
+                            projection={'voted_polls.$': 1})
+
+                        # If the user has voted a poll.
+                        if user_vote:
+                            vote = user_vote['voted_polls'][0]['vote']
+
+                # Add the vote in the poll.
+                poll['user_vote'] = vote if vote else ''
+
+                # Add the poll in polls.
+                polls.append(poll)
+            else:
+                continue
 
         # If polls not found.
         if not polls:
@@ -169,9 +157,12 @@ async def user_voted_polls(request, username):
         user = await User.objects.aget(username=username)
 
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'user_votes'])
+
         # Find the user voted polls in the voted_polls collection.
-        user_votes_object = await polls_db.user_votes.find_one({'user_id': user.id})
+        user_votes_object = await polls_db.user_votes.find_one(
+            {'user_id': user.id})
 
         # If user has not voted in a poll.
         if not user_votes_object:
@@ -181,56 +172,17 @@ async def user_voted_polls(request, username):
         # Convert the BSON object to a JSON object.
         user_votes_object_json = json_util._json_convert((user_votes_object))
 
-        # Find the user voted polls in the voted_polls collection.
-        user_voted_polls = ''
-        if is_login:
-            user_voted_polls = await polls_db.user_votes.find_one(
-                {'user_id': request.user.id})
-
-        # Convert the BSON object to a JSON object.
-        user_voted_polls_json = json_util._json_convert((user_voted_polls))
-
         # Filter the polls.
         polls = []
         # If the user has already voted in this poll.
-        for v in user_votes_object_json['voted_polls']:
-
+        for vote_object in user_votes_object_json['voted_polls']:
+            # / REFACTOR ?
             # Get poll.
-            poll_bson = await polls_db.polls.find_one({'_id': ObjectId(v['poll_id'])})
+            poll_bson = await polls_db.polls.find_one(
+                {'_id': ObjectId(vote_object['poll_id'])})
             # Convert the BSON object to a JSON object.
             poll = json_util._json_convert((poll_bson))
-
-            # Get the user data.
-            user_data = await User.objects.aget(id=poll['created_by']['user_id'])
-            user_profile = await UserProfile.objects.aget(pk=user_data.pk)
-            # Initialize a UserProfileSerializer instance.
-            profile_data = UserProfileSerializer(instance=user_profile).data
-            # Add user data to user profile data.
-            profile_data['username'] = user_data.username
-            # Add user profile data in the poll object.
-            poll['profile'] = profile_data
-
-            # If the user not voted in this poll.
-            is_user_vote = False
-            if is_login:
-                # If the user has not voted a poll.
-                if not user_voted_polls:
-                    poll['user_vote'] = ''
-                    is_user_vote = True
-                else:
-                    # Get vote in the user voted polls object.
-                    for v in user_voted_polls_json['voted_polls']:
-                        if v['poll_id'] == poll['_id']['$oid']:
-                            poll['user_vote'] = v['vote']
-                            is_user_vote = True
-                            break
-
-            if not is_user_vote:
-                poll['user_vote'] = ''
-
-            # Fix poll data.
-            poll['_id'] = poll['_id']['$oid']
-            poll['creation_date'] = poll['creation_date']['$date']
+            # REFACTOR / ?
 
             # Verify the privacy of polls.
             is_public = poll['privacy'] == 'public'
@@ -239,12 +191,46 @@ async def user_voted_polls(request, username):
             # Add if is owner in the poll object.
             poll['is_owner'] = is_owner
 
-            # If poll is public.
-            if is_public:
+            # If poll is public or is private and is owner.
+            if is_public or (is_private and is_owner):
+                # Fix poll data.
+                poll['_id'] = poll['_id']['$oid']
+                poll['creation_date'] = poll['creation_date']['$date']
+
+                # Get the user data.
+                user_data = await User.objects.aget(id=poll['created_by']['user_id'])
+                user_profile = await UserProfile.objects.aget(pk=user_data.pk)
+                # Initialize a UserProfileSerializer instance.
+                profile_data = UserProfileSerializer(
+                    instance=user_profile).data
+                # Add user data to user profile data.
+                profile_data['username'] = user_data.username
+                # Add user profile data in the poll object.
+                poll['profile'] = profile_data
+
+                # Get user vote.
+                if is_login:
+                    is_voter = request.user.id in poll['voters']
+                    if is_voter:
+                        # Find the vote in the user_votes collection.
+                        user_vote = await polls_db.user_votes.find_one(
+                            {
+                                'user_id': request.user.id,
+                                'voted_polls.poll_id': poll['_id']
+                            },
+                            projection={'voted_polls.$': 1})
+
+                        # If the user has voted a poll.
+                        if user_vote:
+                            vote = user_vote['voted_polls'][0]['vote']
+
+                # Add the vote in the poll.
+                poll['user_vote'] = vote if vote else ''
+
                 polls.append(poll)
-            # If poll is private.
-            if is_private and is_owner:
-                polls.append(poll)
+
+            else:
+                continue
 
         # If polls not found.
         if not polls:
