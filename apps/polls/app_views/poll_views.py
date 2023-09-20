@@ -45,11 +45,9 @@ class GetCollectionsMongoDB:
 async def read_poll(request, poll_id):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -63,19 +61,8 @@ async def read_poll(request, poll_id):
 
         # If privacy of poll is friends_only. ?
 
-        # Find the poll options in the options collection.
-        options_bson = await polls_db.options.find_one(
-            {'poll_id': ObjectId(poll_id)})
-
-        # If options is not found.
-        if not options_bson:
-            raise ValidationError('Options not found.')
-
         # Convert the BSON response to a JSON response.
         poll_json = json_util._json_convert((poll_bson))
-        options_json = json_util._json_convert((options_bson))
-        # Add the options in the poll object.
-        poll_json['options'] = options_json['options']
         # Fix data.
         poll_json['_id'] = poll_json['_id']['$oid']
         poll_json['creation_date'] = poll_json['creation_date']['$date']
@@ -115,9 +102,8 @@ async def read_poll(request, poll_id):
 @permission_classes([IsAuthenticated])
 async def create_poll(request):
     session = None
-    options_object = {
-        'options': request.data['options']['add_options']
-    }
+    options_object = {'options': request.data['options']['add_options']}
+
     try:
         # Initialize a Poll Serializer instance.
         poll_serializer = PollSerializer(data=request.data)
@@ -129,6 +115,17 @@ async def create_poll(request):
         options_serializer.is_valid(raise_exception=True)
         list_options = options_serializer.validated_data.get('options')
 
+        # Create options objects.
+        options = []
+        for option in list_options:
+            options.append(
+                {
+                    'created_by': {'user_id': request.user.id},
+                    'option_text': option,
+                    'votes': 0
+                }
+            )
+
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
@@ -136,7 +133,7 @@ async def create_poll(request):
 
                 # Get collections from the polls database.
                 polls_db = GetCollectionsMongoDB(
-                    'polls_db', ['polls', 'options', 'comments'])
+                    'polls_db', ['polls', 'comments'])
 
                 # Create poll document in polls collection.
                 poll = await polls_db.polls.insert_one(
@@ -148,33 +145,14 @@ async def create_poll(request):
                         'total_votes': 0,
                         'voters': [],
                         'privacy': poll_data['privacy'],
-                        'category': poll_data['category']
+                        'category': poll_data['category'],
+                        'options': options
                     },
                     session=session
                 )
 
                 # Get poll ID.
                 poll_id = poll.inserted_id
-
-                # Add the initial options in the options document.
-                options = []
-                for option in list_options:
-                    options.append(
-                        {
-                            'created_by': {'user_id': request.user.id},
-                            'option_text': option,
-                            'votes': 0
-                        }
-                    )
-
-                # Create options document in options collection.
-                await polls_db.options.insert_one(
-                    {
-                        'poll_id': poll_id,
-                        'options': options
-                    },
-                    session=session
-                )
 
                 # Create comments document in comments collection.
                 await polls_db.comments.insert_one(
@@ -188,12 +166,12 @@ async def create_poll(request):
                 # Save transaction.
                 await session.commit_transaction()
 
+                poll_json = json_util._json_convert((poll_id))
+
                 # Response.
                 return Response(
-                    {
-                        'message': 'Poll created successfully',
-                        'poll_id': str(poll_id)
-                    },
+                    {'message': 'Poll created successfully',
+                     'id': poll_json},
                     status=status.HTTP_201_CREATED)
 
     # Handle validation errors.
@@ -229,11 +207,9 @@ async def update_poll(request, poll_id):
     session = None
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')
@@ -249,12 +225,13 @@ async def update_poll(request, poll_id):
         poll_serializer.is_valid(raise_exception=True)
         data = poll_serializer.validated_data
 
-        # Find the poll options.
-        options = await polls_db.options.find_one(
-            {'poll_id': ObjectId(poll_id)})
+        # Get poll options.
+        poll_json = json_util._json_convert((poll_bson))
+        options = poll_json['options']
 
+        # Generate the list of options with the previous options.
         validate_options = {'options': []}
-        for option in options['options']:
+        for option in options:
             validate_options['options'].append(option['option_text'])
 
         # If there options to add or remove in the options document.
@@ -274,6 +251,34 @@ async def update_poll(request, poll_id):
         options_serializer = OptionsSerializer(data=validate_options)
         options_serializer.is_valid(raise_exception=True)
 
+        # Validate if the options to add do not exist, and generate the option object.
+        add_options_object = []
+        if request.data['options']['add_options']:
+            for option in add_options:
+                # If the option already exist.
+                exist = any(o['option_text'] == option for o in options)
+
+                if exist:
+                    raise ValidationError(
+                        f"This options '{option}' already exist.")
+
+                add_options_object.append(
+                    {
+                        'created_by': {'user_id': request.user.id},
+                        'option_text': option,
+                        'votes': 0
+                    })
+
+        # validates if the options to eliminate exist.
+        if request.data['options']['del_options']:
+            for option in del_options:
+                # If the option already exist.
+                exist = any(o['option_text'] == option for o in options)
+
+                if not exist:
+                    raise ValidationError(
+                        f"This option '{option}' not exist.")
+
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
@@ -287,57 +292,26 @@ async def update_poll(request, poll_id):
                     },
                     session=session)
 
-                # If there options to add in the options document.
+                # Add options.
                 if request.data['options']['add_options']:
-                    for option in add_options:
-                        # If the option already exist.
-                        exist = False
-                        for o in options['options']:
-                            if o['option_text'] == option:
-                                exist = True
-                                break
+                    await polls_db.polls.update_one(
+                        {'_id': ObjectId(poll_id)},
+                        {
+                            '$addToSet': {'options': {'$each': add_options_object}}
+                        },
+                        session=session)
 
-                        if exist:
-                            await session.abort_transaction()
-                            raise ValidationError(
-                                f"This options '{option}' already exist.")
-
-                        new_option = {
-                            'created_by': {'user_id': request.user.id},
-                            'option_text': option,
-                            'votes': 0
-                        }
-
-                        # Save the option object.
-                        await polls_db.options.update_one(
-                            {'poll_id': ObjectId(poll_id)},
-                            {
-                                '$push': {'options': new_option}
-                            },
-                            session=session)
-
-                # If there options to remove in the options document.
+                # Remove options.
                 if request.data['options']['del_options']:
-                    for option in del_options:
-                        # If the option already exist.
-                        exist = False
-                        for o in options['options']:
-                            if o['option_text'] == option:
-                                exist = True
-                                break
+                    await polls_db.polls.update_one(
+                        {'_id': ObjectId(poll_id)},
+                        {
+                            '$pull': {'options': {'option_text': {'$in': del_options}}}
+                        },
+                        session=session)
 
-                        if not exist:
-                            await session.abort_transaction()
-                            raise ValidationError(
-                                f"This option '{option}' not exist.")
-
-                        # Remove the option.
-                        await polls_db.options.update_one(
-                            {'poll_id': ObjectId(poll_id)},
-                            {
-                                '$pull': {'options': {'option_text': option}}
-                            },
-                            session=session)
+                # Save transaction.
+                await session.commit_transaction()
 
                 # Response.
                 return Response(
@@ -378,13 +352,12 @@ async def update_poll(request, poll_id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def delete_poll(request, poll_id):
+    session = None
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
         # Find the poll in the polls collection.
-        poll = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+        poll = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
 
         # If poll is not found.
         if not poll:
@@ -392,7 +365,7 @@ async def delete_poll(request, poll_id):
                 'Poll is not found.', status=status.HTTP_404_NOT_FOUND)
 
         # If user is not authorized.
-        is_owner = poll['created_by']['user_id'] != request.user.id
+        is_owner = poll['created_by']['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
                 'You are not authorized to remove this poll.')
@@ -407,17 +380,8 @@ async def delete_poll(request, poll_id):
                     {'_id': poll['_id']},
                     session=session)
 
-                is_poll_removed = poll_result.deleted_count == 0
-
-                # Remove the options.
-                options_result = await polls_db.options.delete_one(
-                    {'poll_id': poll['_id']},
-                    session=session)
-
-                is_options_removed = options_result.deleted_count == 0
-
                 # If not removed.
-                if is_options_removed or is_poll_removed:
+                if poll_result.deleted_count == 0:
                     await session.abort_transaction()
                     raise PyMongoError(
                         'An error occurred while processing your request.',

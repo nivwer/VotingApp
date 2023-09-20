@@ -145,25 +145,25 @@ function Profile() {
           </>
         )}
       </Box>
-
       {/* Profile Tabs. */}
-      <Grid templateColumns="repeat(2, 1fr)" {...styles.body.tab_list}>
-        <GridItem>
-          <NavLink to={`/${username}`}>
-            <Button w={"100%"} variant={"ghost"}>
-              Polls
-            </Button>
-          </NavLink>
-        </GridItem>
-        <GridItem>
-          <NavLink to={`/${username}/votes`}>
-            <Button w={"100%"} variant={"ghost"}>
-              Votes
-            </Button>
-          </NavLink>
-        </GridItem>
-      </Grid>
-
+      <Box bg={"black"} zIndex={1000} pos={"sticky"} top={"64px"}>
+        <Grid  templateColumns="repeat(2, 1fr)" {...styles.body.tab_list}>
+          <GridItem>
+            <NavLink to={`/${username}`}>
+              <Button w={"100%"} variant={"ghost"}>
+                Polls
+              </Button>
+            </NavLink>
+          </GridItem>
+          <GridItem>
+            <NavLink to={`/${username}/votes`}>
+              <Button w={"100%"} variant={"ghost"}>
+                Votes
+              </Button>
+            </NavLink>
+          </GridItem>
+        </Grid>
+      </Box>
       {/* Profile Body. */}
       <Flex>
         <Outlet />

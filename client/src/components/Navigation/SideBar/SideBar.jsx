@@ -13,9 +13,11 @@ import {
   Heading,
   Stack,
 } from "@chakra-ui/react";
+import { useThemeInfo } from "../../../hooks/Theme";
 
 // Component.
 function SideBar({ section }) {
+  const { isDark, ThemeColor } = useThemeInfo();
   // Request to get poll categories.
   const { data: categoriesData, isLoading: isCategoriesLoading } =
     useGetPollCategoriesQuery();
@@ -33,31 +35,26 @@ function SideBar({ section }) {
   return (
     <Box pos={"fixed"} w={"295px"} h={"calc(100vh - 64px)"}>
       <Grid
-        templateAreas={`"header" "main" "footer"`}
-        gridTemplateRows={"245px 1fr 100px"}
+        gridTemplateRows={"80px 1fr 80px"}
         gridTemplateColumns={"95%"}
         gap="1"
         h={"100%"}
       >
-        <GridItem bg="orange.300" area={"header"} overflow={"auto"}>
-          Header
-          {/* User polls voted. */}
-          <Stack bg={"red"}>
-            <NavLink>
-              <Button>Button1</Button>
-            </NavLink>
-            <NavLink>
-              <Button>Button1</Button>
-            </NavLink>
-            <NavLink>
-              <Button>Button1</Button>
-            </NavLink>
-            <NavLink>
-              <Button>Button1</Button>
-            </NavLink>
-          </Stack>
+        <GridItem>
+          {/* New Poll button. */}
+          <Flex h={"100%"} justify={"center"} align={"center"}>
+            <PollModal
+              buttonStyles={{
+                size: "lg",
+                colorScheme: ThemeColor,
+                variant: "outline",
+                w: "90%",
+                borderRadius: "2xl",
+              }}
+            />
+          </Flex>
         </GridItem>
-        <GridItem area={"main"} overflow={"auto"}>
+        <GridItem overflow={"auto"}>
           {/* Categories */}
           <Flex
             zIndex={"100"}
@@ -93,12 +90,18 @@ function SideBar({ section }) {
             </Stack>
           </Flex>
         </GridItem>
-        <GridItem bg="blue.300" area={"footer"}>
-          Footer
-          {/* New Poll button. */}
-          <Box bg={"yellow"} h={"200px"} overflow={"auto"}>
-            <PollModal />
-          </Box>
+        <GridItem>
+          <Flex h={"100%"} justify={"center"} align={"center"}>
+            <PollModal
+              buttonStyles={{
+                size: "lg",
+                colorScheme: ThemeColor,
+                variant: "solid",
+                w: "70%",
+                borderRadius: "2xl",
+              }}
+            />
+          </Flex>
         </GridItem>
       </Grid>
     </Box>

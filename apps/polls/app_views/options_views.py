@@ -13,6 +13,7 @@ from adrf.decorators import api_view
 from utils.mongo_connection import MongoDBSingleton
 # MongoDB.
 from pymongo.errors import PyMongoError
+from bson import json_util
 from bson.objectid import ObjectId
 # Serializers.
 from ..serializers import OptionSerializer
@@ -43,11 +44,9 @@ class GetCollectionsMongoDB:
 async def option_manager(request, poll_id):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'options'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')
@@ -65,16 +64,12 @@ async def option_manager(request, poll_id):
         option_serializer.is_valid(raise_exception=True)
         option = option_serializer.validated_data
 
-        # Find the poll options.
-        options = await polls_db.options.find_one(
-            {'poll_id': ObjectId(poll_id)})
+        # Convert the BSON response to a JSON response.
+        poll_json = json_util._json_convert((poll_bson))
+        options = poll_json['options']
 
         # If the option already exist.
-        exist = False
-        for o in options['options']:
-            if o['option_text'] == option['option_text']:
-                exist = True
-                break
+        exist = any(o['option_text'] == option['option_text'] for o in options)
 
         # Method POST.
         if request.method == 'POST':
@@ -82,7 +77,7 @@ async def option_manager(request, poll_id):
                 raise ValidationError('Option already exist.')
 
             if not is_owner:
-                for o in options['options']:
+                for o in options:
                     if o['created_by']['user_id'] == request.user.id:
                         raise ValidationError('You can only add one option.')
 
@@ -93,8 +88,8 @@ async def option_manager(request, poll_id):
             }
 
             # Save the option object.
-            await polls_db.options.update_one(
-                {'poll_id': ObjectId(poll_id)},
+            await polls_db.polls.update_one(
+                {'_id': ObjectId(poll_id)},
                 {
                     '$push': {'options': new_option}
                 }
@@ -102,10 +97,7 @@ async def option_manager(request, poll_id):
 
             # Response.
             return Response(
-                {
-                    'message': 'Option added successfully'
-                }
-            )
+                {'message': 'Option added successfully'})
 
         # Method DELETE.
         if request.method == 'DELETE':
@@ -117,8 +109,8 @@ async def option_manager(request, poll_id):
                 raise PermissionDenied('Not Authorized.')
 
             # Remove the option.
-            await polls_db.options.update_one(
-                {'poll_id': ObjectId(poll_id)},
+            await polls_db.polls.update_one(
+                {'_id': ObjectId(poll_id)},
                 {
                     '$pull': {'options': {'option_text': option['option_text']}}
                 }
@@ -126,10 +118,7 @@ async def option_manager(request, poll_id):
 
             # Response.
             return Response(
-                {
-                    'message': 'Option removed successfully'
-                }
-            )
+                {'message': 'Option removed successfully'})
 
     # Handle validation errors.
     except ValidationError as e:
