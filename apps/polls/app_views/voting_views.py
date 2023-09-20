@@ -33,7 +33,7 @@ class GetCollectionsMongoDB:
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def get_user_vote(request, poll_id):
+async def get_vote(request, poll_id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['user_votes'])
@@ -73,7 +73,7 @@ async def get_user_vote(request, poll_id):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def add_user_vote(request, poll_id):
+async def add_vote(request, poll_id):
     session = None
     add_vote_value = request.data['vote']
 
@@ -177,7 +177,7 @@ async def add_user_vote(request, poll_id):
 @api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def update_user_vote(request, poll_id):
+async def update_vote(request, poll_id):
     session = None
     add_vote_value = request.data['vote']
     del_vote_value = None
@@ -296,7 +296,7 @@ async def update_user_vote(request, poll_id):
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def delete_user_vote(request, poll_id):
+async def delete_vote(request, poll_id):
     session = None
     del_vote_value = None
 
