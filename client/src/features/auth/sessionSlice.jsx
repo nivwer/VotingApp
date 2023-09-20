@@ -23,12 +23,12 @@ export const sessionSlice = createSlice({
       state.profile = null;
     },
     // Action to update profile.
-    updateProfile: (state, action) => {
+    updateProfileAction: (state, action) => {
       state.profile = action.payload.profile;
     },
   },
 });
 
-export const { login, logout, updateProfile } = sessionSlice.actions;
+export const { login, logout, updateProfileAction } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

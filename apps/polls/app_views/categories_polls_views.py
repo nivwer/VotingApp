@@ -83,6 +83,7 @@ async def category_polls(request, category):
                 poll['profile'] = profile_data
 
                 # Get user vote.
+                vote = ''
                 if is_login:
                     is_voter = request.user.id in poll['voters']
                     if is_voter:

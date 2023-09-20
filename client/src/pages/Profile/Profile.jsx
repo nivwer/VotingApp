@@ -24,6 +24,8 @@ import {
 } from "@chakra-ui/react";
 // Icons.
 import { FaRegCalendar, FaLocationDot, FaLink } from "react-icons/fa6";
+// Others.
+import { format } from "date-fns";
 
 // Page.
 function Profile() {
@@ -38,6 +40,7 @@ function Profile() {
   const { data: dataProfile } = useGetProfileQuery(data, {
     skip: data ? false : true,
   });
+  
 
   // Update data to fetchs.
   useEffect(() => {
@@ -55,6 +58,12 @@ function Profile() {
   useEffect(() => {
     dataProfile && setProfile(dataProfile.profile);
   }, [dataProfile]);
+
+  // Joined date.
+  const dateJoined = format(
+    new Date(profile && profile.date_joined),
+    "MMMM yyyy"
+  );
 
   return (
     <>
@@ -129,7 +138,7 @@ function Profile() {
                   <HStack spacing={5}>
                     {/* Joined date. */}
                     <ProfileTags icon={<FaRegCalendar />}>
-                      Joined September 2022
+                      Joined {dateJoined}
                     </ProfileTags>
                     {/* Location. */}
                     {profile.country && (
@@ -147,7 +156,7 @@ function Profile() {
       </Box>
       {/* Profile Tabs. */}
       <Box bg={"black"} zIndex={1000} pos={"sticky"} top={"64px"}>
-        <Grid  templateColumns="repeat(2, 1fr)" {...styles.body.tab_list}>
+        <Grid templateColumns="repeat(2, 1fr)" {...styles.body.tab_list}>
           <GridItem>
             <NavLink to={`/${username}`}>
               <Button w={"100%"} variant={"ghost"}>

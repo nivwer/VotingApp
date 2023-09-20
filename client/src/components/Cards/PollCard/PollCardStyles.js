@@ -16,15 +16,10 @@ export const getPollCardStyles = (ThemeColor, isDark) => {
       flex: {
         flex: "1",
         gap: "3",
-        alignItems: "center",
+        align: "center",
         flexWrap: "wrap",
       },
-      heading: { size: "sm", opacity: isDark ? 1 : 0.9 },
-      text: {
-        opacity: 0.5,
-        fontWeight: "medium",
-        fontSize: "sm",
-      },
+
       menu: {
         button: {
           borderRadius: "full",

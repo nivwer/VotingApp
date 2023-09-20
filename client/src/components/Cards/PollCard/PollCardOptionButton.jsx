@@ -22,7 +22,6 @@ function PollCardOptionButton({
 }) {
   const navigate = useNavigate();
   const { isDark, ThemeColor } = useThemeInfo();
-  // Session.
   const session = useSelector((state) => state.session);
 
   // Add user vote.
@@ -54,9 +53,7 @@ function PollCardOptionButton({
           res = await updateUserVote(data);
         }
 
-        if (res.error) {
-          setVote(oldVote);
-        }
+        res.error && setVote(oldVote);
       } catch (error) {
         setVote(oldVote);
         console.log(error);

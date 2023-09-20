@@ -85,6 +85,7 @@ async def user_polls(request, username):
                 poll['profile'] = profile_data
 
                 # Get user vote.
+                vote = ''
                 if is_login:
                     is_voter = request.user.id in poll['voters']
                     if is_voter:
@@ -180,6 +181,19 @@ async def user_voted_polls(request, username):
             # Get poll.
             poll_bson = await polls_db.polls.find_one(
                 {'_id': ObjectId(vote_object['poll_id'])})
+
+            # If poll not exist.
+            if not poll_bson:
+                # Remove the user vote in the votes object.
+                await polls_db.user_votes.update_one(
+                    {'user_id': request.user.id},
+                    {
+                        '$pull': {'voted_polls': {
+                            'poll_id': ObjectId(vote_object['poll_id'])}}
+                    },
+                )
+                continue
+
             # Convert the BSON object to a JSON object.
             poll = json_util._json_convert((poll_bson))
             # REFACTOR / ?
@@ -209,6 +223,7 @@ async def user_voted_polls(request, username):
                 poll['profile'] = profile_data
 
                 # Get user vote.
+                vote = ''
                 if is_login:
                     is_voter = request.user.id in poll['voters']
                     if is_voter:

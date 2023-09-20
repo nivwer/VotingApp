@@ -119,6 +119,7 @@ def get_profile(request, username):
         profile_data = UserProfileSerializer(instance=profile_object).data
 
         profile_data['username'] = user.username
+        profile_data['date_joined'] = user.date_joined
 
         # Is owner.
         is_owner = user.id == request.user.id

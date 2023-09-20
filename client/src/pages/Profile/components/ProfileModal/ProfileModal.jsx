@@ -9,7 +9,7 @@ import {
   useUpdateProfileMutation,
 } from "../../../../api/profileApiSlice";
 // Actions.
-import { updateProfile } from "../../../../features/auth/sessionSlice";
+import { updateProfileAction } from "../../../../features/auth/sessionSlice";
 // Styles
 import { getProfileModalStyles } from "./ProfileModalStyles";
 // Components.
@@ -100,7 +100,7 @@ function ProfileModal({ profile = false, buttonStyles }) {
   // Update Profile.
   useEffect(() => {
     if (dataProfile && username === session.user.username) {
-      dispatch(updateProfile({ profile: dataProfile.profile }));
+      dispatch(updateProfileAction({ profile: dataProfile.profile }));
       setSkip(true);
     }
   }, [dataProfile]);
