@@ -46,7 +46,8 @@ async def option_manager(request, poll_id):
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')

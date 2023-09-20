@@ -36,33 +36,22 @@ class GetCollectionsMongoDB:
 async def get_user_vote(request, poll_id):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
-
-        # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
-        # If poll is not found.
-        if not poll_bson:
-            raise ValidationError('Poll is not found.')
-
-# / Refactor ?
+        polls_db = GetCollectionsMongoDB('polls_db', ['user_votes'])
 
         # Find the user voted polls in the user_votes collection.
-        user_votes_object = await polls_db.user_votes.find_one(
-            {'user_id': request.user.id})
+        user_vote = await polls_db.user_votes.find_one(
+            {
+                'user_id': request.user.id,
+                'voted_polls.poll_id': poll_id
+            },
+            projection={'voted_polls.$': 1})
 
         # If the user has not voted a poll.
-        if not user_votes_object:
+        if not user_vote:
             return Response({'vote': ''})
 
-        # Convert the BSON object to a JSON object.
-        user_votes_object_json = json_util._json_convert((user_votes_object))
-
-        # Get the vote in the user votes object.
-        for v in user_votes_object_json['voted_polls']:
-            if v['poll_id'] == poll_id:
-                return Response({'vote': v['vote']})
-
-# Refactor ? /
+        # Response.
+        return Response({'vote': user_vote['voted_polls'][0]['vote']})
 
     # Handle validation errors.
     except ValidationError as e:
@@ -90,10 +79,13 @@ async def add_user_vote(request, poll_id):
 
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'user_votes'])
 
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
+
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')
@@ -192,10 +184,12 @@ async def update_user_vote(request, poll_id):
 
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'user_votes'])
 
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -210,30 +204,21 @@ async def update_user_vote(request, poll_id):
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-# / Refactor ?
+        # Find the user voted polls in the user_votes collection.
+        user_vote = await polls_db.user_votes.find_one(
+            {
+                'user_id': request.user.id,
+                'voted_polls.poll_id': poll_id
+            },
+            projection={'voted_polls.$': 1})
 
-        # Find the user voted polls in the voted_polls collection.
-        user_votes_object = await polls_db.user_votes.find_one(
-            {'user_id': request.user.id})
-
-        # If user has not voted in a poll.
-        if not user_votes_object:
+        # If the user has not voted a poll.
+        if not user_vote:
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-        # If the user has voted a poll.
-        if user_votes_object:
-            # Convert the BSON object to a JSON object.
-            user_votes_object_json = json_util._json_convert(
-                (user_votes_object))
-
-            # If the user has already voted in this poll.
-            for v in user_votes_object_json['voted_polls']:
-                if v['poll_id'] == poll_id:
-                    del_vote_value = v['vote']
-                    break
-
-# Refactor ? /
+         # If the user has voted a poll.
+        del_vote_value = user_vote['voted_polls'][0]['vote']
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -317,10 +302,12 @@ async def delete_user_vote(request, poll_id):
 
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'user_votes'])
 
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -334,30 +321,21 @@ async def delete_user_vote(request, poll_id):
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-# / Refactor ?
-
-        # Find the user voted polls in the voted_polls collection.
-        user_votes_object = await polls_db.user_votes.find_one(
-            {'user_id': request.user.id})
+         # Find the user voted polls in the user_votes collection.
+        user_vote = await polls_db.user_votes.find_one(
+            {
+                'user_id': request.user.id,
+                'voted_polls.poll_id': poll_id
+            },
+            projection={'voted_polls.$': 1})
 
         # If the user has not voted a poll.
-        if not user_votes_object:
+        if not user_vote:
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-        # If the user has voted a poll.
-        if user_votes_object:
-            # Convert the BSON object to a JSON object.
-            user_votes_object_json = json_util._json_convert(
-                (user_votes_object))
-
-            # If the user has already voted in this poll.
-            for v in user_votes_object_json['voted_polls']:
-                if v['poll_id'] == poll_id:
-                    del_vote_value = v['vote']
-                    break
-
-#  Refactor ? /
+         # If the user has voted a poll.
+        del_vote_value = user_vote['voted_polls'][0]['vote']
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:

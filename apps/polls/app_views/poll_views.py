@@ -46,8 +46,10 @@ async def read_poll(request, poll_id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -63,6 +65,7 @@ async def read_poll(request, poll_id):
 
         # Convert the BSON response to a JSON response.
         poll_json = json_util._json_convert((poll_bson))
+
         # Fix data.
         poll_json['_id'] = poll_json['_id']['$oid']
         poll_json['creation_date'] = poll_json['creation_date']['$date']
@@ -208,8 +211,11 @@ async def update_poll(request, poll_id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
+        
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')
@@ -356,13 +362,16 @@ async def delete_poll(request, poll_id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+        
         # Find the poll in the polls collection.
-        poll = await polls_db.polls.find_one({'_id': ObjectId(poll_id)})
+        poll = await polls_db.polls.find_one(
+            {'_id': ObjectId(poll_id)})
 
         # If poll is not found.
         if not poll:
             raise ValidationError(
-                'Poll is not found.', status=status.HTTP_404_NOT_FOUND)
+                'Poll is not found.', 
+                status=status.HTTP_404_NOT_FOUND)
 
         # If user is not authorized.
         is_owner = poll['created_by']['user_id'] == request.user.id

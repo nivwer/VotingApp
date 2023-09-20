@@ -19,21 +19,15 @@ urlpatterns = [
     # CRUD Vote.
     path('poll/vote/add/<str:poll_id>', voting_views.add_user_vote, name='CVote'),
     path('poll/vote/get/<str:poll_id>', voting_views.get_user_vote, name='RVote'),
-    path('poll/vote/update/<str:poll_id>',
-         voting_views.update_user_vote, name='UVote'),
-    path('poll/vote/delete/<str:poll_id>',
-         voting_views.delete_user_vote, name='DVote'),
+    path('poll/vote/update/<str:poll_id>', voting_views.update_user_vote, name='UVote'),
+    path('poll/vote/delete/<str:poll_id>', voting_views.delete_user_vote, name='DVote'),
 
     ### Search Polls. ###
 
     # User Polls.
     path('user/<str:username>', user_polls_views.user_polls, name='UserPolls'),
-    path('user/voted/<str:username>',
-         user_polls_views.user_voted_polls, name='UserVotedPolls'),
-    # path('category/<str:category>', views.category_polls, name='CategoryPolls')
+    path('user/voted/<str:username>', user_polls_views.user_voted_polls, name='UserVPolls'),
 
     # Category Polls.
     path('category/<str:category>', categories_polls_views.category_polls, name='CategoryPolls'),
-
-
 ]
