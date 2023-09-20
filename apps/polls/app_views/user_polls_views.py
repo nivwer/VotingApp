@@ -51,13 +51,10 @@ async def user_polls(request, username):
         user = await User.objects.aget(username=username)
 
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'options', 'users_voted'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
 
         # Find the polls in the polls collection.
-        polls_cursor = polls_db.polls.find(
-            {'created_by.user_id': user.id})
-
+        polls_cursor = polls_db.polls.find({'created_by.user_id': user.id})
         polls_list = await polls_cursor.to_list(length=None)
 
         # Convert the BSON response to a JSON response.
@@ -66,28 +63,23 @@ async def user_polls(request, username):
         # Find the user voted polls in the voted_polls collection.
         user_voted_polls = ''
         if is_login:
-            user_voted_polls = await polls_db.users_voted.find_one(
+            user_voted_polls = await polls_db.user_votes.find_one(
                 {'user_id': request.user.id})
 
         # Convert the BSON object to a JSON object.
-        user_voted_polls_json = json_util._json_convert(
-            (user_voted_polls))
+        user_voted_polls_json = json_util._json_convert((user_voted_polls))
 
         # Filter the polls.
         polls = []
         for poll in polls_list_json:
-            # Get the user in the User table.
-            user_data = await User.objects.aget(
-                id=poll['created_by']['user_id'])
-            # Get the user profile in the UserProfile table.
-            user_profile = await UserProfile.objects.aget(
-                pk=user_data.pk)
+            # Get the user data.
+            user_data = await User.objects.aget(id=poll['created_by']['user_id'])
+            user_profile = await UserProfile.objects.aget(pk=user_data.pk)
             # Initialize a UserProfileSerializer instance.
-            profile_data = UserProfileSerializer(
-                instance=user_profile).data
-            # Add user data to user profile.
+            profile_data = UserProfileSerializer(instance=user_profile).data
+            # Add user data to user profile data.
             profile_data['username'] = user_data.username
-            # Add user profile in the poll object.
+            # Add user profile data in the poll object.
             poll['profile'] = profile_data
 
             # If the user not voted in this poll.
@@ -107,17 +99,6 @@ async def user_polls(request, username):
 
             if not is_user_vote:
                 poll['user_vote'] = ''
-
-            # Find the poll options in the options collection.
-            options_bson = await polls_db.options.find_one(
-                {'poll_id': ObjectId(poll['_id']['$oid'])})
-            # If options is not found.
-            if not options_bson:
-                raise ValidationError('Options not found.')
-            # Convert the BSON response to a JSON response.
-            options_json = json_util._json_convert((options_bson))
-            # Add options in the poll object.
-            poll['options'] = options_json['options']
 
             # Fix poll data.
             poll['_id'] = poll['_id']['$oid']
@@ -188,12 +169,9 @@ async def user_voted_polls(request, username):
         user = await User.objects.aget(username=username)
 
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'options', 'users_voted'])
-
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls', 'user_votes'])
         # Find the user voted polls in the voted_polls collection.
-        user_votes_object = await polls_db.users_voted.find_one(
-            {'user_id': user.id})
+        user_votes_object = await polls_db.user_votes.find_one({'user_id': user.id})
 
         # If user has not voted in a poll.
         if not user_votes_object:
@@ -201,18 +179,16 @@ async def user_voted_polls(request, username):
                 'The user has not voted in a poll.')
 
         # Convert the BSON object to a JSON object.
-        user_votes_object_json = json_util._json_convert(
-            (user_votes_object))
+        user_votes_object_json = json_util._json_convert((user_votes_object))
 
         # Find the user voted polls in the voted_polls collection.
         user_voted_polls = ''
         if is_login:
-            user_voted_polls = await polls_db.users_voted.find_one(
+            user_voted_polls = await polls_db.user_votes.find_one(
                 {'user_id': request.user.id})
 
         # Convert the BSON object to a JSON object.
-        user_voted_polls_json = json_util._json_convert(
-            (user_voted_polls))
+        user_voted_polls_json = json_util._json_convert((user_voted_polls))
 
         # Filter the polls.
         polls = []
@@ -220,23 +196,18 @@ async def user_voted_polls(request, username):
         for v in user_votes_object_json['voted_polls']:
 
             # Get poll.
-            poll_bson = await polls_db.polls.find_one(
-                {'_id': ObjectId(v['poll_id'])})
+            poll_bson = await polls_db.polls.find_one({'_id': ObjectId(v['poll_id'])})
             # Convert the BSON object to a JSON object.
             poll = json_util._json_convert((poll_bson))
 
-            # Get the user in the User table.
-            user_data = await User.objects.aget(
-                id=poll['created_by']['user_id'])
-            # Get the user profile in the UserProfile table.
-            user_profile = await UserProfile.objects.aget(
-                pk=user_data.pk)
+            # Get the user data.
+            user_data = await User.objects.aget(id=poll['created_by']['user_id'])
+            user_profile = await UserProfile.objects.aget(pk=user_data.pk)
             # Initialize a UserProfileSerializer instance.
-            profile_data = UserProfileSerializer(
-                instance=user_profile).data
-            # Add user data to user profile.
+            profile_data = UserProfileSerializer(instance=user_profile).data
+            # Add user data to user profile data.
             profile_data['username'] = user_data.username
-            # Add user profile in the poll object.
+            # Add user profile data in the poll object.
             poll['profile'] = profile_data
 
             # If the user not voted in this poll.
@@ -256,17 +227,6 @@ async def user_voted_polls(request, username):
 
             if not is_user_vote:
                 poll['user_vote'] = ''
-
-            # Find the poll options in the options collection.
-            options_bson = await polls_db.options.find_one(
-                {'poll_id': ObjectId(poll['_id']['$oid'])})
-            # If options is not found.
-            if not options_bson:
-                raise ValidationError('Options not found.')
-            # Convert the BSON object to a JSON object.
-            options_json = json_util._json_convert((options_bson))
-            # Add options in the poll object.
-            poll['options'] = options_json['options']
 
             # Fix poll data.
             poll['_id'] = poll['_id']['$oid']
