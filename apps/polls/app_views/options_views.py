@@ -75,7 +75,8 @@ async def option_manager(request, poll_id):
         # Method POST.
         if request.method == 'POST':
             if exist:
-                raise ValidationError('Option already exist.')
+                raise ValidationError({
+                    'option_text': ['Option already exist.']})
 
             if not is_owner:
                 for o in options:
@@ -103,7 +104,8 @@ async def option_manager(request, poll_id):
         # Method DELETE.
         if request.method == 'DELETE':
             if not exist:
-                raise ValidationError('Option not exist.')
+                raise ValidationError(
+                    {'option_text': ['Option not exist.']})
 
             # If the user not authorized.
             if not is_owner:

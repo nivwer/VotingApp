@@ -33,6 +33,7 @@ import {
   differenceInHours,
 } from "date-fns";
 import { Link, NavLink, UNSAFE_NavigationContext } from "react-router-dom";
+import PollCardInputOption from "./PollCardInputOption";
 
 // Component.
 function PollCard({ poll }) {
@@ -59,6 +60,8 @@ function PollCard({ poll }) {
 
   // Show all options.
   const [showAllOptions, setShowAllOptions] = useState(false);
+  // Show input option.
+  const [showInputOption, setShowInputOption] = useState(false);
 
   return (
     <>
@@ -165,6 +168,12 @@ function PollCard({ poll }) {
                         vote: "{poll.user_vote}" )
                       </PollCardOptionButton>
                     ))}
+                  {showInputOption && (
+                    <PollCardInputOption
+                      poll_id={poll._id}
+                      setShowInputOption={setShowInputOption}
+                    />
+                  )}
                 </Stack>
                 {/* Show all options button. */}
                 {poll.options && poll.options.length > 4 && (
@@ -196,6 +205,12 @@ function PollCard({ poll }) {
             <PollCardButton isLoading={isLoading}>Comment</PollCardButton>
             <PollCardButton isLoading={isLoading}>
               <Link to={`/${poll.profile.username}/${poll._id}`}>Views</Link>
+            </PollCardButton>
+            <PollCardButton
+              isLoading={isLoading}
+              onClick={() => setShowInputOption(!showInputOption)}
+            >
+              Add option
             </PollCardButton>
           </CardFooter>
           <HStack>

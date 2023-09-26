@@ -53,6 +53,20 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Polls"],
     }),
 
+    // Options manager //
+
+    // Add option.
+    addOption: builder.mutation({
+      query: (data) => ({
+        url: `poll/option/${data.poll_id}`,
+        method: "POST",
+        headers: data.headers,
+        body: data.body,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
+
+
     // Vote manager //
 
     // Add user vote.
@@ -142,4 +156,5 @@ export const {
   useDeleteUserVoteMutation,
   useGetPollCategoriesQuery,
   useGetPollsCategoryQuery,
+  useAddOptionMutation,
 } = pollApiSlice;
