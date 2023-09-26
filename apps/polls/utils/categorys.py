@@ -6,7 +6,15 @@ CATEGORIES = {
         },
         {
             'value': 'music',
-            'text': 'Music'
+            'text': 'Music',
+        },
+        {
+            'value': 'art and culture',
+            'text': 'Art and Culture'
+        },
+        {
+            'value': 'programming',
+            'text': 'Programming'
         },
         {
             'value': 'health and wellness',
@@ -17,16 +25,16 @@ CATEGORIES = {
             'text': 'Entertainment'
         },
         {
+            'value': 'animals and pets',
+            'text': 'Animals and Pets'
+        },
+        {
             'value': 'travel and tourism',
             'text': 'Travel and Tourism'
         },
         {
             'value': 'education',
             'text': 'Education'
-        },
-        {
-            'value': 'programming',
-            'text': 'Programming'
         },
         {
             'value': 'news',
@@ -49,6 +57,10 @@ CATEGORIES = {
             'text': 'Sports'
         },
         {
+            'value': 'anime',
+            'text': 'Anime'
+        },
+        {
             'value': 'fashion and beauty',
             'text': 'Fashion and Beauty'
         },
@@ -57,12 +69,8 @@ CATEGORIES = {
             'text': 'Politics and Government'
         },
         {
-            'value': 'art and culture',
-            'text': 'Art and Culture'
-        },
-        {
-            'value': 'anime',
-            'text': 'Anime'
+            'value': 'social networks',
+            'text': 'Social Networks'
         },
         {
             'value': 'lifestyle',
@@ -103,14 +111,6 @@ CATEGORIES = {
         {
             'value': 'religion',
             'text': 'Religion'
-        },
-        {
-            'value': 'social networks',
-            'text': 'Social Networks'
-        },
-        {
-            'value': 'animals and pets',
-            'text': 'Animals and Pets'
         },
         {
             'value': 'psychology',

@@ -10,11 +10,10 @@ import SignIn from "../pages/Auth/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
 import Profile from "../pages/Profile/Profile";
 import Theme from "../pages/Settings/Theme";
+import Poll from "../pages/Poll/Poll";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
-import ProfileUserPolls from "../pages/Profile/ProfileUserPolls";
-import ProfileVotedPolls from "../pages/Profile/ProfileVotedPolls";
 import PollResults from "./Results/PollResults";
 
 // Router.
@@ -56,7 +55,7 @@ function Router() {
         <Route path="/:username" element={<Profile />} />
 
         {/* Poll page. */}
-        {/* <Route path="/:username/:id" element={<ViewPoll />} /> */}
+        <Route path="/:username/:id" element={<Poll />} />
       </Route>
 
       {/* ### SETTINGS SECTION ### */}

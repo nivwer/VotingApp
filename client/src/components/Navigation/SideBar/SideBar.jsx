@@ -49,19 +49,20 @@ function SideBar({ section }) {
           {/* Categories */}
           <Flex
             zIndex={"100"}
+            opacity={0.9} 
             justify={"center"}
             pos={"sticky"}
             top={"0"}
             w={"100%"}
-            bg={"black"}
+            bg={isDark ? "black" : "white"}
             p={"3"}
           >
-            <Heading w={"90%"} fontSize={"lg"}>
+            <Heading w={"87%"} fontSize={"lg"}>
               Categories
             </Heading>
           </Flex>
-          <Flex justify={"center"}>
-            <Stack w={"85%"} spacing={0}>
+          <Flex opacity={isDark ? 0.8 : 0.6} justify={"center"}>
+            <Stack w={"82%"} spacing={0} fontWeight={"semibold"}>
               {categories &&
                 categories.map((category, index) => (
                   <NavLink
@@ -83,16 +84,15 @@ function SideBar({ section }) {
         </GridItem>
         <GridItem>
           <Flex
+            h={"100%"}
+            pl={5}
+            pr={8}
+            justify={"space-between"}
+            align={"center"}
             borderTopLeftRadius={"3xl"}
             border={"1px solid"}
             borderRight={"0px solid"}
             borderColor={isDark ? "whiteAlpha.200" : "blackAlpha.200"}
-            gap={8}
-            h={"100%"}
-            pl={4}
-            pr={8}
-            justify={"space-between"}
-            align={"center"}
           >
             <HStack opacity={isDark ? 0.9 : 0.8} spacing={1}>
               <IconButton
@@ -117,7 +117,7 @@ function SideBar({ section }) {
                 variant: "solid",
                 borderRadius: "full",
                 size: "lg",
-                opacity: 0.9
+                opacity: 0.9,
               }}
             />
           </Flex>

@@ -2,6 +2,8 @@
 from datetime import datetime
 # Virtualenv.
 from dotenv import load_dotenv
+# Django.
+from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied
@@ -19,6 +21,8 @@ from bson import json_util
 from bson.objectid import ObjectId
 # Models and Serializers.
 from ..serializers import PollSerializer, OptionsSerializer
+from apps.profiles.models import UserProfile
+from apps.profiles.serializers import UserProfileSerializer
 
 
 # Load the virtual environment.
@@ -43,9 +47,17 @@ class GetCollectionsMongoDB:
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def read_poll(request, poll_id):
+    # If user is login.
+    is_login = True if request.user else False
+
     try:
+        # Get the user in the User table.
+        user = await User.objects.aget(
+            username=request.user.username)
+
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'user_votes'])
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -55,28 +67,57 @@ async def read_poll(request, poll_id):
         if not poll_bson:
             raise ValidationError('Poll is not found.')
 
+        # Convert the BSON response to a JSON response.
+        poll_json = json_util._json_convert((poll_bson))
+
         # If privacy of poll is private.
         is_private = poll_bson['privacy'] == 'private'
         is_owner = poll_bson['created_by']['user_id'] == request.user.id
-        if not is_owner and is_private:
+        if (not is_owner) and is_private:
             raise PermissionDenied('This poll is private.')
 
         # If privacy of poll is friends_only. ?
 
-        # Convert the BSON response to a JSON response.
-        poll_json = json_util._json_convert((poll_bson))
-
         # Fix data.
         poll_json['_id'] = poll_json['_id']['$oid']
         poll_json['creation_date'] = poll_json['creation_date']['$date']
+        poll_json['is_owner'] = is_owner
+
+        # Get the user data.
+        user_data = await User.objects.aget(
+            id=poll_json['created_by']['user_id'])
+        user_profile = await UserProfile.objects.aget(
+            pk=user_data.pk)
+        # Initialize a UserProfileSerializer instance.
+        profile_data = UserProfileSerializer(
+            instance=user_profile).data
+        # Add user data to user profile data.
+        profile_data['username'] = user_data.username
+        # Add user profile data in the poll object.
+        poll_json['profile'] = profile_data
+
+        # Get user vote.
+        vote = ''
+        if is_login:
+            is_voter = request.user.id in poll_json['voters']
+            if is_voter:
+                # Find the vote in the user_votes collection.
+                user_vote = await polls_db.user_votes.find_one(
+                    {
+                        'user_id': request.user.id,
+                        'voted_polls.poll_id': poll_json['_id']
+                    },
+                    projection={'voted_polls.$': 1})
+
+                # If the user has voted a poll.
+                if user_vote:
+                    vote = user_vote['voted_polls'][0]['vote']
+
+            # Add the vote in the poll.
+            poll_json['user_vote'] = vote if vote else ''
 
         # Response.
-        return Response(
-            {
-                'is_owner': is_owner,
-                'poll': poll_json,
-            }
-        )
+        return Response(poll_json)
 
     # Handle validation errors.
     except ValidationError as e:
@@ -215,7 +256,7 @@ async def update_poll(request, poll_id):
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(poll_id)})
-        
+
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')
@@ -362,7 +403,7 @@ async def delete_poll(request, poll_id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
-        
+
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
             {'_id': ObjectId(poll_id)})
@@ -370,7 +411,7 @@ async def delete_poll(request, poll_id):
         # If poll is not found.
         if not poll:
             raise ValidationError(
-                'Poll is not found.', 
+                'Poll is not found.',
                 status=status.HTTP_404_NOT_FOUND)
 
         # If user is not authorized.

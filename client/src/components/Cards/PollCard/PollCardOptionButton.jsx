@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useThemeInfo } from "../../../hooks/Theme";
 import {
   useAddUserVoteMutation,
+  useDeleteUserVoteMutation,
   useUpdateUserVoteMutation,
 } from "../../../api/pollApiSlice";
 // Components.
@@ -32,20 +33,25 @@ function PollCardOptionButton({
   const [updateUserVote, { isLoading: isUpdateVoteLoading }] =
     useUpdateUserVoteMutation();
 
+  // Delete user vote.
+  const [deleteUserVote, { isLoading: isDeleteVoteLoading }] =
+    useDeleteUserVoteMutation();
+
   const isLoading = isAddVoteLoading || isUpdateVoteLoading;
 
   const handleUserVote = async (value) => {
+    let res = "";
+    const data = {
+      poll_id: poll._id,
+      headers: { Authorization: `Token ${session.token}` },
+      body: { vote: value },
+    };
+    const oldVote = vote;
+
     if (!session.token) {
       navigate("/signin");
     } else if (value != vote) {
-      const oldVote = vote;
       setVote(value);
-      let res = "";
-      const data = {
-        poll_id: poll._id,
-        headers: { Authorization: `Token ${session.token}` },
-        body: { vote: value },
-      };
       try {
         if (vote === "") {
           res = await addUserVote(data);
@@ -59,7 +65,16 @@ function PollCardOptionButton({
         console.log(error);
       }
     } else {
-      console.log("delete vote");
+      setVote("");
+      try {
+        if (vote != "") {
+          res = await deleteUserVote(data);
+        }
+        res.error && setVote(oldVote);
+      } catch (error) {
+        setVote(oldVote);
+        console.log(error);
+      }
     }
   };
 

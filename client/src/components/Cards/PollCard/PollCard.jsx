@@ -32,6 +32,7 @@ import {
   differenceInMinutes,
   differenceInHours,
 } from "date-fns";
+import { Link, NavLink, UNSAFE_NavigationContext } from "react-router-dom";
 
 // Component.
 function PollCard({ poll }) {
@@ -76,25 +77,31 @@ function PollCard({ poll }) {
             <Flex flex="1" gap="3">
               {/* Profile Picture. */}
               <Box h={"100%"}>
-                <IconButton isDisabled={isLoading} variant={"unstyled"}>
-                  <Avatar
-                    src={poll.profile.profile_picture}
-                    size={"md"}
-                    bg={"gray.400"}
-                  />
-                </IconButton>
+                <NavLink to={`/${poll.profile.username}`}>
+                  <IconButton isDisabled={isLoading} variant={"unstyled"}>
+                    <Avatar
+                      src={poll.profile.profile_picture}
+                      size={"md"}
+                      bg={"gray.400"}
+                    />
+                  </IconButton>
+                </NavLink>
               </Box>
 
               <Stack fontSize={"md"} spacing={0}>
                 <HStack spacing={1}>
                   {/* Profile Name. */}
-                  <Text fontWeight={"black"} opacity={isDark ? 1 : 0.9}>
-                    {poll.profile.profile_name}
-                  </Text>
+                  <NavLink to={`/${poll.profile.username}`}>
+                    <Text fontWeight={"black"} opacity={isDark ? 1 : 0.9}>
+                      {poll.profile.profile_name}
+                    </Text>
+                  </NavLink>
                   {/* Username. */}
-                  <Text fontWeight={"normal"} opacity={0.5}>
-                    @{poll.profile.username}
-                  </Text>
+                  <NavLink to={`/${poll.profile.username}`}>
+                    <Text fontWeight={"normal"} opacity={0.5}>
+                      @{poll.profile.username}
+                    </Text>
+                  </NavLink>
                 </HStack>
 
                 <HStack
@@ -187,7 +194,9 @@ function PollCard({ poll }) {
           <CardFooter justify={"space-between"} flexWrap={"wrap"}>
             <PollCardButton isLoading={isLoading}>Share</PollCardButton>
             <PollCardButton isLoading={isLoading}>Comment</PollCardButton>
-            <PollCardButton isLoading={isLoading}>Views</PollCardButton>
+            <PollCardButton isLoading={isLoading}>
+              <Link to={`/${poll.profile.username}/${poll._id}`}>Views</Link>
+            </PollCardButton>
           </CardFooter>
           <HStack>
             <div> {poll.voters}</div>

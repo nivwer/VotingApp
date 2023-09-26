@@ -68,7 +68,7 @@ function NavDrawer({ isOpen, onClose }) {
         <DrawerOverlay />
         <DrawerContent
           bg={isDark ? "black" : "white"}
-          border={"2px solid"}
+          border={"1px solid"}
           borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
           borderLeftRadius="14px"
         >

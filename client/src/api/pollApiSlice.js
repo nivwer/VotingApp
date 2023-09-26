@@ -29,6 +29,7 @@ export const pollApiSlice = createApi({
         method: "GET",
         headers: data.headers,
       }),
+      providesTags: ["Polls"],
     }),
 
     // Update Poll.
@@ -72,6 +73,16 @@ export const pollApiSlice = createApi({
         method: "PATCH",
         headers: data.headers,
         body: data.body,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
+
+    // Delete user vote.
+    deleteUserVote: builder.mutation({
+      query: (data) => ({
+        url: `poll/vote/delete/${data.poll_id}`,
+        method: "DELETE",
+        headers: data.headers,
       }),
       invalidatesTags: ["Polls"],
     }),
@@ -123,11 +134,12 @@ export const {
   useGetUserPollsQuery,
   useGetUserVotedPollsQuery,
   useCreatePollMutation,
-  useReadPollMutation,
+  useReadPollQuery,
   useUpdatePollMutation,
   useDeletePollMutation,
   useAddUserVoteMutation,
   useUpdateUserVoteMutation,
+  useDeleteUserVoteMutation,
   useGetPollCategoriesQuery,
   useGetPollsCategoryQuery,
 } = pollApiSlice;
