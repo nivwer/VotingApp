@@ -19,7 +19,7 @@ function ProfileInputURL({
   name,
   isLoading,
   errors,
-  styles,
+  focusBorderColor,
   icon,
 }) {
   const { isDark } = useThemeInfo();
@@ -49,7 +49,7 @@ function ProfileInputURL({
           type="url"
           defaultValue={defaultValue}
           placeholder={placeholder}
-          focusBorderColor={styles.focusBorderColor}
+          focusBorderColor={focusBorderColor}
         />
       </InputGroup>
       {/* Handle errors. */}

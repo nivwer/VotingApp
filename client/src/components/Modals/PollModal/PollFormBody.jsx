@@ -34,7 +34,6 @@ function PollFormBody({
   privacyValue,
   setPrivacyValue,
   categories,
-  styles,
   isLoading,
 }) {
   const { isDark, ThemeColor } = useThemeInfo();
@@ -107,6 +106,18 @@ function PollFormBody({
     }
   };
 
+  const optionStyles = {
+    justifyContent: "space-between",
+    fontWeight: "semibold",
+    borderRadius: "3xl",
+    border: "1px solid",
+    borderColor: isDark ? "whiteAlpha.300" : "blackAlpha.400",
+    opacity: 0.8,
+    p: "3px",
+  };
+
+  const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700";
+
   return (
     <Stack textAlign="start" spacing={3}>
       {/* Title. */}
@@ -122,12 +133,13 @@ function PollFormBody({
               message: "Maximum 113 characters allowed.",
             },
           })}
+          variant={"outline"}
           type="text"
           fontWeight={"medium"}
           opacity={"0.9"}
           defaultValue={poll ? poll.title : ""}
           placeholder="This is my question."
-          focusBorderColor={styles.focusBorderColor}
+          focusBorderColor={focusBorderColor}
         />
         {/* Handle errors. */}
         {errors.title && (
@@ -152,7 +164,7 @@ function PollFormBody({
           opacity={"0.9"}
           defaultValue={poll ? poll.description : ""}
           placeholder="This is my description."
-          focusBorderColor={styles.focusBorderColor}
+          focusBorderColor={focusBorderColor}
           resize={"none"}
         />
         {/* Handle errors. */}
@@ -176,7 +188,7 @@ function PollFormBody({
           borderRadius={"xl"}
           defaultValue={poll ? poll.category : ""}
           placeholder="Category..."
-          focusBorderColor={styles.focusBorderColor}
+          focusBorderColor={focusBorderColor}
         >
           {categories &&
             categories.map((category, index) => (
@@ -223,11 +235,7 @@ function PollFormBody({
         {/* Options list. */}
         <Stack w={"100%"}>
           {options["options"].map((option, index) => (
-            <Flex
-              key={index}
-              {...styles.body.options.item}
-              opacity={isLoading ? 0.4 : 1}
-            >
+            <Flex key={index} {...optionStyles} opacity={isLoading ? 0.4 : 1}>
               <Text
                 opacity={0.7}
                 wordBreak={"break-all"}
@@ -255,9 +263,9 @@ function PollFormBody({
               {...register("options")}
               type="text"
               placeholder="Add a option."
-              {...styles.body.options.item}
+              {...optionStyles}
               px={"19px"}
-              focusBorderColor={styles.focusBorderColor}
+              focusBorderColor={focusBorderColor}
             />
             <InputRightElement>
               {/* Add options. */}

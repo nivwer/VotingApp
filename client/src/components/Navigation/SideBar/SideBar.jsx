@@ -10,10 +10,15 @@ import {
   Flex,
   Grid,
   GridItem,
+  HStack,
   Heading,
+  IconButton,
   Stack,
+  Text,
 } from "@chakra-ui/react";
 import { useThemeInfo } from "../../../hooks/Theme";
+// Icons.
+import { FaPlus, FaHouse, FaSquarePollHorizontal } from "react-icons/fa6";
 
 // Component.
 function SideBar({ section }) {
@@ -35,30 +40,16 @@ function SideBar({ section }) {
   return (
     <Box pos={"fixed"} w={"295px"} h={"calc(100vh - 64px)"}>
       <Grid
-        gridTemplateRows={"80px 1fr 80px"}
-        gridTemplateColumns={"95%"}
+        gridTemplateRows={"1fr 80px"}
+        gridTemplateColumns={"100%"}
         gap="1"
         h={"100%"}
       >
-        <GridItem>
-          {/* New Poll button. */}
-          <Flex h={"100%"} justify={"center"} align={"center"}>
-            <PollModal
-              buttonStyles={{
-                size: "lg",
-                colorScheme: ThemeColor,
-                variant: "outline",
-                w: "90%",
-                borderRadius: "2xl",
-              }}
-            />
-          </Flex>
-        </GridItem>
         <GridItem overflow={"auto"}>
           {/* Categories */}
           <Flex
             zIndex={"100"}
-            justifyContent={"center"}
+            justify={"center"}
             pos={"sticky"}
             top={"0"}
             w={"100%"}
@@ -69,7 +60,7 @@ function SideBar({ section }) {
               Categories
             </Heading>
           </Flex>
-          <Flex justifyContent={"center"}>
+          <Flex justify={"center"}>
             <Stack w={"85%"} spacing={0}>
               {categories &&
                 categories.map((category, index) => (
@@ -91,14 +82,42 @@ function SideBar({ section }) {
           </Flex>
         </GridItem>
         <GridItem>
-          <Flex h={"100%"} justify={"center"} align={"center"}>
+          <Flex
+            borderTopLeftRadius={"3xl"}
+            border={"1px solid"}
+            borderRight={"0px solid"}
+            borderColor={isDark ? "whiteAlpha.200" : "blackAlpha.200"}
+            gap={8}
+            h={"100%"}
+            pl={4}
+            pr={8}
+            justify={"space-between"}
+            align={"center"}
+          >
+            <HStack opacity={isDark ? 0.9 : 0.8} spacing={1}>
+              <IconButton
+                icon={<FaHouse />}
+                variant={"ghost"}
+                borderRadius="full"
+                size={"lg"}
+                fontSize={"2xl"}
+              />
+              <IconButton
+                icon={<FaSquarePollHorizontal />}
+                variant={"ghost"}
+                borderRadius="full"
+                size={"lg"}
+                fontSize={"2xl"}
+              />
+            </HStack>
             <PollModal
+              icon={<FaPlus />}
               buttonStyles={{
-                size: "lg",
                 colorScheme: ThemeColor,
                 variant: "solid",
-                w: "70%",
-                borderRadius: "2xl",
+                borderRadius: "full",
+                size: "lg",
+                opacity: 0.9
               }}
             />
           </Flex>

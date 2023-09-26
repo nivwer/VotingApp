@@ -25,8 +25,6 @@ import {
 } from "@chakra-ui/react";
 // Icons.
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
-// Styles.
-import { getPollCardStyles } from "./PollCardStyles";
 // Others.
 import {
   format,
@@ -37,8 +35,7 @@ import {
 
 // Component.
 function PollCard({ poll }) {
-  const { ThemeColor, isDark } = useThemeInfo();
-  const styles = getPollCardStyles(ThemeColor, isDark);
+  const { isDark } = useThemeInfo();
 
   // Time Ago.
   const creationDate = new Date(poll.creation_date);
@@ -65,24 +62,29 @@ function PollCard({ poll }) {
   return (
     <>
       {poll && (
-        <Card {...styles.card}>
+        <Card
+          bg={isDark ? "black" : "white"}
+          w="100%"
+          borderRadius="0"
+          borderBottom={"1px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+        >
           {isLoading && <CustomProgress />}
-          <HStack>
-            <div> {poll.voters}</div>
-          </HStack>
+
           {/* Card Header. */}
           <CardHeader as={Flex} spacing={"4"}>
-            <Flex {...styles.header.flex}>
+            <Flex flex="1" gap="3">
               {/* Profile Picture. */}
               <Box h={"100%"}>
                 <IconButton isDisabled={isLoading} variant={"unstyled"}>
                   <Avatar
-                    size={"md"}
                     src={poll.profile.profile_picture}
+                    size={"md"}
                     bg={"gray.400"}
                   />
                 </IconButton>
               </Box>
+
               <Stack fontSize={"md"} spacing={0}>
                 <HStack spacing={1}>
                   {/* Profile Name. */}
@@ -90,15 +92,15 @@ function PollCard({ poll }) {
                     {poll.profile.profile_name}
                   </Text>
                   {/* Username. */}
-                  <Text fontWeight={"medium"} opacity={0.5}>
+                  <Text fontWeight={"normal"} opacity={0.5}>
                     @{poll.profile.username}
                   </Text>
                 </HStack>
 
                 <HStack
-                  fontSize={"sm"}
                   spacing={1}
-                  fontWeight={"semibold"}
+                  fontSize="sm"
+                  fontWeight="semibold"
                   opacity={0.5}
                 >
                   {/* Total Votes. */}
@@ -126,21 +128,29 @@ function PollCard({ poll }) {
           <CardBody>
             <Flex justifyContent={"center"}>
               <Stack spacing={6} w={"90%"}>
-                <Stack>
-                  <Heading {...styles.body.title}>{poll.title}</Heading>
-                  <Text {...styles.body.description}>{poll.description}</Text>
+                <Stack textAlign={"center"}>
+                  {/* Title. */}
+                  <Heading size={"md"} opacity={0.9}>
+                    {poll.title}
+                  </Heading>
+                  {/* Description. */}
+                  <Text fontSize={"md"} opacity={0.8}>
+                    {poll.description}
+                  </Text>
                 </Stack>
+
+                {/* Poll options. */}
                 <Stack px={4}>
                   {poll.options
                     .slice(0, showAllOptions ? poll.options.length : 4)
                     .sort((a, b) => b.votes - a.votes)
                     .map((option, index) => (
                       <PollCardOptionButton
+                        key={index}
                         poll={poll}
                         vote={vote}
                         setVote={setVote}
                         value={option.option_text}
-                        key={index}
                         isDisabled={isLoading || isDisabled}
                         setIsDisabled={setIsDisabled}
                       >
@@ -149,9 +159,14 @@ function PollCard({ poll }) {
                       </PollCardOptionButton>
                     ))}
                 </Stack>
+                {/* Show all options button. */}
                 {poll.options && poll.options.length > 4 && (
                   <Flex opacity={0.8} justify={"center"}>
                     <Button
+                      onClick={() => setShowAllOptions(!showAllOptions)}
+                      size={"sm"}
+                      variant={"ghost"}
+                      borderRadius={"full"}
                       pl={6}
                       rightIcon={
                         <Icon
@@ -159,9 +174,6 @@ function PollCard({ poll }) {
                           as={showAllOptions ? ChevronUpIcon : ChevronDownIcon}
                         />
                       }
-                      variant={"ghost"}
-                      borderRadius={"full"}
-                      onClick={() => setShowAllOptions(!showAllOptions)}
                     >
                       {showAllOptions ? "Show less" : "Show more"}
                     </Button>
@@ -172,11 +184,14 @@ function PollCard({ poll }) {
           </CardBody>
 
           {/* Card Footer. */}
-          <CardFooter {...styles.footer}>
+          <CardFooter justify={"space-between"} flexWrap={"wrap"}>
             <PollCardButton isLoading={isLoading}>Share</PollCardButton>
             <PollCardButton isLoading={isLoading}>Comment</PollCardButton>
             <PollCardButton isLoading={isLoading}>Views</PollCardButton>
           </CardFooter>
+          <HStack>
+            <div> {poll.voters}</div>
+          </HStack>
         </Card>
       )}
     </>

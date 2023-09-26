@@ -12,12 +12,12 @@ function ToggleColorMode() {
   return (
     <>
       <IconButton
-        size="sm"
-        colorScheme={"default"}
-        opacity={isDark ? 1 : 0.6}
-        variant={"ghost"}
-        borderRadius={"full"}
         onClick={() => toggleColorMode()}
+        colorScheme={"default"}
+        variant={"ghost"}
+        size="sm"
+        borderRadius={"full"}
+        opacity={isDark ? 1 : 0.6}
       >
         {colorMode === "dark" ? <MoonIcon /> : <SunIcon />}
       </IconButton>

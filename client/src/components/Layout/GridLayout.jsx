@@ -39,10 +39,10 @@ function GridLayout({ layout = "simple", section = "main" }) {
       columns: "1fr 295px 664px 1fr",
     },
     simple: {
-      area: `"header"
-             "main"`,
+      area: `"header header header"
+             "l-none main r-none"`,
       rows: "64px 1fr",
-      columns: "1fr",
+      columns: "1fr 664px 1fr",
     },
   };
 
@@ -60,16 +60,20 @@ function GridLayout({ layout = "simple", section = "main" }) {
       {/* Right Side */}
       {!isSimple && !isDouble && (
         <GridItem
-          display={{ base: "none", lg: "none", xl: "grid" }}
           area={"right"}
-          borderLeft={isDark ? "1px solid" : "1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          display={{ base: "none", lg: "none", xl: "grid" }}
         ></GridItem>
       )}
 
       {/* Main */}
-      <GridItem minH={"calc(100vh - 64px)"} area={"main"}>
-        <Container p={0} maxW={"664px"}>
+      <GridItem area={"main"}>
+        <Container
+          minH={"calc(100vh - 64px)"}
+          p={0}
+          maxW={"664px"}
+          borderX={layout === "simple" ? "0px solid" : "1px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+        >
           <Outlet />
         </Container>
       </GridItem>
@@ -77,10 +81,8 @@ function GridLayout({ layout = "simple", section = "main" }) {
       {/* Left Side */}
       {!isSimple && (
         <GridItem
-          display={{ base: "none", lg: "grid", xl: "grid" }}
           area={"left"}
-          borderRight={isDark ? "1px solid" : "1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          display={{ base: "none", lg: "grid", xl: "grid" }}
         >
           <SideBar section={section} />
         </GridItem>

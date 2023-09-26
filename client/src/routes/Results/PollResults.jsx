@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 // Page.
 function PollResults() {
-// Get parameters state from URL.
+  // Get parameters state from URL.
   const [searchParams, setSearchParams] = useSearchParams();
 
   const session = useSelector((state) => state.session);

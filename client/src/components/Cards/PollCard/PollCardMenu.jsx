@@ -13,13 +13,10 @@ import {
 } from "@chakra-ui/react";
 // Icons.
 import { FaEllipsis } from "react-icons/fa6";
-// Styles.
-import { getPollCardStyles } from "./PollCardStyles";
 
 // Component.
 function PollCardMenu({ poll, deletePoll, isLoading }) {
   const { isDark, ThemeColor } = useThemeInfo();
-  const styles = getPollCardStyles(ThemeColor, isDark);
   const session = useSelector((state) => state.session);
 
   // Delete poll.
@@ -36,6 +33,19 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
     }
   };
 
+  const itemStyle = {
+    w: "100%",
+    h: "100%",
+    px: 3,
+    py: 2,
+    borderRadius: 0,
+    variant: "ghost",
+    justifyContent: "start",
+    color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
+    bg: isDark ? "black" : "white",
+    opacity: isDark ? 0.9 : 0.7,
+  };
+
   return (
     <>
       {session.token && (
@@ -45,23 +55,22 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
             as={IconButton}
             aria-label={"Options"}
             icon={<FaEllipsis />}
-            {...styles.header.menu.button}
+            borderRadius={"full"}
+            variant={"ghost"}
           />
           {poll.is_owner ? (
-            <MenuList {...styles.header.menu.list}>
+            <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>
               <MenuItem
-                isDisabled={isLoading}
                 as={PollModal}
-                buttonStyles={styles.header.menu.item}
                 poll={poll}
-              >
-                Edit
-              </MenuItem>
-              <MenuItem
+                buttonStyles={itemStyle}
                 isDisabled={isLoading}
+              />
+              <MenuItem
                 as={Button}
-                {...styles.header.menu.item}
                 onClick={() => handleDeletePoll(poll._id)}
+                {...itemStyle}
+                isDisabled={isLoading}
               >
                 Delete
               </MenuItem>

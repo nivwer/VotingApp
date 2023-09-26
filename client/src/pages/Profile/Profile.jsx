@@ -2,21 +2,20 @@
 import { useThemeInfo } from "../../hooks/Theme";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { NavLink, Outlet, useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useGetProfileQuery } from "../../api/profileApiSlice";
-// Styles.
-import { getProfileStyles } from "./ProfileStyles";
 // Components.
+import ProfileUserPolls from "./ProfileUserPolls";
+import ProfileVotedPolls from "./ProfileVotedPolls";
+import ProfileTabButton from "./components/ProfileTabButton";
 import ProfileModal from "./components/ProfileModal/ProfileModal";
 import ProfileLink from "./components/ProfileLink";
 import ProfileTags from "./components/ProfileTags";
 import {
   Avatar,
   Box,
-  Button,
   Flex,
   Grid,
-  GridItem,
   HStack,
   Heading,
   Stack,
@@ -30,17 +29,17 @@ import { format } from "date-fns";
 // Page.
 function Profile() {
   const { isDark, ThemeColor } = useThemeInfo();
-  const styles = getProfileStyles(isDark, ThemeColor);
   const session = useSelector((state) => state.session);
   const { username } = useParams();
   const [data, setData] = useState(false);
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get("tab") || "";
 
   // Query to get User Profile.
   const [profile, setProfile] = useState(null);
   const { data: dataProfile } = useGetProfileQuery(data, {
     skip: data ? false : true,
   });
-  
 
   // Update data to fetchs.
   useEffect(() => {
@@ -68,11 +67,19 @@ function Profile() {
   return (
     <>
       {/* Profile Header. */}
-      <Box {...styles.header.content}>
+      <Box
+        w={"100%"}
+        minHeight={"328px"}
+        p={"7"}
+        pb={"10"}
+        bg={isDark ? "black" : "white"}
+        color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+        overflow={"hidden"}
+      >
         {profile && (
           <>
-            <Flex {...styles.header.container}>
-              <Flex {...styles.header.flex}>
+            <Flex spacing="2" flex="1" dir="column" wrap="wrap" align="start">
+              <Flex justify="space-between" w="100%" p={5} px={3}>
                 {/* Avatar. */}
                 <Avatar
                   bg={"gray.400"}
@@ -112,11 +119,19 @@ function Profile() {
                   )}
 
                   {/* Links. */}
-                  <Stack {...styles.header.stack_links}>
+                  <Stack
+                    color={isDark ? `${ThemeColor}.100` : `${ThemeColor}.600`}
+                    opacity={ThemeColor === "default" ? 0.6 : 0.8}
+                    spacing={0}
+                    fontSize={"md"}
+                  >
                     {/* Website Link. */}
                     {profile.website_link && (
                       <HStack spacing={1} fontWeight={"semibold"}>
-                        <Box {...styles.header.box_icon}>
+                        <Box
+                          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+                          opacity={ThemeColor === "default" ? 1 : 0.8}
+                        >
                           <FaLink />
                         </Box>
                         <ProfileLink link={profile.website_link} />
@@ -155,27 +170,33 @@ function Profile() {
         )}
       </Box>
       {/* Profile Tabs. */}
-      <Box bg={"black"} zIndex={1000} pos={"sticky"} top={"64px"}>
-        <Grid templateColumns="repeat(2, 1fr)" {...styles.body.tab_list}>
-          <GridItem>
-            <NavLink to={`/${username}`}>
-              <Button w={"100%"} variant={"ghost"}>
-                Polls
-              </Button>
-            </NavLink>
-          </GridItem>
-          <GridItem>
-            <NavLink to={`/${username}/votes`}>
-              <Button w={"100%"} variant={"ghost"}>
-                Votes
-              </Button>
-            </NavLink>
-          </GridItem>
+      <Box
+        bg={isDark ? "black" : "white"}
+        zIndex={1000}
+        pos={"sticky"}
+        top={"64px"}
+      >
+        <Grid
+          templateColumns="repeat(3, 1fr)"
+          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+          borderBottom={"1px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+        >
+          <ProfileTabButton tab={tab} username={username}>
+            Polls
+          </ProfileTabButton>
+          <ProfileTabButton tab={tab} value={"votes"} username={username}>
+            Votes
+          </ProfileTabButton>
+          <ProfileTabButton tab={tab} value={"shared"} username={username}>
+            Shared
+          </ProfileTabButton>
         </Grid>
       </Box>
       {/* Profile Body. */}
       <Flex>
-        <Outlet />
+        {!tab && <ProfileUserPolls />}
+        {tab === "votes" && <ProfileVotedPolls />}
       </Flex>
     </>
   );

@@ -52,11 +52,9 @@ function Router() {
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="user" />}>
         {/* Profile page. */}
-        <Route element={<Profile />}>
-          <Route path="/:username" element={<ProfileUserPolls />} />
 
-          <Route path="/:username/votes" element={<ProfileVotedPolls />} />
-        </Route>
+        <Route path="/:username" element={<Profile />} />
+
         {/* Poll page. */}
         {/* <Route path="/:username/:id" element={<ViewPoll />} /> */}
       </Route>

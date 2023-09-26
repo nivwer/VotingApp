@@ -16,8 +16,6 @@ import {
   InputRightElement,
   Stack,
 } from "@chakra-ui/react";
-// Styles.
-import { getAuthStyles } from "../AuthStyles";
 // Icons.
 import ToggleShowPassword from "./ToggleShowPassword";
 
@@ -31,14 +29,22 @@ function AuthForm({
   watch,
 }) {
   const { isDark } = useThemeInfo();
-  const styles = getAuthStyles(isDark);
 
   // Show Password fields.
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700";
+
   return (
-    <Box {...styles.content}>
+    <Box
+      w={"100%"}
+      color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+      outline={"2px solid"}
+      outlineColor={isDark ? "whiteAlpha.300" : "blackAlpha.600"}
+      borderRadius={"14px"}
+      textAlign={"center"}
+    >
       {isLoading && <CustomProgress />}
       {/* Form */}
       <form onSubmit={onSubmit}>
@@ -56,7 +62,7 @@ function AuthForm({
                 })}
                 type="text"
                 placeholder="Username"
-                focusBorderColor={styles.focusBorderColor}
+                focusBorderColor={focusBorderColor}
               />
               {/* Handle errors. */}
               {errors.username && (
@@ -76,7 +82,7 @@ function AuthForm({
                   })}
                   placeholder="Password"
                   type={showPassword ? "text" : "password"}
-                  focusBorderColor={styles.focusBorderColor}
+                  focusBorderColor={focusBorderColor}
                 />
                 <InputRightElement width="3rem">
                   <ToggleShowPassword
@@ -109,7 +115,7 @@ function AuthForm({
                     })}
                     placeholder="Confirm password"
                     type={showConfirmPassword ? "text" : "password"}
-                    focusBorderColor={styles.focusBorderColor}
+                    focusBorderColor={focusBorderColor}
                   />
                   <InputRightElement width="3rem">
                     <ToggleShowPassword
@@ -130,7 +136,13 @@ function AuthForm({
 
           {/* Submit. */}
           <Flex justifyContent="center">
-            <Button isDisabled={isLoading} {...styles.footer.submit}>
+            <Button
+              isDisabled={isLoading}
+              type="submit"
+              colorScheme={"default"}
+              variant={"solid"}
+              opacity={isDark ? 0.9 : 1}
+            >
               {isSignUp ? "Sign Up" : "Sign In"}
             </Button>
           </Flex>

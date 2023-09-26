@@ -25,8 +25,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-// Styles.
-import { getNavDrawerStyles } from "./NavDrawerStyles";
 // Icons.
 import { FaHouse, FaUser, FaPaintbrush } from "react-icons/fa6";
 // Cookies.
@@ -37,7 +35,6 @@ function NavDrawer({ isOpen, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isDark, ThemeColor } = useThemeInfo();
-  const styles = getNavDrawerStyles(ThemeColor, isDark);
   const session = useSelector((state) => state.session);
 
   // Get csrftoken.
@@ -69,7 +66,12 @@ function NavDrawer({ isOpen, onClose }) {
     <>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent {...styles.content}>
+        <DrawerContent
+          bg={isDark ? "black" : "white"}
+          border={"2px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          borderLeftRadius="14px"
+        >
           <DrawerCloseButton />
 
           {/* Drawer Header. */}

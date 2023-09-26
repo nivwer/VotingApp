@@ -8,8 +8,6 @@ import {
   useGetPollCategoriesQuery,
   useUpdatePollMutation,
 } from "../../../api/pollApiSlice";
-// Styles.
-import { getPollModalStyles } from "./PollModalStyles";
 // Components.
 import PollFormBody from "./PollFormBody";
 import CustomProgress from "../../Progress/CustomProgress";
@@ -24,12 +22,12 @@ import {
   ModalHeader,
   ModalOverlay,
   Heading,
+  IconButton,
 } from "@chakra-ui/react";
 
 // Component.
-function PollModal({ poll = false, buttonStyles }) {
+function PollModal({ poll = false, buttonStyles, icon = false }) {
   const { ThemeColor, isDark } = useThemeInfo();
-  const styles = getPollModalStyles(ThemeColor, isDark);
   const session = useSelector((state) => state.session);
   // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -145,14 +143,25 @@ function PollModal({ poll = false, buttonStyles }) {
   return (
     <>
       {/* Button to open the Modal. */}
-      <Button onClick={onOpen} {...buttonStyles}>
-        {poll ? "Edit poll" : "New poll"}
-      </Button>
+      {icon ? (
+        <IconButton onClick={onOpen} {...buttonStyles} icon={icon} />
+      ) : (
+        <Button onClick={onOpen} {...buttonStyles}>
+          {poll ? "Edit" : "New poll"}
+        </Button>
+      )}
 
       {/* Modal. */}
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent {...styles.content}>
+        <ModalContent
+          m={"auto"}
+          bg={isDark ? "black" : "white"}
+          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+          border={"1px solid"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          borderRadius={"14px"}
+        >
           {isLoading && <CustomProgress />}
           {/* Header. */}
           <ModalHeader>
@@ -176,24 +185,20 @@ function PollModal({ poll = false, buttonStyles }) {
                 privacyValue={privacyValue}
                 setPrivacyValue={setPrivacyValue}
                 categories={categories}
-                styles={styles}
                 isLoading={isLoading}
               />
             </ModalBody>
             {/* Footer. */}
             <ModalFooter>
               <Button
-                isDisabled={isLoading}
                 type="submit"
-                {...styles.footer.submit}
+                colorScheme={ThemeColor}
+                mr={3}
+                isDisabled={isLoading}
               >
                 {poll ? "Save" : "Create"}
               </Button>
-              <Button
-                isDisabled={isLoading}
-                onClick={onClose}
-                {...styles.footer.cancel}
-              >
+              <Button onClick={onClose} variant="ghost" isDisabled={isLoading}>
                 Cancel
               </Button>
             </ModalFooter>

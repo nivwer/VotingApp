@@ -28,9 +28,7 @@ function ProfileFormBody({
   register,
   errors,
   watch,
-  reset,
   setValue,
-  styles,
   isLoading,
 }) {
   const { isDark } = useThemeInfo();
@@ -102,6 +100,8 @@ function ProfileFormBody({
     },
   ];
 
+  const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700"
+
   return (
     <>
       <Stack textAlign="start" spacing={3}>
@@ -141,7 +141,7 @@ function ProfileFormBody({
                     type="text"
                     defaultValue={profile.profile_name}
                     placeholder="Enter your name."
-                    focusBorderColor={styles.focusBorderColor}
+                    focusBorderColor={focusBorderColor}
                   />
                   <InputRightElement width="auto" mx={"4px"}>
                     <FormControl>
@@ -183,7 +183,7 @@ function ProfileFormBody({
                 type="text"
                 defaultValue={profile.bio}
                 placeholder="Enter your biography."
-                focusBorderColor={styles.focusBorderColor}
+                focusBorderColor={focusBorderColor}
                 resize={"none"}
               />
               {/* Handle errors. */}
@@ -203,7 +203,7 @@ function ProfileFormBody({
           defaultValue={profile.profile_picture}
           isLoading={isLoading}
           errors={errors}
-          styles={styles}
+          focusBorderColor={focusBorderColor}
           icon={<FaImage />}
         />
 
@@ -217,7 +217,7 @@ function ProfileFormBody({
             defaultValue={link.default_value}
             isLoading={isLoading}
             errors={errors}
-            styles={styles}
+            focusBorderColor={focusBorderColor}
             icon={<FaLink />}
           />
         ))}
@@ -232,7 +232,7 @@ function ProfileFormBody({
               {...register("country")}
               defaultValue={profile.country}
               placeholder="Don't specify"
-              focusBorderColor={styles.focusBorderColor}
+              focusBorderColor={focusBorderColor}
             >
               {countries.map((country, index) => (
                 <option key={index} value={country.name}>
@@ -258,7 +258,7 @@ function ProfileFormBody({
               {...register("city")}
               defaultValue={profile.city}
               placeholder="Don't specify"
-              focusBorderColor={styles.focusBorderColor}
+              focusBorderColor={focusBorderColor}
             >
               {filteredCities.map((city, index) => (
                 <option key={index} value={city}>

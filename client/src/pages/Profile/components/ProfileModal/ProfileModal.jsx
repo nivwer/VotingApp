@@ -10,8 +10,6 @@ import {
 } from "../../../../api/profileApiSlice";
 // Actions.
 import { updateProfileAction } from "../../../../features/auth/sessionSlice";
-// Styles
-import { getProfileModalStyles } from "./ProfileModalStyles";
 // Components.
 import CustomProgress from "../../../../components/Progress/CustomProgress";
 import ProfileFormBody from "./ProfileFormBody";
@@ -31,7 +29,6 @@ import {
 function ProfileModal({ profile = false, buttonStyles }) {
   const dispatch = useDispatch();
   const { ThemeColor, isDark } = useThemeInfo();
-  const styles = getProfileModalStyles(ThemeColor, isDark);
   const session = useSelector((state) => state.session);
   const { username } = useParams();
   const [data, setData] = useState(false);
@@ -115,7 +112,14 @@ function ProfileModal({ profile = false, buttonStyles }) {
       {/* Modal. */}
       <Modal size={"2xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent {...styles.content}>
+        <ModalContent
+          bg={isDark ? "black" : "white"}
+          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+          outline={"2px solid"}
+          outlineColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          borderRadius="14px"
+          p={"5px"}
+        >
           {isLoading && <CustomProgress />}
           {/* Header. */}
           <ModalHeader>Edit profile</ModalHeader>
@@ -130,7 +134,6 @@ function ProfileModal({ profile = false, buttonStyles }) {
                 watch={watch}
                 reset={reset}
                 setValue={setValue}
-                styles={styles}
                 isLoading={isLoading}
               />
             </ModalBody>
@@ -140,14 +143,16 @@ function ProfileModal({ profile = false, buttonStyles }) {
               <Button
                 isDisabled={isLoading}
                 type="submit"
-                {...styles.footer.submit}
+                colorScheme={ThemeColor}
+                mr={3}
               >
                 Save
               </Button>
               <Button
                 isDisabled={isLoading}
                 onClick={onClose}
-                {...styles.footer.cancel}
+                variant={"ghost"}
+                colorScheme={"default"}
               >
                 Cancel
               </Button>
