@@ -26,7 +26,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 // Icons.
-import { FaHouse, FaUser, FaPaintbrush } from "react-icons/fa6";
+import { FaHouse, FaUser, FaPaintbrush, FaGear, FaGripLines } from "react-icons/fa6";
 // Cookies.
 import Cookies from "js-cookie";
 
@@ -96,35 +96,71 @@ function NavDrawer({ isOpen, onClose }) {
             </Flex>
           </DrawerHeader>
 
-          {/* Divider. */}
-          <Box px="5">
-            <Divider
-              borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
-            />
-          </Box>
-
           {/* Drawer Body. */}
-          <DrawerBody mt="2">
-            {/* User Pages. */}
-            <Stack spacing={0}>
+          <DrawerBody>
+            <Stack spacing={3}>
+              {/* Divider. */}
+              <Divider
+                borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+              />
+              {/* Profile Page. */}
               <NavLink to={`/${session.user.username}`}>
                 <NavDrawerButton icon={<FaUser />} onClick={onClose}>
                   Profile
                 </NavDrawerButton>
               </NavLink>
-            </Stack>
 
-            {/* Settings Pages. */}
-            <Stack spacing={0}>
-              <NavLink to={"/settings/theme"}>
-                <NavDrawerButton icon={<FaPaintbrush />} onClick={onClose}>
-                  Theme
-                </NavDrawerButton>
-              </NavLink>
-            </Stack>
+              {/* Divider. */}
+              <Divider
+                borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+              />
 
-            {/* Sign Out. */}
-            <NavDrawerButton onClick={handleLogout}>Sign Out</NavDrawerButton>
+              {/* User Pages. */}
+              <Stack spacing={0}>
+                <NavLink to={`/${session.user.username}`}>
+                  <NavDrawerButton icon={<FaGripLines />} onClick={onClose}>
+                    Your Polls
+                  </NavDrawerButton>
+                </NavLink>
+                <NavLink to={`/${session.user.username}?tab=votes`}>
+                  <NavDrawerButton icon={<FaGripLines />} onClick={onClose}>
+                    Your Votes
+                  </NavDrawerButton>
+                </NavLink>
+                <NavLink to={`/${session.user.username}?tab=votes`}>
+                  <NavDrawerButton icon={<FaGripLines />} onClick={onClose}>
+                    Saved
+                  </NavDrawerButton>
+                </NavLink>
+              </Stack>
+
+              {/* Divider. */}
+              <Divider
+                borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+              />
+
+              {/* Settings Pages. */}
+              <Stack spacing={0}>
+                <NavLink to={"/settings"}>
+                  <NavDrawerButton icon={<FaGear />} onClick={onClose}>
+                    Settings
+                  </NavDrawerButton>
+                </NavLink>
+                <NavLink to={"/settings/theme"}>
+                  <NavDrawerButton icon={<FaPaintbrush />} onClick={onClose}>
+                    Theme
+                  </NavDrawerButton>
+                </NavLink>
+              </Stack>
+
+              {/* Divider. */}
+              <Divider
+                borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+              />
+
+              {/* Sign Out. */}
+              <NavDrawerButton onClick={handleLogout}>Sign Out</NavDrawerButton>
+            </Stack>
           </DrawerBody>
 
           {/* Drawer Footer. */}

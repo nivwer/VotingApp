@@ -9,8 +9,9 @@ import SignUp from "../pages/Auth/SignUp";
 import SignIn from "../pages/Auth/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
 import Profile from "../pages/Profile/Profile";
-import Theme from "../pages/Settings/Theme";
+import ThemeSettings from "../pages/Settings/ThemeSettings";
 import Poll from "../pages/Poll/Poll";
+import Settings from "../pages/Settings/Settings";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
@@ -51,9 +52,7 @@ function Router() {
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="user" />}>
         {/* Profile page. */}
-
         <Route path="/:username" element={<Profile />} />
-
         {/* Poll page. */}
         <Route path="/:username/:id" element={<Poll />} />
       </Route>
@@ -64,8 +63,8 @@ function Router() {
       <Route element={<GridLayout layout="triple" section="settings" />}>
         {/* Settings pages. */}
         <Route element={<ProtectedRoute isAllowed={!!session.token} />}>
-          {/*  <Route path="/settings" element={<Settings />} /> */}
-          <Route path="/settings/theme" element={<Theme />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings/theme" element={<ThemeSettings />} />
         </Route>
       </Route>
     </Routes>

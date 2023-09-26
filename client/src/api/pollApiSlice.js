@@ -53,7 +53,7 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Polls"],
     }),
 
-    // Options manager //
+    // Option manager //
 
     // Add option.
     addOption: builder.mutation({

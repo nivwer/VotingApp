@@ -49,7 +49,7 @@ function SideBar({ section }) {
           {/* Categories */}
           <Flex
             zIndex={"100"}
-            opacity={0.9} 
+            opacity={0.9}
             justify={"center"}
             pos={"sticky"}
             top={"0"}
@@ -95,20 +95,24 @@ function SideBar({ section }) {
             borderColor={isDark ? "whiteAlpha.200" : "blackAlpha.200"}
           >
             <HStack opacity={isDark ? 0.9 : 0.8} spacing={1}>
-              <IconButton
-                icon={<FaHouse />}
-                variant={"ghost"}
-                borderRadius="full"
-                size={"lg"}
-                fontSize={"2xl"}
-              />
-              <IconButton
-                icon={<FaSquarePollHorizontal />}
-                variant={"ghost"}
-                borderRadius="full"
-                size={"lg"}
-                fontSize={"2xl"}
-              />
+              <NavLink to={"/home"}>
+                <IconButton
+                  icon={<FaHouse />}
+                  variant={"ghost"}
+                  borderRadius="full"
+                  size={"lg"}
+                  fontSize={"2xl"}
+                />
+              </NavLink>
+              <NavLink to={"categories"}>
+                <IconButton
+                  icon={<FaSquarePollHorizontal />}
+                  variant={"ghost"}
+                  borderRadius="full"
+                  size={"lg"}
+                  fontSize={"2xl"}
+                />
+              </NavLink>
             </HStack>
             <PollModal
               icon={<FaPlus />}
