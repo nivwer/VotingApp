@@ -1,6 +1,6 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDeletePollMutation } from "../../../api/pollApiSlice";
 // Components.
 import PollCardOptionButton from "./PollCardOptionButton";
@@ -152,20 +152,21 @@ function PollCard({ poll }) {
                 {/* Poll options. */}
                 <Stack px={4}>
                   {poll.options
-                    .slice(0, showAllOptions ? poll.options.length : 4)
+                    .slice(0, poll.options.length)
                     .sort((a, b) => b.votes - a.votes)
+                    .slice(0, showAllOptions ? poll.options.length : 4)
                     .map((option, index) => (
                       <PollCardOptionButton
                         key={index}
                         poll={poll}
+                        option={option}
                         vote={vote}
                         setVote={setVote}
                         value={option.option_text}
                         isDisabled={isLoading || isDisabled}
                         setIsDisabled={setIsDisabled}
                       >
-                        {option.option_text}( votes: {option.votes} ) ( user
-                        vote: "{poll.user_vote}" )
+                        {option.option_text}
                       </PollCardOptionButton>
                     ))}
                   {showInputOption && (
@@ -213,9 +214,6 @@ function PollCard({ poll }) {
               Add option
             </PollCardButton>
           </CardFooter>
-          <HStack>
-            <div> {poll.voters}</div>
-          </HStack>
         </Card>
       )}
     </>

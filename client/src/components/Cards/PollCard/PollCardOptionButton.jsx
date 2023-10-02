@@ -9,11 +9,12 @@ import {
   useUpdateUserVoteMutation,
 } from "../../../api/pollApiSlice";
 // Components.
-import { Button } from "@chakra-ui/react";
+import { Box, Button, HStack, Text } from "@chakra-ui/react";
 
 // Component.
 function PollCardOptionButton({
   poll,
+  option,
   value,
   children,
   vote,
@@ -37,7 +38,8 @@ function PollCardOptionButton({
   const [deleteUserVote, { isLoading: isDeleteVoteLoading }] =
     useDeleteUserVoteMutation();
 
-  const isLoading = isAddVoteLoading || isUpdateVoteLoading;
+  const isLoading =
+    isAddVoteLoading || isUpdateVoteLoading || isDeleteVoteLoading;
 
   const handleUserVote = async (value) => {
     let res = "";
@@ -91,17 +93,29 @@ function PollCardOptionButton({
       onClick={() => handleUserVote(value)}
       isDisabled={isLoading ? false : isDisabled}
       isLoading={isLoading}
-      loadingText={value}
+      loadingText={<Text w={"90%"}>{value}</Text>}
       variant={vote === value ? "solid" : "outline"}
       colorScheme={vote === value ? ThemeColor : "default"}
-      borderRadius={"full"}
+      borderRadius={"3xl"}
       borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.400"}
       opacity={0.8}
       justifyContent="start"
-      wordBreak={"break-all"}
-      pl={"5"}
+      textAlign={"start"}
+      style={{ whiteSpace: "normal", wordWrap: "break-word" }}
+      px={"5"}
+      py={"2.5"}
+      h={"100%"}
     >
-      {children}
+      <HStack justify={"space-between"} w={"100%"}>
+        <Text textAlign={"start"} w={"86%"}>
+          {children}
+        </Text>
+        <Text fontWeight={"bold"} w={"auto"}>
+          {option.votes === 0
+            ? "0%"
+            : `${(poll.total_votes / option.votes) * 100}%`}
+        </Text>
+      </HStack>
     </Button>
   );
 }

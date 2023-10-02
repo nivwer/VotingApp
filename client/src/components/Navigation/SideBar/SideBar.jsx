@@ -66,7 +66,7 @@ function SideBar({ section }) {
               {categories &&
                 categories.map((category, index) => (
                   <NavLink
-                    to={`/results/?category=${category.value}`}
+                    to={`/categories/${category.value}`}
                     key={index}
                   >
                     <Button

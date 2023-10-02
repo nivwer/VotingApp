@@ -16,6 +16,8 @@ import Settings from "../pages/Settings/Settings";
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
 import PollResults from "../components/Results/PollResults";
+import Categories from "../pages/Polls/Categories/Categories";
+import CategoryPolls from "../pages/Polls/Categories/CategoryPolls";
 
 // Router.
 function Router() {
@@ -45,6 +47,10 @@ function Router() {
         {/* Home page. */}
         <Route path="/home" element={<Home />} />
         <Route path="/results" element={<PollResults />} />
+
+        {/* Categories pages. */}
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/categories/:category" element={<CategoryPolls />} />
       </Route>
 
       {/* ### USER SECTION ### */}
