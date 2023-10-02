@@ -34,6 +34,17 @@ function Navbar() {
   // Drawer.
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const formatPathSegment = (segment) => {
+    return decodeURIComponent(segment)
+      .split(" ")
+      .map((word) =>
+        word.toLowerCase() === "and"
+          ? word
+          : word.charAt(0).toUpperCase() + word.slice(1)
+      )
+      .join(" ");
+  };
+
   return (
     <Box
       w={"100%"}
@@ -59,9 +70,7 @@ function Navbar() {
                   onClick={() => navigate(`/${path[0]}`)}
                   fontWeight={path[1] ? "medium" : "bold"}
                 >
-                  {username
-                    ? `@${username}`
-                    : path[0].replace(/^./, path[0][0].toUpperCase())}
+                  {username ? `@${username}` : formatPathSegment(path[0])}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             )}
@@ -72,7 +81,7 @@ function Navbar() {
                   onClick={() => navigate(`/${path[0]}/${path[1]}`)}
                   fontWeight={path[2] ? "medium" : "bold"}
                 >
-                  {path[1].replace(/^./, path[1][0].toUpperCase())}
+                  {formatPathSegment(path[1])}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             )}
@@ -83,7 +92,7 @@ function Navbar() {
                   onClick={() => navigate(`/${path[0]}/${path[1]}/${path[2]}`)}
                   fontWeight={"bold"}
                 >
-                  {path[2].replace(/^./, path[2][0].toUpperCase())}
+                  {formatPathSegment(path[2])}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             )}
