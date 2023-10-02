@@ -7,9 +7,9 @@ import PollCard from "../../Cards/PollCard/PollCard";
 function PollCardGroup({ data, isLoading }) {
   return (
     <Box w={"100%"} display={"flex"} flexDir={"column"} alignItems={"center"}>
-      {data && data.polls
+      {data && data.polls && !isLoading
         ? data.polls.map((poll, index) => <PollCard key={index} poll={poll} />)
-        : data && <div>{data.message}</div>}
+        : data && !isLoading && <div>{data.message}</div>}
       {(isLoading || !data) && <CustomSpinner />}
     </Box>
   );

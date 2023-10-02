@@ -1,3 +1,5 @@
+# Standard.
+from datetime import datetime
 # Rest Framework.
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -113,7 +115,8 @@ async def add_vote(request, poll_id):
                         '$addToSet': {
                             'voted_polls': {
                                 'poll_id': poll_id,
-                                'vote': add_vote_value
+                                'vote': add_vote_value,
+                                'voted_at': datetime.now()
                             }
                         }
                     },
@@ -234,7 +237,9 @@ async def update_vote(request, poll_id):
                         'voted_polls.poll_id': poll_id
                     },
                     {
-                        '$set': {'voted_polls.$.vote': add_vote_value}
+                        '$set': {
+                            'voted_polls.$.vote': add_vote_value,
+                            'voted_polls.$.voted_at': datetime.now()}
                     },
                     session=session)
 

@@ -14,6 +14,7 @@ from adrf.decorators import api_view
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
 # MongoDB.
+from pymongo import DESCENDING
 from pymongo.errors import PyMongoError
 from bson import json_util
 from bson.objectid import ObjectId
@@ -61,8 +62,10 @@ async def user_polls(request, username):
             'polls_db', ['polls', 'user_votes'])
 
         # Find the polls in the polls collection.
-        polls_cursor = polls_db.polls.find({'created_by.user_id': user.id})
-        polls_list = await polls_cursor.to_list(length=None)
+        polls_list = await polls_db.polls.find(
+            {'created_by.user_id': user.id},
+            sort=[('creation_date', DESCENDING)]
+        ).to_list(length=None)
 
         # Convert the BSON response to a JSON response.
         polls_list_json = json_util._json_convert(polls_list)
@@ -123,9 +126,12 @@ async def user_polls(request, username):
 
             page_values_json = json_util._json_convert(page_obj.object_list)
 
+        # Polls res.
+        res = page_values_json if request.GET.get('page') else polls
+
         # Response.
         return Response(
-            {'polls': page_values_json if request.GET.get('page') else polls},
+            {'polls':  res},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.
@@ -270,9 +276,13 @@ async def user_voted_polls(request, username):
 
             page_values_json = json_util._json_convert(page_obj.object_list)
 
+        # Polls res.
+        res = page_values_json if request.GET.get('page') else polls
+        res.reverse()
+
         # Response.
         return Response(
-            {'polls': page_values_json if request.GET.get('page') else polls},
+            {'polls': res},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.

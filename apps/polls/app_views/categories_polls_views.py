@@ -120,9 +120,13 @@ async def category_polls(request, category):
 
             page_values_json = json_util._json_convert(page_obj.object_list)
 
+        # Polls res.
+        res = page_values_json if request.GET.get('page') else polls
+        res.reverse()
+
         # Response.
         return Response(
-            {'polls': page_values_json if request.GET.get('page') else polls},
+            {'polls':  res},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.

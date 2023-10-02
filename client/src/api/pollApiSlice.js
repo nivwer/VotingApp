@@ -139,6 +139,9 @@ export const pollApiSlice = createApi({
     getPollsCategory: builder.query({
       query: (data) => ({
         url: `category/${data.category}`,
+        url: data.page
+          ? `category/${data.category}?page=${data.page}`
+          : `category/${data.category}`,
         method: "GET",
         headers: data.headers,
       }),

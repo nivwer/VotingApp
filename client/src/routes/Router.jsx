@@ -15,7 +15,7 @@ import Settings from "../pages/Settings/Settings";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
-import PollResults from "./Results/PollResults";
+import PollResults from "../components/Results/PollResults";
 
 // Router.
 function Router() {
