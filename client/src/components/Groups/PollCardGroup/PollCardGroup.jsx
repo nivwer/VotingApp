@@ -3,18 +3,14 @@ import { Box } from "@chakra-ui/react";
 import CustomSpinner from "../../Spinners/CustomSpinner";
 import PollCard from "../../Cards/PollCard/PollCard";
 
-
 // Component.
-function PollCardGroup({ data }) {
+function PollCardGroup({ data, isLoading }) {
   return (
     <Box w={"100%"} display={"flex"} flexDir={"column"} alignItems={"center"}>
-      {!data ? (
-        <CustomSpinner />
-      ) : data.polls ? (
-        data.polls.map((poll, index) => <PollCard key={index} poll={poll} />)
-      ) : (
-        <div>{data.message}</div>
-      )}
+      {data && data.polls
+        ? data.polls.map((poll, index) => <PollCard key={index} poll={poll} />)
+        : data && <div>{data.message}</div>}
+      {(isLoading || !data) && <CustomSpinner />}
     </Box>
   );
 }

@@ -30,6 +30,7 @@ class GetCollectionsMongoDB:
 
 # Views.
 
+# Handles the get process of the user vote.
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -70,6 +71,7 @@ async def get_vote(request, poll_id):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# Handles the creation process of the user vote.
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -173,7 +175,7 @@ async def add_vote(request, poll_id):
             await session.end_session()
 
 
-# Handles the CRUD of the vote.
+# Handles the updating process of the user vote.
 @api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -292,7 +294,7 @@ async def update_vote(request, poll_id):
             await session.end_session()
 
 
-# Handles the CRUD of the vote.
+# Handles the removing process of the user vote.
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])

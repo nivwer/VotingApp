@@ -40,7 +40,7 @@ function SideBar({ section }) {
   return (
     <Box pos={"fixed"} w={"295px"} h={"calc(100vh - 64px)"}>
       <Grid
-        gridTemplateRows={"1fr 80px"}
+        gridTemplateRows={"1fr 70px"}
         gridTemplateColumns={"100%"}
         gap="1"
         h={"100%"}
@@ -100,8 +100,8 @@ function SideBar({ section }) {
                   icon={<FaHouse />}
                   variant={"ghost"}
                   borderRadius="full"
-                  size={"lg"}
-                  fontSize={"2xl"}
+                  size={"md"}
+                  fontSize={"xl"}
                 />
               </NavLink>
               <NavLink to={"categories"}>
@@ -109,8 +109,8 @@ function SideBar({ section }) {
                   icon={<FaSquarePollHorizontal />}
                   variant={"ghost"}
                   borderRadius="full"
-                  size={"lg"}
-                  fontSize={"2xl"}
+                  size={"md"}
+                  fontSize={"xl"}
                 />
               </NavLink>
             </HStack>
@@ -120,7 +120,7 @@ function SideBar({ section }) {
                 colorScheme: ThemeColor,
                 variant: "solid",
                 borderRadius: "full",
-                size: "lg",
+                size: "md",
                 opacity: 0.9,
               }}
             />

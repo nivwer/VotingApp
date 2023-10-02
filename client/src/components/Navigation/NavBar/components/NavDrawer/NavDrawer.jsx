@@ -26,7 +26,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 // Icons.
-import { FaHouse, FaUser, FaPaintbrush, FaGear, FaGripLines } from "react-icons/fa6";
+import { FaUser, FaPaintbrush, FaGear, FaGripLines } from "react-icons/fa6";
 // Cookies.
 import Cookies from "js-cookie";
 

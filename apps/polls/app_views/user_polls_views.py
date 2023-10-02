@@ -1,6 +1,7 @@
 # Virtualenv.
 from dotenv import load_dotenv
 # Django.
+from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
@@ -114,9 +115,17 @@ async def user_polls(request, username):
             return Response(
                 {'message': 'This user does not have polls.'})
 
+        # In case the frontend has pagination or an integrated infinite scroll.
+        if request.GET.get('page'):
+            page_number = request.GET.get('page')
+            paginator = Paginator(polls, 10)
+            page_obj = paginator.get_page(page_number)
+
+            page_values_json = json_util._json_convert(page_obj.object_list)
+
         # Response.
         return Response(
-            {'polls': polls},
+            {'polls': page_values_json if request.GET.get('page') else polls},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.
@@ -141,6 +150,7 @@ async def user_polls(request, username):
 
     # Handle other exceptions.
     except Exception as e:
+        print(str(e))
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -252,9 +262,17 @@ async def user_voted_polls(request, username):
             return Response(
                 {'message': 'This user has not voted for a poll.'})
 
+        # In case the frontend has pagination or an integrated infinite scroll.
+        if request.GET.get('page'):
+            page_number = request.GET.get('page')
+            paginator = Paginator(polls, 10)
+            page_obj = paginator.get_page(page_number)
+
+            page_values_json = json_util._json_convert(page_obj.object_list)
+
         # Response.
         return Response(
-            {'polls': polls},
+            {'polls': page_values_json if request.GET.get('page') else polls},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.

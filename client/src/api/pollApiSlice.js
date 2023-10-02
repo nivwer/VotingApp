@@ -66,7 +66,6 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Polls"],
     }),
 
-
     // Vote manager //
 
     // Add user vote.
@@ -106,7 +105,9 @@ export const pollApiSlice = createApi({
     // Get User Polls.
     getUserPolls: builder.query({
       query: (data) => ({
-        url: `user/${data.username}`,
+        url: data.page
+          ? `user/${data.username}?page=${data.page}`
+          : `user/${data.username}`,
         method: "GET",
         headers: data.headers,
       }),
@@ -116,7 +117,9 @@ export const pollApiSlice = createApi({
     // Get User voted Polls.
     getUserVotedPolls: builder.query({
       query: (data) => ({
-        url: `user/voted/${data.username}`,
+        url: data.page
+          ? `user/voted/${data.username}?page=${data.page}`
+          : `user/voted/${data.username}`,
         method: "GET",
         headers: data.headers,
       }),
