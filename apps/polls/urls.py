@@ -8,11 +8,12 @@ from .app_views.options_views import option_manager
 from .app_views.voting_views import add_vote, get_vote, update_vote, delete_vote
 # GET Polls views.
 from .app_views.user_polls_views import user_polls, user_voted_polls
-from .app_views.categories_polls_views import category_polls
+from .app_views.categories_polls_views import polls_categories, category_polls, get_categories_data
 
 urlpatterns = [
     # Utils.
-    path('categories/', views.polls_categories, name="RCategories"),
+    path('categories/', polls_categories, name="RCategories"),
+    path('categories/data', get_categories_data, name="RCategoriesData"),
 
     # CRUD Poll.
     path('poll/create/', create_poll, name='CPoll'),

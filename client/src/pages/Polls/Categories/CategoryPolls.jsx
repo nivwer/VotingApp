@@ -2,9 +2,9 @@
 import { useParams, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import PollCardGroup from "../../../components/Groups/PollCardGroup/PollCardGroup";
 import { useGetPollsCategoryQuery } from "../../../api/pollApiSlice";
 // Components.
+import PollCardGroup from "../../../components/Groups/PollCardGroup/PollCardGroup";
 
 
 // Page.

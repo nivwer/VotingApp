@@ -1,24 +1,32 @@
+# Standard.
+from datetime import datetime, timedelta
+import json
 # Virtualenv.
 from dotenv import load_dotenv
 # Django.
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.permissions import AllowAny
 # Async Rest Framework support.
 from adrf.decorators import api_view
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
 # MongoDB.
+from pymongo import DESCENDING
 from pymongo.errors import PyMongoError
 from bson import json_util
 # Models and Serializers.
 from apps.profiles.models import UserProfile
 from apps.profiles.serializers import UserProfileSerializer
+# Utils.
+from apps.polls.utils.categorys import CATEGORIES
+
 
 # Load the virtual environment.
 load_dotenv()
@@ -38,7 +46,25 @@ class GetCollectionsMongoDB:
 
 # Views.
 
-# Handles the get process for a user polls.
+# Get poll categories.
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def polls_categories(request):
+
+    # Time To Live.
+    TTL = timedelta(minutes=15)
+    expiration_date = datetime.utcnow() + TTL
+
+    # Cache Control.
+    res = HttpResponse(json.dumps(CATEGORIES), content_type='application/json')
+    res['Cache-Control'] = f'max-age={int(TTL.total_seconds())}'
+    res['Expires'] = expiration_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+    # Response.
+    return res
+
+
+# Handles the get process for a category polls.
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def category_polls(request, category):
@@ -51,8 +77,10 @@ async def category_polls(request, category):
             'polls_db', ['polls', 'user_votes'])
 
         # Find the polls in the polls collection.
-        polls_cursor = polls_db.polls.find({'category': category})
-        polls_list = await polls_cursor.to_list(length=None)
+        polls_list = await polls_db.polls.find(
+            {'category': category},
+            sort=[('creation_date', DESCENDING)]
+        ).to_list(length=None)
 
         # Convert the BSON response to a JSON response.
         polls_list_json = json_util._json_convert(polls_list)
@@ -151,6 +179,60 @@ async def category_polls(request, category):
 
     # Handle other exceptions.
     except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Handles the get process for categories data.
+@api_view(['GET'])
+@permission_classes([AllowAny])
+async def get_categories_data(request):
+    try:
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls'])
+
+        data_categories = []
+        for category in CATEGORIES['list']:
+            # Find the polls in the polls collection.
+            polls_list = await polls_db.polls.find(
+                {'category': category['value']}).to_list(length=None)
+
+            # Convert bson to json.
+            polls_list_json = json_util._json_convert(polls_list)
+
+            # Get total votes.
+            total_votes = sum(poll['total_votes'] for poll in polls_list_json)
+
+            # Create data category object.
+            data_category = {
+                'text': category['text'],
+                'total_polls': len(polls_list),
+                'total_votes': total_votes
+            }
+
+            # Add data category object in data categories object.
+            data_categories.append(data_category)
+
+        # Response.
+        return Response(
+            {'data_categories':  data_categories},
+            status=status.HTTP_200_OK)
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        print(str(e))
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

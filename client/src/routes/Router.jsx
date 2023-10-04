@@ -12,12 +12,11 @@ import Profile from "../pages/Profile/Profile";
 import ThemeSettings from "../pages/Settings/ThemeSettings";
 import Poll from "../pages/Poll/Poll";
 import Settings from "../pages/Settings/Settings";
+import Categories from "../pages/Polls/Categories/Categories";
+import CategoryPolls from "../pages/Polls/Categories/CategoryPolls";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
-import PollResults from "../components/Results/PollResults";
-import Categories from "../pages/Polls/Categories/Categories";
-import CategoryPolls from "../pages/Polls/Categories/CategoryPolls";
 
 // Router.
 function Router() {
@@ -46,7 +45,6 @@ function Router() {
       <Route element={<GridLayout layout="triple" section="main" />}>
         {/* Home page. */}
         <Route path="/home" element={<Home />} />
-        <Route path="/results" element={<PollResults />} />
 
         {/* Categories pages. */}
         <Route path="/categories" element={<Categories />} />

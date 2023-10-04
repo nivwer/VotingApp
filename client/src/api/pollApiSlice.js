@@ -126,7 +126,21 @@ export const pollApiSlice = createApi({
       providesTags: ["Polls"],
     }),
 
-    // Others.
+    // Get category polls.
+    getPollsCategory: builder.query({
+      query: (data) => ({
+        url: data.page
+          ? `category/${data.category}?page=${data.page}`
+          : `category/${data.category}`,
+        method: "GET",
+        headers: data.headers,
+      }),
+      providesTags: ["Polls"],
+    }),
+
+    // Others. //
+
+    // Get categories.
     getPollCategories: builder.query({
       query: () => ({
         url: "categories/",
@@ -135,17 +149,13 @@ export const pollApiSlice = createApi({
       providesTags: ["Categories"],
     }),
 
-    // Others.
-    getPollsCategory: builder.query({
-      query: (data) => ({
-        url: `category/${data.category}`,
-        url: data.page
-          ? `category/${data.category}?page=${data.page}`
-          : `category/${data.category}`,
+    // Get categories data.
+    getCategoriesData: builder.query({
+      query: () => ({
+        url: "categories/data",
         method: "GET",
-        headers: data.headers,
       }),
-      providesTags: ["Polls"],
+      providesTags: ["Categories"],
     }),
   }),
 });
@@ -163,4 +173,5 @@ export const {
   useGetPollCategoriesQuery,
   useGetPollsCategoryQuery,
   useAddOptionMutation,
+  useGetCategoriesDataQuery,
 } = pollApiSlice;
