@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
+from django.contrib.auth import update_session_auth_hash
 # Rest Framework.
 from rest_framework import status
 from rest_framework.response import Response
@@ -253,6 +254,105 @@ def check_session(request):
     except Exception as e:
         return JsonResponse(
             {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Handles the username update process.
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_username(request):
+    try:
+        new_username = request.data.get('new_username')
+
+        if not new_username:
+            raise ValidationError(
+                {'new_username': ['New username is required.']},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        # If the new username is not unique.
+        if User.objects.filter(username=new_username).exists():
+            raise ValidationError(
+                {'new_username': ['Username is already taken.']},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        # Save the new username.
+        user = request.user
+        user.username = new_username
+        user.save()
+
+        # Update the session auth hash to prevent logout.
+        update_session_auth_hash(request, user)
+
+        # Response.
+        return Response(
+            {'message': 'Username updated successfully.'},
+            status=status.HTTP_200_OK)
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle Authentication errors.
+    except AuthenticationFailed as e:
+        return Response(e.detail, status=status.HTTP_401_UNAUTHORIZED)
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Handles the password update process.
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@transaction.atomic
+def update_password(request):
+    try:
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+
+        if not current_password:
+            raise ValidationError(
+                {'current_password': ['This field is required.']},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        if not new_password:
+            raise ValidationError(
+                {'new_password': ['This field is required.']},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+
+        # Check if the current password is correct.
+        if not user.check_password(current_password):
+            raise ValidationError(
+                {'current_password': ['Current password is incorrect.']},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        # Save the password.
+        user.set_password(new_password)
+        user.save()
+
+        # Update the session auth hash to prevent logout.
+        update_session_auth_hash(request, user)
+
+        return Response(
+            {'message': 'Password updated successfully.'},
+            status=status.HTTP_200_OK)
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle Authentication errors.
+    except AuthenticationFailed as e:
+        return Response(e.detail, status=status.HTTP_401_UNAUTHORIZED)
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

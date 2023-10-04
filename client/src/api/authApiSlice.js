@@ -8,6 +8,7 @@ export const authApiSlice = createApi({
     baseUrl: "http://localhost:8000/auth/",
     credentials: "include",
   }),
+  tagTypes: ["User",],
   endpoints: (builder) => ({
     // Register.
     signUp: builder.mutation({
@@ -42,6 +43,29 @@ export const authApiSlice = createApi({
         url: "user/session/check/",
         method: "GET",
       }),
+      providesTags: ["User"],
+    }),
+
+    // Update username.
+    updateUsername: builder.mutation({
+      query: (data) => ({
+        url: "user/update/username/",
+        method: "PUT",
+        headers: data.headers,
+        body: data.body,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    // Update password.
+    updatePassword: builder.mutation({
+      query: (data) => ({
+        url: "user/update/password/",
+        method: "PUT",
+        headers: data.headers,
+        body: data.body,
+      }),
+      invalidatesTags: ["User"],
     }),
   }),
 });
@@ -51,4 +75,6 @@ export const {
   useSignUpMutation,
   useSignOutMutation,
   useCheckSessionQuery,
+  useUpdateUsernameMutation,
+  useUpdatePasswordMutation,
 } = authApiSlice;
