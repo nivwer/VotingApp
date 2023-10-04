@@ -52,7 +52,7 @@ class GetCollectionsMongoDB:
 def polls_categories(request):
 
     # Time To Live.
-    TTL = timedelta(minutes=15)
+    TTL = timedelta(weeks=1)
     expiration_date = datetime.utcnow() + TTL
 
     # Cache Control.
@@ -190,35 +190,62 @@ async def category_polls(request, category):
 async def get_categories_data(request):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
 
+        # Get the categories data.
+        aggregated_data = await polls_db.polls.aggregate(
+            [
+                {
+                    '$group': {
+                        '_id': '$category',
+                        'total_polls': {'$sum': 1},
+                        'total_votes': {'$sum': '$total_votes'}
+                    }
+                },
+                {
+                    '$project': {
+                        '_id': 0,
+                        'category': '$_id',
+                        'total_polls': 1,
+                        'total_votes': 1
+                    }
+                }
+            ]
+        ).to_list(None)
+
+        # Add category data in data categories.
         data_categories = []
         for category in CATEGORIES['list']:
-            # Find the polls in the polls collection.
-            polls_list = await polls_db.polls.find(
-                {'category': category['value']}).to_list(length=None)
+            in_aggregated_data = False
+            for category_data in aggregated_data:
+                if category['value'] == category_data['category']:
+                    data_categories.append({
+                        'text': category['text'],
+                        'value': category_data['category'],
+                        'total_polls': category_data['total_polls'],
+                        'total_votes': category_data['total_votes']
+                    })
+                    in_aggregated_data = True
 
-            # Convert bson to json.
-            polls_list_json = json_util._json_convert(polls_list)
+            if not in_aggregated_data:
+                data_categories.append({
+                    'text': category['text'],
+                    'value': category_data['category'],
+                    'total_polls': 0,
+                    'total_votes': 0
+                })
 
-            # Get total votes.
-            total_votes = sum(poll['total_votes'] for poll in polls_list_json)
+        # Time To Live.
+        TTL = timedelta(days=1)
+        expiration_date = datetime.utcnow() + TTL
 
-            # Create data category object.
-            data_category = {
-                'text': category['text'],
-                'total_polls': len(polls_list),
-                'total_votes': total_votes
-            }
-
-            # Add data category object in data categories object.
-            data_categories.append(data_category)
+        # Cache Control.
+        res = Response(data_categories, content_type='application/json')
+        res['Cache-Control'] = f'max-age={int(TTL.total_seconds())}'
+        res['Expires'] = expiration_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
         # Response.
-        return Response(
-            {'data_categories':  data_categories},
-            status=status.HTTP_200_OK)
+        return res
 
     # Handle validation errors.
     except ValidationError as e:
@@ -226,13 +253,9 @@ async def get_categories_data(request):
 
     # Handle MongoDB errors.
     except PyMongoError as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as e:
         print(str(e))
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

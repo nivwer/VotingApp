@@ -38,14 +38,13 @@ function Categories() {
               </Tr>
             </Thead>
             <Tbody>
-              {dataCategories &&
-                dataCategories.data_categories.map((category, index) => (
-                  <Tr key={index}>
-                    <Td>{category.text}</Td>
-                    <Td isNumeric>{category.total_polls}</Td>
-                    <Td isNumeric>{category.total_polls}</Td>
-                  </Tr>
-                ))}
+              {dataCategories.map((category, index) => (
+                <Tr key={index}>
+                  <Td>{category.text}</Td>
+                  <Td isNumeric>{category.total_polls}</Td>
+                  <Td isNumeric>{category.total_polls}</Td>
+                </Tr>
+              ))}
             </Tbody>
             <Tfoot>
               <Tr>
@@ -56,7 +55,11 @@ function Categories() {
             </Tfoot>
           </Table>
         </TableContainer>
-      ) : (isLoading || isFetching || !dataCategories) ? <CustomSpinner /> : dataCategories.message}
+      ) : isLoading || isFetching || !dataCategories ? (
+        <CustomSpinner />
+      ) : (
+        dataCategories.message
+      )}
     </>
   );
 }

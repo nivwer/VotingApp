@@ -1,5 +1,4 @@
 // Hooks.
-import { useEffect, useState } from "react";
 import { useGetPollCategoriesQuery } from "../../../api/pollApiSlice";
 // Components.
 import PollModal from "../../Modals/PollModal/PollModal";
@@ -14,7 +13,6 @@ import {
   Heading,
   IconButton,
   Stack,
-  Text,
 } from "@chakra-ui/react";
 import { useThemeInfo } from "../../../hooks/Theme";
 // Icons.
@@ -26,16 +24,9 @@ function SideBar({ section }) {
   // Request to get poll categories.
   const { data: categoriesData, isLoading: isCategoriesLoading } =
     useGetPollCategoriesQuery();
+
   // Is loading.
   const isLoading = isCategoriesLoading;
-
-  // Poll categories.
-  const [categories, setCategories] = useState(false);
-
-  // Load poll categories.
-  useEffect(() => {
-    categoriesData ? setCategories(categoriesData.list) : setCategories(false);
-  }, [categoriesData]);
 
   return (
     <Box pos={"fixed"} w={"295px"} h={"calc(100vh - 64px)"}>
@@ -63,8 +54,8 @@ function SideBar({ section }) {
           </Flex>
           <Flex opacity={isDark ? 0.8 : 0.6} justify={"center"}>
             <Stack w={"82%"} spacing={0} fontWeight={"semibold"}>
-              {categories &&
-                categories.map((category, index) => (
+              {categoriesData &&
+                categoriesData.list.map((category, index) => (
                   <NavLink
                     to={`/categories/${category.value}`}
                     key={index}
