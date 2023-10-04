@@ -17,7 +17,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 // Icons.
-import ToggleShowPassword from "./ToggleShowPassword";
+import ToggleShowPassword from "../../../components/Toggles/ShowPassword/ToggleShowPassword";
 
 // Page.
 function AuthForm({

@@ -9,11 +9,13 @@ import SignUp from "../pages/Auth/SignUp";
 import SignIn from "../pages/Auth/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
 import Profile from "../pages/Profile/Profile";
-import ThemeSettings from "../pages/Settings/ThemeSettings";
 import Poll from "../pages/Poll/Poll";
-import Settings from "../pages/Settings/Settings";
 import Categories from "../pages/Polls/Categories/Categories";
 import CategoryPolls from "../pages/Polls/Categories/CategoryPolls";
+import Settings from "../pages/Settings/Settings";
+import AccountSettings from "../pages/Settings/AccountSettings";
+import ProfileSettings from "../pages/Settings/ProfileSettings";
+import ThemeSettings from "../pages/Settings/ThemeSettings";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
@@ -68,6 +70,8 @@ function Router() {
         {/* Settings pages. */}
         <Route element={<ProtectedRoute isAllowed={!!session.token} />}>
           <Route path="/settings" element={<Settings />} />
+          <Route path="/settings/account" element={<AccountSettings />} />
+          <Route path="/settings/profile" element={<ProfileSettings />} />
           <Route path="/settings/theme" element={<ThemeSettings />} />
         </Route>
       </Route>
