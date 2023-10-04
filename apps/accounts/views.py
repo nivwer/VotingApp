@@ -1,5 +1,5 @@
 # Standard.
-from datetime import datetime
+from datetime import datetime, timedelta
 # Django.
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -40,7 +40,8 @@ def sign_up(request):
         user_instance = user_serializer.save()
 
         # Set the password for the user using the provided password.
-        user_object = User.objects.get(username=user_serializer.data['username'])
+        user_object = User.objects.get(
+            username=user_serializer.data['username'])
         user_object.set_password(user_serializer.data['password'])
         user_object.save()
 
@@ -229,13 +230,25 @@ def check_session(request):
         profile_data = UserProfileSerializer(instance=user_profile).data
 
         # Response.
-        return Response(
-            {
-                'token': token.key,
-                'user': user_data,
-                'profile': profile_data,
-            },
-            status=status.HTTP_200_OK,)
+        session_data = {
+            'token': token.key,
+            'user': user_data,
+            'profile': profile_data,
+        }
+
+        # Time To Live.
+        TTL = timedelta(hours=3)
+        expiration_date = datetime.utcnow() + TTL
+
+        # Cache Control.
+        res = Response(session_data,
+                       content_type='application/json',
+                       status=status.HTTP_200_OK)
+        res['Cache-Control'] = f'max-age={int(TTL.total_seconds())}'
+        res['Expires'] = expiration_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+        # Response.
+        return res
 
     except Exception as e:
         return JsonResponse(

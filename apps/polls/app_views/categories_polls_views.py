@@ -226,7 +226,7 @@ async def get_categories_data(request):
                         'total_votes': category_data['total_votes']
                     })
                     in_aggregated_data = True
-
+            
             if not in_aggregated_data:
                 data_categories.append({
                     'text': category['text'],
