@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  is_loading: true,
   token: null,
   user: null,
   profile: null,
@@ -15,8 +14,6 @@ export const sessionSlice = createSlice({
     login: (state, action) => {
       state.token = action.payload.token;
       state.user = action.payload.user;
-      state.profile = action.payload.profile;
-      state.is_loading = false;
     },
     // Action to logout.
     logout: (state) => {

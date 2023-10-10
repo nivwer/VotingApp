@@ -10,6 +10,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Stack,
 } from "@chakra-ui/react";
 import { useUpdateUsernameMutation } from "../../../api/authApiSlice";
 
@@ -52,25 +53,36 @@ function UsernameForm() {
   return (
     <Box px={"5"}>
       <form onSubmit={onSubmit}>
-        <FormControl isDisabled={isLoading} isInvalid={errors.new_username}>
-          <FormLabel fontWeight={"bold"} htmlFor="new_username">
-            Username
-          </FormLabel>
-          <Input
-            defaultValue={session.user.username}
-            {...register("new_username", {
-              required: "This field is required.",
-            })}
-            type="text"
-            placeholder="Change username"
-            focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
-          />
-          {/* Handle errors. */}
-          {errors.new_username && (
-            <FormErrorMessage>{errors.new_username.message}</FormErrorMessage>
-          )}
-        </FormControl>
-        <Button type="submit">submit</Button>
+        <Stack spacing={3}>
+          <FormControl isDisabled={isLoading} isInvalid={errors.new_username}>
+            <FormLabel fontWeight={"bold"} htmlFor="new_username">
+              Username
+            </FormLabel>
+            <Input
+              defaultValue={session.user.username}
+              {...register("new_username", {
+                required: "This field is required.",
+              })}
+              type="text"
+              placeholder="Change username"
+              focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
+            />
+            {/* Handle errors. */}
+            {errors.new_username && (
+              <FormErrorMessage>{errors.new_username.message}</FormErrorMessage>
+            )}
+          </FormControl>
+          <Box>
+            <Button
+              isLoading={isLoading}
+              loadingText="Save username"
+              size={"sm"}
+              type="submit"
+            >
+              Save username
+            </Button>
+          </Box>
+        </Stack>
       </form>
     </Box>
   );

@@ -67,66 +67,83 @@ function PasswordForm() {
   return (
     <Box px={"5"}>
       <form onSubmit={onSubmit}>
-        <Stack spacing={4}>
-          {/* Password. */}
-          <FormControl
-            isDisabled={isLoading}
-            isInvalid={errors.current_password}
-          >
-            <FormLabel fontWeight={"bold"} htmlFor="current_password">
-              Password
-            </FormLabel>
-            <InputGroup size="md">
-              <Input
-                {...register("current_password", {
-                  required: "This field is required.",
-                })}
-                placeholder="Current password"
-                type={showPassword ? "text" : "password"}
-                focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
-              />
-              <InputRightElement width="3rem">
-                <ToggleShowPassword
-                  isLoading={isLoading}
-                  showPassword={showPassword}
-                  setShowPassword={setShowPassword}
+        <Stack spacing={3}>
+          <Stack spacing={4}>
+            {/* Password. */}
+            <FormControl
+              isDisabled={isLoading}
+              isInvalid={errors.current_password}
+            >
+              <FormLabel fontWeight={"bold"} htmlFor="current_password">
+                Password
+              </FormLabel>
+              <InputGroup size="md">
+                <Input
+                  {...register("current_password", {
+                    required: "This field is required.",
+                  })}
+                  placeholder="Current password"
+                  type={showPassword ? "text" : "password"}
+                  focusBorderColor={
+                    isDark ? "whiteAlpha.600" : "blackAlpha.700"
+                  }
                 />
-              </InputRightElement>
-            </InputGroup>
-            {errors.current_password && (
-              <FormErrorMessage>
-                {errors.current_password.message}
-              </FormErrorMessage>
-            )}
-          </FormControl>
-          {/* New password. */}
-          <FormControl isDisabled={isLoading} isInvalid={errors.new_password}>
-            <FormLabel fontWeight={"bold"} htmlFor="new_password">
-              New password
-            </FormLabel>
-            <InputGroup>
-              <Input
-                {...register("new_password", {
-                  required: "This field is required.",
-                })}
-                placeholder="New password"
-                type={showNewPassword ? "text" : "password"}
-                focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
-              />
-              <InputRightElement width="3rem">
-                <ToggleShowPassword
-                  isLoading={isLoading}
-                  showPassword={showNewPassword}
-                  setShowPassword={setShowNewPassword}
+                <InputRightElement width="3rem">
+                  <ToggleShowPassword
+                    isLoading={isLoading}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                  />
+                </InputRightElement>
+              </InputGroup>
+              {errors.current_password && (
+                <FormErrorMessage>
+                  {errors.current_password.message}
+                </FormErrorMessage>
+              )}
+            </FormControl>
+            {/* New password. */}
+            <FormControl isDisabled={isLoading} isInvalid={errors.new_password}>
+              <FormLabel fontWeight={"bold"} htmlFor="new_password">
+                New password
+              </FormLabel>
+              <InputGroup>
+                <Input
+                  {...register("new_password", {
+                    required: "This field is required.",
+                  })}
+                  placeholder="New password"
+                  type={showNewPassword ? "text" : "password"}
+                  focusBorderColor={
+                    isDark ? "whiteAlpha.600" : "blackAlpha.700"
+                  }
                 />
-              </InputRightElement>
-            </InputGroup>
-            {errors.new_password && (
-              <FormErrorMessage>{errors.new_password.message}</FormErrorMessage>
-            )}
-          </FormControl>
+                <InputRightElement width="3rem">
+                  <ToggleShowPassword
+                    isLoading={isLoading}
+                    showPassword={showNewPassword}
+                    setShowPassword={setShowNewPassword}
+                  />
+                </InputRightElement>
+              </InputGroup>
+              {errors.new_password && (
+                <FormErrorMessage>
+                  {errors.new_password.message}
+                </FormErrorMessage>
+              )}
+            </FormControl>
+          </Stack>
+          <Box>
+            <Button
+              isLoading={isLoading}
+              loadingText="Save password"
+              size={"sm"}
+              type="submit"
+            >
+              Save password
+            </Button>
+          </Box>
         </Stack>
-        <Button type="submit">submit</Button>
       </form>
     </Box>
   );

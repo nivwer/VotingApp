@@ -14,7 +14,7 @@ import Categories from "../pages/Polls/Categories/Categories";
 import CategoryPolls from "../pages/Polls/Categories/CategoryPolls";
 import Settings from "../pages/Settings/Settings";
 import AccountSettings from "../pages/Settings/AccountSettings/AccountSettings";
-import ProfileSettings from "../pages/Settings/ProfileSettings";
+import ProfileSettings from "../pages/Settings/ProfileSettings/ProfileSettings";
 import ThemeSettings from "../pages/Settings/ThemeSettings";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
