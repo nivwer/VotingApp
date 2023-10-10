@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import {
   Box,
   Button,
+  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -51,7 +52,7 @@ function UsernameForm() {
   });
 
   return (
-    <Box px={"5"}>
+    <Box py={1} px={2}>
       <form onSubmit={onSubmit}>
         <Stack spacing={3}>
           <FormControl isDisabled={isLoading} isInvalid={errors.new_username}>
@@ -65,6 +66,8 @@ function UsernameForm() {
               })}
               type="text"
               placeholder="Change username"
+              size={"sm"}
+              borderRadius={"md"}
               focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
             />
             {/* Handle errors. */}

@@ -65,7 +65,7 @@ function PasswordForm() {
   });
 
   return (
-    <Box px={"5"}>
+    <Box py={1} px={2}>
       <form onSubmit={onSubmit}>
         <Stack spacing={3}>
           <Stack spacing={4}>
@@ -77,13 +77,15 @@ function PasswordForm() {
               <FormLabel fontWeight={"bold"} htmlFor="current_password">
                 Password
               </FormLabel>
-              <InputGroup size="md">
+              <InputGroup size="sm">
                 <Input
                   {...register("current_password", {
                     required: "This field is required.",
                   })}
                   placeholder="Current password"
                   type={showPassword ? "text" : "password"}
+                  size={"sm"}
+                  borderRadius={"md"}
                   focusBorderColor={
                     isDark ? "whiteAlpha.600" : "blackAlpha.700"
                   }
@@ -107,13 +109,15 @@ function PasswordForm() {
               <FormLabel fontWeight={"bold"} htmlFor="new_password">
                 New password
               </FormLabel>
-              <InputGroup>
+              <InputGroup size={"sm"}>
                 <Input
                   {...register("new_password", {
                     required: "This field is required.",
                   })}
                   placeholder="New password"
                   type={showNewPassword ? "text" : "password"}
+                  size={"sm"}
+                  borderRadius={"md"}
                   focusBorderColor={
                     isDark ? "whiteAlpha.600" : "blackAlpha.700"
                   }

@@ -1,23 +1,29 @@
 // Components.
 import UsernameForm from "./UsernameForm";
 import PasswordForm from "./PasswordForm";
-import { Box, Divider, Heading, Stack } from "@chakra-ui/react";
+import { Box, Divider, Heading, Stack, Text } from "@chakra-ui/react";
 
 // Page.
 function AccountSettings() {
   return (
-    <Box opacity={"0.9"} w={"100%"} p={"10"}>
-      <Stack spacing={7}>
-        <Heading textAlign={"center"} size={"lg"}>
-          Account
-        </Heading>
-        <Divider />
+    <Box opacity={"0.9"} w={"100%"} p={10}>
+      <Stack spacing={10}>
         {/* Username. */}
-        <UsernameForm />
-        <Divider />
+        <Stack>
+          <Text fontWeight={"medium"} fontSize={"2xl"}>
+            Change username
+          </Text>
+          <Divider />
+          <UsernameForm />
+        </Stack>
         {/* Password. */}
-        <PasswordForm />
-        <Divider />
+        <Stack>
+          <Text fontWeight={"medium"} fontSize={"2xl"}>
+            Change password
+          </Text>
+          <Divider />
+          <PasswordForm />
+        </Stack>
       </Stack>
     </Box>
   );

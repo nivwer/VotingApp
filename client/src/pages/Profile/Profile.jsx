@@ -90,7 +90,9 @@ function Profile() {
                 {session.token &&
                   session.user.username === profile.username && (
                     <NavLink to={`/settings/profile`}>
-                      <Button>Edit profile</Button>
+                      <Button variant={"outline"} size={"sm"} borderRadius={"full"}>
+                        Edit profile
+                      </Button>
                     </NavLink>
                   )}
               </Flex>
