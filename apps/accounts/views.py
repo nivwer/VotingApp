@@ -263,18 +263,16 @@ def check_session(request):
 @permission_classes([IsAuthenticated])
 def update_username(request):
     try:
-        new_username = request.data.get('new_username')
+        new_username = request.data['new_username']
 
         if not new_username:
             raise ValidationError(
-                {'new_username': ['New username is required.']},
-                status=status.HTTP_400_BAD_REQUEST)
+                {'new_username': ['This field is required.']})
 
         # If the new username is not unique.
         if User.objects.filter(username=new_username).exists():
             raise ValidationError(
-                {'new_username': ['Username is already taken.']},
-                status=status.HTTP_400_BAD_REQUEST)
+                {'new_username': ['Username is already taken.']})
 
         # Save the new username.
         user = request.user
@@ -298,6 +296,7 @@ def update_username(request):
         return Response(e.detail, status=status.HTTP_401_UNAUTHORIZED)
 
     except Exception as e:
+        print({"error": str(e)})
         return Response(
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -310,26 +309,23 @@ def update_username(request):
 @transaction.atomic
 def update_password(request):
     try:
-        current_password = request.data.get('current_password')
-        new_password = request.data.get('new_password')
+        current_password = request.data['current_password']
+        new_password = request.data['new_password']
 
         if not current_password:
             raise ValidationError(
-                {'current_password': ['This field is required.']},
-                status=status.HTTP_400_BAD_REQUEST)
+                {'current_password': ['This field is required.']})
 
         if not new_password:
             raise ValidationError(
-                {'new_password': ['This field is required.']},
-                status=status.HTTP_400_BAD_REQUEST)
+                {'new_password': ['This field is required.']},)
 
         user = request.user
 
         # Check if the current password is correct.
         if not user.check_password(current_password):
             raise ValidationError(
-                {'current_password': ['Current password is incorrect.']},
-                status=status.HTTP_400_BAD_REQUEST)
+                {'current_password': ['Current password is incorrect.']})
 
         # Save the password.
         user.set_password(new_password)

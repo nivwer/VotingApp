@@ -32,6 +32,7 @@ function PasswordForm() {
     handleSubmit,
     formState: { errors },
     setError,
+    setValue,
   } = useForm();
 
   // Show Password fields.
@@ -47,6 +48,11 @@ function PasswordForm() {
         },
         body: data,
       });
+      if (res.data) {
+        setValue("new_password", "");
+        setValue("current_password", "");
+      }
+
       // If server error.
       if (res.error) {
         for (const fieldName in res.error.data) {

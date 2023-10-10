@@ -14,8 +14,10 @@ function AccountSettings() {
         <Divider />
         {/* Username. */}
         <UsernameForm />
+        <Divider />
         {/* Password. */}
         <PasswordForm />
+        <Divider />
       </Stack>
     </Box>
   );

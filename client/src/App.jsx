@@ -1,8 +1,8 @@
 // Hooks.
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useThemeInfo } from "./hooks/Theme";
 import { useCheckSessionQuery } from "./api/authApiSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // Actions.
 import { login } from "./features/auth/sessionSlice";
 // Components..
@@ -15,7 +15,8 @@ import { Container } from "@chakra-ui/react";
 function App() {
   const dispatch = useDispatch();
   const { isDark } = useThemeInfo();
-  
+  const session = useSelector((state) => state.session);
+
   // Check the user session.
   const { data, isLoading } = useCheckSessionQuery();
 
@@ -32,7 +33,7 @@ function App() {
         bg={isDark ? "black" : "white"}
         color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
       >
-        {isLoading ? <InitialSpinner /> : <Router />}
+        {session["is_loading"] ? <InitialSpinner /> : <Router />}
       </Container>
     </BrowserRouter>
   );
