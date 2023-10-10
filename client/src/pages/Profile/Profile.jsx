@@ -2,18 +2,18 @@
 import { useThemeInfo } from "../../hooks/Theme";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams, useSearchParams } from "react-router-dom";
+import { NavLink, useParams, useSearchParams } from "react-router-dom";
 import { useGetProfileQuery } from "../../api/profileApiSlice";
 // Components.
 import ProfileUserPolls from "./ProfileUserPolls";
 import ProfileVotedPolls from "./ProfileVotedPolls";
 import ProfileTabButton from "./components/ProfileTabButton";
-import ProfileModal from "./components/ProfileModal/ProfileModal";
 import ProfileLink from "./components/ProfileLink";
 import ProfileTags from "./components/ProfileTags";
 import {
   Avatar,
   Box,
+  Button,
   Flex,
   Grid,
   HStack,
@@ -89,7 +89,9 @@ function Profile() {
                 {/* Button to edit the profile. */}
                 {session.token &&
                   session.user.username === profile.username && (
-                    <ProfileModal profile={profile} />
+                    <NavLink to={`/settings/profile`}>
+                      <Button>Edit profile</Button>
+                    </NavLink>
                   )}
               </Flex>
 
