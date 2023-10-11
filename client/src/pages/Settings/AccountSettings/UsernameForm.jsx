@@ -67,6 +67,7 @@ function UsernameForm() {
               type="text"
               placeholder="Change username"
               size={"sm"}
+              fontWeight={"medium"}
               borderRadius={"md"}
               focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
             />

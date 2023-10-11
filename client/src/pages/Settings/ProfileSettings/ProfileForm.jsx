@@ -174,6 +174,7 @@ function ProfileForm({ profile = false }) {
                           placeholder="Enter your name."
                           borderRadius={"md"}
                           size={"sm"}
+                          fontWeight={"medium"}
                           focusBorderColor={focusBorderColor}
                         />
                         <InputRightElement width="auto" mx={"4px"}>
@@ -220,6 +221,7 @@ function ProfileForm({ profile = false }) {
                       defaultValue={profile.bio}
                       placeholder="Enter your biography."
                       size={"sm"}
+                      fontWeight={"medium"}
                       borderRadius={"md"}
                       focusBorderColor={focusBorderColor}
                       resize={"none"}
@@ -343,7 +345,7 @@ function ProfileForm({ profile = false }) {
             <Box>
               <Button
                 isLoading={isLoading}
-                loadingText="Save username"
+                loadingText="Save profile"
                 size={"sm"}
                 type="submit"
                 colorScheme={ThemeColor}

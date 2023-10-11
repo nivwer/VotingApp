@@ -50,6 +50,7 @@ function ProfileInputURL({
           defaultValue={defaultValue}
           placeholder={placeholder}
           size="sm"
+          fontWeight={"medium"}
           focusBorderColor={focusBorderColor}
         />
       </InputGroup>

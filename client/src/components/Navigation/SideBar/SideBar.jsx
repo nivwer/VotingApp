@@ -56,10 +56,7 @@ function SideBar({ section }) {
             <Stack w={"82%"} spacing={0} fontWeight={"semibold"}>
               {categoriesData &&
                 categoriesData.list.map((category, index) => (
-                  <NavLink
-                    to={`/categories/${category.value}`}
-                    key={index}
-                  >
+                  <NavLink to={`/categories/${category.value}`} key={index}>
                     <Button
                       variant={"ghost"}
                       justifyContent={"start"}

@@ -1,3 +1,5 @@
+# Standard.
+from datetime import datetime, timedelta
 # Django.
 from django.contrib.auth.models import User
 # Rest Framework.
@@ -28,10 +30,19 @@ def read_profile(request):
         profile_object = UserProfile.objects.get(user=user.pk)
         profile_data = UserProfileSerializer(instance=profile_object).data
 
+        # Time To Live.
+        TTL = timedelta(hours=3)
+        expiration_date = datetime.utcnow() + TTL
+
+        # Cache Control.
+        res = Response({'profile': profile_data},
+                       content_type='application/json',
+                       status=status.HTTP_200_OK)
+        res['Cache-Control'] = f'max-age={int(TTL.total_seconds())}'
+        res['Expires'] = expiration_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
         # Response.
-        return Response(
-            {'profile': profile_data},
-            status=status.HTTP_200_OK)
+        return res
 
     # Handle validation errors.
     except ValidationError as e:

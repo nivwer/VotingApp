@@ -85,6 +85,7 @@ function PasswordForm() {
                   placeholder="Current password"
                   type={showPassword ? "text" : "password"}
                   size={"sm"}
+                  fontWeight={"medium"}
                   borderRadius={"md"}
                   focusBorderColor={
                     isDark ? "whiteAlpha.600" : "blackAlpha.700"
@@ -117,6 +118,7 @@ function PasswordForm() {
                   placeholder="New password"
                   type={showNewPassword ? "text" : "password"}
                   size={"sm"}
+                  fontWeight={"medium"}
                   borderRadius={"md"}
                   focusBorderColor={
                     isDark ? "whiteAlpha.600" : "blackAlpha.700"
