@@ -23,6 +23,7 @@ import {
   ModalOverlay,
   Heading,
   IconButton,
+  Text,
 } from "@chakra-ui/react";
 
 // Component.
@@ -165,9 +166,9 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
           {isLoading && <CustomProgress />}
           {/* Header. */}
           <ModalHeader>
-            <Heading fontSize={"2xl"}>
+            <Text fontSize={"xl"} fontWeight={"medium"}>
               {poll ? "Edit poll" : "New poll"}
-            </Heading>
+            </Text>
           </ModalHeader>
           <ModalCloseButton />
           <form onSubmit={onSubmit}>

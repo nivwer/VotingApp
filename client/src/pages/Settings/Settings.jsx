@@ -2,26 +2,14 @@
 import { useThemeInfo } from "../../hooks/Theme";
 // Components.
 import { NavLink } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Divider,
-  HStack,
-  Icon,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Icon, Stack, Text } from "@chakra-ui/react";
 // Icons.
-import {
-  FaUserLock,
-  FaUserGear,
-  FaUserPen,
-  FaPaintbrush,
-} from "react-icons/fa6";
+import { FaUserGear, FaUserPen, FaPaintbrush } from "react-icons/fa6";
 
+// Component.
 function SettingLinkButton({ children, to, icon }) {
   return (
-    <NavLink to={to}>
+    <NavLink to={`/settings/${to}`}>
       <Button
         size={"lg"}
         variant={"ghost"}
@@ -44,13 +32,13 @@ function Settings() {
   return (
     <Box w={"100%"} pt={5} opacity={isDark ? 0.9 : 0.6}>
       <Stack spacing={0}>
-        <SettingLinkButton icon={<FaUserGear />} to={"/settings/account"}>
+        <SettingLinkButton icon={<FaUserGear />} to={"account"}>
           Account
         </SettingLinkButton>
-        <SettingLinkButton icon={<FaUserPen />} to={"/settings/profile"}>
+        <SettingLinkButton icon={<FaUserPen />} to={"profile"}>
           Profile
         </SettingLinkButton>
-        <SettingLinkButton icon={<FaPaintbrush />} to={"/settings/theme"}>
+        <SettingLinkButton icon={<FaPaintbrush />} to={"theme"}>
           Theme
         </SettingLinkButton>
       </Stack>

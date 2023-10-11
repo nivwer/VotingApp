@@ -6,7 +6,6 @@ import { useGetPollsCategoryQuery } from "../../../api/pollApiSlice";
 // Components.
 import PollCardGroup from "../../../components/Groups/PollCardGroup/PollCardGroup";
 
-
 // Page.
 function CategoryPolls() {
   const session = useSelector((state) => state.session);
@@ -23,6 +22,8 @@ function CategoryPolls() {
 
   // Update data to fetchs.
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     if (session.token) {
       setData({
         headers: { Authorization: `Token ${session.token}` },
@@ -38,14 +39,10 @@ function CategoryPolls() {
         // page: page,
       });
     }
+
   }, [category, session.token]);
 
-  return (
-    <PollCardGroup
-      data={dataPollsCategory}
-      isLoading={isLoading || isFetching}
-    />
-  );
+  return <PollCardGroup data={dataPollsCategory} isLoading={isLoading} />;
 }
 
 export default CategoryPolls;
