@@ -1,17 +1,18 @@
 // Components.
-import { Button } from "@chakra-ui/react";
+import { Button, HStack, IconButton } from "@chakra-ui/react";
 
 // Component.
-function PollCardButton({ children, isLoading, onClick }) {
+function PollCardButton({ children, isLoading, onClick, icon }) {
   return (
-    <Button
-      flex={"1"}
+    <IconButton
+      size={"md"}
       variant={"ghost"}
       isDisabled={isLoading}
       onClick={onClick}
+      borderRadius={"full"}
     >
-      {children}
-    </Button>
+      {icon}
+    </IconButton>
   );
 }
 

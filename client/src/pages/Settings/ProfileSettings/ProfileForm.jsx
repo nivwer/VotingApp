@@ -49,8 +49,8 @@ function ProfileForm({ profile = false }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await updateProfile({
-        profile: data,
         headers: { Authorization: `Token ${session.token}` },
+        body: data,
       });
 
       // If server error.

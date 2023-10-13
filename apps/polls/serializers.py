@@ -35,3 +35,8 @@ class OptionsSerializer(serializers.Serializer):
 # Option serializer.
 class OptionSerializer(serializers.Serializer):
     option_text = serializers.CharField(max_length=113, required=True)
+
+# Comment serializer.
+class CommentSerializer(serializers.Serializer):
+    comment = serializers.CharField(max_length=143, required=True)
+

@@ -14,10 +14,10 @@ export const pollApiSlice = createApi({
     // Create Poll.
     createPoll: builder.mutation({
       query: (data) => ({
-        url: "poll/create/",
+        url: "poll",
         method: "POST",
-        body: data.poll,
         headers: data.headers,
+        body: data.body,
       }),
       invalidatesTags: ["Polls"],
     }),
@@ -25,7 +25,7 @@ export const pollApiSlice = createApi({
     // Read Poll.
     readPoll: builder.query({
       query: (data) => ({
-        url: `poll/read/${data.id}`,
+        url: `poll/${data.id}`,
         method: "GET",
         headers: data.headers,
       }),
@@ -35,10 +35,10 @@ export const pollApiSlice = createApi({
     // Update Poll.
     updatePoll: builder.mutation({
       query: (data) => ({
-        url: `poll/update/${data.poll_id}`,
+        url: `poll/${data.id}/update`,
         method: "PATCH",
-        body: data.poll,
         headers: data.headers,
+        body: data.body,
       }),
       invalidatesTags: ["Polls"],
     }),
@@ -46,7 +46,7 @@ export const pollApiSlice = createApi({
     // Delete Poll.
     deletePoll: builder.mutation({
       query: (data) => ({
-        url: `poll/delete/${data.id}`,
+        url: `poll/${data.id}/delete`,
         method: "DELETE",
         headers: data.headers,
       }),
@@ -58,7 +58,7 @@ export const pollApiSlice = createApi({
     // Add option.
     addOption: builder.mutation({
       query: (data) => ({
-        url: `poll/option/${data.poll_id}`,
+        url: `poll/${data.id}/option`,
         method: "POST",
         headers: data.headers,
         body: data.body,
@@ -71,7 +71,7 @@ export const pollApiSlice = createApi({
     // Add user vote.
     addUserVote: builder.mutation({
       query: (data) => ({
-        url: `poll/vote/add/${data.poll_id}`,
+        url: `poll/${data.id}/vote`,
         method: "POST",
         headers: data.headers,
         body: data.body,
@@ -82,7 +82,7 @@ export const pollApiSlice = createApi({
     // Update user vote.
     updateUserVote: builder.mutation({
       query: (data) => ({
-        url: `poll/vote/update/${data.poll_id}`,
+        url: `poll/${data.id}/vote/update`,
         method: "PATCH",
         headers: data.headers,
         body: data.body,
@@ -93,7 +93,7 @@ export const pollApiSlice = createApi({
     // Delete user vote.
     deleteUserVote: builder.mutation({
       query: (data) => ({
-        url: `poll/vote/delete/${data.poll_id}`,
+        url: `poll/${data.id}/vote/delete`,
         method: "DELETE",
         headers: data.headers,
       }),
@@ -106,8 +106,8 @@ export const pollApiSlice = createApi({
     getUserPolls: builder.query({
       query: (data) => ({
         url: data.page
-          ? `user/${data.username}?page=${data.page}`
-          : `user/${data.username}`,
+          ? `user/${data.id}?page=${data.page}`
+          : `user/${data.id}`,
         method: "GET",
         headers: data.headers,
       }),
@@ -118,8 +118,8 @@ export const pollApiSlice = createApi({
     getUserVotedPolls: builder.query({
       query: (data) => ({
         url: data.page
-          ? `user/voted/${data.username}?page=${data.page}`
-          : `user/voted/${data.username}`,
+          ? `user/${data.id}/voted_polls?page=${data.page}`
+          : `user/${data.id}/voted_polls`,
         method: "GET",
         headers: data.headers,
       }),

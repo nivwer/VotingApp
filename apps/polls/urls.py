@@ -1,41 +1,44 @@
 # Django.
 from django.urls import path
-# Basic views.
-from . import views
-# CRUD views.
-from .app_views.poll_views import create_poll, read_poll, update_poll, delete_poll
-from .app_views.options_views import option_manager
-from .app_views.voting_views import add_vote, get_vote, update_vote, delete_vote
-# GET Polls views.
-from .app_views.user_polls_views import user_polls, user_voted_polls
-from .app_views.categories_polls_views import polls_categories, category_polls, get_categories_data
+# Poll.
+from .views.poll import poll_create, poll_read, poll_update, poll_delete
+from .views.option import option_manager
+from .views.vote import vote_add, vote_read, vote_update, vote_delete
+from .views.comment import comment_add, comment_update, comment_delete
+# User.
+from .views.user import user_polls, user_voted_polls
+# Categories.
+from .views.categories import categories, categories_data
+from .views.category import category_polls
+
 
 urlpatterns = [
-    # Utils.
-    path('categories/', polls_categories, name="RCategories"),
-    path('categories/data', get_categories_data, name="RCategoriesData"),
-
     # CRUD Poll.
-    path('poll/create/', create_poll, name='CPoll'),
-    path('poll/read/<str:poll_id>', read_poll, name='RPoll'),
-    path('poll/update/<str:poll_id>', update_poll, name='UPoll'),
-    path('poll/delete/<str:poll_id>', delete_poll, name='DPoll'),
+    path('poll', poll_create, name='create_poll'),
+    path('poll/<str:id>', poll_read, name='read_poll'),
+    path('poll/<str:id>/update', poll_update, name='update_Poll'),
+    path('poll/<str:id>/delete', poll_delete, name='delete_Poll'),
 
-    # Options.
-    path('poll/option/<str:poll_id>', option_manager, name='OptionManager'),
+    # Option manager.
+    path('poll/<str:id>/option', option_manager, name='option_manager'),
 
     # CRUD Vote.
-    path('poll/vote/add/<str:poll_id>', add_vote, name='CVote'),
-    path('poll/vote/get/<str:poll_id>', get_vote, name='RVote'),
-    path('poll/vote/update/<str:poll_id>', update_vote, name='UVote'),
-    path('poll/vote/delete/<str:poll_id>', delete_vote, name='DVote'),
+    path('poll/<str:id>/vote', vote_add, name='add_vote'),
+    path('poll/<str:id>/vote/read', vote_read, name='get_vote'),
+    path('poll/<str:id>/vote/update', vote_update, name='update_vote'),
+    path('poll/<str:id>/vote/delete', vote_delete, name='delete_vote'),
 
-    ### GET Polls. ###
+    # CRUD Comment.
+    path('poll/<str:id>/comment', comment_add, name='add_comment'),
+    path('poll/<str:id>/comment/update', comment_update, name='update_comment'),
+    path('poll/<str:id>/comment/delete', comment_delete, name='delete_comment'),
 
     # User Polls.
-    path('user/<str:username>', user_polls, name='GetUserPolls'),
-    path('user/voted/<str:username>', user_voted_polls, name='GetUserVPolls'),
+    path('user/<str:id>', user_polls, name='polls_user'),
+    path('user/<str:id>/voted_polls', user_voted_polls, name='voted_polls_user'),
 
-    # Category Polls.
-    path('category/<str:category>', category_polls, name='GetCategoryPolls'),
+    # Categories.
+    path('categories', categories, name="categories"),
+    path('categories/data', categories_data, name="data_categories"),
+    path('category/<str:category>', category_polls, name='category_polls'),
 ]

@@ -1,11 +1,13 @@
 from django.urls import path
-from . import views
+from .views.profile import profile_me, profile_me_update
+from .views.profile_public import profile_by_username
 
 urlpatterns = [
-    # CRUD profile.
-    path('profile/read/', views.read_profile),
-    path('profile/update/', views.update_profile),
+    # User private profile.
+    path('profile/user/me', profile_me, name='me_profile'),
+    path('profile/user/me/update', profile_me_update, name='update_me_profile'),
 
-    # Get user public profile.
-    path('profile/get/<str:username>', views.get_profile),
+    # User public profile.
+    path('profile/user/<str:username>',
+         profile_by_username, name='profile_by_username'),
 ]

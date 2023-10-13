@@ -3,7 +3,6 @@ import { useThemeInfo } from "../../../hooks/Theme";
 import { useSelector } from "react-redux";
 // Components.
 import NavDrawer from "./components/NavDrawer/NavDrawer";
-import ToggleColorMode from "../../Toggles/Theme/ToggleColorMode";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ButtonGroup,
@@ -104,7 +103,6 @@ function Navbar() {
           {session.token ? (
             <HStack spacing="6">
               <ButtonGroup spacing="0"></ButtonGroup>
-              <ToggleColorMode />
               <IconButton variant={"unstyled"} onClick={onOpen}>
                 <Avatar
                   bg={"gray.400"}

@@ -43,10 +43,116 @@ class GetCollectionsMongoDB:
 
 # Views.
 
+
+# Handles the creation process for the polls.
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+async def poll_create(request):
+    session = None
+    options_object = {'options': request.data['options']['add_options']}
+
+    try:
+        # Initialize a Poll Serializer instance.
+        poll_serializer = PollSerializer(data=request.data)
+        poll_serializer.is_valid(raise_exception=True)
+        poll_data = poll_serializer.validated_data
+
+        # Initialize a Options Serializer instance.
+        options_serializer = OptionsSerializer(data=options_object)
+        options_serializer.is_valid(raise_exception=True)
+        list_options = options_serializer.validated_data.get('options')
+
+        # Create options objects.
+        options = []
+        for option in list_options:
+            options.append(
+                {
+                    'created_by': {'user_id': request.user.id},
+                    'option_text': option,
+                    'votes': 0
+                }
+            )
+
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'comments'])
+
+        # Initialize a MongoDB session.
+        async with await MongoDBSingleton().client.start_session() as session:
+            # Initialize a MongoDB transaccion.
+            async with session.start_transaction():
+
+                # Create poll document in polls collection.
+                poll = await polls_db.polls.insert_one(
+                    {
+                        'created_by': {'user_id': request.user.id},
+                        'title': poll_data['title'],
+                        'description': poll_data['description'],
+                        'creation_date': datetime.now(),
+                        'total_votes': 0,
+                        'voters': [],
+                        'privacy': poll_data['privacy'],
+                        'category': poll_data['category'],
+                        'options': options,
+                        'share_counter': 0,
+                        'comment_counter': 0,
+                    },
+                    session=session
+                )
+
+                # Get poll ID.
+                poll_id = poll.inserted_id
+
+                # Create comments document in comments collection.
+                await polls_db.comments.insert_one(
+                    {
+                        'poll_id': poll_id,
+                        'comments': []
+                    },
+                    session=session
+                )
+
+                # Save transaction.
+                await session.commit_transaction()
+
+                poll_json = json_util._json_convert((poll_id))
+
+                # Response.
+                return Response(
+                    {'message': 'Poll created successfully',
+                     'id': poll_json},
+                    status=status.HTTP_201_CREATED)
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        if session:
+            await session.abort_transaction()
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        if session:
+            await session.abort_transaction()
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    finally:
+        if session:
+            await session.end_session()
+
+
 # Handles the read to a polls.
 @api_view(['GET'])
 @permission_classes([AllowAny])
-async def read_poll(request, poll_id):
+async def poll_read(request, id):
     # If user is login.
     is_login = True if request.user else False
 
@@ -61,7 +167,7 @@ async def read_poll(request, poll_id):
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -140,114 +246,11 @@ async def read_poll(request, poll_id):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Handles the creation process for the polls.
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-async def create_poll(request):
-    session = None
-    options_object = {'options': request.data['options']['add_options']}
-
-    try:
-        # Initialize a Poll Serializer instance.
-        poll_serializer = PollSerializer(data=request.data)
-        poll_serializer.is_valid(raise_exception=True)
-        poll_data = poll_serializer.validated_data
-
-        # Initialize a Options Serializer instance.
-        options_serializer = OptionsSerializer(data=options_object)
-        options_serializer.is_valid(raise_exception=True)
-        list_options = options_serializer.validated_data.get('options')
-
-        # Create options objects.
-        options = []
-        for option in list_options:
-            options.append(
-                {
-                    'created_by': {'user_id': request.user.id},
-                    'option_text': option,
-                    'votes': 0
-                }
-            )
-
-        # Initialize a MongoDB session.
-        async with await MongoDBSingleton().client.start_session() as session:
-            # Initialize a MongoDB transaccion.
-            async with session.start_transaction():
-
-                # Get collections from the polls database.
-                polls_db = GetCollectionsMongoDB(
-                    'polls_db', ['polls', 'comments'])
-
-                # Create poll document in polls collection.
-                poll = await polls_db.polls.insert_one(
-                    {
-                        'created_by': {'user_id': request.user.id},
-                        'title': poll_data['title'],
-                        'description': poll_data['description'],
-                        'creation_date': datetime.now(),
-                        'total_votes': 0,
-                        'voters': [],
-                        'privacy': poll_data['privacy'],
-                        'category': poll_data['category'],
-                        'options': options
-                    },
-                    session=session
-                )
-
-                # Get poll ID.
-                poll_id = poll.inserted_id
-
-                # Create comments document in comments collection.
-                await polls_db.comments.insert_one(
-                    {
-                        'poll_id': poll_id,
-                        'comments': []
-                    },
-                    session=session
-                )
-
-                # Save transaction.
-                await session.commit_transaction()
-
-                poll_json = json_util._json_convert((poll_id))
-
-                # Response.
-                return Response(
-                    {'message': 'Poll created successfully',
-                     'id': poll_json},
-                    status=status.HTTP_201_CREATED)
-
-    # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-
-    # Handle MongoDB errors.
-    except PyMongoError as e:
-        if session:
-            await session.abort_transaction()
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # Handle other exceptions.
-    except Exception as e:
-        if session:
-            await session.abort_transaction()
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    finally:
-        if session:
-            await session.end_session()
-
-
 # Handles the update process for the polls.
 @api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def update_poll(request, poll_id):
+async def poll_update(request, id):
     session = None
     try:
         # Get collections from the polls database.
@@ -255,7 +258,7 @@ async def update_poll(request, poll_id):
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -333,7 +336,7 @@ async def update_poll(request, poll_id):
 
                 # Update poll document in polls collection.
                 await polls_db.polls.update_one(
-                    {'_id': ObjectId(poll_id)},
+                    {'_id': ObjectId(id)},
                     {
                         '$set': data
                     },
@@ -342,7 +345,7 @@ async def update_poll(request, poll_id):
                 # Add options.
                 if request.data['options']['add_options']:
                     await polls_db.polls.update_one(
-                        {'_id': ObjectId(poll_id)},
+                        {'_id': ObjectId(id)},
                         {
                             '$addToSet': {'options': {'$each': add_options_object}}
                         },
@@ -351,7 +354,7 @@ async def update_poll(request, poll_id):
                 # Remove options.
                 if request.data['options']['del_options']:
                     await polls_db.polls.update_one(
-                        {'_id': ObjectId(poll_id)},
+                        {'_id': ObjectId(id)},
                         {
                             '$pull': {'options': {'option_text': {'$in': del_options}}}
                         },
@@ -398,7 +401,7 @@ async def update_poll(request, poll_id):
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def delete_poll(request, poll_id):
+async def poll_delete(request, id):
     session = None
     try:
         # Get collections from the polls database.
@@ -406,7 +409,7 @@ async def delete_poll(request, poll_id):
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
 
         # If poll is not found.
         if not poll:

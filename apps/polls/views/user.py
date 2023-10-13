@@ -44,13 +44,13 @@ class GetCollectionsMongoDB:
 # Handles the get process for a user polls.
 @api_view(['GET'])
 @permission_classes([AllowAny])
-async def user_polls(request, username):
+async def user_polls(request, id):
     # If user is login.
     is_login = True if request.user else False
 
     try:
         # Get the user data.
-        user = await User.objects.aget(username=username)
+        user = await User.objects.aget(id=id)
         user_profile = await UserProfile.objects.aget(pk=user.pk)
         # Initialize a UserProfileSerializer instance.
         profile_data = UserProfileSerializer(instance=user_profile).data
@@ -165,13 +165,13 @@ async def user_polls(request, username):
 # Handles the get process for a user voted polls.
 @api_view(['GET'])
 @permission_classes([AllowAny])
-async def user_voted_polls(request, username):
+async def user_voted_polls(request, id):
     # If user is login.
     is_login = True if request.user else False
 
     try:
         # Get the user in the User table.
-        user = await User.objects.aget(username=username)
+        user = await User.objects.aget(id=id)
 
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(

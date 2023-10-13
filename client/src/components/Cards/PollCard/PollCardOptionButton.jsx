@@ -44,7 +44,7 @@ function PollCardOptionButton({
   const handleUserVote = async (value) => {
     let res = "";
     const data = {
-      poll_id: poll._id,
+      id: poll._id,
       headers: { Authorization: `Token ${session.token}` },
       body: { vote: value },
     };

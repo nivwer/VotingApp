@@ -42,14 +42,14 @@ function SideBar({ section }) {
             zIndex={"100"}
             opacity={0.9}
             justify={"center"}
-            pos={"sticky"}
-            top={"0"}
             w={"100%"}
             bg={isDark ? "black" : "white"}
-            p={"3"}
+            p={3}
+            py={2}
+            mt={5}
           >
             <Heading w={"87%"} fontSize={"lg"}>
-              Categories
+              <NavLink to={"/categories"}>Categories</NavLink>
             </Heading>
           </Flex>
           <Flex opacity={isDark ? 0.8 : 0.6} justify={"center"}>

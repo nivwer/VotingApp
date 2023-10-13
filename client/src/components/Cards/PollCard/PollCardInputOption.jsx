@@ -37,7 +37,7 @@ function PollCardInputOption({ poll_id, setShowInputOption }) {
       let res = "";
       if (session.token) {
         res = await addOption({
-          poll_id: poll_id,
+          id: id,
           headers: { Authorization: `Token ${session.token}` },
           body: data,
         });

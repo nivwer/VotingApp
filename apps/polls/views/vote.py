@@ -32,52 +32,12 @@ class GetCollectionsMongoDB:
 
 # Views.
 
-# Handles the get process of the user vote.
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-async def get_vote(request, poll_id):
-    try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['user_votes'])
-
-        # Find the user voted polls in the user_votes collection.
-        user_vote = await polls_db.user_votes.find_one(
-            {
-                'user_id': request.user.id,
-                'voted_polls.poll_id': poll_id
-            },
-            projection={'voted_polls.$': 1})
-
-        # If the user has not voted a poll.
-        if not user_vote:
-            return Response({'vote': ''})
-
-        # Response.
-        return Response({'vote': user_vote['voted_polls'][0]['vote']})
-
-    # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-
-    # Handle MongoDB errors.
-    except PyMongoError as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # Handle other exceptions.
-    except Exception as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 # Handles the creation process of the user vote.
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def add_vote(request, poll_id):
+async def vote_add(request, id):
     session = None
     add_vote_value = request.data['vote']
 
@@ -88,7 +48,7 @@ async def add_vote(request, poll_id):
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -114,7 +74,7 @@ async def add_vote(request, poll_id):
                     {
                         '$addToSet': {
                             'voted_polls': {
-                                'poll_id': poll_id,
+                                'poll_id': id,
                                 'vote': add_vote_value,
                                 'voted_at': datetime.now()
                             }
@@ -127,7 +87,7 @@ async def add_vote(request, poll_id):
                 await polls_db.polls.bulk_write([
                     # Save the user id in poll voters list.
                     UpdateOne(
-                        {'_id': ObjectId(poll_id)},
+                        {'_id': ObjectId(id)},
                         {
                             '$push': {'voters': request.user.id},
                             '$inc': {'total_votes': 1}
@@ -136,7 +96,7 @@ async def add_vote(request, poll_id):
                     # Add the new vote.
                     UpdateOne(
                         {
-                            '_id': ObjectId(poll_id),
+                            '_id': ObjectId(id),
                             'options.option_text': add_vote_value
                         },
                         {
@@ -149,7 +109,7 @@ async def add_vote(request, poll_id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('res')
+                return Response('Vote created successfully')
 
     # Handle validation errors.
     except ValidationError as e:
@@ -178,11 +138,52 @@ async def add_vote(request, poll_id):
             await session.end_session()
 
 
+# Handles the get process of the user vote.
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+async def vote_read(request, id):
+    try:
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB('polls_db', ['user_votes'])
+
+        # Find the user voted polls in the user_votes collection.
+        user_vote = await polls_db.user_votes.find_one(
+            {
+                'user_id': request.user.id,
+                'voted_polls.poll_id': id
+            },
+            projection={'voted_polls.$': 1})
+
+        # If the user has not voted a poll.
+        if not user_vote:
+            return Response({'vote': ''})
+
+        # Response.
+        return Response({'vote': user_vote['voted_polls'][0]['vote']})
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 # Handles the updating process of the user vote.
 @api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def update_vote(request, poll_id):
+async def vote_update(request, id):
     session = None
     add_vote_value = request.data['vote']
     del_vote_value = None
@@ -194,7 +195,7 @@ async def update_vote(request, poll_id):
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -213,7 +214,7 @@ async def update_vote(request, poll_id):
         user_vote = await polls_db.user_votes.find_one(
             {
                 'user_id': request.user.id,
-                'voted_polls.poll_id': poll_id
+                'voted_polls.poll_id': id
             },
             projection={'voted_polls.$': 1})
 
@@ -234,7 +235,7 @@ async def update_vote(request, poll_id):
                 await polls_db.user_votes.update_one(
                     {
                         'user_id': request.user.id,
-                        'voted_polls.poll_id': poll_id
+                        'voted_polls.poll_id': id
                     },
                     {
                         '$set': {
@@ -247,7 +248,7 @@ async def update_vote(request, poll_id):
                     # Remove the previous vote.
                     UpdateOne(
                         {
-                            '_id': ObjectId(poll_id),
+                            '_id': ObjectId(id),
                             'options.option_text': del_vote_value
                         },
                         {
@@ -257,7 +258,7 @@ async def update_vote(request, poll_id):
                     # Add the new vote.
                     UpdateOne(
                         {
-                            '_id': ObjectId(poll_id),
+                            '_id': ObjectId(id),
                             'options.option_text': add_vote_value
                         },
                         {
@@ -270,7 +271,7 @@ async def update_vote(request, poll_id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('res')
+                return Response('Vote updated successfully')
 
     # Handle validation errors.
     except ValidationError as e:
@@ -303,7 +304,7 @@ async def update_vote(request, poll_id):
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def delete_vote(request, poll_id):
+async def vote_delete(request, id):
     session = None
     del_vote_value = None
 
@@ -314,7 +315,7 @@ async def delete_vote(request, poll_id):
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -332,7 +333,7 @@ async def delete_vote(request, poll_id):
         user_vote = await polls_db.user_votes.find_one(
             {
                 'user_id': request.user.id,
-                'voted_polls.poll_id': poll_id
+                'voted_polls.poll_id': id
             },
             projection={'voted_polls.$': 1})
 
@@ -353,7 +354,7 @@ async def delete_vote(request, poll_id):
                 await polls_db.user_votes.update_one(
                     {'user_id': request.user.id},
                     {
-                        '$pull': {'voted_polls': {'poll_id': poll_id}}
+                        '$pull': {'voted_polls': {'poll_id': id}}
                     },
                     session=session
                 )
@@ -361,7 +362,7 @@ async def delete_vote(request, poll_id):
                 await polls_db.polls.bulk_write([
                     # Remove the user id in poll voters list.
                     UpdateOne(
-                        {'_id': ObjectId(poll_id)},
+                        {'_id': ObjectId(id)},
                         {
                             '$pull': {'voters': request.user.id},
                             '$inc': {'total_votes': -1}
@@ -370,7 +371,7 @@ async def delete_vote(request, poll_id):
                     # Remove the previous vote.
                     UpdateOne(
                         {
-                            '_id': ObjectId(poll_id),
+                            '_id': ObjectId(id),
                             'options.option_text': del_vote_value
                         },
                         {
@@ -383,7 +384,7 @@ async def delete_vote(request, poll_id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('res')
+                return Response('Vote removed successfully')
 
     # Handle validation errors.
     except ValidationError as e:

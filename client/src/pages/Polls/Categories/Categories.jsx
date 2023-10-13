@@ -1,8 +1,10 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
 import { useGetCategoriesDataQuery } from "../../../api/pollApiSlice";
 // Components.
+import { NavLink } from "react-router-dom";
+import CustomSpinner from "../../../components/Spinners/CustomSpinner";
 import {
+  Button,
   Table,
   TableCaption,
   TableContainer,
@@ -13,11 +15,9 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import CustomSpinner from "../../../components/Spinners/CustomSpinner";
 
 // Page.
 function Categories() {
-  const { isDark, ThemeColor } = useThemeInfo();
   const {
     data: dataCategories,
     isLoading,
@@ -27,8 +27,8 @@ function Categories() {
   return (
     <>
       {dataCategories ? (
-        <TableContainer p={"5"}>
-          <Table size={"md"} variant="simple">
+        <TableContainer p={"6"}>
+          <Table size={"sm"} variant="simple">
             <TableCaption>Categories data.</TableCaption>
             <Thead>
               <Tr>
@@ -40,7 +40,18 @@ function Categories() {
             <Tbody>
               {dataCategories.map((category, index) => (
                 <Tr key={index}>
-                  <Td>{category.text}</Td>
+                  <Td>
+                    <NavLink to={`/categories/${category.value}`}>
+                      <Button
+                        variant={"ghost"}
+                        w={"100%"}
+                        justifyContent={"start"}
+                        borderRadius={"full"}
+                      >
+                        {category.text}
+                      </Button>
+                    </NavLink>
+                  </Td>
                   <Td isNumeric>{category.total_polls}</Td>
                   <Td isNumeric>{category.total_polls}</Td>
                 </Tr>

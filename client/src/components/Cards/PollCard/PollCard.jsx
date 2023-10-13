@@ -6,7 +6,9 @@ import { useDeletePollMutation } from "../../../api/pollApiSlice";
 import PollCardOptionButton from "./PollCardOptionButton";
 import PollCardButton from "./PollCardButton";
 import PollCardMenu from "./PollCardMenu";
+import PollCardInputOption from "./PollCardInputOption";
 import CustomProgress from "../../Progress/CustomProgress";
+import { Link, NavLink } from "react-router-dom";
 import {
   Avatar,
   Card,
@@ -25,6 +27,15 @@ import {
 } from "@chakra-ui/react";
 // Icons.
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import {
+  FaPlus,
+  FaComment,
+  FaRegComment,
+  FaMinus,
+  FaRetweet,
+  FaBookmark,
+  FaRegBookmark,
+} from "react-icons/fa6";
 // Others.
 import {
   format,
@@ -32,8 +43,6 @@ import {
   differenceInMinutes,
   differenceInHours,
 } from "date-fns";
-import { Link, NavLink, UNSAFE_NavigationContext } from "react-router-dom";
-import PollCardInputOption from "./PollCardInputOption";
 
 // Component.
 function PollCard({ poll }) {
@@ -201,18 +210,30 @@ function PollCard({ poll }) {
           </CardBody>
 
           {/* Card Footer. */}
-          <CardFooter justify={"space-between"} flexWrap={"wrap"}>
-            <PollCardButton isLoading={isLoading}>Share</PollCardButton>
-            <PollCardButton isLoading={isLoading}>Comment</PollCardButton>
-            <PollCardButton isLoading={isLoading}>
-              <Link to={`/${poll.profile.username}/${poll._id}`}>Views</Link>
-            </PollCardButton>
-            <PollCardButton
-              isLoading={isLoading}
-              onClick={() => setShowInputOption(!showInputOption)}
-            >
-              Add option
-            </PollCardButton>
+          <CardFooter justify={"space-between"} gap={10} flexWrap={"wrap"}>
+            <HStack mx={5} spacing={4}>
+              <Link to={`/${poll.profile.username}/${poll._id}`}>
+                <PollCardButton
+                  icon={<FaRegComment />}
+                  isLoading={isLoading}
+                ></PollCardButton>
+              </Link>
+              <PollCardButton icon={<FaRetweet />} isLoading={isLoading}>
+                <Text>Share</Text>
+              </PollCardButton>
+              <PollCardButton icon={<FaBookmark />} isLoading={isLoading}>
+                <Link to={`/${poll.profile.username}/${poll._id}`}>Views</Link>
+              </PollCardButton>
+            </HStack>
+            <Box mx={5}>
+              <PollCardButton
+                icon={!showInputOption ? <FaPlus /> : <FaMinus />}
+                isLoading={isLoading}
+                onClick={() => setShowInputOption(!showInputOption)}
+              >
+                <Text>Add option</Text>
+              </PollCardButton>
+            </Box>
           </CardFooter>
         </Card>
       )}

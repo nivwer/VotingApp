@@ -90,7 +90,11 @@ function Profile() {
                 {session.token &&
                   session.user.username === profile.username && (
                     <NavLink to={`/settings/profile`}>
-                      <Button variant={"outline"} size={"sm"} borderRadius={"full"}>
+                      <Button
+                        variant={"outline"}
+                        size={"sm"}
+                        borderRadius={"full"}
+                      >
                         Edit profile
                       </Button>
                     </NavLink>
@@ -199,8 +203,8 @@ function Profile() {
       </Box>
       {/* Profile Body. */}
       <Flex>
-        {!tab && <ProfileUserPolls />}
-        {tab === "votes" && <ProfileVotedPolls />}
+        {!tab && <ProfileUserPolls id={profile && profile.id} />}
+        {tab === "votes" && <ProfileVotedPolls id={profile && profile.id} />}
       </Flex>
     </>
   );
