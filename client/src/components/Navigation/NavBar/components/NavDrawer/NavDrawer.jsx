@@ -34,7 +34,7 @@ import Cookies from "js-cookie";
 function NavDrawer({ isOpen, onClose }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isDark, ThemeColor } = useThemeInfo();
+  const { isDark } = useThemeInfo();
   const session = useSelector((state) => state.session);
 
   // Get csrftoken.
@@ -47,9 +47,7 @@ function NavDrawer({ isOpen, onClose }) {
   const handleLogout = async () => {
     try {
       const res = await signOut({
-        headers: {
-          "X-CSRFToken": csrftoken,
-        },
+        headers: { "X-CSRFToken": csrftoken },
       });
       // If the logout is successful.
       if (res.data) {

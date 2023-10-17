@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { useThemeInfo } from "./hooks/Theme";
 import { useCheckSessionQuery } from "./api/authApiSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useReadProfileQuery } from "./api/profileApiSlice";
 // Actions.
-import { login, updateProfileAction } from "./features/auth/sessionSlice";
+import { login } from "./features/auth/sessionSlice";
 // Components..
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
 import InitialSpinner from "./components/Spinners/InitialSpinner";
 import { Container } from "@chakra-ui/react";
-import { useReadProfileQuery } from "./api/profileApiSlice";
 
 // App.
 function App() {
@@ -21,29 +21,56 @@ function App() {
   const [data, setData] = useState(false);
 
   // Check the user session.
-  const { data: dataSession } = useCheckSessionQuery();
-  // Get user data.
-  const { data: dataProfile } = useReadProfileQuery(data, {
-    skip: data ? false : true,
-  });
+  const {
+    data: dataSession,
+    isLoading: isCheckSessionLoading,
+    isFetching: isCheckSessionFetching,
+    isUninitialized: isCheckSessionUninitialized,
+    status: statusSession,
+  } = useCheckSessionQuery();
+
+  // Get user profile data.
+  const { data: dataProfile, isLoading: isReadProfileLoading } =
+    useReadProfileQuery(data, {
+      skip: data ? false : true,
+    });
 
   useEffect(() => {
-    dataSession && dispatch(login(dataSession));
-  }, [dataSession]);
-
-  useEffect(() => {
-    dataProfile && dispatch(updateProfileAction(dataProfile));
-  }, [dataProfile]);
+    if (dataSession && dataProfile) {
+      dispatch(
+        login({
+          isAuthenticated: true,
+          token: dataSession.token,
+          user: dataSession.user,
+          profile: dataProfile.profile,
+        })
+      );
+    }
+  }, [dataSession, dataProfile]);
 
   // Update data to fetchs.
   useEffect(() => {
-    session.token &&
-      setData({ headers: { Authorization: `Token ${session.token}` } });
-  }, [session.token]);
+    if (!isCheckSessionUninitialized && !isCheckSessionLoading) {
+      if (dataSession) {
+        setData({ headers: { Authorization: `Token ${dataSession.token}` } });
+        if (!isLoading && !dataProfile) {
+          setIsLoading(true);
+        }
+      } else {
+        if (isLoading) {
+          setIsLoading(false);
+        }
+      }
+    }
+  }, [dataSession, statusSession]);
 
   useEffect(() => {
-    dataProfile && dataSession && setIsLoading(false);
-  }, [dataProfile, dataSession]);
+    if (isLoading) {
+      if (session.isAuthenticated) {
+        setIsLoading(false);
+      }
+    }
+  }, [session]);
 
   return (
     <BrowserRouter>
