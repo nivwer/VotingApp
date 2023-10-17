@@ -18,15 +18,11 @@ import {
 
 // Page.
 function Categories() {
-  const {
-    data: dataCategories,
-    isLoading,
-    isFetching,
-  } = useGetCategoriesDataQuery();
+  const { data, isLoading, isFetching } = useGetCategoriesDataQuery();
 
   return (
     <>
-      {dataCategories ? (
+      {data ? (
         <TableContainer p={"6"}>
           <Table size={"sm"} variant="simple">
             <TableCaption>Categories data.</TableCaption>
@@ -38,7 +34,7 @@ function Categories() {
               </Tr>
             </Thead>
             <Tbody>
-              {dataCategories.map((category, index) => (
+              {data.map((category, index) => (
                 <Tr key={index}>
                   <Td>
                     <NavLink to={`/categories/${category.value}`}>
@@ -66,10 +62,10 @@ function Categories() {
             </Tfoot>
           </Table>
         </TableContainer>
-      ) : isLoading || isFetching || !dataCategories ? (
+      ) : isLoading || isFetching || !data ? (
         <CustomSpinner />
       ) : (
-        dataCategories.message
+        data.message
       )}
     </>
   );

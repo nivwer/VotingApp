@@ -1,8 +1,8 @@
 // Components.
-import { Button, HStack, IconButton } from "@chakra-ui/react";
+import { IconButton } from "@chakra-ui/react";
 
 // Component.
-function PollCardButton({ children, isLoading, onClick, icon }) {
+function PollCardButton({ isLoading, onClick, icon }) {
   return (
     <IconButton
       size={"md"}

@@ -7,19 +7,20 @@ import PollCardGroup from "../../components/Groups/PollCardGroup/PollCardGroup";
 
 // Page.
 function ProfileVotedPolls({ id }) {
-  const session = useSelector((state) => state.session);
+  const { token } = useSelector((state) => state.session);
   const [data, setData] = useState(false);
 
   // User Polls.
   const { data: dataPolls, isLoading } = useGetUserVotedPollsQuery(data, {
     skip: data ? false : true,
   });
+  
   // Update data to fetchs.
   useEffect(() => {
     if (id) {
-      if (session.token) {
+      if (token) {
         setData({
-          headers: { Authorization: `Token ${session.token}` },
+          headers: { Authorization: `Token ${token}` },
           id: id,
           // There is no support for pagination on the frontend.
           // It has not been possible to incorporate a pagination system and an infinite scroll due to lack of time and the complexity that comes with doing so.
@@ -33,7 +34,7 @@ function ProfileVotedPolls({ id }) {
         });
       }
     }
-  }, [id, session.token]);
+  }, [id, token]);
 
   return <PollCardGroup data={dataPolls} isLoading={isLoading} />;
 }

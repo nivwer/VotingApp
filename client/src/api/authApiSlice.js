@@ -17,6 +17,7 @@ export const authApiSlice = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["User"],
     }),
 
     // Login.
@@ -40,7 +41,7 @@ export const authApiSlice = createApi({
     }),
 
     // Check the user session.
-    checkSession: builder.query({
+    userSessionCheck: builder.query({
       query: () => ({
         url: "user/me/session/check",
         method: "GET",
@@ -76,7 +77,7 @@ export const {
   useSignInMutation,
   useSignUpMutation,
   useSignOutMutation,
-  useCheckSessionQuery,
+  useUserSessionCheckQuery,
   useUpdateUsernameMutation,
   useUpdatePasswordMutation,
 } = authApiSlice;

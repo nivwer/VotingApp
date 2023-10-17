@@ -8,25 +8,24 @@ import PollCardGroup from "../../../components/Groups/PollCardGroup/PollCardGrou
 
 // Page.
 function CategoryPolls() {
-  const session = useSelector((state) => state.session);
+  const { isAuthenticated, token } = useSelector((state) => state.session);
   const { category } = useParams();
   const [data, setData] = useState(false);
 
-  const {
-    data: dataPollsCategory,
-    isLoading,
-    isFetching,
-  } = useGetPollsCategoryQuery(data, {
-    skip: data ? false : true,
-  });
+  const { data: dataPollsCategory, isLoading } = useGetPollsCategoryQuery(
+    data,
+    {
+      skip: data ? false : true,
+    }
+  );
 
   // Update data to fetchs.
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    if (session.token) {
+    if (isAuthenticated) {
       setData({
-        headers: { Authorization: `Token ${session.token}` },
+        headers: { Authorization: `Token ${token}` },
         category: category,
         // There is no support for pagination on the frontend.
         // It has not been possible to incorporate a pagination system and an infinite scroll due to lack of time and the complexity that comes with doing so.
@@ -39,8 +38,7 @@ function CategoryPolls() {
         // page: page,
       });
     }
-
-  }, [category, session.token]);
+  }, [category, isAuthenticated]);
 
   return <PollCardGroup data={dataPollsCategory} isLoading={isLoading} />;
 }

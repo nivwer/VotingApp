@@ -16,17 +16,15 @@ import { FaEllipsis } from "react-icons/fa6";
 
 // Component.
 function PollCardMenu({ poll, deletePoll, isLoading }) {
-  const { isDark, ThemeColor } = useThemeInfo();
-  const session = useSelector((state) => state.session);
+  const { isDark } = useThemeInfo();
+  const { isAuthenticated, token } = useSelector((state) => state.session);
 
   // Delete poll.
   const handleDeletePoll = async (poll_id) => {
     try {
       const res = await deletePoll({
         id: poll_id,
-        headers: {
-          Authorization: `Token ${session.token}`,
-        },
+        headers: { Authorization: `Token ${token}` },
       });
     } catch (error) {
       console.log(error);
@@ -48,7 +46,7 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
 
   return (
     <>
-      {session.token && (
+      {isAuthenticated && (
         <Menu>
           <MenuButton
             isDisabled={isLoading}

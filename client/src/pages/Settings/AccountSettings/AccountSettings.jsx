@@ -1,7 +1,7 @@
 // Components.
 import UsernameForm from "./UsernameForm";
 import PasswordForm from "./PasswordForm";
-import { Box, Divider, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Divider, Stack, Text } from "@chakra-ui/react";
 
 // Page.
 function AccountSettings() {

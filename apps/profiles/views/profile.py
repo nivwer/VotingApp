@@ -35,8 +35,7 @@ def profile_me(request):
         expiration_date = datetime.utcnow() + TTL
 
         # Cache Control.
-        res = Response({'profile': profile_data},
-                       content_type='application/json',
+        res = Response({'profile': profile_data}, content_type='application/json',
                        status=status.HTTP_200_OK)
         res['Cache-Control'] = f'max-age={int(TTL.total_seconds())}'
         res['Expires'] = expiration_date.strftime('%a, %d %b %Y %H:%M:%S GMT')

@@ -1,5 +1,5 @@
 // Hooks.
-import { useGetPollCategoriesQuery } from "../../../api/pollApiSlice";
+import { useGetCategoriesQuery } from "../../../api/pollApiSlice";
 // Components.
 import PollModal from "../../Modals/PollModal/PollModal";
 import { NavLink } from "react-router-dom";
@@ -23,7 +23,7 @@ function SideBar({ section }) {
   const { isDark, ThemeColor } = useThemeInfo();
   // Request to get poll categories.
   const { data: categoriesData, isLoading: isCategoriesLoading } =
-    useGetPollCategoriesQuery();
+    useGetCategoriesQuery();
 
   // Is loading.
   const isLoading = isCategoriesLoading;

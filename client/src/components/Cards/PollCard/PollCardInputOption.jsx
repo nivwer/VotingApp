@@ -17,7 +17,7 @@ import { FaPlus } from "react-icons/fa6";
 
 // Component.
 function PollCardInputOption({ poll_id, setShowInputOption }) {
-  const session = useSelector((state) => state.session);
+  const { token } = useSelector((state) => state.session);
   const { isDark } = useThemeInfo();
 
   // React hook form.
@@ -35,10 +35,10 @@ function PollCardInputOption({ poll_id, setShowInputOption }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       let res = "";
-      if (session.token) {
+      if (token) {
         res = await addOption({
           id: id,
-          headers: { Authorization: `Token ${session.token}` },
+          headers: { Authorization: `Token ${token}` },
           body: data,
         });
       }

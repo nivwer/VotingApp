@@ -3,18 +3,11 @@ import { useSelector } from "react-redux";
 // Components.
 import ProfileForm from "./ProfileForm";
 import { NavLink } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Divider,
-  HStack,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Divider, HStack, Stack, Text } from "@chakra-ui/react";
 
 // Page.
 function ProfileSettings() {
-  const session = useSelector((state) => state.session);
+  const { user, profile } = useSelector((state) => state.session);
 
   return (
     <Box opacity={"0.9"} w={"100%"} p={"10"}>
@@ -25,12 +18,14 @@ function ProfileSettings() {
             <Text fontWeight={"medium"} fontSize={"2xl"}>
               Edit profile
             </Text>
-            <NavLink to={`/${session.user.username}`}>
-              <Button variant={"outline"} size={"xs"}>Go to your profile</Button>
+            <NavLink to={`/${user.username}`}>
+              <Button variant={"outline"} size={"xs"}>
+                Go to your profile
+              </Button>
             </NavLink>
           </HStack>
           <Divider />
-          <ProfileForm profile={session.profile} />
+          <ProfileForm profile={profile} />
         </Stack>
       </Stack>
     </Box>

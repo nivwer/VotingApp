@@ -1,9 +1,9 @@
 // Hooks.
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "./hooks/Theme";
-import { useCheckSessionQuery } from "./api/authApiSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useReadProfileQuery } from "./api/profileApiSlice";
+import { useUserSessionCheckQuery } from "./api/authApiSlice";
+import { useProfileMeQuery } from "./api/profileApiSlice";
 // Actions.
 import { login } from "./features/auth/sessionSlice";
 // Components..
@@ -23,18 +23,18 @@ function App() {
   // Check the user session.
   const {
     data: dataSession,
+    status: statusSession,
     isLoading: isCheckSessionLoading,
     isFetching: isCheckSessionFetching,
     isUninitialized: isCheckSessionUninitialized,
-    status: statusSession,
-  } = useCheckSessionQuery();
+  } = useUserSessionCheckQuery();
 
   // Get user profile data.
-  const { data: dataProfile, isLoading: isReadProfileLoading } =
-    useReadProfileQuery(data, {
-      skip: data ? false : true,
-    });
+  const { data: dataProfile } = useProfileMeQuery(data, {
+    skip: data ? false : true,
+  });
 
+  // Login.
   useEffect(() => {
     if (dataSession && dataProfile) {
       dispatch(
@@ -48,28 +48,20 @@ function App() {
     }
   }, [dataSession, dataProfile]);
 
-  // Update data to fetchs.
   useEffect(() => {
     if (!isCheckSessionUninitialized && !isCheckSessionLoading) {
       if (dataSession) {
         setData({ headers: { Authorization: `Token ${dataSession.token}` } });
-        if (!isLoading && !dataProfile) {
-          setIsLoading(true);
-        }
+        !isLoading && !dataProfile && setIsLoading(true);
       } else {
-        if (isLoading) {
-          setIsLoading(false);
-        }
+        isLoading && setIsLoading(false);
       }
     }
   }, [dataSession, statusSession]);
 
+  // If is Authenticated.
   useEffect(() => {
-    if (isLoading) {
-      if (session.isAuthenticated) {
-        setIsLoading(false);
-      }
-    }
+    isLoading && session.isAuthenticated && setIsLoading(false);
   }, [session]);
 
   return (

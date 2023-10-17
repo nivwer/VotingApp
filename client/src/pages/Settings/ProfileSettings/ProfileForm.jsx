@@ -2,7 +2,7 @@
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useUpdateProfileMutation } from "../../../api/profileApiSlice";
+import { useProfileMeUpdateMutation } from "../../../api/profileApiSlice";
 // Components.
 import ProfileInputURL from "./ProfileInputURL";
 import {
@@ -30,7 +30,7 @@ import { useSelector } from "react-redux";
 // Component.
 function ProfileForm({ profile = false }) {
   const { isDark, ThemeColor } = useThemeInfo();
-  const session = useSelector((state) => state.session);
+  const { token } = useSelector((state) => state.session);
 
   // React hook form.
   const {
@@ -43,22 +43,20 @@ function ProfileForm({ profile = false }) {
   } = useForm();
 
   // Request to update profile.
-  const [updateProfile, { isLoading }] = useUpdateProfileMutation();
+  const [profileMeUpdate, { isLoading }] = useProfileMeUpdateMutation();
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const res = await updateProfile({
-        headers: { Authorization: `Token ${session.token}` },
+      const res = await profileMeUpdate({
+        headers: { Authorization: `Token ${token}` },
         body: data,
       });
 
       // If server error.
       if (res.error) {
         for (const fieldName in res.error.data) {
-          setError(fieldName, {
-            message: res.error.data[fieldName][0],
-          });
+          setError(fieldName, { message: res.error.data[fieldName][0] });
         }
       }
     } catch (error) {
@@ -80,9 +78,7 @@ function ProfileForm({ profile = false }) {
   useEffect(() => {
     if (selectedCountry || selectedCountry === "") {
       setCountry(selectedCountry);
-      if (selectedCountry !== country) {
-        setValue("city", "");
-      }
+      selectedCountry !== country && setValue("city", "");
     }
   }, [selectedCountry]);
 
@@ -90,11 +86,9 @@ function ProfileForm({ profile = false }) {
   const [filteredCities, setFilteredCities] = useState(false);
 
   useEffect(() => {
-    if (countries && country) {
-      setFilteredCities(countries.find((c) => c.name === country)?.cities);
-    } else {
-      setFilteredCities(false);
-    }
+    countries && country
+      ? setFilteredCities(countries.find((c) => c.name === country)?.cities)
+      : setFilteredCities(false);
   }, [country, countries]);
 
   const isCities = countries && filteredCities && country !== "";

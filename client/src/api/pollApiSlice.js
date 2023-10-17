@@ -141,7 +141,7 @@ export const pollApiSlice = createApi({
     // Others. //
 
     // Get categories.
-    getPollCategories: builder.query({
+    getCategories: builder.query({
       query: () => ({
         url: "categories/",
         method: "GET",
@@ -170,7 +170,7 @@ export const {
   useAddUserVoteMutation,
   useUpdateUserVoteMutation,
   useDeleteUserVoteMutation,
-  useGetPollCategoriesQuery,
+  useGetCategoriesQuery,
   useGetPollsCategoryQuery,
   useAddOptionMutation,
   useGetCategoriesDataQuery,

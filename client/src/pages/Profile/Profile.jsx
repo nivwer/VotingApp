@@ -3,7 +3,7 @@ import { useThemeInfo } from "../../hooks/Theme";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
-import { useGetProfileQuery } from "../../api/profileApiSlice";
+import { useProfileByUsernameQuery } from "../../api/profileApiSlice";
 // Components.
 import ProfileUserPolls from "./ProfileUserPolls";
 import ProfileVotedPolls from "./ProfileVotedPolls";
@@ -29,7 +29,9 @@ import { format } from "date-fns";
 // Page.
 function Profile() {
   const { isDark, ThemeColor } = useThemeInfo();
-  const session = useSelector((state) => state.session);
+  const { isAuthenticated, token, user } = useSelector(
+    (state) => state.session
+  );
   const { username } = useParams();
   const [data, setData] = useState(false);
   const [searchParams] = useSearchParams();
@@ -37,21 +39,21 @@ function Profile() {
 
   // Query to get User Profile.
   const [profile, setProfile] = useState(null);
-  const { data: dataProfile } = useGetProfileQuery(data, {
+  const { data: dataProfile } = useProfileByUsernameQuery(data, {
     skip: data ? false : true,
   });
 
   // Update data to fetchs.
   useEffect(() => {
-    if (session.token) {
+    if (isAuthenticated) {
       setData({
-        headers: { Authorization: `Token ${session.token}` },
+        headers: { Authorization: `Token ${token}` },
         username: username,
       });
     } else {
       setData({ username: username });
     }
-  }, [username, session.token]);
+  }, [username, isAuthenticated]);
 
   // Load Profile.
   useEffect(() => {
@@ -87,18 +89,17 @@ function Profile() {
                   src={profile.profile_picture}
                 />
                 {/* Button to edit the profile. */}
-                {session.token &&
-                  session.user.username === profile.username && (
-                    <NavLink to={`/settings/profile`}>
-                      <Button
-                        variant={"outline"}
-                        size={"sm"}
-                        borderRadius={"full"}
-                      >
-                        Edit profile
-                      </Button>
-                    </NavLink>
-                  )}
+                {isAuthenticated && user.username === profile.username && (
+                  <NavLink to={`/settings/profile`}>
+                    <Button
+                      variant={"outline"}
+                      size={"sm"}
+                      borderRadius={"full"}
+                    >
+                      Edit profile
+                    </Button>
+                  </NavLink>
+                )}
               </Flex>
 
               <Stack spacing={4}>

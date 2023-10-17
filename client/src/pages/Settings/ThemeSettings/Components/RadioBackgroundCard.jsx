@@ -3,8 +3,6 @@ import { Flex, Text, useRadio } from "@chakra-ui/react";
 import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import { Box } from "@chakra-ui/react";
-// Icons.
-import { FaCheck } from "react-icons/fa6";
 
 // Component.
 function RadioBackgroundCard(props) {

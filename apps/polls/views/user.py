@@ -181,10 +181,10 @@ async def user_voted_polls(request, id):
         user_votes_object = await polls_db.user_votes.find_one(
             {'user_id': user.id})
 
-        # If user has not voted in a poll.
+        # If polls not found.
         if not user_votes_object:
-            raise ValidationError(
-                'The user has not voted in a poll.')
+            return Response(
+                {'message': 'This user has not voted for a poll.'})
 
         # Convert the BSON object to a JSON object.
         user_votes_object_json = json_util._json_convert((user_votes_object))

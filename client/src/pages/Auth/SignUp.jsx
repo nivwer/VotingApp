@@ -1,10 +1,8 @@
 // Hooks.
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSignUpMutation } from "../../api/authApiSlice";
-// Actions.
-import { login } from "../../features/auth/sessionSlice";
 // Components.
 import AuthForm from "./components/AuthForm";
 import { Center, Container } from "@chakra-ui/react";
@@ -12,7 +10,7 @@ import { Center, Container } from "@chakra-ui/react";
 // Page.
 function SignUp() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.session);
 
   // Request to the backend.
   const [signUp, { isLoading }] = useSignUpMutation();
@@ -32,8 +30,7 @@ function SignUp() {
       const res = await signUp(data);
       // If the registration is valid.
       if (res.data) {
-        dispatch(login(res.data));
-        navigate("/home");
+        isAuthenticated && navigate("/home");
       }
 
       // If server error.

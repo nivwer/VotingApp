@@ -21,7 +21,7 @@ import ToggleShowPassword from "../../../components/Toggles/ShowPassword/ToggleS
 // Component.
 function PasswordForm() {
   const { isDark } = useThemeInfo();
-  const session = useSelector((state) => state.session);
+  const { token } = useSelector((state) => state.session);
 
   // Request to update password.
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
@@ -43,9 +43,7 @@ function PasswordForm() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await updatePassword({
-        headers: {
-          Authorization: `Token ${session.token}`,
-        },
+        headers: { Authorization: `Token ${token}` },
         body: data,
       });
       if (res.data) {

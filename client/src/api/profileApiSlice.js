@@ -9,18 +9,18 @@ export const profileApiSlice = createApi({
   }),
   tagTypes: ["Profile"],
   endpoints: (builder) => ({
-    // Read user private profile.
-    readProfile: builder.query({
+    // GET user private profile.
+    profileMe: builder.query({
       query: (data) => ({
         url: "profile/user/me",
         method: "GET",
-        headers: data.headers
+        headers: data.headers,
       }),
       providesTags: ["Profile"],
     }),
 
     // Update user profile.
-    updateProfile: builder.mutation({
+    profileMeUpdate: builder.mutation({
       query: (data) => ({
         url: "profile/user/me/update",
         method: "PATCH",
@@ -30,12 +30,12 @@ export const profileApiSlice = createApi({
       invalidatesTags: ["Profile"],
     }),
 
-    // Get user public profile.
-    getProfile: builder.query({
+    // GET user public profile.
+    profileByUsername: builder.query({
       query: (data) => ({
         url: `profile/user/${data.username}`,
         method: "GET",
-        headers: data.headers
+        headers: data.headers,
       }),
       providesTags: ["Profile"],
     }),
@@ -43,7 +43,7 @@ export const profileApiSlice = createApi({
 });
 
 export const {
-  useReadProfileQuery,
-  useUpdateProfileMutation,
-  useGetProfileQuery,
+  useProfileMeQuery,
+  useProfileMeUpdateMutation,
+  useProfileByUsernameQuery,
 } = profileApiSlice;

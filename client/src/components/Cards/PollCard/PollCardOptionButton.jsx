@@ -9,7 +9,7 @@ import {
   useUpdateUserVoteMutation,
 } from "../../../api/pollApiSlice";
 // Components.
-import { Box, Button, HStack, Text } from "@chakra-ui/react";
+import { Button, HStack, Text } from "@chakra-ui/react";
 
 // Component.
 function PollCardOptionButton({
@@ -24,7 +24,7 @@ function PollCardOptionButton({
 }) {
   const navigate = useNavigate();
   const { isDark, ThemeColor } = useThemeInfo();
-  const session = useSelector((state) => state.session);
+  const { isAuthenticated, token } = useSelector((state) => state.session);
 
   // Add user vote.
   const [addUserVote, { isLoading: isAddVoteLoading }] =
@@ -45,12 +45,12 @@ function PollCardOptionButton({
     let res = "";
     const data = {
       id: poll._id,
-      headers: { Authorization: `Token ${session.token}` },
+      headers: { Authorization: `Token ${token}` },
       body: { vote: value },
     };
     const oldVote = vote;
 
-    if (!session.token) {
+    if (!isAuthenticated) {
       navigate("/signin");
     } else if (value != vote) {
       setVote(value);

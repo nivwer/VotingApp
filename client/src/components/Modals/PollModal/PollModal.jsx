@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   useCreatePollMutation,
-  useGetPollCategoriesQuery,
+  useGetCategoriesQuery,
   useUpdatePollMutation,
 } from "../../../api/pollApiSlice";
 // Components.
@@ -21,7 +21,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Heading,
   IconButton,
   Text,
 } from "@chakra-ui/react";
@@ -29,7 +28,7 @@ import {
 // Component.
 function PollModal({ poll = false, buttonStyles, icon = false }) {
   const { ThemeColor, isDark } = useThemeInfo();
-  const session = useSelector((state) => state.session);
+  const { token } = useSelector((state) => state.session);
   // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
   // React hook form.
@@ -44,7 +43,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
 
   // Request to get poll categories.
   const { data: categoriesData, isLoading: isCategoriesLoading } =
-    useGetPollCategoriesQuery();
+    useGetCategoriesQuery();
   // Request to create polls.
   const [createPoll, { isLoading: isCreateLoading }] = useCreatePollMutation();
   // Request to update polls.
@@ -100,7 +99,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
       if (poll) {
         res = await updatePoll({
           id: poll._id,
-          headers: { Authorization: `Token ${session.token}` },
+          headers: { Authorization: `Token ${token}` },
           body: data,
         });
         // If the values is valid.
@@ -114,7 +113,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
         }
       } else {
         res = await createPoll({
-          headers: { Authorization: `Token ${session.token}` },
+          headers: { Authorization: `Token ${token}` },
           body: data,
         });
         // If the values is valid.

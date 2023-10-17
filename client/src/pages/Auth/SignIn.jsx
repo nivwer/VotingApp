@@ -1,6 +1,6 @@
 // Hooks.
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSignInMutation } from "../../api/authApiSlice";
 //Components.
@@ -10,7 +10,7 @@ import { Container, Center } from "@chakra-ui/react";
 // Page.
 function SignIn() {
   const navigate = useNavigate();
-  const session = useSelector((state) => state.session);
+  const { isAuthenticated } = useSelector((state) => state.session);
 
   // Request to the backend.
   const [signIn, { isLoading }] = useSignInMutation();
@@ -29,9 +29,7 @@ function SignIn() {
       const res = await signIn(data);
       // If the authentication is valid.
       if (res.data) {
-        if (session.user && session.profile) {
-          navigate("/home");
-        }
+        isAuthenticated && navigate("/home");
       }
 
       // If server error.

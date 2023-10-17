@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import {
   Box,
   Button,
-  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -18,7 +17,7 @@ import { useUpdateUsernameMutation } from "../../../api/authApiSlice";
 // Component.
 function UsernameForm() {
   const { isDark } = useThemeInfo();
-  const session = useSelector((state) => state.session);
+  const { token, user } = useSelector((state) => state.session);
 
   // Request to update username.
   const [updateUsername, { isLoading }] = useUpdateUsernameMutation();
@@ -35,9 +34,7 @@ function UsernameForm() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await updateUsername({
-        headers: {
-          Authorization: `Token ${session.token}`,
-        },
+        headers: { Authorization: `Token ${token}` },
         body: data,
       });
       // If server error.
@@ -60,7 +57,7 @@ function UsernameForm() {
               Username
             </FormLabel>
             <Input
-              defaultValue={session.user.username}
+              defaultValue={user.username}
               {...register("new_username", {
                 required: "This field is required.",
               })}
