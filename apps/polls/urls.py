@@ -4,7 +4,7 @@ from django.urls import path
 from .views.poll import poll_create, poll_read, poll_update, poll_delete
 from .views.option import option_manager
 from .views.vote import vote_add, vote_read, vote_update, vote_delete
-from .views.comment import comment_add, comment_update, comment_delete
+from .views.comment import comment_add, comment_update, comment_delete, comments_read
 # User.
 from .views.user import user_polls, user_voted_polls
 # Categories.
@@ -32,6 +32,8 @@ urlpatterns = [
     path('poll/<str:id>/comment', comment_add, name='add_comment'),
     path('poll/<str:id>/comment/update', comment_update, name='update_comment'),
     path('poll/<str:id>/comment/delete', comment_delete, name='delete_comment'),
+    # Comments.
+    path('poll/<str:id>/comments', comments_read, name='read_comments'),
 
     # User Polls.
     path('user/<str:id>', user_polls, name='polls_user'),

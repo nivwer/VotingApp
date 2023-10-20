@@ -142,7 +142,7 @@ async def comment_delete(request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-async def get_comments(request, poll_id):
+async def comments_read(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
@@ -150,7 +150,7 @@ async def get_comments(request, poll_id):
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
 
         # If poll is not found.
         if not poll_bson:
@@ -171,13 +171,18 @@ async def get_comments(request, poll_id):
 
         # Find the poll comments document in comments collection.
         comments_bson = await polls_db.comments.find_one(
-            {'poll_id': poll_id})
+            {'poll_id': id})
+
+        if comments_bson:
+            print("si existe")
+        else:
+            print("no existe")
 
         # Convert the BSON to a JSON.
         comments_json = json_util._json_convert(comments_bson)
 
         comments = []
-        for comment in comments_json:
+        for comment in comments_json['comments']:
 
             # Get the user data.
             user_data = await User.objects.aget(id=comment['user_id'])
@@ -207,7 +212,6 @@ async def get_comments(request, poll_id):
 
         # Polls res.
         res = page_values_json if request.GET.get('page') else comments
-        res.reverse()
 
         # Response.
         return Response(
@@ -236,6 +240,7 @@ async def get_comments(request, poll_id):
 
     # Handle other exceptions.
     except Exception as e:
+        print(str(e))
         return Response(
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -107,7 +107,7 @@ async def poll_create(request):
                 # Create comments document in comments collection.
                 await polls_db.comments.insert_one(
                     {
-                        'poll_id': poll_id,
+                        'poll_id': str(poll_id),
                         'comments': []
                     },
                     session=session

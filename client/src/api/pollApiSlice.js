@@ -7,7 +7,7 @@ export const pollApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/polls/",
   }),
-  tagTypes: ["Polls", "Categories"],
+  tagTypes: ["Polls", "Categories", "Comments"],
   endpoints: (builder) => ({
     // CRUD Poll. //
 
@@ -100,6 +100,32 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Polls"],
     }),
 
+
+    // CRUD Comment. //
+
+    // Create comment.
+    addComment: builder.mutation({
+      query: (data) => ({
+        url: `poll/${data.id}/comment`,
+        method: "POST",
+        headers: data.headers,
+        body: data.body,
+      }),
+      invalidatesTags: ["Comments"],
+    }),
+
+    //Read comments.
+    readComments: builder.query({
+      query: (data) => ({
+        url: `poll/${data.id}/comments`,
+        method: "GET",
+        headers: data.headers,
+      }),
+      providesTags: ["Comments"],
+    }),
+
+
+
     // GET Polls. //
 
     // Get User Polls.
@@ -143,7 +169,7 @@ export const pollApiSlice = createApi({
     // Get categories.
     getCategories: builder.query({
       query: () => ({
-        url: "categories/",
+        url: "categories",
         method: "GET",
       }),
       providesTags: ["Categories"],
@@ -174,4 +200,6 @@ export const {
   useGetPollsCategoryQuery,
   useAddOptionMutation,
   useGetCategoriesDataQuery,
+  useAddCommentMutation,
+  useReadCommentsQuery
 } = pollApiSlice;

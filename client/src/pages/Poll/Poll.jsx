@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useReadPollQuery } from "../../api/pollApiSlice";
 // Components.
 import PollCard from "../../components/Cards/PollCard/PollCard";
+import PollComments from "./components/PollComments";
 
 // Page.
 function Poll() {
@@ -28,7 +29,15 @@ function Poll() {
     }
   }, [id, isAuthenticated]);
 
-  return <>{poll && <PollCard poll={poll} />} </>;
+  return (
+    <>
+      {poll && <PollCard poll={poll} />}
+      {poll && (
+        // && comments
+        <PollComments id={id} />
+      )}
+    </>
+  );
 }
 
 export default Poll;
