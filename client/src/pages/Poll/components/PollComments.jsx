@@ -1,9 +1,10 @@
 // Hooks.
-import { Box } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { useReadCommentsQuery } from "../../../api/pollApiSlice";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+// Components.
 import PollCommentInput from "./PollCommentInput";
+import { Box, Stack } from "@chakra-ui/react";
 
 // Components.
 function PollComments({ id }) {
@@ -29,15 +30,17 @@ function PollComments({ id }) {
 
   return (
     <>
-      <PollCommentInput id={id} />
+      <Stack>
+        <PollCommentInput id={id} />
 
-      {dataComments && dataComments.comments ? (
-        dataComments.comments.map((comment, index) => (
-          <Box key={index}>{comment.comment}</Box>
-        ))
-      ) : (
-        <div>not comments</div>
-      )}
+        {dataComments && dataComments.comments ? (
+          dataComments.comments.map((comment, index) => (
+            <Box key={index}>{comment.comment}</Box>
+          ))
+        ) : (
+          <div>not comments</div>
+        )}
+      </Stack>
     </>
   );
 }

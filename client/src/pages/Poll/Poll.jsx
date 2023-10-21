@@ -31,10 +31,11 @@ function Poll() {
 
   return (
     <>
-      {poll && <PollCard poll={poll} />}
       {poll && (
-        // && comments
-        <PollComments id={id} />
+        <>
+          <PollCard poll={poll} />
+          <PollComments id={id} />
+        </>
       )}
     </>
   );
