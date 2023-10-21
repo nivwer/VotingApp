@@ -23,6 +23,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
 // Component.
 function PollCommentInput({ id }) {
@@ -38,6 +39,8 @@ function PollCommentInput({ id }) {
     formState: { errors },
     setError,
     setValue,
+    watch,
+    clearErrors,
   } = useForm();
 
   // Add Comment onSubmit.
@@ -76,7 +79,7 @@ function PollCommentInput({ id }) {
         {/* Profile Picture. */}
         <Flex flex="1" gap="3">
           <Box h={"100%"}>
-            <NavLink to={`/${profile.username}`}>
+            <NavLink to={`/${user.username}`}>
               <IconButton isDisabled={isLoading} variant={"unstyled"}>
                 <Avatar
                   src={profile.profile_picture}
@@ -91,13 +94,11 @@ function PollCommentInput({ id }) {
 
       <Stack w={"100%"} spacing={0}>
         <form onSubmit={onSubmit}>
-          <CardBody p={0} pr={5} pt={5} pl={0}>
+          <CardBody p={0} pr={10} pt={5} pl={0}>
             <FormControl isDisabled={isLoading} isInvalid={errors.comment}>
               <FormLabel fontWeight={"bold"} htmlFor="comment"></FormLabel>
               <Textarea
-                {...register("comment", {
-                  required: "This field is required.",
-                })}
+                {...register("comment", { required: true })}
                 placeholder="Write your comment"
                 fontWeight={"medium"}
                 borderRadius={"md"}
@@ -105,6 +106,9 @@ function PollCommentInput({ id }) {
                 variant={"unstyled"}
                 resize={"none"}
                 focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
+                minH="50px"
+                h={watch("comment") ? "80px" : "auto"}
+                onBlur={() => clearErrors()}
               />
               {errors.comment && (
                 <FormErrorMessage>{errors.comment.message}</FormErrorMessage>
@@ -114,17 +118,29 @@ function PollCommentInput({ id }) {
 
           <CardFooter py={2} pb={5} pr={10}>
             <Flex w={"100%"} justify={"end"}>
-              <Button
-                type="submit"
-                size={"sm"}
-                variant={"solid"}
-                colorScheme={ThemeColor}
-                borderRadius={"full"}
-                isLoading={isLoading}
-                loadingText={<Text fontWeight={"bold"}>Comment</Text>}
-              >
-                <Text fontWeight={"bold"}>Comment</Text>
-              </Button>
+              <HStack>
+                {watch("comment") && (
+                  <Button
+                    size={"sm"}
+                    borderRadius={"full"}
+                    isDisabled={isLoading}
+                    onClick={() => setValue("comment", "")}
+                  >
+                    <Text fontWeight={"bold"}>Cancel</Text>
+                  </Button>
+                )}
+                <Button
+                  type="submit"
+                  size={"sm"}
+                  variant={"solid"}
+                  colorScheme={ThemeColor}
+                  borderRadius={"full"}
+                  isLoading={isLoading}
+                  loadingText={<Text fontWeight={"bold"}>Comment</Text>}
+                >
+                  <Text fontWeight={"bold"}>Comment</Text>
+                </Button>
+              </HStack>
             </Flex>
           </CardFooter>
         </form>

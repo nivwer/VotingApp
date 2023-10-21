@@ -1,6 +1,6 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDeletePollMutation } from "../../../api/pollApiSlice";
 // Components.
 import PollCardOptionButton from "./PollCardOptionButton";

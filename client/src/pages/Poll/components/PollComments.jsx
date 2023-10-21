@@ -4,7 +4,8 @@ import { useReadCommentsQuery } from "../../../api/pollApiSlice";
 import { useSelector } from "react-redux";
 // Components.
 import PollCommentInput from "./PollCommentInput";
-import { Box, Stack } from "@chakra-ui/react";
+import CustomSpinner from "../../../components/Spinners/CustomSpinner";
+import PollCommentCard from "./PollCommentCard";
 
 // Components.
 function PollComments({ id }) {
@@ -30,17 +31,14 @@ function PollComments({ id }) {
 
   return (
     <>
-      <Stack>
-        <PollCommentInput id={id} />
+      {isAuthenticated && <PollCommentInput id={id} />}
 
-        {dataComments && dataComments.comments ? (
-          dataComments.comments.map((comment, index) => (
-            <Box key={index}>{comment.comment}</Box>
+      {dataComments && dataComments.comments && !isLoading
+        ? dataComments.comments.map((comment, index) => (
+            <PollCommentCard key={index} comment={comment} />
           ))
-        ) : (
-          <div>not comments</div>
-        )}
-      </Stack>
+        : dataComments && !isLoading && <div>{dataComments.message}</div>}
+      {(isLoading || !dataComments) && <CustomSpinner />}
     </>
   );
 }

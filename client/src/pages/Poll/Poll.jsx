@@ -6,6 +6,7 @@ import { useReadPollQuery } from "../../api/pollApiSlice";
 // Components.
 import PollCard from "../../components/Cards/PollCard/PollCard";
 import PollComments from "./components/PollComments";
+import CustomSpinner from "../../components/Spinners/CustomSpinner";
 
 // Page.
 function Poll() {
@@ -13,7 +14,7 @@ function Poll() {
   const { id } = useParams();
   const [data, setData] = useState(false);
 
-  const { data: poll } = useReadPollQuery(data, {
+  const { data: poll, isLoading } = useReadPollQuery(data, {
     skip: data ? false : true,
   });
 
@@ -31,12 +32,14 @@ function Poll() {
 
   return (
     <>
-      {poll && (
+      {poll && !isLoading && (
         <>
           <PollCard poll={poll} />
           <PollComments id={id} />
         </>
       )}
+
+      {(isLoading || !poll) && <CustomSpinner />}
     </>
   );
 }

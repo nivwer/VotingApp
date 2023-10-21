@@ -48,7 +48,7 @@ class GetCollectionsMongoDB:
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def comment_add(request, id):
-
+    session = None
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
@@ -79,6 +79,7 @@ async def comment_add(request, id):
                         '$push': {
                             'comments': {
                                 'user_id': request.user.id,
+                                'creation_date': datetime.now(),
                                 'comment': comment
                             }
                         }
@@ -173,11 +174,6 @@ async def comments_read(request, id):
         comments_bson = await polls_db.comments.find_one(
             {'poll_id': id})
 
-        if comments_bson:
-            print("si existe")
-        else:
-            print("no existe")
-
         # Convert the BSON to a JSON.
         comments_json = json_util._json_convert(comments_bson)
 
@@ -212,6 +208,7 @@ async def comments_read(request, id):
 
         # Polls res.
         res = page_values_json if request.GET.get('page') else comments
+        res.reverse()
 
         # Response.
         return Response(
