@@ -2,7 +2,10 @@
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useProfileMeUpdateMutation } from "../../../api/profileApiSlice";
+import {
+  useGetCountriesQuery,
+  useProfileMeUpdateMutation,
+} from "../../../api/profileApiSlice";
 // Components.
 import ProfileInputURL from "./ProfileInputURL";
 import {
@@ -23,8 +26,6 @@ import {
 } from "@chakra-ui/react";
 // Icons.
 import { FaImage, FaLink } from "react-icons/fa6";
-// Countries
-import countriesData from "../../../assets/countries.json";
 import { useSelector } from "react-redux";
 
 // Component.
@@ -41,6 +42,9 @@ function ProfileForm({ profile = false }) {
     setError,
     setValue,
   } = useForm();
+
+  // Request to get countries.
+  const { data: dataCountries } = useGetCountriesQuery();
 
   // Request to update profile.
   const [profileMeUpdate, { isLoading }] = useProfileMeUpdateMutation();
@@ -67,9 +71,10 @@ function ProfileForm({ profile = false }) {
   // Countries.
   const [countries, setCountries] = useState(false);
 
+  // Load countries.
   useEffect(() => {
-    setCountries(countriesData["countries"]);
-  }, []);
+    dataCountries ? setCountries(dataCountries.list) : setCountries(false);
+  }, [dataCountries]);
 
   // Country.
   const selectedCountry = watch("country");

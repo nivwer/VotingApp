@@ -1,5 +1,5 @@
-{
-  "countries": [
+COUNTRIES = {
+  "list": [
     {
       "name": "Afghanistan",
       "cities": [
@@ -758,4 +758,3 @@
     }
   ]
 }
-

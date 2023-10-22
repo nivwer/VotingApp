@@ -7,7 +7,7 @@ export const profileApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/profiles/",
   }),
-  tagTypes: ["Profile"],
+  tagTypes: ["Profile", "Countries"],
   endpoints: (builder) => ({
     // GET user private profile.
     profileMe: builder.query({
@@ -39,6 +39,15 @@ export const profileApiSlice = createApi({
       }),
       providesTags: ["Profile"],
     }),
+
+    // Get countries.
+    getCountries: builder.query({
+      query: () => ({
+        url: "countries",
+        method: "GET",
+      }),
+      providesTags: ["Countries"],
+    }),
   }),
 });
 
@@ -46,4 +55,5 @@ export const {
   useProfileMeQuery,
   useProfileMeUpdateMutation,
   useProfileByUsernameQuery,
+  useGetCountriesQuery,
 } = profileApiSlice;
