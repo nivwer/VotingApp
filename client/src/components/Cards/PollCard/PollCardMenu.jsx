@@ -1,6 +1,7 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 // Components.
 import PollModal from "../../Modals/PollModal/PollModal";
 import {
@@ -16,8 +17,10 @@ import { FaEllipsis } from "react-icons/fa6";
 
 // Component.
 function PollCardMenu({ poll, deletePoll, isLoading }) {
+  const navigate = useNavigate();
   const { isDark } = useThemeInfo();
   const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { id } = useParams();
 
   // Delete poll.
   const handleDeletePoll = async (poll_id) => {
@@ -26,6 +29,10 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
         id: poll_id,
         headers: { Authorization: `Token ${token}` },
       });
+
+      if (res.data && id) {
+        navigate(`/${poll.profile.username}`);
+      }
     } catch (error) {
       console.log(error);
     }

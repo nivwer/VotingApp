@@ -23,12 +23,14 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Component.
 function PollCommentInput({ id }) {
   const { isDark, ThemeColor } = useThemeInfo();
   const { token, user, profile } = useSelector((state) => state.session);
+
+  const [commentLength, setCommentLength] = useState(0);
 
   const [addComment, { isLoading }] = useAddCommentMutation();
 
@@ -42,6 +44,17 @@ function PollCommentInput({ id }) {
     watch,
     clearErrors,
   } = useForm();
+
+  const isWriting = watch("comment");
+
+  useEffect(() => {
+    const comment = watch("comment");
+    if (comment.length > 143) {
+      setValue("comment", comment.slice(0, -1));
+    } else {
+      setCommentLength(comment.length);
+    }
+  }, [isWriting]);
 
   // Add Comment onSubmit.
   const onSubmit = handleSubmit(async (data) => {
@@ -67,33 +80,33 @@ function PollCommentInput({ id }) {
   });
 
   return (
-    <Card
-      bg={isDark ? "black" : "white"}
-      w="100%"
-      direction={"row"}
-      borderRadius="0"
-      borderBottom={"1px solid"}
-      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
-    >
-      <CardHeader as={Flex} spacing={"4"}>
-        {/* Profile Picture. */}
-        <Flex flex="1" gap="3">
-          <Box h={"100%"}>
-            <NavLink to={`/${user.username}`}>
-              <IconButton isDisabled={isLoading} variant={"unstyled"}>
-                <Avatar
-                  src={profile.profile_picture}
-                  size={"md"}
-                  bg={"gray.400"}
-                />
-              </IconButton>
-            </NavLink>
-          </Box>
-        </Flex>
-      </CardHeader>
+    <form onSubmit={onSubmit}>
+      <Card
+        bg={isDark ? "black" : "white"}
+        w="100%"
+        direction={"row"}
+        borderRadius="0"
+        borderBottom={"1px solid"}
+        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+      >
+        <CardHeader as={Flex} spacing={"4"}>
+          {/* Profile Picture. */}
+          <Flex flex="1" gap="3" minH={"45px"}>
+            <Box h={"100%"}>
+              <NavLink to={`/${user.username}`}>
+                <IconButton isDisabled={isLoading} variant={"unstyled"}>
+                  <Avatar
+                    src={profile.profile_picture}
+                    size={"md"}
+                    bg={"gray.400"}
+                  />
+                </IconButton>
+              </NavLink>
+            </Box>
+          </Flex>
+        </CardHeader>
 
-      <Stack w={"100%"} spacing={0}>
-        <form onSubmit={onSubmit}>
+        <Stack w={"100%"} spacing={0} flexDir={isWriting ? "column" : "row"}>
           <CardBody p={0} pr={10} pt={5} pl={0}>
             <FormControl isDisabled={isLoading} isInvalid={errors.comment}>
               <FormLabel fontWeight={"bold"} htmlFor="comment"></FormLabel>
@@ -101,13 +114,14 @@ function PollCommentInput({ id }) {
                 {...register("comment", { required: true })}
                 placeholder="Write your comment"
                 fontWeight={"medium"}
+                fontSize={"lg"}
                 borderRadius={"md"}
                 p={1}
                 variant={"unstyled"}
                 resize={"none"}
                 focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
                 minH="50px"
-                h={watch("comment") ? "80px" : "auto"}
+                h={isWriting ? "85px" : "auto"}
                 onBlur={() => clearErrors()}
               />
               {errors.comment && (
@@ -116,10 +130,15 @@ function PollCommentInput({ id }) {
             </FormControl>
           </CardBody>
 
-          <CardFooter py={2} pb={5} pr={10}>
-            <Flex w={"100%"} justify={"end"}>
+          <CardFooter py={isWriting ? 2 : "auto"} pb={5} pl={0} pr={10}>
+            <Flex w={"100%"} justify={"space-between"}>
+              {isWriting && (
+                <HStack fontSize={"sm"} fontWeight={"bold"}>
+                  <Text opacity={0.5}>{commentLength} / 143</Text>
+                </HStack>
+              )}
               <HStack>
-                {watch("comment") && (
+                {isWriting && (
                   <Button
                     size={"sm"}
                     borderRadius={"full"}
@@ -143,9 +162,9 @@ function PollCommentInput({ id }) {
               </HStack>
             </Flex>
           </CardFooter>
-        </form>
-      </Stack>
-    </Card>
+        </Stack>
+      </Card>
+    </form>
   );
 }
 

@@ -179,6 +179,8 @@ async def comments_read(request, id):
 
         comments = []
         for comment in comments_json['comments']:
+            # Fix data.
+            comment['creation_date'] = comment['creation_date']['$date']
 
             # Get the user data.
             user_data = await User.objects.aget(id=comment['user_id'])

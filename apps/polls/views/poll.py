@@ -405,7 +405,8 @@ async def poll_delete(request, id):
     session = None
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'comments'])
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
@@ -433,8 +434,15 @@ async def poll_delete(request, id):
                     {'_id': poll['_id']},
                     session=session)
 
+                # Remove the poll.
+                comments_result = await polls_db.comments.delete_one(
+                    {'poll_id': id},
+                    session=session)
+
+                isRemoved = poll_result.deleted_count == 0 or comments_result.deleted_count == 0
+
                 # If not removed.
-                if poll_result.deleted_count == 0:
+                if isRemoved:
                     await session.abort_transaction()
                     raise PyMongoError(
                         'An error occurred while processing your request.',

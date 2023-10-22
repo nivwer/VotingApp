@@ -36,6 +36,7 @@ function Profile() {
   const [data, setData] = useState(false);
   const [searchParams] = useSearchParams();
   const tab = searchParams.get("tab") || "";
+  const [isLoading, setIsLoading] = useState(true);
 
   // Query to get User Profile.
   const [profile, setProfile] = useState(null);
@@ -45,6 +46,7 @@ function Profile() {
 
   // Update data to fetchs.
   useEffect(() => {
+    setIsLoading(true);
     if (isAuthenticated) {
       setData({
         headers: { Authorization: `Token ${token}` },
@@ -58,6 +60,7 @@ function Profile() {
   // Load Profile.
   useEffect(() => {
     dataProfile && setProfile(dataProfile.profile);
+    setIsLoading(false);
   }, [dataProfile]);
 
   // Joined date.
@@ -78,7 +81,7 @@ function Profile() {
         color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
         overflow={"hidden"}
       >
-        {profile && (
+        {!isLoading && profile && (
           <>
             <Flex spacing="2" flex="1" dir="column" wrap="wrap" align="start">
               <Flex justify="space-between" w="100%" p={5} px={3}>
@@ -115,7 +118,7 @@ function Profile() {
                     </Text>
                   </HStack>
                   {/* Username. */}
-                  <Text opacity={0.5} fontWeight="normal">
+                  <Text opacity={0.5} fontWeight="medium">
                     @{profile.username}
                   </Text>
                 </Box>
@@ -203,10 +206,12 @@ function Profile() {
         </Grid>
       </Box>
       {/* Profile Body. */}
-      <Flex>
-        {!tab && <ProfileUserPolls id={profile && profile.id} />}
-        {tab === "votes" && <ProfileVotedPolls id={profile && profile.id} />}
-      </Flex>
+      {!isLoading && (
+        <Flex>
+          {!tab && <ProfileUserPolls id={profile && profile.id} />}
+          {tab === "votes" && <ProfileVotedPolls id={profile && profile.id} />}
+        </Flex>
+      )}
     </>
   );
 }

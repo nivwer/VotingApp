@@ -110,7 +110,7 @@ function PollCard({ poll }) {
                   </NavLink>
                   {/* Username. */}
                   <NavLink to={`/${poll.profile.username}`}>
-                    <Text fontWeight={"normal"} opacity={0.5}>
+                    <Text fontWeight={"medium"} opacity={0.5}>
                       @{poll.profile.username}
                     </Text>
                   </NavLink>
@@ -118,8 +118,8 @@ function PollCard({ poll }) {
 
                 <HStack
                   spacing={1}
-                  fontSize="sm"
-                  fontWeight="semibold"
+                  fontSize="md"
+                  fontWeight="medium"
                   opacity={0.5}
                 >
                   {/* Total Votes. */}
@@ -153,7 +153,7 @@ function PollCard({ poll }) {
                     {poll.title}
                   </Heading>
                   {/* Description. */}
-                  <Text fontSize={"md"} opacity={0.8}>
+                  <Text fontSize={"md"} fontWeight={"medium"} opacity={0.8}>
                     {poll.description}
                   </Text>
                 </Stack>

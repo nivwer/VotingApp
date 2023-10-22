@@ -100,7 +100,6 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Polls"],
     }),
 
-
     // CRUD Comment. //
 
     // Create comment.
@@ -124,8 +123,6 @@ export const pollApiSlice = createApi({
       providesTags: ["Comments"],
     }),
 
-
-
     // GET Polls. //
 
     // Get User Polls.
@@ -142,7 +139,7 @@ export const pollApiSlice = createApi({
 
     // Get User voted Polls.
     getUserVotedPolls: builder.query({
-      query: (data) => ({
+      query: (data) => ({  
         url: data.page
           ? `user/${data.id}/voted_polls?page=${data.page}`
           : `user/${data.id}/voted_polls`,
@@ -201,5 +198,5 @@ export const {
   useAddOptionMutation,
   useGetCategoriesDataQuery,
   useAddCommentMutation,
-  useReadCommentsQuery
+  useReadCommentsQuery,
 } = pollApiSlice;
