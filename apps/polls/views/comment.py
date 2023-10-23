@@ -22,9 +22,7 @@ from pymongo.errors import PyMongoError
 from bson import json_util
 from bson.objectid import ObjectId
 # Models and Serializers.
-from ..serializers import PollSerializer, OptionsSerializer, CommentSerializer
-from apps.profiles.models import UserProfile
-from apps.profiles.serializers import UserProfileSerializer
+from ..serializers import CommentSerializer
 
 
 # Load the virtual environment.
@@ -44,9 +42,8 @@ class GetCollectionsMongoDB:
 
 # Views.
 
+
 # Handle the process of creating comments in a poll.
-
-
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -74,21 +71,6 @@ async def comment_add(request, id):
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
-
-                # # Add the comment in comments document.
-                # await polls_db.comments.update_one(
-                #     {'poll_id': id},
-                #     {
-                #         '$push': {
-                #             'comments': {
-                #                 'user_id': request.user.id,
-                #                 'creation_date': datetime.now(),
-                #                 'comment': comment
-                #             }
-                #         }
-                #     },
-                #     session=session
-                # )
 
                 # Add the comment in comments document.
                 await polls_db.comments.insert_one(
@@ -256,6 +238,15 @@ async def comment_delete(request, id, comment_id):
                     session=session
                 )
 
+                # Remove comment in comment counter.
+                await polls_db.polls.update_one(
+                    {'_id': ObjectId(id)},
+                    {
+                        '$inc': {'comment_counter': -1}
+                    },
+                    session=session
+                )
+
                 # Save transaction.
                 await session.commit_transaction()
 
@@ -321,10 +312,6 @@ async def comments_read(request, id):
 
         # If privacy of poll is friends_only. ?
 
-        # # Find the poll comments in comments collection.
-        # comments_bson = await polls_db.comments.find(
-        #     {'poll_id': id})
-
         # Find the poll comments document in comments collection.
         comments_bson = await polls_db.comments.find(
             {'poll_id': id},
@@ -342,18 +329,6 @@ async def comments_read(request, id):
             # Get the user data.
             user_data = await User.objects.filter(id=comment['user_id']).values(
                 'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
-
-            # Get the user data.
-            # user_data = await User.objects.aget(id=comment['user_id'])
-            # user_profile = await UserProfile.objects.aget(pk=comment['user_id'])
-
-            # # Initialize a UserProfileSerializer instance.
-            # profile_data = UserProfileSerializer(
-            #     instance=user_profile).data
-            # Add user data to user profile data.
-            # profile_data['username'] = profile_data
-            # # Add user profile data in the poll object.
-            # comment['user_profile'] = profile_data
 
             if user_data:
                 comment['user_profile'] = {

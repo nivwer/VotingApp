@@ -101,22 +101,8 @@ async def poll_create(request):
                     session=session
                 )
 
-                # Get poll ID.
-                # poll_id = poll.inserted_id
-
-                # # Create comments document in comments collection.
-                # await polls_db.comments.insert_one(
-                #     {
-                #         'poll_id': str(poll_id),
-                #         'comments': []
-                #     },
-                #     session=session
-                # )
-
                 # Save transaction.
                 await session.commit_transaction()
-
-                # poll_json = json_util._json_convert((poll_id))
 
                 # Response.
                 return Response(

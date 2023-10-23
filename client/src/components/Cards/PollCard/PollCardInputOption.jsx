@@ -16,7 +16,7 @@ import {
 import { FaPlus } from "react-icons/fa6";
 
 // Component.
-function PollCardInputOption({ poll_id, setShowInputOption }) {
+function PollCardInputOption({ id, setShowInputOption }) {
   const { token } = useSelector((state) => state.session);
   const { isDark } = useThemeInfo();
 

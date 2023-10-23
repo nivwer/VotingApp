@@ -17,9 +17,6 @@ from utils.mongo_connection import MongoDBSingleton
 from pymongo import DESCENDING
 from pymongo.errors import PyMongoError
 from bson import json_util
-# Models and Serializers.
-from apps.profiles.models import UserProfile
-from apps.profiles.serializers import UserProfileSerializer
 
 
 # Load the virtual environment.
@@ -55,7 +52,7 @@ async def category_polls(request, category):
         # Find the polls in the polls collection.
         polls_list = await polls_db.polls.find(
             {'category': category},
-            sort=[('creation_date', DESCENDING)]
+            sort=[('created_at', DESCENDING)]
         ).to_list(length=None)
 
         # Convert the BSON response to a JSON response.
@@ -74,18 +71,18 @@ async def category_polls(request, category):
             if is_public or (is_private and is_owner):
                 # Fix poll data.
                 poll['_id'] = poll['_id']['$oid']
-                poll['creation_date'] = poll['creation_date']['$date']
+                poll['created_at'] = poll['created_at']['$date']
 
                 # Get the user data.
-                user_data = await User.objects.aget(id=poll['user_id'])
-                user_profile = await UserProfile.objects.aget(pk=user_data.pk)
-                # Initialize a UserProfileSerializer instance.
-                profile_data = UserProfileSerializer(
-                    instance=user_profile).data
-                # Add user data to user profile data.
-                profile_data['username'] = user_data.username
-                # Add user profile data in the poll object.
-                poll['profile'] = profile_data
+                user_data = await User.objects.filter(id=poll['user_id']).values(
+                    'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
+
+                if user_data:
+                    poll['profile'] = {
+                        'username': user_data['username'],
+                        'profile_picture': user_data['userprofile__profile_picture'],
+                        'profile_name': user_data['userprofile__profile_name']
+                    }
 
                 # Get user vote.
                 vote = ''

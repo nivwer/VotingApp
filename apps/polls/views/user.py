@@ -18,9 +18,6 @@ from pymongo import DESCENDING
 from pymongo.errors import PyMongoError
 from bson import json_util
 from bson.objectid import ObjectId
-# Models and Serializers.
-from apps.profiles.models import UserProfile
-from apps.profiles.serializers import UserProfileSerializer
 
 
 # Load the virtual environment.
@@ -50,12 +47,8 @@ async def user_polls(request, id):
 
     try:
         # Get the user data.
-        user = await User.objects.aget(id=id)
-        user_profile = await UserProfile.objects.aget(pk=user.pk)
-        # Initialize a UserProfileSerializer instance.
-        profile_data = UserProfileSerializer(instance=user_profile).data
-        # Add user data to user profile data.
-        profile_data['username'] = user.username
+        user_data = await User.objects.filter(id=id).values(
+            'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
 
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
@@ -63,7 +56,7 @@ async def user_polls(request, id):
 
         # Find the polls in the polls collection.
         polls_list = await polls_db.polls.find(
-            {'user_id': user.id},
+            {'user_id': int(id)},
             sort=[('created_at', DESCENDING)]
         ).to_list(length=None)
 
@@ -86,7 +79,12 @@ async def user_polls(request, id):
                 poll['_id'] = poll['_id']['$oid']
                 poll['created_at'] = poll['created_at']['$date']
                 # Add user profile data in the poll object.
-                poll['profile'] = profile_data
+
+                poll['profile'] = {
+                    'username': user_data['username'],
+                    'profile_picture': user_data['userprofile__profile_picture'],
+                    'profile_name': user_data['userprofile__profile_name']
+                }
 
                 # Get user vote.
                 vote = ''
@@ -170,16 +168,13 @@ async def user_voted_polls(request, id):
     is_login = True if request.user else False
 
     try:
-        # Get the user in the User table.
-        user = await User.objects.aget(id=id)
-
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
             'polls_db', ['polls', 'user_votes'])
 
         # Find the user voted polls in the voted_polls collection.
         user_votes_object = await polls_db.user_votes.find_one(
-            {'user_id': user.id})
+            {'user_id': int(id)})
 
         # If polls not found.
         if not user_votes_object:
@@ -193,7 +188,9 @@ async def user_voted_polls(request, id):
         polls = []
         # If the user has already voted in this poll.
         for vote_object in user_votes_object_json['voted_polls']:
-            # / REFACTOR ?
+
+    # / REFACTOR ?
+
             # Get poll.
             poll_bson = await polls_db.polls.find_one(
                 {'_id': ObjectId(vote_object['poll_id'])})
@@ -212,12 +209,13 @@ async def user_voted_polls(request, id):
 
             # Convert the BSON object to a JSON object.
             poll = json_util._json_convert((poll_bson))
-            # REFACTOR / ?
+
+    # REFACTOR / ?
 
             # Verify the privacy of polls.
             is_public = poll['privacy'] == 'public'
             is_private = poll['privacy'] == 'private'
-            is_owner = poll['created_by']['user_id'] == request.user.id
+            is_owner = poll['user_id'] == request.user.id
             # Add if is owner in the poll object.
             poll['is_owner'] = is_owner
 
@@ -228,15 +226,15 @@ async def user_voted_polls(request, id):
                 poll['created_at'] = poll['created_at']['$date']
 
                 # Get the user data.
-                user_data = await User.objects.aget(id=poll['created_by']['user_id'])
-                user_profile = await UserProfile.objects.aget(pk=user_data.pk)
-                # Initialize a UserProfileSerializer instance.
-                profile_data = UserProfileSerializer(
-                    instance=user_profile).data
-                # Add user data to user profile data.
-                profile_data['username'] = user_data.username
-                # Add user profile data in the poll object.
-                poll['profile'] = profile_data
+                user_data = await User.objects.filter(id=poll['user_id']).values(
+                    'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
+
+                if user_data:
+                    poll['profile'] = {
+                        'username': user_data['username'],
+                        'profile_picture': user_data['userprofile__profile_picture'],
+                        'profile_name': user_data['userprofile__profile_name']
+                    }
 
                 # Get user vote.
                 vote = ''

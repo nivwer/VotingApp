@@ -182,7 +182,7 @@ function PollCard({ poll }) {
                     ))}
                   {showInputOption && (
                     <PollCardInputOption
-                      poll_id={poll._id}
+                      id={poll._id}
                       setShowInputOption={setShowInputOption}
                     />
                   )}

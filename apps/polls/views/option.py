@@ -41,13 +41,13 @@ class GetCollectionsMongoDB:
 @api_view(['POST', 'DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def option_manager(request, poll_id):
+async def option_manager(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
-            {'_id': ObjectId(poll_id)})
+            {'_id': ObjectId(id)})
         # If poll is not found.
         if not poll_bson:
             raise ValidationError('Poll is not found.')
@@ -91,7 +91,7 @@ async def option_manager(request, poll_id):
 
             # Save the option object.
             await polls_db.polls.update_one(
-                {'_id': ObjectId(poll_id)},
+                {'_id': ObjectId(id)},
                 {
                     '$push': {'options': new_option}
                 }
@@ -113,7 +113,7 @@ async def option_manager(request, poll_id):
 
             # Remove the option.
             await polls_db.polls.update_one(
-                {'_id': ObjectId(poll_id)},
+                {'_id': ObjectId(id)},
                 {
                     '$pull': {'options': {'option_text': option['option_text']}}
                 }
