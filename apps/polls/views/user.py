@@ -63,8 +63,8 @@ async def user_polls(request, id):
 
         # Find the polls in the polls collection.
         polls_list = await polls_db.polls.find(
-            {'created_by.user_id': user.id},
-            sort=[('creation_date', DESCENDING)]
+            {'user_id': user.id},
+            sort=[('created_at', DESCENDING)]
         ).to_list(length=None)
 
         # Convert the BSON response to a JSON response.
@@ -76,7 +76,7 @@ async def user_polls(request, id):
             # Verify the privacy of polls.
             is_public = poll['privacy'] == 'public'
             is_private = poll['privacy'] == 'private'
-            is_owner = poll['created_by']['user_id'] == request.user.id
+            is_owner = poll['user_id'] == request.user.id
             # Add if is owner in the poll object.
             poll['is_owner'] = is_owner
 
@@ -84,7 +84,7 @@ async def user_polls(request, id):
             if is_public or (is_private and is_owner):
                 # Fix poll data.
                 poll['_id'] = poll['_id']['$oid']
-                poll['creation_date'] = poll['creation_date']['$date']
+                poll['created_at'] = poll['created_at']['$date']
                 # Add user profile data in the poll object.
                 poll['profile'] = profile_data
 
@@ -225,7 +225,7 @@ async def user_voted_polls(request, id):
             if is_public or (is_private and is_owner):
                 # Fix poll data.
                 poll['_id'] = poll['_id']['$oid']
-                poll['creation_date'] = poll['creation_date']['$date']
+                poll['created_at'] = poll['created_at']['$date']
 
                 # Get the user data.
                 user_data = await User.objects.aget(id=poll['created_by']['user_id'])

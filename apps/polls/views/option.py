@@ -54,7 +54,7 @@ async def option_manager(request, poll_id):
 
         # If privacy of poll is private.
         is_private = poll_bson['privacy'] == 'private'
-        is_owner = poll_bson['created_by']['user_id'] == request.user.id
+        is_owner = poll_bson['user_id'] == request.user.id
         if not is_owner and is_private:
             raise PermissionDenied('This poll is private.')
 
@@ -80,11 +80,11 @@ async def option_manager(request, poll_id):
 
             if not is_owner:
                 for o in options:
-                    if o['created_by']['user_id'] == request.user.id:
+                    if o['user_id'] == request.user.id:
                         raise ValidationError('You can only add one option.')
 
             new_option = {
-                'created_by': {'user_id': request.user.id},
+                'user_id': request.user.id,
                 'option_text': option['option_text'],
                 'votes': 0
             }

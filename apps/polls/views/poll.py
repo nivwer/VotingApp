@@ -68,7 +68,7 @@ async def poll_create(request):
         for option in list_options:
             options.append(
                 {
-                    'created_by': {'user_id': request.user.id},
+                    'user_id': request.user.id,
                     'option_text': option,
                     'votes': 0
                 }
@@ -86,11 +86,11 @@ async def poll_create(request):
                 # Create poll document in polls collection.
                 poll = await polls_db.polls.insert_one(
                     {
-                        'created_by': {'user_id': request.user.id},
+                        'user_id': request.user.id,
                         'title': poll_data['title'],
                         'description': poll_data['description'],
-                        'creation_date': datetime.now(),
-                        'total_votes': 0,
+                        'created_at': datetime.now(),
+                        'votes_counter': 0,
                         'voters': [],
                         'privacy': poll_data['privacy'],
                         'category': poll_data['category'],
@@ -177,7 +177,7 @@ async def poll_read(request, id):
 
         # If privacy of poll is private.
         is_private = poll_bson['privacy'] == 'private'
-        is_owner = poll_bson['created_by']['user_id'] == request.user.id
+        is_owner = poll_bson['user_id'] == request.user.id
         if (not is_owner) and is_private:
             raise PermissionDenied('This poll is private.')
 
@@ -185,12 +185,12 @@ async def poll_read(request, id):
 
         # Fix data.
         poll_json['_id'] = poll_json['_id']['$oid']
-        poll_json['creation_date'] = poll_json['creation_date']['$date']
+        poll_json['created_at'] = poll_json['created_at']['$date']
         poll_json['is_owner'] = is_owner
 
         # Get the user data.
         user_data = await User.objects.aget(
-            id=poll_json['created_by']['user_id'])
+            id=poll_json['user_id'])
         user_profile = await UserProfile.objects.aget(
             pk=user_data.pk)
         # Initialize a UserProfileSerializer instance.
@@ -264,7 +264,7 @@ async def poll_update(request, id):
             raise ValidationError('Poll is not found.')
 
         # If user is not authorized.
-        is_owner = poll_bson['created_by']['user_id'] == request.user.id
+        is_owner = poll_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
                 'You are not authorized to update this poll.')
@@ -313,7 +313,7 @@ async def poll_update(request, id):
 
                 add_options_object.append(
                     {
-                        'created_by': {'user_id': request.user.id},
+                        'user_id': request.user.id,
                         'option_text': option,
                         'votes': 0
                     })
@@ -418,7 +418,7 @@ async def poll_delete(request, id):
                 status=status.HTTP_404_NOT_FOUND)
 
         # If user is not authorized.
-        is_owner = poll['created_by']['user_id'] == request.user.id
+        is_owner = poll['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
                 'You are not authorized to remove this poll.')
@@ -434,7 +434,7 @@ async def poll_delete(request, id):
                     session=session)
 
                 # Remove the poll.
-                comments_result = await polls_db.comments.delete_one(
+                comments_result = await polls_db.comments.delete_many(
                     {'poll_id': id},
                     session=session)
 

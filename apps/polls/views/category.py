@@ -67,7 +67,7 @@ async def category_polls(request, category):
             # Verify the privacy of polls.
             is_public = poll['privacy'] == 'public'
             is_private = poll['privacy'] == 'private'
-            is_owner = poll['created_by']['user_id'] == request.user.id
+            is_owner = poll['user_id'] == request.user.id
             # Add if is owner in the poll object.
             poll['is_owner'] = is_owner
 
@@ -77,7 +77,7 @@ async def category_polls(request, category):
                 poll['creation_date'] = poll['creation_date']['$date']
 
                 # Get the user data.
-                user_data = await User.objects.aget(id=poll['created_by']['user_id'])
+                user_data = await User.objects.aget(id=poll['user_id'])
                 user_profile = await UserProfile.objects.aget(pk=user_data.pk)
                 # Initialize a UserProfileSerializer instance.
                 profile_data = UserProfileSerializer(

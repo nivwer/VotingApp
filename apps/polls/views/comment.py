@@ -161,7 +161,7 @@ async def comment_update(request, id, comment_id):
             raise ValidationError('Poll is not found.')
 
          # If user is not authorized.
-        is_owner = poll_bson['created_by']['user_id'] == request.user.id
+        is_owner = poll_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
                 'You are not authorized to update this comment.')
@@ -224,8 +224,71 @@ async def comment_update(request, id, comment_id):
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def comment_delete(request):
-    return
+async def comment_delete(request, id, comment_id):
+    session = None
+    try:
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'comments'])
+
+        # Find the poll in the polls collection.
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(id)})
+
+        # If poll is not found.
+        if not poll_bson:
+            raise ValidationError('Poll is not found.')
+
+         # If user is not authorized.
+        is_owner = poll_bson['user_id'] == request.user.id
+        if not is_owner:
+            raise PermissionDenied(
+                'You are not authorized to remove this comment.')
+
+        # Initialize a MongoDB session.
+        async with await MongoDBSingleton().client.start_session() as session:
+            # Initialize a MongoDB transaccion.
+            async with session.start_transaction():
+
+                # Remove the comment in comments document.
+                await polls_db.comments.delete_one(
+                    {'_id': comment_id},
+                    session=session
+                )
+
+                # Save transaction.
+                await session.commit_transaction()
+
+                # Response.
+                return Response('Comment updated successfully')
+
+    # Handle validation errors.
+    except ValidationError as e:
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle permission denied.
+    except PermissionDenied as e:
+        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        if session:
+            await session.abort_transaction()
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        if session:
+            await session.abort_transaction()
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    finally:
+        if session:
+            await session.end_session()
 
 
 # Handles the process of obtaining comments.
@@ -250,7 +313,7 @@ async def comments_read(request, id):
 
         # Verify the privacy of polls.
         is_private = poll_json['privacy'] == 'private'
-        is_owner = poll_json['created_by']['user_id'] == request.user.id
+        is_owner = poll_json['user_id'] == request.user.id
 
         # If poll private.
         if (not is_owner) and is_private:

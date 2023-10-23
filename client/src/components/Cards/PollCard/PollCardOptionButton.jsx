@@ -113,7 +113,7 @@ function PollCardOptionButton({
         <Text fontWeight={"bold"} w={"auto"}>
           {option.votes === 0
             ? "0%"
-            : `${((option.votes * 100) / poll.total_votes).toFixed(0)}%`}
+            : `${((option.votes * 100) / poll.votes_counter).toFixed(0)}%`}
         </Text>
       </HStack>
     </Button>

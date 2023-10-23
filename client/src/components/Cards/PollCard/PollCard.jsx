@@ -49,7 +49,7 @@ function PollCard({ poll }) {
   const { isDark } = useThemeInfo();
 
   // Time Ago.
-  const creationDate = new Date(poll.creation_date);
+  const creationDate = new Date(poll.created_at);
   const now = new Date();
   let timeAgo;
   if (isToday(creationDate)) {
@@ -130,8 +130,8 @@ function PollCard({ poll }) {
                 >
                   {/* Total Votes. */}
                   <Text>
-                    {poll.total_votes}{" "}
-                    {poll.total_votes === 1 ? "Vote" : "Votes"}
+                    {poll.votes_counter}{" "}
+                    {poll.votes_counter === 1 ? "Vote" : "Votes"}
                   </Text>
                 </HStack>
               </Stack>

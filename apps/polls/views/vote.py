@@ -90,7 +90,7 @@ async def vote_add(request, id):
                         {'_id': ObjectId(id)},
                         {
                             '$push': {'voters': request.user.id},
-                            '$inc': {'total_votes': 1}
+                            '$inc': {'votes_counter': 1}
                         }
                     ),
                     # Add the new vote.
@@ -365,7 +365,7 @@ async def vote_delete(request, id):
                         {'_id': ObjectId(id)},
                         {
                             '$pull': {'voters': request.user.id},
-                            '$inc': {'total_votes': -1}
+                            '$inc': {'votes_counter': -1}
                         }
                     ),
                     # Remove the previous vote.
