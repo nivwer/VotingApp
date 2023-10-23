@@ -26,7 +26,7 @@ import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 // Component.
-function PollCommentInput({ id }) {
+function CommentInput({ id }) {
   const { isDark, ThemeColor } = useThemeInfo();
   const { token, user, profile } = useSelector((state) => state.session);
 
@@ -168,4 +168,4 @@ function PollCommentInput({ id }) {
   );
 }
 
-export default PollCommentInput;
+export default CommentInput;

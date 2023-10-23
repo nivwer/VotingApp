@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { useReadCommentsQuery } from "../../../api/pollApiSlice";
 import { useSelector } from "react-redux";
 // Components.
-import PollCommentInput from "./PollCommentInput";
+import CommentInput from "../../../components/Cards/CommentCard/CommentInput";
+import CommentCard from "../../../components/Cards/CommentCard/CommentCard";
 import CustomSpinner from "../../../components/Spinners/CustomSpinner";
-import PollCommentCard from "./PollCommentCard";
 
 // Components.
 function PollComments({ id }) {
@@ -31,11 +31,11 @@ function PollComments({ id }) {
 
   return (
     <>
-      {isAuthenticated && <PollCommentInput id={id} />}
+      {isAuthenticated && <CommentInput id={id} />}
 
       {dataComments && dataComments.comments && !isLoading
         ? dataComments.comments.map((comment, index) => (
-            <PollCommentCard key={index} comment={comment} />
+            <CommentCard key={index} comment={comment} />
           ))
         : dataComments && !isLoading && <div>{dataComments.message}</div>}
       {(isLoading || !dataComments) && <CustomSpinner />}

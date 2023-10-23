@@ -114,6 +114,12 @@ function PollCard({ poll }) {
                       @{poll.profile.username}
                     </Text>
                   </NavLink>
+                  <HStack spacing={1} fontWeight="medium" opacity={0.5}>
+                    {/* Divider. */}
+                    <Text>·</Text>
+                    {/* Time Ago. */}
+                    <Text>{timeAgo}</Text>
+                  </HStack>
                 </HStack>
 
                 <HStack
@@ -127,10 +133,6 @@ function PollCard({ poll }) {
                     {poll.total_votes}{" "}
                     {poll.total_votes === 1 ? "Vote" : "Votes"}
                   </Text>
-                  {/* Divider. */}
-                  <Text>·</Text>
-                  {/* Time Ago. */}
-                  <Text>{timeAgo}</Text>
                 </HStack>
               </Stack>
             </Flex>
@@ -210,16 +212,20 @@ function PollCard({ poll }) {
           </CardBody>
 
           {/* Card Footer. */}
-          <CardFooter justify={"space-between"} gap={10} flexWrap={"wrap"}>
+          <CardFooter
+            py={3}
+            justify={"space-between"}
+            gap={10}
+            flexWrap={"wrap"}
+          >
             <HStack mx={5} spacing={4}>
               <Link to={`/${poll.profile.username}/${poll._id}`}>
-                <PollCardButton
-                  icon={<FaRegComment />}
-                  isLoading={isLoading}
-                ></PollCardButton>
+                <PollCardButton icon={<FaRegComment />} isLoading={isLoading}>
+                  {poll.comment_counter}
+                </PollCardButton>
               </Link>
               <PollCardButton icon={<FaRetweet />} isLoading={isLoading}>
-                <Text>Share</Text>
+                {poll.share_counter}
               </PollCardButton>
               <PollCardButton icon={<FaBookmark />} isLoading={isLoading}>
                 <Link to={`/${poll.profile.username}/${poll._id}`}>Views</Link>
@@ -230,9 +236,7 @@ function PollCard({ poll }) {
                 icon={!showInputOption ? <FaPlus /> : <FaMinus />}
                 isLoading={isLoading}
                 onClick={() => setShowInputOption(!showInputOption)}
-              >
-                <Text>Add option</Text>
-              </PollCardButton>
+              ></PollCardButton>
             </Box>
           </CardFooter>
         </Card>

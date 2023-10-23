@@ -22,12 +22,12 @@ import {
 } from "date-fns";
 
 // Component.
-function PollCommentCard({ comment }) {
+function CommentCard({ comment }) {
   const { isDark } = useThemeInfo();
   const isLoading = false;
 
   // Time Ago.
-  const creationDate = new Date(comment.creation_date);
+  const creationDate = new Date(comment.created_at);
   const now = new Date();
   let timeAgo;
   if (isToday(creationDate)) {
@@ -69,7 +69,7 @@ function PollCommentCard({ comment }) {
         </CardHeader>
 
         {/* Card Body. */}
-        <CardBody  py={4}  pl={0}>
+        <CardBody py={4} pl={0}>
           <HStack fontSize={"md"} spacing={1}>
             {/* Profile Name. */}
             <NavLink to={`/${comment.user_profile.username}`}>
@@ -83,14 +83,7 @@ function PollCommentCard({ comment }) {
                 @{comment.user_profile.username}
               </Text>
             </NavLink>
-            <HStack
-              my={"auto"}
-              h={"90%"}
-              align={"end"}
-              spacing={1}
-              fontWeight="medium"
-              opacity={0.5}
-            >
+            <HStack spacing={1} fontWeight="medium" opacity={0.5}>
               {/* Divider. */}
               <Text>·</Text>
               {/* Time Ago. */}
@@ -114,4 +107,4 @@ function PollCommentCard({ comment }) {
   );
 }
 
-export default PollCommentCard;
+export default CommentCard;

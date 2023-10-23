@@ -110,7 +110,7 @@ export const pollApiSlice = createApi({
         headers: data.headers,
         body: data.body,
       }),
-      invalidatesTags: ["Comments"],
+      invalidatesTags: ["Comments", "Polls"],
     }),
 
     //Read comments.
