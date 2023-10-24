@@ -62,6 +62,7 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
             icon={<FaEllipsis />}
             borderRadius={"full"}
             variant={"ghost"}
+            opacity={0.6}
           />
           {poll.is_owner ? (
             <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>

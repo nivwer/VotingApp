@@ -82,26 +82,27 @@ function PollCard({ poll }) {
           borderBottom={"1px solid"}
           borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
           opacity={isLoading ? 0.6 : 1}
+          boxShadow={"none"}
         >
           {isLoading && <CustomProgress />}
 
           {/* Card Header. */}
-          <CardHeader as={Flex} spacing={"4"}>
-            <Flex flex="1" gap="3">
-              {/* Profile Picture. */}
-              <Box h={"100%"}>
-                <NavLink to={`/${poll.profile.username}`}>
-                  <IconButton isDisabled={isLoading} variant={"unstyled"}>
-                    <Avatar
-                      src={poll.profile.profile_picture}
-                      size={"md"}
-                      bg={"gray.400"}
-                    />
-                  </IconButton>
-                </NavLink>
-              </Box>
+          <CardHeader as={Flex} spacing={"4"} pt={0}>
+            {/* Profile Picture. */}
+            <HStack flex={1} mt={3}>
+              <NavLink to={`/${poll.profile.username}`}>
+                <IconButton isDisabled={isLoading} variant={"unstyled"}>
+                  <Avatar
+                    src={poll.profile.profile_picture}
+                    size={"md"}
+                    h={"45px"}
+                    w={"45px"}
+                    bg={"gray.400"}
+                  />
+                </IconButton>
+              </NavLink>
 
-              <Stack fontSize={"md"} spacing={0}>
+              <Stack mt={2} fontSize={"md"} spacing={0}>
                 <HStack spacing={1}>
                   {/* Profile Name. */}
                   <NavLink to={`/${poll.profile.username}`}>
@@ -123,31 +124,25 @@ function PollCard({ poll }) {
                   </HStack>
                 </HStack>
 
-                <HStack
-                  spacing={1}
-                  fontSize="md"
-                  fontWeight="medium"
-                  opacity={0.5}
-                >
-                  {/* Total Votes. */}
-                  <Text>
-                    {poll.votes_counter}{" "}
-                    {poll.votes_counter === 1 ? "Vote" : "Votes"}
-                  </Text>
-                </HStack>
+                {/* Total Votes. */}
+                <Text fontWeight="medium" opacity={0.5}>
+                  {poll.votes_counter}{" "}
+                  {poll.votes_counter === 1 ? "Vote" : "Votes"}
+                </Text>
               </Stack>
-            </Flex>
-
-            {/* Menu. */}
-            <PollCardMenu
-              poll={poll}
-              isLoading={isLoading}
-              deletePoll={deletePoll}
-            />
+            </HStack>
+            <HStack justify={"space-between"}>
+              {/* Menu. */}
+              <PollCardMenu
+                poll={poll}
+                isLoading={isLoading}
+                deletePoll={deletePoll}
+              />
+            </HStack>
           </CardHeader>
 
           {/* Card Body. */}
-          <CardBody>
+          <CardBody pt={2}>
             <Flex justifyContent={"center"}>
               <Stack spacing={6} w={"90%"}>
                 <Stack textAlign={"center"}>

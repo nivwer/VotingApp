@@ -57,6 +57,7 @@ function CommentCardMenu({ id, user_id, poll_id, deleteComment, isLoading }) {
             icon={<FaEllipsis />}
             borderRadius={"full"}
             variant={"ghost"}
+            opacity={0.6}
           />
 
           <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>

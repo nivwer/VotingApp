@@ -23,6 +23,7 @@ import {
   differenceInMinutes,
   differenceInHours,
 } from "date-fns";
+import CustomProgress from "../../Progress/CustomProgress";
 
 // Component.
 function CommentCard({ comment }) {
@@ -48,33 +49,31 @@ function CommentCard({ comment }) {
         bg={isDark ? "black" : "white"}
         w="100%"
         borderRadius="0"
+        direction={"row"}
         borderBottom={"1px solid"}
         borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
-        direction={"row"}
         opacity={isLoading ? 0.6 : 1}
       >
         {/* Card Header. */}
-        <CardHeader as={Flex} py={4} spacing={"4"} pr={3}>
+        <CardHeader as={Flex} spacing={"4"} pt={0} pr={2}>
           {/* Profile Picture. */}
-          <Flex flex="1" gap="3" minH={"48px"}>
-            <Box h={"100%"}>
-              <NavLink to={`/${comment.user_profile.username}`}>
-                <IconButton isDisabled={isLoading} variant={"unstyled"}>
-                  <Avatar
-                    src={comment.user_profile.profile_picture}
-                    size={"md"}
-                    h={"45px"}
-                    w={"45px"}
-                    bg={"gray.400"}
-                  />
-                </IconButton>
-              </NavLink>
-            </Box>
-          </Flex>
+          <HStack flex={1} mt={3}>
+            <NavLink to={`/${comment.user_profile.username}`}>
+              <IconButton isDisabled={isLoading} variant={"unstyled"}>
+                <Avatar
+                  src={comment.user_profile.profile_picture}
+                  size={"md"}
+                  h={"45px"}
+                  w={"45px"}
+                  bg={"gray.400"}
+                />
+              </IconButton>
+            </NavLink>
+          </HStack>
         </CardHeader>
 
         {/* Card Body. */}
-        <CardBody py={4} px={0}>
+        <CardBody py={5} px={0}>
           <HStack fontSize={"md"} spacing={1}>
             {/* Profile Name. */}
             <NavLink to={`/${comment.user_profile.username}`}>
@@ -95,19 +94,18 @@ function CommentCard({ comment }) {
               <Text>{timeAgo}</Text>
             </HStack>
           </HStack>
-
           <Flex px={0} fontSize={"md"}>
             <Text
               opacity={0.8}
               w={"auto"}
-              fontWeight={"normal"}
+              fontWeight={"medium"}
               wordBreak={"break-word"}
             >
               {comment.comment}
             </Text>
           </Flex>
         </CardBody>
-        <CardFooter py={2} pl={2}>
+        <CardFooter py={3}>
           <CommentCardMenu
             id={comment._id}
             user_id={comment.user_id}

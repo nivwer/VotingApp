@@ -23,6 +23,7 @@ import {
   ModalOverlay,
   IconButton,
   Text,
+  HStack,
 } from "@chakra-ui/react";
 
 // Component.
@@ -186,17 +187,23 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
             </ModalBody>
             {/* Footer. */}
             <ModalFooter>
-              <Button
-                type="submit"
-                colorScheme={ThemeColor}
-                mr={3}
-                isDisabled={isLoading}
-              >
-                {poll ? "Save" : "Create"}
-              </Button>
-              <Button onClick={onClose} variant="ghost" isDisabled={isLoading}>
-                Cancel
-              </Button>
+              <HStack>
+                <Button
+                  type="submit"
+                  colorScheme={ThemeColor}
+                  isDisabled={isLoading}
+                  borderRadius={"full"}
+                >
+                  {poll ? "Save" : "Create"}
+                </Button>
+                <Button
+                  borderRadius={"full"}
+                  onClick={onClose}
+                  isDisabled={isLoading}
+                >
+                  Cancel
+                </Button>
+              </HStack>
             </ModalFooter>
           </form>
         </ModalContent>

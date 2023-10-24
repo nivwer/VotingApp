@@ -94,7 +94,7 @@ async def categories_data(request):
                 if category['value'] == category_data['category']:
                     data_categories.append({
                         'text': category['text'],
-                        'value': category_data['category'],
+                        'value': category['value'],
                         'total_polls': category_data['total_polls'],
                         'total_votes': category_data['total_votes']
                     })

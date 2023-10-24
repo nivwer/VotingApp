@@ -21,10 +21,10 @@ function ProfileTabButton({ value, username, tab, children }) {
             !value
               ? !tab
                 ? "black"
-                : "bold"
+                : "semibold"
               : tab === value
               ? "black"
-              : "bold"
+              : "semibold"
           }
           variant={"ghost"}
           borderBottom={"3px solid"}
