@@ -113,6 +113,17 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Comments", "Polls"],
     }),
 
+
+    // Create comment.
+    deleteComment: builder.mutation({
+      query: (data) => ({
+        url: `poll/${data.id}/comment/${data.comment_id}/delete`,
+        method: "DELETE",
+        headers: data.headers,
+      }),
+      invalidatesTags: ["Comments", "Polls"],
+    }),
+
     //Read comments.
     readComments: builder.query({
       query: (data) => ({
@@ -199,4 +210,5 @@ export const {
   useGetCategoriesDataQuery,
   useAddCommentMutation,
   useReadCommentsQuery,
+  useDeleteCommentMutation,
 } = pollApiSlice;

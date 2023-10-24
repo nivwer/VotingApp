@@ -189,7 +189,9 @@ function Profile() {
         top={"64px"}
       >
         <Grid
-          templateColumns="repeat(3, 1fr)"
+          templateColumns={
+            user.username == username ? "repeat(4, 1fr)" : "repeat(3, 1fr)"
+          }
           color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
           borderBottom={"1px solid"}
           borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
@@ -203,6 +205,11 @@ function Profile() {
           <ProfileTabButton tab={tab} value={"shared"} username={username}>
             Shared
           </ProfileTabButton>
+          {user.username == username && (
+            <ProfileTabButton tab={tab} value={"bookmarks"} username={username}>
+              Bookmarks
+            </ProfileTabButton>
+          )}
         </Grid>
       </Box>
       {/* Profile Body. */}

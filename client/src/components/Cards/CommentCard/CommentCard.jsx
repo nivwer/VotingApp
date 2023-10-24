@@ -1,11 +1,14 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
+import { useDeleteCommentMutation } from "../../../api/pollApiSlice";
 // Components.
+import CommentCardMenu from "./CommentCardMenu";
 import {
   Avatar,
   Box,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Flex,
   HStack,
@@ -24,7 +27,8 @@ import {
 // Component.
 function CommentCard({ comment }) {
   const { isDark } = useThemeInfo();
-  const isLoading = false;
+
+  const [deleteComment, { isLoading }] = useDeleteCommentMutation();
 
   // Time Ago.
   const creationDate = new Date(comment.created_at);
@@ -47,6 +51,7 @@ function CommentCard({ comment }) {
         borderBottom={"1px solid"}
         borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
         direction={"row"}
+        opacity={isLoading ? 0.6 : 1}
       >
         {/* Card Header. */}
         <CardHeader as={Flex} py={4} spacing={"4"} pr={3}>
@@ -69,7 +74,7 @@ function CommentCard({ comment }) {
         </CardHeader>
 
         {/* Card Body. */}
-        <CardBody py={4} pl={0}>
+        <CardBody py={4} px={0}>
           <HStack fontSize={"md"} spacing={1}>
             {/* Profile Name. */}
             <NavLink to={`/${comment.user_profile.username}`}>
@@ -91,7 +96,7 @@ function CommentCard({ comment }) {
             </HStack>
           </HStack>
 
-          <Flex pl={0} fontSize={"md"}>
+          <Flex px={0} fontSize={"md"}>
             <Text
               opacity={0.8}
               w={"auto"}
@@ -102,6 +107,15 @@ function CommentCard({ comment }) {
             </Text>
           </Flex>
         </CardBody>
+        <CardFooter py={2} pl={2}>
+          <CommentCardMenu
+            id={comment._id}
+            user_id={comment.user_id}
+            poll_id={comment.poll_id}
+            deleteComment={deleteComment}
+            isLoading={isLoading}
+          />
+        </CardFooter>
       </Card>
     </>
   );

@@ -30,8 +30,10 @@ urlpatterns = [
 
     # CRUD Comment.
     path('poll/<str:id>/comment', comment_add, name='add_comment'),
-    path('poll/<str:id>/comment/update', comment_update, name='update_comment'),
-    path('poll/<str:id>/comment/delete', comment_delete, name='delete_comment'),
+    path('poll/<str:id>/comment/<str:comment_id>/update',
+         comment_update, name='update_comment'),
+    path('poll/<str:id>/comment/<str:comment_id>/delete',
+         comment_delete, name='delete_comment'),
     # Comments.
     path('poll/<str:id>/comments', comments_read, name='read_comments'),
 

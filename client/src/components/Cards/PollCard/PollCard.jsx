@@ -81,6 +81,7 @@ function PollCard({ poll }) {
           borderRadius="0"
           borderBottom={"1px solid"}
           borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          opacity={isLoading ? 0.6 : 1}
         >
           {isLoading && <CustomProgress />}
 

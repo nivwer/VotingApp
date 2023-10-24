@@ -155,6 +155,7 @@ function CommentInput({ id }) {
                   colorScheme={ThemeColor}
                   borderRadius={"full"}
                   isLoading={isLoading}
+                  isDisabled={!isWriting}
                   loadingText={<Text fontWeight={"bold"}>Comment</Text>}
                 >
                   <Text fontWeight={"bold"}>Comment</Text>

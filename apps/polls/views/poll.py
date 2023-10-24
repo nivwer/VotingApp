@@ -409,25 +409,31 @@ async def poll_delete(request, id):
             raise PermissionDenied(
                 'You are not authorized to remove this poll.')
 
+        print(poll['comment_counter'])
+
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
                 # Remove the poll.
-                poll_result = await polls_db.polls.delete_one(
+                rm_poll_result = await polls_db.polls.delete_one(
                     {'_id': poll['_id']},
                     session=session)
 
-                # Remove the poll.
-                comments_result = await polls_db.comments.delete_many(
-                    {'poll_id': id},
-                    session=session)
+                rm_comments_result = {'deleted_count': 0}
+                # comments_result Remove the poll.
+                if poll['comment_counter'] != 0:
+                    print('hace la peticion')
+                    rm_comments_result = await polls_db.comments.delete_many(
+                        {'poll_id': id},
+                        session=session)
 
-                isRemoved = poll_result.deleted_count == 0 or comments_result.deleted_count == 0
+                isNotRemoved = rm_poll_result.deleted_count == 0 or rm_comments_result['deleted_count'] != poll[
+                    'comment_counter']
 
                 # If not removed.
-                if isRemoved:
+                if isNotRemoved:
                     await session.abort_transaction()
                     raise PyMongoError(
                         'An error occurred while processing your request.',
@@ -459,6 +465,7 @@ async def poll_delete(request, id):
 
     # Handle other exceptions.
     except Exception as e:
+        print(f'error: {str(e)}')
         if session:
             await session.abort_transaction()
         return Response(

@@ -124,7 +124,7 @@ async def comment_add(request, id):
 
 
 # Handles the process of updating a comment in a poll.
-@api_view(['UPDATE'])
+@api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def comment_update(request, id, comment_id):
@@ -233,8 +233,8 @@ async def comment_delete(request, id, comment_id):
             async with session.start_transaction():
 
                 # Remove the comment in comments document.
-                await polls_db.comments.delete_one(
-                    {'_id': comment_id},
+                rm_comment_result = await polls_db.comments.delete_one(
+                    {'_id': ObjectId(comment_id)},
                     session=session
                 )
 
@@ -246,6 +246,15 @@ async def comment_delete(request, id, comment_id):
                     },
                     session=session
                 )
+
+                isNotRemoved = rm_comment_result.deleted_count == 0
+
+                # If not removed.
+                if isNotRemoved:
+                    await session.abort_transaction()
+                    raise PyMongoError(
+                        'An error occurred while processing your request.',
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                 # Save transaction.
                 await session.commit_transaction()
@@ -324,6 +333,7 @@ async def comments_read(request, id):
         comments = []
         for comment in comments_json:
             # Fix data.
+            comment['_id'] = comment['_id']['$oid']
             comment['created_at'] = comment['created_at']['$date']
 
             # Get the user data.
