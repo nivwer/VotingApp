@@ -421,19 +421,23 @@ async def poll_delete(request, id):
                     {'_id': poll['_id']},
                     session=session)
 
-                rm_comments_result = {'deleted_count': 0}
+                comments_is_not_removed = True
                 # comments_result Remove the poll.
-                if poll['comment_counter'] != 0:
-                    print('hace la peticion')
+                if poll['comment_counter'] > 0:
                     rm_comments_result = await polls_db.comments.delete_many(
                         {'poll_id': id},
                         session=session)
 
-                isNotRemoved = rm_poll_result.deleted_count == 0 or rm_comments_result['deleted_count'] != poll[
-                    'comment_counter']
+                    comments_is_not_removed = rm_comments_result.deleted_count != poll[
+                        'comment_counter']
+
+                else:
+                    comments_is_not_removed = False
+
+                poll_is_not_removed = rm_poll_result.deleted_count == 0
 
                 # If not removed.
-                if isNotRemoved:
+                if poll_is_not_removed or comments_is_not_removed:
                     await session.abort_transaction()
                     raise PyMongoError(
                         'An error occurred while processing your request.',
