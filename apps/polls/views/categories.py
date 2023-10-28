@@ -103,7 +103,7 @@ async def categories_data(request):
             if not in_aggregated_data:
                 data_categories.append({
                     'text': category['text'],
-                    'value': category_data['category'],
+                    'value': category['value'],
                     'total_polls': 0,
                     'total_votes': 0
                 })
