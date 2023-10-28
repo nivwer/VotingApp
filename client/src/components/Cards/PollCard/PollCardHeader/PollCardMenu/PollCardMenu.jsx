@@ -1,9 +1,9 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 // Components.
-import PollModal from "../../Modals/PollModal/PollModal";
+import PollModal from "../../../../Modals/PollModal/PollModal";
 import {
   Button,
   IconButton,
@@ -15,7 +15,7 @@ import {
 // Icons.
 import { FaEllipsis } from "react-icons/fa6";
 
-// Component.
+// SubComponent ( PollCardHeader ).
 function PollCardMenu({ poll, deletePoll, isLoading }) {
   const navigate = useNavigate();
   const { isDark } = useThemeInfo();

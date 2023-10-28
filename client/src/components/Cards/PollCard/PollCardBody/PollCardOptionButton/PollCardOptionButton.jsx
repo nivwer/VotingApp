@@ -2,29 +2,22 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 import {
   useAddUserVoteMutation,
   useDeleteUserVoteMutation,
   useUpdateUserVoteMutation,
-} from "../../../api/pollApiSlice";
+} from "../../../../../api/pollApiSlice";
 // Components.
 import { Button, HStack, Text } from "@chakra-ui/react";
 
-// Component.
-function PollCardOptionButton({
-  poll,
-  option,
-  value,
-  children,
-  vote,
-  setVote,
-  isDisabled,
-  setIsDisabled,
-}) {
+// SubComponent ( PollCardBody ).
+function PollCardOptionButton({ poll, option, voteState, disabledState }) {
   const navigate = useNavigate();
   const { isDark, ThemeColor } = useThemeInfo();
   const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { vote, setVote } = voteState;
+  const { isDisabled, setIsDisabled } = disabledState;
 
   // Add user vote.
   const [addUserVote, { isLoading: isAddVoteLoading }] =
@@ -90,12 +83,12 @@ function PollCardOptionButton({
 
   return (
     <Button
-      onClick={() => handleUserVote(value)}
+      onClick={() => handleUserVote(option.value)}
       isDisabled={isLoading ? false : isDisabled}
       isLoading={isLoading}
-      loadingText={<Text w={"90%"}>{value}</Text>}
-      variant={vote === value ? "solid" : "outline"}
-      colorScheme={vote === value ? ThemeColor : "default"}
+      loadingText={<Text w={"90%"}>{option.value}</Text>}
+      variant={vote === option.value ? "solid" : "outline"}
+      colorScheme={vote === option.value ? ThemeColor : "default"}
       borderRadius={"3xl"}
       borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.400"}
       opacity={0.8}
@@ -108,7 +101,7 @@ function PollCardOptionButton({
     >
       <HStack justify={"space-between"} w={"100%"}>
         <Text textAlign={"start"} w={"86%"}>
-          {children}
+          {option.option_text}
         </Text>
         <Text fontWeight={"bold"} w={"auto"}>
           {option.votes === 0

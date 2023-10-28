@@ -1,8 +1,8 @@
 // Hooks.
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { useThemeInfo } from "../../../hooks/Theme";
-import { useAddOptionMutation } from "../../../api/pollApiSlice";
+import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useAddOptionMutation } from "../../../../../api/pollApiSlice";
 // Components.
 import {
   FormControl,
@@ -15,7 +15,7 @@ import {
 // Icons.
 import { FaPlus } from "react-icons/fa6";
 
-// Component.
+// SubComponent( PollCardBody ).
 function PollCardInputOption({ id, setShowInputOption }) {
   const { token } = useSelector((state) => state.session);
   const { isDark } = useThemeInfo();

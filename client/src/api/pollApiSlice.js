@@ -113,8 +113,7 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Comments", "Polls"],
     }),
 
-
-    // Create comment.
+    // Remove comment.
     deleteComment: builder.mutation({
       query: (data) => ({
         url: `poll/${data.id}/comment/${data.comment_id}/delete`,
@@ -124,7 +123,7 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Comments", "Polls"],
     }),
 
-    //Read comments.
+    // Read comments.
     readComments: builder.query({
       query: (data) => ({
         url: `poll/${data.id}/comments`,
@@ -133,6 +132,27 @@ export const pollApiSlice = createApi({
       }),
       providesTags: ["Comments"],
     }),
+
+    // Share action.
+    sharePoll: builder.mutation({
+      query: (data) => ({
+        url: `poll/${data.id}/share`,
+        method: "POST",
+        headers: data.headers,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
+
+    // UnShare action.
+    unSharePoll: builder.mutation({
+      query: (data) => ({
+        url: `poll/${data.id}/unshare`,
+        method: "DELETE",
+        headers: data.headers,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
+
 
     // GET Polls. //
 
@@ -211,4 +231,6 @@ export const {
   useAddCommentMutation,
   useReadCommentsQuery,
   useDeleteCommentMutation,
+  useSharePollMutation,
+  useUnSharePollMutation,
 } = pollApiSlice;
