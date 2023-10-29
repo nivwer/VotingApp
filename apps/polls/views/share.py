@@ -156,4 +156,84 @@ async def share_action(request, id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def unshare_action(request, id):
-    return Response('res')
+    session = None
+    try:
+        # Get collections from the polls database.
+        polls_db = GetCollectionsMongoDB(
+            'polls_db', ['polls', 'user_actions'])
+
+        # Find the poll in the polls collection.
+        poll = await polls_db.polls.find_one(
+            {'_id': ObjectId(id)})
+
+        # If poll is not found.
+        if not poll:
+            raise ValidationError('Poll is not found.')
+
+        # Find the user actions in the user_actions collection.
+        user_has_shared = await polls_db.user_actions.find_one(
+            {'user_id': request.user.id, 'poll_id': id},
+            {'_id': 0, 'poll_id': 1, 'has_shared': 1})
+
+        delete_user_share_action = False
+
+        if user_has_shared is not None and user_has_shared['has_shared']:
+            delete_user_share_action = True
+        else:
+            raise ValidationError(
+                'The user has not shared in this poll.')
+
+        # Initialize a MongoDB session.
+        async with await MongoDBSingleton().client.start_session() as session:
+            # Initialize a MongoDB transaccion.
+            async with session.start_transaction():
+
+                if delete_user_share_action:
+                    # Update the user share action.
+                    await polls_db.user_actions.update_one(
+                        {'user_id': request.user.id, 'poll_id': id},
+                        {
+                            '$unset': {'has_shared': ''}
+                        },
+                        session=session
+                    )
+
+                # Remove count to shared counter.
+                await polls_db.polls.update_one(
+                    {'_id': ObjectId(id)},
+                    {
+                        '$inc': {'share_counter': -1}
+                    },
+                    session=session)
+
+                # Save transaction.
+                await session.commit_transaction()
+
+                # Response.
+                return Response('Poll shared successfully')
+
+    # Handle validation errors.
+    except ValidationError as e:
+        if session:
+            await session.abort_transaction()
+        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle MongoDB errors.
+    except PyMongoError as e:
+        if session:
+            await session.abort_transaction()
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as e:
+        if session:
+            await session.abort_transaction()
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    finally:
+        if session:
+            await session.end_session()

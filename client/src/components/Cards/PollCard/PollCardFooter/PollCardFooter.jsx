@@ -1,6 +1,11 @@
 // Hooks.
+import { useSelector } from "react-redux";
+import {
+  useSharePollMutation,
+  useUnSharePollMutation,
+} from "../../../../api/pollApiSlice";
 // Componentes.
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Box, HStack } from "@chakra-ui/react";
 // SubComponents.
 import PollCardButton from "./PollCardButton.jsx/PollCardButton";
@@ -17,7 +22,34 @@ import {
 
 // SubComponent ( PollCard ).
 function PollCardFooter({ poll, isLoading, state }) {
+  const navigate = useNavigate();
+  const { isAuthenticated, token } = useSelector((state) => state.session);
   const { showInputOption, setShowInputOption } = state;
+
+  // Share poll mananger.
+  const [sharePoll, { isLoading: isShareLoading }] = useSharePollMutation();
+  const [unsharePoll, { isLoading: isUnshareLoading }] =
+    useUnSharePollMutation();
+
+  const handleShare = async () => {
+    if (isAuthenticated) {
+      try {
+        const res = await sharePoll({
+          headers: { Authorization: `Token ${token}` },
+          id: poll._id,
+        });
+
+        // If server error.
+        if (res.error) {
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      navigate("/signin");
+    }
+  };
+
   return (
     <HStack w={"100%"} justify={"space-between"}>
       <HStack mx={5} spacing={4}>
@@ -26,7 +58,11 @@ function PollCardFooter({ poll, isLoading, state }) {
             {poll.comment_counter}
           </PollCardButton>
         </Link>
-        <PollCardButton icon={<FaRetweet />} isLoading={isLoading}>
+        <PollCardButton
+          onClick={() => handleShare()}
+          icon={<FaRetweet />}
+          isLoading={isLoading}
+        >
           {poll.share_counter}
         </PollCardButton>
         <PollCardButton icon={<FaBookmark />} isLoading={isLoading}>

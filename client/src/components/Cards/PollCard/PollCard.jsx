@@ -1,11 +1,7 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useState } from "react";
-import {
-  useDeletePollMutation,
-  useSharePollMutation,
-  useUnSharePollMutation,
-} from "../../../api/pollApiSlice";
+import { useDeletePollMutation } from "../../../api/pollApiSlice";
 // Components.
 import CustomProgress from "../../Progress/CustomProgress";
 import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
@@ -20,11 +16,6 @@ function PollCard({ poll }) {
 
   // Request to delete polls.
   const [deletePoll, { isLoading }] = useDeletePollMutation();
-
-  // Share poll mananger.
-  const [sharePoll, { isLoading: isShareLoading }] = useSharePollMutation();
-  const [unsharePoll, { isLoading: isUnshareLoading }] =
-    useUnSharePollMutation();
 
   // Show input option.
   const [showInputOption, setShowInputOption] = useState(false);
