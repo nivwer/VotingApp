@@ -78,7 +78,9 @@ function PollCardOptionButton({ poll, option, voteState, disabledState }) {
   }, [isLoading]);
 
   useEffect(() => {
-    setVote(poll.user_vote);
+    setVote(
+      poll.user_actions.has_voted ? poll.user_actions.has_voted.vote : ""
+    );
   }, [poll]);
 
   return (

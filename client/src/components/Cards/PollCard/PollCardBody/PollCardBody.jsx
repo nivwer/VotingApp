@@ -14,7 +14,10 @@ function PollCardBody({ poll, isLoading, state }) {
   const { showInputOption, setShowInputOption } = state;
 
   // Vote.
-  const [vote, setVote] = useState(poll.user_vote);
+  const [vote, setVote] = useState(
+    poll.user_actions.has_voted ? poll.user_actions.has_voted.vote : ""
+  );
+
   const [isDisabled, setIsDisabled] = useState(false);
 
   // Show all options.

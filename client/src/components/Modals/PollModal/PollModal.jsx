@@ -1,5 +1,6 @@
 // Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -28,8 +29,9 @@ import {
 
 // Component.
 function PollModal({ poll = false, buttonStyles, icon = false }) {
+  const navigate = useNavigate()
   const { ThemeColor, isDark } = useThemeInfo();
-  const { token } = useSelector((state) => state.session);
+  const { token, user } = useSelector((state) => state.session);
   // Modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
   // React hook form.
@@ -121,6 +123,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
         if (res.data) {
           onClose();
           useDefaultValues();
+          navigate(`/${user.username}/${res.data.id}`)
         }
       }
 

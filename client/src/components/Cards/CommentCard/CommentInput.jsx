@@ -89,15 +89,17 @@ function CommentInput({ id }) {
         borderBottom={"1px solid"}
         borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
       >
-        <CardHeader as={Flex} spacing={"4"}>
+        <CardHeader as={Flex} pr={3}>
           {/* Profile Picture. */}
-          <Flex flex="1" gap="3" minH={"45px"}>
+          <Flex flex="1" gap="3" minH={"40px"}>
             <Box h={"100%"}>
               <NavLink to={`/${user.username}`}>
                 <IconButton isDisabled={isLoading} variant={"unstyled"}>
                   <Avatar
                     src={profile.profile_picture}
                     size={"md"}
+                    h={"45px"}
+                    w={"45px"}
                     bg={"gray.400"}
                   />
                 </IconButton>
