@@ -44,45 +44,89 @@ async def vote_add(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes'])
+            'polls_db', ['polls', 'user_votes', 'user_actions'])
 
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one(
+        poll = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
         # If poll is not found.
-        if not poll_bson:
+        if not poll:
             raise ValidationError('Poll is not found.')
 
-        # Convert the BSON object to a JSON object.
-        poll_json = json_util._json_convert((poll_bson))
+        # Find the user actions in the user_actions collection.
+        user_actions_doc = await polls_db.user_actions.find_one(
+            {'user_id': request.user.id, 'poll_id': id},
+            {'_id': 0, 'poll_id': 1, 'has_voted': 1})
 
-        # Is voter.
-        is_voter = request.user.id in poll_json['voters']
-        if is_voter:
-            raise ValidationError(
-                'The user has already voted in this poll.')
+        create_user_actions_doc = False
+        add_user_vote_action = False
+
+        if user_actions_doc is None:
+            create_user_actions_doc = True
+        else:
+            if 'has_vote' in user_actions_doc:
+                raise ValidationError(
+                    'The user has already voted in this poll.')
+            else:
+                add_user_vote_action = True
+
+        # # Convert the BSON object to a JSON object.
+        # poll_json = json_util._json_convert((poll_bson))
+
+        # # Is voter.
+        # is_voter = request.user.id in poll_json['voters']
+        # if is_voter:
+        #     raise ValidationError(
+        #         'The user has already voted in this poll.')
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                # Insert or update the user votes object.
-                await polls_db.user_votes.update_one(
-                    {'user_id': request.user.id},
-                    {
-                        '$addToSet': {
-                            'voted_polls': {
-                                'poll_id': id,
+                if create_user_actions_doc:
+                    # Insert the user action.
+                    await polls_db.user_actions.insert_one(
+                        {
+                            'has_shared': {
+                                'shared_at': datetime.now(),
+                            },
+                            'poll_id': id,
+                            'user_id': request.user.id
+                        },
+                        session=session
+                    )
+
+                if add_user_vote_action:
+                    # Update the user vote action.
+                    await polls_db.user_actions.update_one(
+                        {'user_id': request.user.id, 'poll_id': id},
+                        {
+                            '$set': {'has_voted': {
                                 'vote': add_vote_value,
-                                'voted_at': datetime.now()
-                            }
-                        }
-                    },
-                    upsert=True,
-                    session=session
-                )
+                                'voted_at': datetime.now(),
+                            }}
+                        },
+                        upsert=True,
+                        session=session
+                    )
+
+                # # Insert or update the user votes object.
+                # await polls_db.user_votes.update_one(
+                #     {'user_id': request.user.id},
+                #     {
+                #         '$addToSet': {
+                #             'voted_polls': {
+                #                 'poll_id': id,
+                #                 'vote': add_vote_value,
+                #                 'voted_at': datetime.now()
+                #             }
+                #         }
+                #     },
+                #     upsert=True,
+                #     session=session
+                # )
 
                 await polls_db.polls.bulk_write([
                     # Save the user id in poll voters list.
@@ -145,22 +189,27 @@ async def vote_add(request, id):
 async def vote_read(request, id):
     try:
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['user_votes'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['user_actions'])
 
-        # Find the user voted polls in the user_votes collection.
-        user_vote = await polls_db.user_votes.find_one(
-            {
-                'user_id': request.user.id,
-                'voted_polls.poll_id': id
-            },
-            projection={'voted_polls.$': 1})
+        # # Find the user voted polls in the user_votes collection.
+        # user_vote = await polls_db.user_votes.find_one(
+        #     {
+        #         'user_id': request.user.id,
+        #         'voted_polls.poll_id': id
+        #     },
+        #     projection={'voted_polls.$': 1})
+
+        # Find the user actions in the user_actions collection.
+        user_has_voted = await polls_db.user_actions.find_one(
+            {'user_id': request.user.id, 'poll_id': id},
+            {'_id': 0, 'has_voted': 1})
 
         # If the user has not voted a poll.
-        if not user_vote:
+        if not user_has_voted:
             return Response({'vote': ''})
 
         # Response.
-        return Response({'vote': user_vote['voted_polls'][0]['vote']})
+        return Response({'vote': user_has_voted['has_voted']['vote']})
 
     # Handle validation errors.
     except ValidationError as e:
@@ -191,40 +240,53 @@ async def vote_update(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes'])
+            'polls_db', ['polls', 'user_votes', 'user_actions'])
 
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one(
+        poll = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
         # If poll is not found.
-        if not poll_bson:
+        if not poll:
             raise ValidationError('Poll is not found.')
 
-        # Convert the BSON object to a JSON object.
-        poll_json = json_util._json_convert((poll_bson))
+        # # Convert the BSON object to a JSON object.
+        # poll_json = json_util._json_convert((poll))
 
-        # Is voter.
-        is_voter = request.user.id in poll_json['voters']
-        if not is_voter:
+        # Find the user actions in the user_actions collection.
+        user_actions_doc = await polls_db.user_actions.find_one(
+            {'user_id': request.user.id, 'poll_id': id},
+            {'_id': 0, 'poll_id': 1, 'has_voted': 1})
+
+        update_user_voted_action = False
+
+        if user_actions_doc is not None and user_actions_doc['has_voted']:
+            update_user_voted_action = True
+        else:
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-        # Find the user voted polls in the user_votes collection.
-        user_vote = await polls_db.user_votes.find_one(
-            {
-                'user_id': request.user.id,
-                'voted_polls.poll_id': id
-            },
-            projection={'voted_polls.$': 1})
+        # # Is voter.
+        # is_voter = request.user.id in poll_json['voters']
+        # if not is_voter:
+        #     raise ValidationError(
+        #         'The user has not voted in this poll.')
 
-        # If the user has not voted a poll.
-        if not user_vote:
-            raise ValidationError(
-                'The user has not voted in this poll.')
+        # # Find the user voted polls in the user_votes collection.
+        # user_vote = await polls_db.user_votes.find_one(
+        #     {
+        #         'user_id': request.user.id,
+        #         'voted_polls.poll_id': id
+        #     },
+        #     projection={'voted_polls.$': 1})
 
-         # If the user has voted a poll.
-        del_vote_value = user_vote['voted_polls'][0]['vote']
+        # # If the user has not voted a poll.
+        # if not user_vote:
+        #     raise ValidationError(
+        #         'The user has not voted in this poll.')
+
+        # If the user has voted a poll.
+        del_vote_value = user_actions_doc['has_voted']['vote']
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -232,17 +294,30 @@ async def vote_update(request, id):
             async with session.start_transaction():
 
                 # Add the user vote in the votes object.
-                await polls_db.user_votes.update_one(
-                    {
-                        'user_id': request.user.id,
-                        'voted_polls.poll_id': id
-                    },
-                    {
-                        '$set': {
-                            'voted_polls.$.vote': add_vote_value,
-                            'voted_polls.$.voted_at': datetime.now()}
-                    },
-                    session=session)
+                # await polls_db.user_votes.update_one(
+                #     {
+                #         'user_id': request.user.id,
+                #         'voted_polls.poll_id': id
+                #     },
+                #     {
+                #         '$set': {
+                #             'voted_polls.$.vote': add_vote_value,
+                #             'voted_polls.$.voted_at': datetime.now()}
+                #     },
+                #     session=session)
+
+                if update_user_voted_action:
+                    # Update the user vote action.
+                    await polls_db.user_actions.update_one(
+                        {'user_id': request.user.id, 'poll_id': id},
+                        {
+                            '$set': {'has_voted': {
+                                'vote': add_vote_value,
+                                'voted_at': datetime.now(),
+                            }}
+                        },
+                        session=session
+                    )
 
                 await polls_db.polls.bulk_write([
                     # Remove the previous vote.
@@ -311,39 +386,52 @@ async def vote_delete(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes'])
+            'polls_db', ['polls', 'user_votes', 'user_actions'])
 
         # Find the poll in the polls collection.
-        poll_bson = await polls_db.polls.find_one(
+        poll = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
         # If poll is not found.
-        if not poll_bson:
+        if not poll:
             raise ValidationError('Poll is not found.')
-        # Convert the BSON object to a JSON object.
-        poll_json = json_util._json_convert((poll_bson))
+
+        # # Convert the BSON object to a JSON object.
+        # poll_json = json_util._json_convert((poll_bson))
 
         # Is voter.
-        is_voter = request.user.id in poll_json['voters']
-        if not is_voter:
+        # is_voter = request.user.id in poll_json['voters']
+        # if not is_voter:
+        #     raise ValidationError(
+        #         'The user has not voted in this poll.')
+
+        user_actions_doc = await polls_db.user_actions.find_one(
+            {'user_id': request.user.id, 'poll_id': id},
+            {'_id': 0, 'poll_id': 1, 'has_voted': 1})
+
+        remove_user_voted_action = False
+
+        if user_actions_doc is not None and user_actions_doc['has_voted']:
+            remove_user_voted_action = True
+        else:
             raise ValidationError(
                 'The user has not voted in this poll.')
 
-        # Find the user voted polls in the user_votes collection.
-        user_vote = await polls_db.user_votes.find_one(
-            {
-                'user_id': request.user.id,
-                'voted_polls.poll_id': id
-            },
-            projection={'voted_polls.$': 1})
+        # # Find the user voted polls in the user_votes collection.
+        # user_vote = await polls_db.user_votes.find_one(
+        #     {
+        #         'user_id': request.user.id,
+        #         'voted_polls.poll_id': id
+        #     },
+        #     projection={'voted_polls.$': 1})
 
-        # If the user has not voted a poll.
-        if not user_vote:
-            raise ValidationError(
-                'The user has not voted in this poll.')
+        # # If the user has not voted a poll.
+        # if not user_vote:
+        #     raise ValidationError(
+        #         'The user has not voted in this poll.')
 
         # If the user has voted a poll.
-        del_vote_value = user_vote['voted_polls'][0]['vote']
+        del_vote_value = user_actions_doc['has_voted']['vote']
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -351,13 +439,23 @@ async def vote_delete(request, id):
             async with session.start_transaction():
 
                 # Remove the user vote in the votes object.
-                await polls_db.user_votes.update_one(
-                    {'user_id': request.user.id},
-                    {
-                        '$pull': {'voted_polls': {'poll_id': id}}
-                    },
-                    session=session
-                )
+                # await polls_db.user_votes.update_one(
+                #     {'user_id': request.user.id},
+                #     {
+                #         '$pull': {'voted_polls': {'poll_id': id}}
+                #     },
+                #     session=session
+                # )
+
+                if remove_user_voted_action:
+                    # Remove the user vote action.
+                    await polls_db.user_actions.update_one(
+                        {'user_id': request.user.id, 'poll_id': id},
+                        {
+                            '$unset': {'has_voted': ''}
+                        },
+                        session=session
+                    )
 
                 await polls_db.polls.bulk_write([
                     # Remove the user id in poll voters list.

@@ -56,21 +56,21 @@ async def bookmark_action(request, id):
             raise ValidationError('Poll is not found.')
 
         # Find the user actions in the user_actions collection.
-        user_has_bookmark = await polls_db.user_actions.find_one(
+        user_actions_doc = await polls_db.user_actions.find_one(
             {'user_id': request.user.id, 'poll_id': id},
             {'_id': 0, 'poll_id': 1, 'has_bookmark': 1})
 
         create_user_actions_doc = False
-        update_user_bookmark_action = False
+        add_user_bookmark_action = False
 
-        if user_has_bookmark is None:
+        if user_actions_doc is None:
             create_user_actions_doc = True
         else:
-            if 'has_bookmark' in user_has_bookmark:
+            if 'has_bookmark' in user_actions_doc:
                 raise ValidationError(
                     'The user has already bookmarked this poll.')
             else:
-                update_user_bookmark_action = True
+                add_user_bookmark_action = True
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -90,7 +90,7 @@ async def bookmark_action(request, id):
                         session=session
                     )
 
-                if update_user_bookmark_action:
+                if add_user_bookmark_action:
                     # Update the user bookmark action.
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': id},
@@ -165,14 +165,14 @@ async def unbookmark_action(request, id):
             raise ValidationError('Poll is not found.')
 
         # Find the user actions in the user_actions collection.
-        user_has_bookmark = await polls_db.user_actions.find_one(
+        user_actions_doc = await polls_db.user_actions.find_one(
             {'user_id': request.user.id, 'poll_id': id},
             {'_id': 0, 'poll_id': 1, 'has_bookmark': 1})
 
-        delete_user_bookmark_action = False
+        remove_user_bookmark_action = False
 
-        if user_has_bookmark is not None and user_has_bookmark['has_bookmark']:
-            delete_user_bookmark_action = True
+        if user_actions_doc is not None and user_actions_doc['has_bookmark']:
+            remove_user_bookmark_action = True
         else:
             raise ValidationError(
                 'The user has not bookmarked in this poll.')
@@ -182,7 +182,7 @@ async def unbookmark_action(request, id):
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                if delete_user_bookmark_action:
+                if remove_user_bookmark_action:
                     # Remove the user bookmark action.
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': id},

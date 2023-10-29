@@ -56,21 +56,21 @@ async def share_action(request, id):
             raise ValidationError('Poll is not found.')
 
         # Find the user actions in the user_actions collection.
-        user_has_shared = await polls_db.user_actions.find_one(
+        user_actions_doc = await polls_db.user_actions.find_one(
             {'user_id': request.user.id, 'poll_id': id},
             {'_id': 0, 'poll_id': 1, 'has_shared': 1})
 
         create_user_actions_doc = False
-        update_user_share_action = False
+        add_user_share_action = False
 
-        if user_has_shared is None:
+        if user_actions_doc is None:
             create_user_actions_doc = True
         else:
-            if 'has_shared' in user_has_shared:
+            if 'has_shared' in user_actions_doc:
                 raise ValidationError(
                     'The user has already shared in this poll.')
             else:
-                update_user_share_action = True
+                add_user_share_action = True
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -90,7 +90,7 @@ async def share_action(request, id):
                         session=session
                     )
 
-                if update_user_share_action:
+                if add_user_share_action:
                     # Update the user share action.
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': id},
@@ -164,14 +164,14 @@ async def unshare_action(request, id):
             raise ValidationError('Poll is not found.')
 
         # Find the user actions in the user_actions collection.
-        user_has_shared = await polls_db.user_actions.find_one(
+        user_actions_doc = await polls_db.user_actions.find_one(
             {'user_id': request.user.id, 'poll_id': id},
             {'_id': 0, 'poll_id': 1, 'has_shared': 1})
 
-        delete_user_share_action = False
+        remove_user_share_action = False
 
-        if user_has_shared is not None and user_has_shared['has_shared']:
-            delete_user_share_action = True
+        if user_actions_doc is not None and user_actions_doc['has_shared']:
+            remove_user_share_action = True
         else:
             raise ValidationError(
                 'The user has not shared in this poll.')
@@ -181,7 +181,7 @@ async def unshare_action(request, id):
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                if delete_user_share_action:
+                if remove_user_share_action:
                     # Update the user share action.
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': id},

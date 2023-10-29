@@ -83,12 +83,12 @@ function PollCardOptionButton({ poll, option, voteState, disabledState }) {
 
   return (
     <Button
-      onClick={() => handleUserVote(option.value)}
+      onClick={() => handleUserVote(option.option_text)}
       isDisabled={isLoading ? false : isDisabled}
       isLoading={isLoading}
-      loadingText={<Text w={"90%"}>{option.value}</Text>}
-      variant={vote === option.value ? "solid" : "outline"}
-      colorScheme={vote === option.value ? ThemeColor : "default"}
+      loadingText={<Text w={"90%"}>{option.option_text}</Text>}
+      variant={vote === option.option_text ? "solid" : "outline"}
+      colorScheme={vote === option.option_text ? ThemeColor : "default"}
       borderRadius={"3xl"}
       borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.400"}
       opacity={0.8}
