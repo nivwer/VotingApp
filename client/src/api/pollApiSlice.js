@@ -133,6 +133,8 @@ export const pollApiSlice = createApi({
       providesTags: ["Comments"],
     }),
 
+    // Share manager. //
+
     // Share action.
     sharePoll: builder.mutation({
       query: (data) => ({
@@ -153,6 +155,27 @@ export const pollApiSlice = createApi({
       invalidatesTags: ["Polls"],
     }),
 
+    // Bookmark manager. //
+
+    // Bookmark action.
+    bookmarkPoll: builder.mutation({
+      query: (data) => ({
+        url: `poll/${data.id}/bookmark`,
+        method: "POST",
+        headers: data.headers,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
+
+    // UnBookmark action.
+    unBookmarkPoll: builder.mutation({
+      query: (data) => ({
+        url: `poll/${data.id}/unbookmark`,
+        method: "DELETE",
+        headers: data.headers,
+      }),
+      invalidatesTags: ["Polls"],
+    }),
 
     // GET Polls. //
 
@@ -170,7 +193,7 @@ export const pollApiSlice = createApi({
 
     // Get User voted Polls.
     getUserVotedPolls: builder.query({
-      query: (data) => ({  
+      query: (data) => ({
         url: data.page
           ? `user/${data.id}/voted_polls?page=${data.page}`
           : `user/${data.id}/voted_polls`,
@@ -233,4 +256,6 @@ export const {
   useDeleteCommentMutation,
   useSharePollMutation,
   useUnSharePollMutation,
+  useBookmarkPollMutation,
+  useUnBookmarkPollMutation,
 } = pollApiSlice;

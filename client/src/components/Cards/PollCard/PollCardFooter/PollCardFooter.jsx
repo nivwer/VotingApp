@@ -1,7 +1,9 @@
 // Hooks.
 import { useSelector } from "react-redux";
 import {
+  useBookmarkPollMutation,
   useSharePollMutation,
+  useUnBookmarkPollMutation,
   useUnSharePollMutation,
 } from "../../../../api/pollApiSlice";
 // Componentes.
@@ -31,6 +33,13 @@ function PollCardFooter({ poll, isLoading, state }) {
   const [unsharePoll, { isLoading: isUnshareLoading }] =
     useUnSharePollMutation();
 
+  // Bookmark poll mananger.
+  const [bookmarkPoll, { isLoading: isBookmarkLoading }] =
+    useBookmarkPollMutation();
+  const [unbookmarkPoll, { isLoading: isUnbookmarkLoading }] =
+    useUnBookmarkPollMutation();
+
+  // Share.
   const handleShare = async () => {
     if (isAuthenticated) {
       try {
@@ -56,27 +65,67 @@ function PollCardFooter({ poll, isLoading, state }) {
     }
   };
 
+  // Bookmark.
+  const handleBookmark = async () => {
+    if (isAuthenticated) {
+      try {
+        const data = {
+          headers: { Authorization: `Token ${token}` },
+          id: poll._id,
+        };
+        let res = "";
+        if (!poll.user_actions.has_bookmark) {
+          res = await bookmarkPoll(data);
+        } else {
+          res = await unbookmarkPoll(data);
+        }
+
+        // If server error.
+        if (res.error) {
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      navigate("/signin");
+    }
+  };
+
   return (
     <HStack w={"100%"} justify={"space-between"}>
       <HStack mx={5} spacing={4}>
+        {/* Comment. */}
         <Link to={`/${poll.profile.username}/${poll._id}`}>
           <PollCardButton icon={<FaRegComment />} isLoading={isLoading}>
             {poll.comment_counter}
           </PollCardButton>
         </Link>
+        {/* Share. */}
         <PollCardButton
-          color={poll.user_actions.has_shared ? "blue" : "green"}
           onClick={() => handleShare()}
+          active={poll.user_actions.has_shared ? true : false}
           icon={<FaRetweet />}
-          isLoading={isLoading}
+          isLoading={isShareLoading || isUnshareLoading}
+          isDisabled={isLoading}
         >
           {poll.share_counter}
         </PollCardButton>
-        <PollCardButton icon={<FaBookmark />} isLoading={isLoading}>
+
+        {/* Bookmark. */}
+        <PollCardButton
+          onClick={() => handleBookmark()}
+          active={poll.user_actions.has_bookmark ? true : false}
+          icon={
+            poll.user_actions.has_bookmark ? <FaBookmark /> : <FaRegBookmark />
+          }
+          isLoading={isBookmarkLoading || isUnbookmarkLoading}
+          isDisabled={isLoading}
+        >
           {poll.bookmark_counter}
         </PollCardButton>
       </HStack>
       <Box mx={5}>
+        {/* Show Input Option. */}
         <PollCardButton
           icon={!showInputOption ? <FaPlus /> : <FaMinus />}
           isLoading={isLoading}
