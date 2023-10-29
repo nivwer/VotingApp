@@ -107,7 +107,7 @@ async def bookmark_action(request, id):
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'bookmark_counter': 1}
+                        '$inc': {'bookmarks_counter': 1}
                     },
                     session=session)
 
@@ -196,7 +196,7 @@ async def unbookmark_action(request, id):
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'bookmark_counter': -1}
+                        '$inc': {'bookmarks_counter': -1}
                     },
                     session=session)
 

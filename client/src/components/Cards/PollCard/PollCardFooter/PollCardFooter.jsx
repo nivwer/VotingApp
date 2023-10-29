@@ -97,7 +97,7 @@ function PollCardFooter({ poll, isLoading, state }) {
         {/* Comment. */}
         <Link to={`/${poll.profile.username}/${poll._id}`}>
           <PollCardButton icon={<FaRegComment />} isLoading={isLoading}>
-            {poll.comment_counter}
+            {poll.comments_counter}
           </PollCardButton>
         </Link>
         {/* Share. */}
@@ -108,7 +108,7 @@ function PollCardFooter({ poll, isLoading, state }) {
           isLoading={isShareLoading || isUnshareLoading}
           isDisabled={isLoading}
         >
-          {poll.share_counter}
+          {poll.shares_counter}
         </PollCardButton>
 
         {/* Bookmark. */}
@@ -121,7 +121,7 @@ function PollCardFooter({ poll, isLoading, state }) {
           isLoading={isBookmarkLoading || isUnbookmarkLoading}
           isDisabled={isLoading}
         >
-          {poll.bookmark_counter}
+          {poll.bookmarks_counter}
         </PollCardButton>
       </HStack>
       <Box mx={5}>

@@ -87,7 +87,7 @@ async def comment_add(request, id):
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'comment_counter': 1}
+                        '$inc': {'comments_counter': 1}
                     },
                     session=session
                 )
@@ -242,7 +242,7 @@ async def comment_delete(request, id, comment_id):
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'comment_counter': -1}
+                        '$inc': {'comments_counter': -1}
                     },
                     session=session
                 )

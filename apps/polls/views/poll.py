@@ -93,9 +93,9 @@ async def poll_create(request):
                         'options': options,
                         'voters': [],
                         'votes_counter': 0,
-                        'share_counter': 0,
-                        'bookmark_counter': 0,
-                        'comment_counter': 0,
+                        'shares_counter': 0,
+                        'bookmarks_counter': 0,
+                        'comments_counter': 0,
                     },
                     session=session
                 )
@@ -148,7 +148,7 @@ async def poll_read(request, id):
     try:
        # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes', 'user_actions'])
+            'polls_db', ['polls', 'user_actions'])
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -184,8 +184,7 @@ async def poll_read(request, id):
             'profile_name': user_data['userprofile__profile_name']
         }
 
-        # Get user vote.
-        vote = ''
+        # If is login.
         if is_login:
             # Find the user actions.
             user_actions_doc = await polls_db.user_actions.find_one(
@@ -195,23 +194,6 @@ async def poll_read(request, id):
             user_actions_json = json_util._json_convert((user_actions_doc))
 
             poll_json['user_actions'] = user_actions_json if user_actions_json is not None else {}
-
-            is_voter = request.user.id in poll_json['voters']
-            if is_voter:
-                # Find the vote in the user_votes collection.
-                user_vote = await polls_db.user_votes.find_one(
-                    {
-                        'user_id': request.user.id,
-                        'voted_polls.poll_id': poll_json['_id']
-                    },
-                    projection={'voted_polls.$': 1})
-
-                # If the user has voted a poll.
-                if user_vote:
-                    vote = user_vote['voted_polls'][0]['vote']
-
-            # Add the vote in the poll.
-            poll_json['user_vote'] = vote if vote else ''
 
         # Response.
         return Response(poll_json)

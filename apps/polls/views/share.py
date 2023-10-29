@@ -107,7 +107,7 @@ async def share_action(request, id):
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'share_counter': 1}
+                        '$inc': {'shares_counter': 1}
                     },
                     session=session)
 
@@ -195,7 +195,7 @@ async def unshare_action(request, id):
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'share_counter': -1}
+                        '$inc': {'shares_counter': -1}
                     },
                     session=session)
 
