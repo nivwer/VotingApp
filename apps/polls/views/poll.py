@@ -100,12 +100,17 @@ async def poll_create(request):
                     session=session
                 )
 
+                poll_id = poll.inserted_id
+
                 # Save transaction.
                 await session.commit_transaction()
 
                 # Response.
                 return Response(
-                    {'message': 'Poll created successfully'},
+                    {
+                        'message': 'Poll created successfully',
+                        'id': str(poll_id)
+                    },
                     status=status.HTTP_201_CREATED)
 
     # Handle validation errors.
@@ -183,11 +188,11 @@ async def poll_read(request, id):
         vote = ''
         if is_login:
             # Find the user actions.
-            user_actions = await polls_db.user_actions.find_one(
+            user_actions_doc = await polls_db.user_actions.find_one(
                 {'user_id': request.user.id, 'poll_id': poll_json['_id']})
 
             # Convert the BSON to a JSON.
-            user_actions_json = json_util._json_convert((user_actions))
+            user_actions_json = json_util._json_convert((user_actions_doc))
 
             poll_json['user_actions'] = user_actions_json if user_actions_json is not None else {}
 

@@ -89,8 +89,9 @@ async def vote_add(request, id):
                     # Insert the user action.
                     await polls_db.user_actions.insert_one(
                         {
-                            'has_shared': {
-                                'shared_at': datetime.now(),
+                            'has_voted': {
+                                'vote': add_vote_value,
+                                'voted_at': datetime.now(),
                             },
                             'poll_id': id,
                             'user_id': request.user.id

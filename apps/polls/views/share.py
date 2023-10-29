@@ -182,7 +182,7 @@ async def unshare_action(request, id):
             async with session.start_transaction():
 
                 if remove_user_share_action:
-                    # Update the user share action.
+                    # Remove the user share action.
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': id},
                         {
