@@ -34,10 +34,16 @@ function PollCardFooter({ poll, isLoading, state }) {
   const handleShare = async () => {
     if (isAuthenticated) {
       try {
-        const res = await sharePoll({
+        const data = {
           headers: { Authorization: `Token ${token}` },
           id: poll._id,
-        });
+        };
+        let res = "";
+        if (!poll.user_actions.has_shared) {
+          res = await sharePoll(data);
+        } else {
+          res = await unsharePoll(data);
+        }
 
         // If server error.
         if (res.error) {
@@ -59,6 +65,7 @@ function PollCardFooter({ poll, isLoading, state }) {
           </PollCardButton>
         </Link>
         <PollCardButton
+          color={poll.user_actions.has_shared ? "blue" : "green"}
           onClick={() => handleShare()}
           icon={<FaRetweet />}
           isLoading={isLoading}
@@ -66,7 +73,7 @@ function PollCardFooter({ poll, isLoading, state }) {
           {poll.share_counter}
         </PollCardButton>
         <PollCardButton icon={<FaBookmark />} isLoading={isLoading}>
-          <Link to={`/${poll.profile.username}/${poll._id}`}>Views</Link>
+          {poll.bookmark_counter}
         </PollCardButton>
       </HStack>
       <Box mx={5}>

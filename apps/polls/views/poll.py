@@ -21,8 +21,6 @@ from bson import json_util
 from bson.objectid import ObjectId
 # Models and Serializers.
 from ..serializers import PollSerializer, OptionsSerializer
-from apps.profiles.models import UserProfile
-from apps.profiles.serializers import UserProfileSerializer
 
 
 # Load the virtual environment.
@@ -90,12 +88,13 @@ async def poll_create(request):
                         'title': poll_data['title'],
                         'description': poll_data['description'],
                         'created_at': datetime.now(),
-                        'votes_counter': 0,
-                        'voters': [],
                         'privacy': poll_data['privacy'],
                         'category': poll_data['category'],
                         'options': options,
+                        'voters': [],
+                        'votes_counter': 0,
                         'share_counter': 0,
+                        'bookmark_counter': 0,
                         'comment_counter': 0,
                     },
                     session=session
@@ -142,13 +141,9 @@ async def poll_read(request, id):
     is_login = True if request.user else False
 
     try:
-        # Get the user in the User table.
-        user = await User.objects.aget(
-            username=request.user.username)
-
-        # Get collections from the polls database.
+       # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes'])
+            'polls_db', ['polls', 'user_votes', 'user_actions'])
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -175,21 +170,27 @@ async def poll_read(request, id):
         poll_json['is_owner'] = is_owner
 
         # Get the user data.
-        user_data = await User.objects.aget(
-            id=poll_json['user_id'])
-        user_profile = await UserProfile.objects.aget(
-            pk=user_data.pk)
-        # Initialize a UserProfileSerializer instance.
-        profile_data = UserProfileSerializer(
-            instance=user_profile).data
-        # Add user data to user profile data.
-        profile_data['username'] = user_data.username
-        # Add user profile data in the poll object.
-        poll_json['profile'] = profile_data
+        user_data = await User.objects.filter(id=poll_json['user_id']).values(
+            'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
+
+        poll_json['profile'] = {
+            'username': user_data['username'],
+            'profile_picture': user_data['userprofile__profile_picture'],
+            'profile_name': user_data['userprofile__profile_name']
+        }
 
         # Get user vote.
         vote = ''
         if is_login:
+            # Find the user actions.
+            user_actions = await polls_db.user_actions.find_one(
+                {'user_id': request.user.id, 'poll_id': poll_json['_id']})
+
+            # Convert the BSON to a JSON.
+            user_actions_json = json_util._json_convert((user_actions))
+
+            poll_json['user_actions'] = user_actions_json if user_actions_json is not None else {}
+
             is_voter = request.user.id in poll_json['voters']
             if is_voter:
                 # Find the vote in the user_votes collection.

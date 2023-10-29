@@ -6,6 +6,7 @@ from .views.option import option_manager
 from .views.vote import vote_add, vote_read, vote_update, vote_delete
 from .views.comment import comment_add, comment_update, comment_delete, comments_read
 from .views.share import share_action, unshare_action
+from .views.bookmark import bookmark_action, unbookmark_action
 # User.
 from .views.user import user_polls, user_voted_polls
 # Categories.
@@ -29,6 +30,14 @@ urlpatterns = [
     path('poll/<str:id>/vote/update', vote_update, name='update_vote'),
     path('poll/<str:id>/vote/delete', vote_delete, name='delete_vote'),
 
+    # Share manager.
+    path('poll/<str:id>/share', share_action, name='share_action'),
+    path('poll/<str:id>/unshare', unshare_action, name='unshare_action'),
+
+    # Bookmark manager.
+    path('poll/<str:id>/bookmark', bookmark_action, name='bookmark_action'),
+    path('poll/<str:id>/unbookmark', unbookmark_action, name='unbookmark_action'),
+
     # CRUD Comment.
     path('poll/<str:id>/comment', comment_add, name='add_comment'),
     path('poll/<str:id>/comment/<str:comment_id>/update', comment_update, name='update_comment'),
@@ -36,9 +45,6 @@ urlpatterns = [
     # Get Comments.
     path('poll/<str:id>/comments', comments_read, name='read_comments'),
 
-    # Share manager.
-    path('poll/<str:id>/share', share_action, name='share_action'),
-    path('poll/<str:id>/unshare', unshare_action, name='unshare_action'),
 
 
     # User Polls.

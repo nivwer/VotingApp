@@ -36,11 +36,11 @@ class GetCollectionsMongoDB:
 # Views.
 
 
-# Handles the sharing process in a poll.
+# Handles the bookmarking process in a poll.
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def share_action(request, id):
+async def bookmark_action(request, id):
     session = None
     try:
         # Get collections from the polls database.
@@ -56,21 +56,21 @@ async def share_action(request, id):
             raise ValidationError('Poll is not found.')
 
         # Find the user actions in the user_actions collection.
-        user_has_shared = await polls_db.user_actions.find_one(
+        user_has_bookmark = await polls_db.user_actions.find_one(
             {'user_id': request.user.id, 'poll_id': id},
-            {'_id': 0, 'poll_id': 1, 'has_shared': 1})
+            {'_id': 0, 'poll_id': 1, 'has_bookmark': 1})
 
         create_user_actions_doc = False
-        update_user_share_action = False
+        update_user_bookmark_action = False
 
-        if user_has_shared is None:
+        if user_has_bookmark is None:
             create_user_actions_doc = True
         else:
-            if 'has_shared' in user_has_shared:
+            if 'has_bookmark' in user_has_bookmark:
                 raise ValidationError(
-                    'The user has already shared in this poll.')
+                    'The user has already bookmarked this poll.')
             else:
-                update_user_share_action = True
+                update_user_bookmark_action = True
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -81,8 +81,8 @@ async def share_action(request, id):
                     # Insert the user action.
                     await polls_db.user_actions.insert_one(
                         {
-                            'has_shared': {
-                                'shared_at': datetime.now(),
+                            'has_bookmark': {
+                                'bookmarked_at': datetime.now(),
                             },
                             'poll_id': id,
                             'user_id': request.user.id
@@ -90,24 +90,24 @@ async def share_action(request, id):
                         session=session
                     )
 
-                if update_user_share_action:
-                    # Update the user share action.
+                if update_user_bookmark_action:
+                    # Update the user bookmark action.
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': id},
                         {
-                            '$set': {'has_shared': {
-                                'shared_at': datetime.now(),
+                            '$set': {'has_bookmark': {
+                                'bookmarked_at': datetime.now(),
                             }}
                         },
                         upsert=True,
                         session=session
                     )
 
-                # Add count to shared counter.
+                # Add count to bookmarked counter.
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'share_counter': 1}
+                        '$inc': {'bookmark_counter': 1}
                     },
                     session=session)
 
@@ -144,11 +144,12 @@ async def share_action(request, id):
             await session.end_session()
 
 
-# Handles the unsharing process in a poll.
+
+# Handles the unbookmarking process in a poll.
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def unshare_action(request, id):
+async def unbookmark_action(request, id):
     session = None
     try:
         # Get collections from the polls database.
@@ -164,38 +165,38 @@ async def unshare_action(request, id):
             raise ValidationError('Poll is not found.')
 
         # Find the user actions in the user_actions collection.
-        user_has_shared = await polls_db.user_actions.find_one(
+        user_has_bookmark = await polls_db.user_actions.find_one(
             {'user_id': request.user.id, 'poll_id': id},
-            {'_id': 0, 'poll_id': 1, 'has_shared': 1})
+            {'_id': 0, 'poll_id': 1, 'has_bookmark': 1})
 
-        delete_user_share_action = False
+        delete_user_bookmark_action = False
 
-        if user_has_shared is not None and user_has_shared['has_shared']:
-            delete_user_share_action = True
+        if user_has_bookmark is not None and user_has_bookmark['has_bookmark']:
+            delete_user_bookmark_action = True
         else:
             raise ValidationError(
-                'The user has not shared in this poll.')
+                'The user has not bookmarked in this poll.')
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                if delete_user_share_action:
-                    # Update the user share action.
+                if delete_user_bookmark_action:
+                    # Remove the user bookmark action.
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': id},
                         {
-                            '$unset': {'has_shared': ''}
+                            '$unset': {'has_bookmark': ''}
                         },
                         session=session
                     )
 
-                # Remove count to shared counter.
+                # Remove count to bookmarked counter.
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
-                        '$inc': {'share_counter': -1}
+                        '$inc': {'bookmark_counter': -1}
                     },
                     session=session)
 
@@ -230,3 +231,4 @@ async def unshare_action(request, id):
     finally:
         if session:
             await session.end_session()
+
