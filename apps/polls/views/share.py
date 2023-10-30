@@ -57,7 +57,7 @@ async def share_action(request, id):
 
         # Find the user actions in the user_actions collection.
         user_actions_doc = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
             {'_id': 0, 'poll_id': 1, 'has_shared': 1})
 
         create_user_actions_doc = False
@@ -84,7 +84,7 @@ async def share_action(request, id):
                             'has_shared': {
                                 'shared_at': datetime.now(),
                             },
-                            'poll_id': id,
+                            'poll_id': ObjectId(id),
                             'user_id': request.user.id
                         },
                         session=session
@@ -93,7 +93,7 @@ async def share_action(request, id):
                 if add_user_share_action:
                     # Update the user share action.
                     await polls_db.user_actions.update_one(
-                        {'user_id': request.user.id, 'poll_id': id},
+                        {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
                             '$set': {'has_shared': {
                                 'shared_at': datetime.now(),
@@ -165,7 +165,7 @@ async def unshare_action(request, id):
 
         # Find the user actions in the user_actions collection.
         user_actions_doc = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
             {'_id': 0, 'poll_id': 1, 'has_shared': 1})
 
         remove_user_share_action = False
@@ -184,7 +184,7 @@ async def unshare_action(request, id):
                 if remove_user_share_action:
                     # Remove the user share action.
                     await polls_db.user_actions.update_one(
-                        {'user_id': request.user.id, 'poll_id': id},
+                        {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
                             '$unset': {'has_shared': ''}
                         },

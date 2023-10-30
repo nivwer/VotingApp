@@ -57,8 +57,8 @@ async def bookmark_action(request, id):
 
         # Find the user actions in the user_actions collection.
         user_actions_doc = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
-            {'_id': 0, 'poll_id': 1, 'has_bookmark': 1})
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
+            {'_id': 0, 'poll_id': 1, 'has_bookmarked': 1})
 
         create_user_actions_doc = False
         add_user_bookmark_action = False
@@ -66,7 +66,7 @@ async def bookmark_action(request, id):
         if user_actions_doc is None:
             create_user_actions_doc = True
         else:
-            if 'has_bookmark' in user_actions_doc:
+            if 'has_bookmarked' in user_actions_doc:
                 raise ValidationError(
                     'The user has already bookmarked this poll.')
             else:
@@ -81,10 +81,10 @@ async def bookmark_action(request, id):
                     # Insert the user action.
                     await polls_db.user_actions.insert_one(
                         {
-                            'has_bookmark': {
+                            'has_bookmarked': {
                                 'bookmarked_at': datetime.now(),
                             },
-                            'poll_id': id,
+                            'poll_id': ObjectId(id),
                             'user_id': request.user.id
                         },
                         session=session
@@ -93,9 +93,9 @@ async def bookmark_action(request, id):
                 if add_user_bookmark_action:
                     # Update the user bookmark action.
                     await polls_db.user_actions.update_one(
-                        {'user_id': request.user.id, 'poll_id': id},
+                        {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
-                            '$set': {'has_bookmark': {
+                            '$set': {'has_bookmarked': {
                                 'bookmarked_at': datetime.now(),
                             }}
                         },
@@ -166,12 +166,12 @@ async def unbookmark_action(request, id):
 
         # Find the user actions in the user_actions collection.
         user_actions_doc = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
-            {'_id': 0, 'poll_id': 1, 'has_bookmark': 1})
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
+            {'_id': 0, 'poll_id': 1, 'has_bookmarked': 1})
 
         remove_user_bookmark_action = False
 
-        if user_actions_doc is not None and user_actions_doc['has_bookmark']:
+        if user_actions_doc is not None and user_actions_doc['has_bookmarked']:
             remove_user_bookmark_action = True
         else:
             raise ValidationError(
@@ -185,9 +185,9 @@ async def unbookmark_action(request, id):
                 if remove_user_bookmark_action:
                     # Remove the user bookmark action.
                     await polls_db.user_actions.update_one(
-                        {'user_id': request.user.id, 'poll_id': id},
+                        {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
-                            '$unset': {'has_bookmark': ''}
+                            '$unset': {'has_bookmarked': ''}
                         },
                         session=session
                     )

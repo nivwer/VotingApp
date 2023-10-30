@@ -99,6 +99,7 @@ function CommentCard({ comment }) {
               opacity={0.8}
               w={"auto"}
               fontWeight={"medium"}
+              
               wordBreak={"break-word"}
             >
               {comment.comment}

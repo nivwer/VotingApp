@@ -188,7 +188,8 @@ async def poll_read(request, id):
         if is_login:
             # Find the user actions.
             user_actions_doc = await polls_db.user_actions.find_one(
-                {'user_id': request.user.id, 'poll_id': poll_json['_id']})
+                {'user_id': request.user.id,
+                 'poll_id': ObjectId(id)})
 
             # Convert the BSON to a JSON.
             user_actions_json = json_util._json_convert((user_actions_doc))
@@ -397,8 +398,6 @@ async def poll_delete(request, id):
             raise PermissionDenied(
                 'You are not authorized to remove this poll.')
 
-        print(poll['comment_counter'])
-
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
@@ -411,13 +410,13 @@ async def poll_delete(request, id):
 
                 comments_is_not_removed = True
                 # comments_result Remove the poll.
-                if poll['comment_counter'] > 0:
+                if poll['comments_counter'] > 0:
                     rm_comments_result = await polls_db.comments.delete_many(
                         {'poll_id': id},
                         session=session)
 
                     comments_is_not_removed = rm_comments_result.deleted_count != poll[
-                        'comment_counter']
+                        'comments_counter']
 
                 else:
                     comments_is_not_removed = False

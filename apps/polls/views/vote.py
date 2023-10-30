@@ -56,7 +56,7 @@ async def vote_add(request, id):
 
         # Find the user actions in the user_actions collection.
         user_actions_doc = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
             {'_id': 0, 'poll_id': 1, 'has_voted': 1})
 
         create_user_actions_doc = False
@@ -84,7 +84,7 @@ async def vote_add(request, id):
                                 'vote': add_vote_value,
                                 'voted_at': datetime.now(),
                             },
-                            'poll_id': id,
+                            'poll_id': ObjectId(id),
                             'user_id': request.user.id
                         },
                         session=session
@@ -93,7 +93,7 @@ async def vote_add(request, id):
                 if add_user_vote_action:
                     # Update the user vote action.
                     await polls_db.user_actions.update_one(
-                        {'user_id': request.user.id, 'poll_id': id},
+                        {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
                             '$set': {'has_voted': {
                                 'vote': add_vote_value,
@@ -169,7 +169,7 @@ async def vote_read(request, id):
 
         # Find the user actions in the user_actions collection.
         user_has_voted = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
             {'_id': 0, 'has_voted': 1})
 
         # If the user has not voted a poll.
@@ -220,7 +220,7 @@ async def vote_update(request, id):
 
         # Find the user actions in the user_actions collection.
         user_actions_doc = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
             {'_id': 0, 'poll_id': 1, 'has_voted': 1})
 
         update_user_voted_action = False
@@ -242,7 +242,7 @@ async def vote_update(request, id):
                 if update_user_voted_action:
                     # Update the user vote action.
                     await polls_db.user_actions.update_one(
-                        {'user_id': request.user.id, 'poll_id': id},
+                        {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
                             '$set': {'has_voted': {
                                 'vote': add_vote_value,
@@ -330,7 +330,7 @@ async def vote_delete(request, id):
             raise ValidationError('Poll is not found.')
 
         user_actions_doc = await polls_db.user_actions.find_one(
-            {'user_id': request.user.id, 'poll_id': id},
+            {'user_id': request.user.id, 'poll_id': ObjectId(id)},
             {'_id': 0, 'poll_id': 1, 'has_voted': 1})
 
         remove_user_voted_action = False
@@ -352,7 +352,7 @@ async def vote_delete(request, id):
                 if remove_user_voted_action:
                     # Remove the user vote action.
                     await polls_db.user_actions.update_one(
-                        {'user_id': request.user.id, 'poll_id': id},
+                        {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
                             '$unset': {'has_voted': ''}
                         },

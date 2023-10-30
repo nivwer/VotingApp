@@ -14,7 +14,6 @@ import PollCardButton from "./PollCardButton.jsx/PollCardButton";
 // Icons.
 import {
   FaPlus,
-  FaComment,
   FaRegComment,
   FaMinus,
   FaRetweet,
@@ -74,7 +73,7 @@ function PollCardFooter({ poll, isLoading, state }) {
           id: poll._id,
         };
         let res = "";
-        if (!poll.user_actions.has_bookmark) {
+        if (!poll.user_actions.has_bookmarked) {
           res = await bookmarkPoll(data);
         } else {
           res = await unbookmarkPoll(data);
@@ -96,7 +95,7 @@ function PollCardFooter({ poll, isLoading, state }) {
       <HStack mx={5} spacing={4}>
         {/* Comment. */}
         <Link to={`/${poll.profile.username}/${poll._id}`}>
-          <PollCardButton icon={<FaRegComment />} isLoading={isLoading}>
+          <PollCardButton icon={<FaRegComment />} isDisabled={isLoading}>
             {poll.comments_counter}
           </PollCardButton>
         </Link>
@@ -114,9 +113,9 @@ function PollCardFooter({ poll, isLoading, state }) {
         {/* Bookmark. */}
         <PollCardButton
           onClick={() => handleBookmark()}
-          active={poll.user_actions.has_bookmark ? true : false}
+          active={poll.user_actions.has_bookmarked ? true : false}
           icon={
-            poll.user_actions.has_bookmark ? <FaBookmark /> : <FaRegBookmark />
+            poll.user_actions.has_bookmarked ? <FaBookmark /> : <FaRegBookmark />
           }
           isLoading={isBookmarkLoading || isUnbookmarkLoading}
           isDisabled={isLoading}
@@ -128,7 +127,7 @@ function PollCardFooter({ poll, isLoading, state }) {
         {/* Show Input Option. */}
         <PollCardButton
           icon={!showInputOption ? <FaPlus /> : <FaMinus />}
-          isLoading={isLoading}
+          isDisabled={isLoading}
           onClick={() => setShowInputOption(!showInputOption)}
         ></PollCardButton>
       </Box>

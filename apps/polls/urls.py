@@ -8,7 +8,7 @@ from .views.comment import comment_add, comment_update, comment_delete, comments
 from .views.share import share_action, unshare_action
 from .views.bookmark import bookmark_action, unbookmark_action
 # User.
-from .views.user import user_polls, user_voted_polls
+from .views.user import user_polls, user_voted_polls, user_votes_polls
 # Categories.
 from .views.categories import categories, categories_data
 from .views.category import category_polls
@@ -49,7 +49,7 @@ urlpatterns = [
 
     # User Polls.
     path('user/<str:id>', user_polls, name='polls_user'),
-    path('user/<str:id>/voted_polls', user_voted_polls, name='voted_polls_user'),
+    path('user/<str:id>/voted_polls', user_votes_polls, name='voted_polls_user'),
 
     # Categories.
     path('categories', categories, name="categories"),

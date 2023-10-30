@@ -78,7 +78,7 @@ async def comment_add(request, id):
                         'user_id': request.user.id,
                         'comment': comment,
                         'created_at': datetime.now(),
-                        'poll_id': id,
+                        'poll_id': ObjectId(id),
                     },
                     session=session
                 )
@@ -160,7 +160,7 @@ async def comment_update(request, id, comment_id):
 
                 # Update the comment in comments document.
                 await polls_db.comments.update_one(
-                    {'_id': comment_id},
+                    {'_id': ObjectId(comment_id)},
                     {
                         '$set': {'comment': comment}
                     },
@@ -323,7 +323,7 @@ async def comments_read(request, id):
 
         # Find the poll comments document in comments collection.
         comments_bson = await polls_db.comments.find(
-            {'poll_id': id},
+            {'poll_id': ObjectId(id)},
             sort=[('created_at', DESCENDING)]
         ).to_list(length=None)
 
@@ -335,10 +335,16 @@ async def comments_read(request, id):
             # Fix data.
             comment['_id'] = comment['_id']['$oid']
             comment['created_at'] = comment['created_at']['$date']
+            comment['poll_id'] = comment['poll_id']['$oid']
 
             # Get the user data.
-            user_data = await User.objects.filter(id=comment['user_id']).values(
-                'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
+            user_data = await User.objects.filter(
+                id=comment['user_id']
+            ).values(
+                'username',
+                'userprofile__profile_picture',
+                'userprofile__profile_name'
+            ).afirst()
 
             if user_data:
                 comment['user_profile'] = {
