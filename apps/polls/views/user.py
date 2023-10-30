@@ -47,8 +47,13 @@ async def user_polls(request, id):
 
     try:
         # Get the user data.
-        user_data = await User.objects.filter(id=id).values(
-            'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
+        user_data = await User.objects.filter(
+            id=id
+        ).values(
+            'username',
+            'userprofile__profile_picture',
+            'userprofile__profile_name'
+        ).afirst()
 
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
@@ -56,7 +61,17 @@ async def user_polls(request, id):
 
         # Find the polls in the polls collection.
         polls_list = await polls_db.polls.find(
-            {'user_id': int(id)},
+            {
+                'user_id': int(id),
+                '$or': [
+                    {
+                        'privacy': 'public'
+                    },
+                    {
+                        'privacy': 'private',
+                        'user_id': request.user.id
+                    }
+                ]},
             sort=[('created_at', DESCENDING)]
         ).to_list(length=None)
 
@@ -66,43 +81,41 @@ async def user_polls(request, id):
         # Filter the polls.
         polls = []
         for poll in polls_list_json:
-            # Verify the privacy of polls.
-            is_public = poll['privacy'] == 'public'
-            is_private = poll['privacy'] == 'private'
-            is_owner = poll['user_id'] == request.user.id
-            # Add if is owner in the poll object.
-            poll['is_owner'] = is_owner
+            # Fix poll data.
+            poll['_id'] = poll['_id']['$oid']
+            poll['created_at'] = poll['created_at']['$date']
+            # Add user profile data in the poll object.
 
-            # If poll is public or private and is owner.
-            if is_public or (is_private and is_owner):
-                # Fix poll data.
-                poll['_id'] = poll['_id']['$oid']
-                poll['created_at'] = poll['created_at']['$date']
-                # Add user profile data in the poll object.
+            poll['profile'] = {
+                'username': user_data['username'],
+                'profile_picture': user_data['userprofile__profile_picture'],
+                'profile_name': user_data['userprofile__profile_name']
+            }
 
-                poll['profile'] = {
-                    'username': user_data['username'],
-                    'profile_picture': user_data['userprofile__profile_picture'],
-                    'profile_name': user_data['userprofile__profile_name']
-                }
-
-                # If is login.
-                if is_login:
-                    # Find the user actions.
-                    user_actions_doc = await polls_db.user_actions.find_one(
-                        {'user_id': request.user.id, 'poll_id': poll['_id']})
-
-                    # Convert the BSON to a JSON.
-                    user_actions_json = json_util._json_convert(
-                        (user_actions_doc))
-
-                    poll['user_actions'] = user_actions_json if user_actions_json is not None else {
+            # If is login.
+            if is_login:
+                # Find the user actions.
+                user_actions_doc = await polls_db.user_actions.find_one(
+                    {
+                        'user_id': request.user.id,
+                        'poll_id': ObjectId(poll['_id'])
+                    },
+                    projection={
+                        '_id': 0,
+                        'has_voted': 1,
+                        'has_shared': 1,
+                        'has_bookmarked': 1
                     }
+                )
 
-                # Add the poll in polls.
-                polls.append(poll)
-            else:
-                continue
+                # Convert the BSON to a JSON.
+                user_actions_json = json_util._json_convert(
+                    (user_actions_doc))
+
+                poll['user_actions'] = user_actions_json if user_actions_json is not None else {}
+
+            # Add the poll in polls.
+            polls.append(poll)
 
         # If polls not found.
         if not polls:
@@ -156,153 +169,6 @@ async def user_polls(request, id):
 # Handles the get process for a user voted polls.
 @api_view(['GET'])
 @permission_classes([AllowAny])
-async def user_voted_polls(request, id):
-    # If user is login.
-    is_login = True if request.user else False
-
-    try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_actions'])
-
-        # Find the user voted polls.
-        user_votes_action_doc = await polls_db.user_actions.find(
-            {'user_id': int(id), 'has_voted': {'$exists': True}},
-            {'_id': 0, 'poll_id': 1, 'has_voted': 1},
-            sort=[('has_voted.voted_at', DESCENDING)]
-        ).to_list(length=None)
-
-        # If polls not found.
-        if not user_votes_action_doc:
-            return Response(
-                {'message': 'This user has not voted for a poll.'})
-
-        # Convert the BSON object to a JSON object.
-        user_votes_action_json = json_util._json_convert(
-            (user_votes_action_doc))
-
-        # Filter the polls.
-        polls = []
-        # If the user has already voted in this poll.
-        for vote in user_votes_action_json:
-
-            # / REFACTOR ?
-
-            # Get poll.
-            poll_bson = await polls_db.polls.find_one(
-                {'_id': ObjectId(vote['poll_id'])})
-
-            # If poll not exist.
-            # if not poll_bson:
-            #     # Remove the user vote in the votes object.
-            #     # await polls_db.user_actions.update_one(
-            #     #     {'user_id': request.user.id},
-            #     #     {
-            #     #         '$pull': {'voted_polls': {
-            #     #             'poll_id': ObjectId(vote_object['poll_id'])}}
-            #     #     },
-            #     # )
-            #     continue
-
-            # Convert the BSON object to a JSON object.
-            poll = json_util._json_convert((poll_bson))
-
-    # REFACTOR / ?
-
-            # Verify the privacy of polls.
-            is_public = poll['privacy'] == 'public'
-            is_private = poll['privacy'] == 'private'
-            is_owner = poll['user_id'] == request.user.id
-            # Add if is owner in the poll object.
-            poll['is_owner'] = is_owner
-
-            # If poll is public or is private and is owner.
-            if is_public or (is_private and is_owner):
-                # Fix poll data.
-                poll['_id'] = poll['_id']['$oid']
-                poll['created_at'] = poll['created_at']['$date']
-
-                # Get the user data.
-                user_data = await User.objects.filter(id=poll['user_id']).values(
-                    'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
-
-                if user_data:
-                    poll['profile'] = {
-                        'username': user_data['username'],
-                        'profile_picture': user_data['userprofile__profile_picture'],
-                        'profile_name': user_data['userprofile__profile_name']
-                    }
-
-                # If is login.
-                if is_login:
-                    # Find the user actions.
-                    user_actions_doc = await polls_db.user_actions.find_one(
-                        {'user_id': request.user.id, 'poll_id': poll['_id']})
-
-                    # Convert the BSON to a JSON.
-                    user_actions_json = json_util._json_convert(
-                        (user_actions_doc))
-
-                    poll['user_actions'] = user_actions_json if user_actions_json is not None else {
-                    }
-
-                polls.append(poll)
-
-            else:
-                continue
-
-        # If polls not found.
-        if not polls:
-            return Response(
-                {'message': 'This user has not voted for a poll.'})
-
-        # In case the frontend has pagination or an integrated infinite scroll.
-        if request.GET.get('page'):
-            page_number = request.GET.get('page')
-            paginator = Paginator(polls, 10)
-            page_obj = paginator.get_page(page_number)
-
-            page_values_json = json_util._json_convert(page_obj.object_list)
-
-        # Polls res.
-        res = page_values_json if request.GET.get('page') else polls
-        res.reverse()
-
-        # Response.
-        return Response(
-            {'polls': res},
-            status=status.HTTP_200_OK)
-
-    # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-
-    # Handle if the user is not found.
-    except User.DoesNotExist:
-        return Response(
-            {'username': ['User is not found.']},
-            status=status.HTTP_404_NOT_FOUND)
-
-    # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
-
-    # Handle MongoDB errors.
-    except PyMongoError as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # Handle other exceptions.
-    except Exception as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# Handles the get process for a user voted polls.
-@api_view(['GET'])
-@permission_classes([AllowAny])
 async def user_votes_polls(request, id):
     # If user is login.
     is_login = True if request.user else False
@@ -314,53 +180,53 @@ async def user_votes_polls(request, id):
 
         polls_list_docs = await polls_db.user_actions.aggregate([
             {
-                "$match": {
-                    "user_id": int(id),
-                    "has_voted": {"$exists": True}
+                '$match': {
+                    'user_id': int(id),
+                    'has_voted': {'$exists': True}
                 }
             },
             {
-                "$project": {
-                    "_id": 0,
-                    "poll_id": 1,
-                    "has_voted": 1
+                '$project': {
+                    '_id': 0,
+                    'poll_id': 1,
+                    'has_voted': 1
                 }
             },
             {
-                "$sort": {"has_voted.voted_at": DESCENDING}
+                '$sort': {'has_voted.voted_at': DESCENDING}
             },
             # {
-            #     "$skip": 10,
+            #     '$skip': 10,
             # },
             # {
-            #     "$limit": 10
+            #     '$limit': 10
             # },
             {
-                "$lookup": {
-                    "from": "polls",
-                    "localField": "poll_id",
-                    "foreignField": "_id",
-                    "as": "poll"
+                '$lookup': {
+                    'from': 'polls',
+                    'localField': 'poll_id',
+                    'foreignField': '_id',
+                    'as': 'poll'
                 }
             },
             {
-                "$unwind": "$poll"
+                '$unwind': '$poll'
             },
             {
-                "$match": {
-                    "$or": [
+                '$match': {
+                    '$or': [
                         {
-                            "poll.privacy": "public"
+                            'poll.privacy': 'public'
                         },
                         {
-                            "poll.privacy": "private",
-                            "poll.user_id": request.user.id
+                            'poll.privacy': 'private',
+                            'poll.user_id': request.user.id
                         }
                     ]
                 }
             },
             {
-                "$replaceRoot": {"newRoot": "$poll"}
+                '$replaceRoot': {'newRoot': '$poll'}
             }
         ]).to_list(length=None)
 
@@ -407,7 +273,7 @@ async def user_votes_polls(request, id):
                         'has_bookmarked': 1
                     }
                 )
-                
+
                 # Convert the BSON to a JSON.
                 user_actions_json = json_util._json_convert((user_actions_doc))
 
