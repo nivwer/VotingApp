@@ -1,10 +1,10 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import { NavLink } from "react-router-dom";
 import { Button, GridItem, Text } from "@chakra-ui/react";
 
-// Component.
+// SubComponent ( ProfileBody ).
 function ProfileTabButton({ value, username, tab, children }) {
   const { isDark, ThemeColor } = useThemeInfo();
   return (

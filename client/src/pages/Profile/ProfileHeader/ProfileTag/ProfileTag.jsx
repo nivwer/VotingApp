@@ -1,8 +1,8 @@
 // Components.
 import { HStack, Text } from "@chakra-ui/react";
 
-// Component.
-function ProfileTags({ children, icon = null }) {
+// SubComponent ( ProfileHeader ).
+function ProfileTag({ children, icon = null }) {
   return (
     <HStack spacing={5}>
       <HStack spacing={1} fontSize={"md"} opacity={0.6}>
@@ -22,4 +22,4 @@ function ProfileTags({ children, icon = null }) {
   );
 }
 
-export default ProfileTags;
+export default ProfileTag;

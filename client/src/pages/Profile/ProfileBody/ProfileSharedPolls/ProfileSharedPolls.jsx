@@ -1,20 +1,20 @@
 // Hooks.
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { useGetUserVotedPollsQuery } from "../../api/pollApiSlice";
+import { useGetUserSharedPollsQuery } from "../../../../api/pollApiSlice";
 // Components.
-import PollCardGroup from "../../components/Groups/PollCardGroup/PollCardGroup";
+import PollCardGroup from "../../../../components/Groups/PollCardGroup/PollCardGroup";
 
-// Page.
-function ProfileVotedPolls({ id }) {
+// SubComponent ( ProfileBody ).
+function ProfileSharedPolls({ id }) {
   const { token } = useSelector((state) => state.session);
   const [data, setData] = useState(false);
 
   // User Polls.
-  const { data: dataPolls, isLoading } = useGetUserVotedPollsQuery(data, {
+  const { data: dataPolls, isLoading } = useGetUserSharedPollsQuery(data, {
     skip: data ? false : true,
   });
-  
+
   // Update data to fetchs.
   useEffect(() => {
     if (id) {
@@ -39,4 +39,4 @@ function ProfileVotedPolls({ id }) {
   return <PollCardGroup data={dataPolls} isLoading={isLoading} />;
 }
 
-export default ProfileVotedPolls;
+export default ProfileSharedPolls;

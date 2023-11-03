@@ -2,7 +2,7 @@
 
 import { Link } from "@chakra-ui/react";
 
-// Component.
+// SubComponent ( ProfileHeader ).
 function ProfileLink({ link }) {
   return <Link>{link.replace(/(https:\/\/)|(www\.)/g, "").split("/")[0]}</Link>;
 }

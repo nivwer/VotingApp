@@ -1,11 +1,11 @@
 // Hooks.
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { useGetUserBookmarkedPollsQuery } from "../../api/pollApiSlice";
+import { useGetUserBookmarkedPollsQuery } from "../../../../api/pollApiSlice";
 // Components.
-import PollCardGroup from "../../components/Groups/PollCardGroup/PollCardGroup";
+import PollCardGroup from "../../../../components/Groups/PollCardGroup/PollCardGroup";
 
-// Page.
+// SubComponent ( ProfileBody ).
 function ProfileBookmarkedPolls({ id }) {
   const { token } = useSelector((state) => state.session);
   const [data, setData] = useState(false);
