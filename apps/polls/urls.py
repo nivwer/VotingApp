@@ -8,7 +8,7 @@ from .views.comment import comment_add, comment_update, comment_delete, comments
 from .views.share import share_action, unshare_action
 from .views.bookmark import bookmark_action, unbookmark_action
 # User.
-from .views.user import user_polls, user_voted_polls, user_votes_polls
+from .views.user import user_polls, user_voted_polls, user_shared_polls, user_bookmarked_polls
 # Categories.
 from .views.categories import categories, categories_data
 from .views.category import category_polls
@@ -40,8 +40,10 @@ urlpatterns = [
 
     # CRUD Comment.
     path('poll/<str:id>/comment', comment_add, name='add_comment'),
-    path('poll/<str:id>/comment/<str:comment_id>/update', comment_update, name='update_comment'),
-    path('poll/<str:id>/comment/<str:comment_id>/delete', comment_delete, name='delete_comment'),
+    path('poll/<str:id>/comment/<str:comment_id>/update',
+         comment_update, name='update_comment'),
+    path('poll/<str:id>/comment/<str:comment_id>/delete',
+         comment_delete, name='delete_comment'),
     # Get Comments.
     path('poll/<str:id>/comments', comments_read, name='read_comments'),
 
@@ -49,7 +51,10 @@ urlpatterns = [
 
     # User Polls.
     path('user/<str:id>', user_polls, name='polls_user'),
-    path('user/<str:id>/voted_polls', user_votes_polls, name='voted_polls_user'),
+    path('user/<str:id>/votes', user_voted_polls, name='voted_polls_user'),
+    path('user/<str:id>/shares', user_shared_polls, name='shared_polls_user'),
+    path('user/<str:id>/bookmarks', user_bookmarked_polls,
+         name='bookmarked_polls_user'),
 
     # Categories.
     path('categories', categories, name="categories"),

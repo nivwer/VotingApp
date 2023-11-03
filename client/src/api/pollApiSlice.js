@@ -195,8 +195,32 @@ export const pollApiSlice = createApi({
     getUserVotedPolls: builder.query({
       query: (data) => ({
         url: data.page
-          ? `user/${data.id}/voted_polls?page=${data.page}`
-          : `user/${data.id}/voted_polls`,
+          ? `user/${data.id}/votes?page=${data.page}`
+          : `user/${data.id}/votes`,
+        method: "GET",
+        headers: data.headers,
+      }),
+      providesTags: ["Polls"],
+    }),
+
+    // Get User shared Polls.
+    getUserSharedPolls: builder.query({
+      query: (data) => ({
+        url: data.page
+          ? `user/${data.id}/shares?page=${data.page}`
+          : `user/${data.id}/shares`,
+        method: "GET",
+        headers: data.headers,
+      }),
+      providesTags: ["Polls"],
+    }),
+
+    // Get User bookmarked Polls.
+    getUserBookmarkedPolls: builder.query({
+      query: (data) => ({
+        url: data.page
+          ? `user/${data.id}/bookmarks?page=${data.page}`
+          : `user/${data.id}/bookmarks`,
         method: "GET",
         headers: data.headers,
       }),
@@ -240,6 +264,8 @@ export const pollApiSlice = createApi({
 export const {
   useGetUserPollsQuery,
   useGetUserVotedPollsQuery,
+  useGetUserSharedPollsQuery,
+  useGetUserBookmarkedPollsQuery,
   useCreatePollMutation,
   useReadPollQuery,
   useUpdatePollMutation,
