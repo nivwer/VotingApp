@@ -17,6 +17,7 @@ from utils.mongo_connection import MongoDBSingleton
 from pymongo import DESCENDING
 from pymongo.errors import PyMongoError
 from bson import json_util
+from bson.objectid import ObjectId
 
 
 # Load the virtual environment.
@@ -47,11 +48,21 @@ async def category_polls(request, category):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes'])
+            'polls_db', ['polls', 'user_actions'])
 
         # Find the polls in the polls collection.
         polls_list = await polls_db.polls.find(
-            {'category': category},
+            {
+                'category': category,
+                '$or': [
+                    {
+                        'privacy': 'public'
+                    },
+                    {
+                        'privacy': 'private',
+                        'user_id': request.user.id
+                    }
+                ]},
             sort=[('created_at', DESCENDING)]
         ).to_list(length=None)
 
@@ -61,52 +72,49 @@ async def category_polls(request, category):
         # Filter the polls.
         polls = []
         for poll in polls_list_json:
-            # Verify the privacy of polls.
-            is_public = poll['privacy'] == 'public'
-            is_private = poll['privacy'] == 'private'
-            is_owner = poll['user_id'] == request.user.id
-            # Add if is owner in the poll object.
-            poll['is_owner'] = is_owner
+            # Fix poll data.
+            poll['_id'] = poll['_id']['$oid']
+            poll['created_at'] = poll['created_at']['$date']
 
-            if is_public or (is_private and is_owner):
-                # Fix poll data.
-                poll['_id'] = poll['_id']['$oid']
-                poll['created_at'] = poll['created_at']['$date']
+            # Get the user data.
+            user_data = await User.objects.filter(
+                id=poll['user_id']
+            ).values(
+                'username',
+                'userprofile__profile_picture',
+                'userprofile__profile_name'
+            ).afirst()
 
-                # Get the user data.
-                user_data = await User.objects.filter(id=poll['user_id']).values(
-                    'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
+            if user_data:
+                poll['profile'] = {
+                    'username': user_data['username'],
+                    'profile_picture': user_data['userprofile__profile_picture'],
+                    'profile_name': user_data['userprofile__profile_name']
+                }
 
-                if user_data:
-                    poll['profile'] = {
-                        'username': user_data['username'],
-                        'profile_picture': user_data['userprofile__profile_picture'],
-                        'profile_name': user_data['userprofile__profile_name']
+            # If is login.
+            if is_login:
+                # Find the user actions.
+                user_actions_doc = await polls_db.user_actions.find_one(
+                    {
+                        'user_id': request.user.id,
+                        'poll_id': ObjectId(poll['_id'])
+                    },
+                    projection={
+                        '_id': 0,
+                        'has_voted': 1,
+                        'has_shared': 1,
+                        'has_bookmarked': 1
                     }
+                )
 
-                # Get user vote.
-                vote = ''
-                if is_login:
-                    is_voter = request.user.id in poll['voters']
-                    if is_voter:
-                        # Find the vote in the user_votes collection.
-                        user_vote = await polls_db.user_votes.find_one(
-                            {
-                                'user_id': request.user.id,
-                                'voted_polls.poll_id': poll['_id']
-                            },
-                            projection={'voted_polls.$': 1})
+                # Convert the BSON to a JSON.
+                user_actions_json = json_util._json_convert(
+                    (user_actions_doc))
 
-                        # If the user has voted a poll.
-                        if user_vote:
-                            vote = user_vote['voted_polls'][0]['vote']
+                poll['user_actions'] = user_actions_json if user_actions_json is not None else {}
 
-                # Add the vote in the poll.
-                poll['user_vote'] = vote if vote else ''
-
-                polls.append(poll)
-            else:
-                continue
+            polls.append(poll)
 
         # If polls not found.
         if not polls:
@@ -123,7 +131,6 @@ async def category_polls(request, category):
 
         # Polls res.
         res = page_values_json if request.GET.get('page') else polls
-        res.reverse()
 
         # Response.
         return Response(
