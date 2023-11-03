@@ -25,6 +25,8 @@ import {
 import { FaRegCalendar, FaLocationDot, FaLink } from "react-icons/fa6";
 // Others.
 import { format } from "date-fns";
+import ProfileSharedPolls from "./ProfileSharedPolls";
+import ProfileBookmarkedPolls from "./ProfileBookmarkedPolls";
 
 // Page.
 function Profile() {
@@ -202,8 +204,8 @@ function Profile() {
           <ProfileTabButton tab={tab} value={"votes"} username={username}>
             Votes
           </ProfileTabButton>
-          <ProfileTabButton tab={tab} value={"shared"} username={username}>
-            Shared
+          <ProfileTabButton tab={tab} value={"shares"} username={username}>
+            Shares
           </ProfileTabButton>
           {user.username == username && (
             <ProfileTabButton tab={tab} value={"bookmarks"} username={username}>
@@ -217,6 +219,12 @@ function Profile() {
         <Flex>
           {!tab && <ProfileUserPolls id={profile && profile.id} />}
           {tab === "votes" && <ProfileVotedPolls id={profile && profile.id} />}
+          {tab === "shares" && (
+            <ProfileSharedPolls id={profile && profile.id} />
+          )}
+          {tab === "bookmarks" && (
+            <ProfileBookmarkedPolls id={profile && profile.id} />
+          )}
         </Flex>
       )}
     </>
