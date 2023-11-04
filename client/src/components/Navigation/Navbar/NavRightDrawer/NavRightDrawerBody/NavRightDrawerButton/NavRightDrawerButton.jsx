@@ -3,8 +3,8 @@ import { useThemeInfo } from "../../../../../../hooks/Theme";
 // Components.
 import { Button, HStack, Text } from "@chakra-ui/react";
 
-// SubComponent ( NavDrawerBody ).
-function NavDrawerButton({ children, icon = null, onClick }) {
+// SubComponent ( NavRightDrawerBody ).
+function NavRightDrawerButton({ children, icon = null, onClick }) {
   const { isDark } = useThemeInfo();
   return (
     <Button
@@ -34,4 +34,4 @@ function NavDrawerButton({ children, icon = null, onClick }) {
   );
 }
 
-export default NavDrawerButton;
+export default NavRightDrawerButton;

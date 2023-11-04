@@ -44,7 +44,7 @@ async def vote_add(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes', 'user_actions'])
+            'polls_db', ['polls',  'user_actions'])
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
@@ -208,7 +208,7 @@ async def vote_update(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes', 'user_actions'])
+            'polls_db', ['polls', 'user_actions'])
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
@@ -319,7 +319,7 @@ async def vote_delete(request, id):
     try:
         # Get collections from the polls database.
         polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_votes', 'user_actions'])
+            'polls_db', ['polls', 'user_actions'])
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(

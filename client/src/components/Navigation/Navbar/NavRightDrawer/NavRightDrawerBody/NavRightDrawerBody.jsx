@@ -5,12 +5,12 @@ import { useSelector } from "react-redux";
 import { Divider, Stack } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 // SubComponents.
-import NavDrawerButton from "./NavDrawerButton/NavDrawerButton";
+import NavRightDrawerButton from "./NavRightDrawerButton/NavRightDrawerButton";
 // Icons.
-import { FaUser, FaPaintbrush, FaGear, FaGripLines } from "react-icons/fa6";
+import { FaUser, FaGear, FaGripLines } from "react-icons/fa6";
 
-// SubComponent ( NavDrawer ).
-function NavDrawerBody({ handleLogout, onClose }) {
+// SubComponent ( NavRightDrawer ).
+function NavRightDrawerBody({ handleLogout, onClose }) {
   const { isDark } = useThemeInfo();
   const { user } = useSelector((state) => state.session);
 
@@ -20,9 +20,9 @@ function NavDrawerBody({ handleLogout, onClose }) {
       <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"} />
       {/* Profile Page. */}
       <NavLink to={`/${user.username}`}>
-        <NavDrawerButton icon={<FaUser />} onClick={onClose}>
+        <NavRightDrawerButton icon={<FaUser />} onClick={onClose}>
           Profile
-        </NavDrawerButton>
+        </NavRightDrawerButton>
       </NavLink>
 
       {/* Divider. */}
@@ -31,24 +31,24 @@ function NavDrawerBody({ handleLogout, onClose }) {
       {/* User Pages. */}
       <Stack spacing={0}>
         <NavLink to={`/${user.username}`}>
-          <NavDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
             Your Polls
-          </NavDrawerButton>
+          </NavRightDrawerButton>
         </NavLink>
         <NavLink to={`/${user.username}?tab=votes`}>
-          <NavDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
             Your Votes
-          </NavDrawerButton>
+          </NavRightDrawerButton>
         </NavLink>
         <NavLink to={`/${user.username}?tab=shares`}>
-          <NavDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
             Your Shares
-          </NavDrawerButton>
+          </NavRightDrawerButton>
         </NavLink>
         <NavLink to={`/${user.username}?tab=bookmarks`}>
-          <NavDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
             Your Bookmarks
-          </NavDrawerButton>
+          </NavRightDrawerButton>
         </NavLink>
       </Stack>
 
@@ -58,14 +58,9 @@ function NavDrawerBody({ handleLogout, onClose }) {
       {/* Settings Pages. */}
       <Stack spacing={0}>
         <NavLink to={"/settings"}>
-          <NavDrawerButton icon={<FaGear />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaGear />} onClick={onClose}>
             Settings
-          </NavDrawerButton>
-        </NavLink>
-        <NavLink to={"/settings/theme"}>
-          <NavDrawerButton icon={<FaPaintbrush />} onClick={onClose}>
-            Theme
-          </NavDrawerButton>
+          </NavRightDrawerButton>
         </NavLink>
       </Stack>
 
@@ -73,9 +68,11 @@ function NavDrawerBody({ handleLogout, onClose }) {
       <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"} />
 
       {/* Sign Out. */}
-      <NavDrawerButton onClick={handleLogout}>Sign Out</NavDrawerButton>
+      <NavRightDrawerButton onClick={handleLogout}>
+        Sign Out
+      </NavRightDrawerButton>
     </Stack>
   );
 }
 
-export default NavDrawerBody;
+export default NavRightDrawerBody;

@@ -73,8 +73,7 @@ async def poll_create(request):
             )
 
         # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'comments'])
+        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:

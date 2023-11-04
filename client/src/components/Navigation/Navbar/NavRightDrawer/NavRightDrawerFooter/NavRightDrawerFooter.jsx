@@ -1,8 +1,8 @@
 // Components.
 import { Button } from "@chakra-ui/react";
 
-// SubComponent ( NavDrawer ).
-function NavDrawerFooter({ onClose }) {
+// SubComponent ( NavRightDrawer ).
+function NavRightDrawerFooter({ onClose }) {
   return (
     <>
       <Button variant="outline" mr={3} onClick={onClose}>
@@ -13,4 +13,4 @@ function NavDrawerFooter({ onClose }) {
   );
 }
 
-export default NavDrawerFooter;
+export default NavRightDrawerFooter;

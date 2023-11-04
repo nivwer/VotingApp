@@ -17,14 +17,14 @@ import {
   DrawerOverlay,
 } from "@chakra-ui/react";
 // SubComponents.
-import NavDrawerHeader from "./NavDrawerHeader/NavDrawerHeader";
-import NavDrawerBody from "./NavDrawerBody/NavDrawerBody";
+import NavRightDrawerHeader from "./NavRightDrawerHeader/NavRightDrawerHeader";
+import NavRightDrawerBody from "./NavRightDrawerBody/NavRightDrawerBody";
+import NavRightDrawerFooter from "./NavRightDrawerFooter/NavRightDrawerFooter";
 // Cookies.
 import Cookies from "js-cookie";
-import NavDrawerFooter from "./NavDrawerFooter/NavDrawerFooter";
 
 // SubComponent ( Navbar ).
-function NavDrawer({ disclosure }) {
+function NavRightDrawer({ disclosure }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isDark } = useThemeInfo();
@@ -67,17 +67,17 @@ function NavDrawer({ disclosure }) {
 
           {/* Drawer Header. */}
           <DrawerHeader>
-            <NavDrawerHeader />
+            <NavRightDrawerHeader />
           </DrawerHeader>
 
           {/* Drawer Body. */}
           <DrawerBody>
-            <NavDrawerBody handleLogout={handleLogout} onClose={onClose} />
+            <NavRightDrawerBody handleLogout={handleLogout} onClose={onClose} />
           </DrawerBody>
 
           {/* Drawer Footer. */}
           <DrawerFooter>
-            <NavDrawerFooter onClose={onClose} />
+            <NavRightDrawerFooter onClose={onClose} />
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
@@ -85,4 +85,4 @@ function NavDrawer({ disclosure }) {
   );
 }
 
-export default NavDrawer;
+export default NavRightDrawer;

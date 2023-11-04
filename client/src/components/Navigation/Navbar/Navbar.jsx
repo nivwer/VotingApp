@@ -4,9 +4,10 @@ import { useSelector } from "react-redux";
 // Components.
 import { useDisclosure, Box, Flex } from "@chakra-ui/react";
 // SubComponents.
-import NavDrawer from "./NavDrawer/NavDrawer";
+import NavRightDrawer from "./NavRightDrawer/NavRightDrawer";
 import NavbarFooter from "./NavbarFooter/NavbarFooter";
 import NavbarHeader from "./NavbarHeader/NavbarHeader";
+import NavLeftDrawer from "./NavLeftDrawer/NavLeftDrawer";
 
 // Component.
 function Navbar() {
@@ -14,7 +15,8 @@ function Navbar() {
   const { isAuthenticated } = useSelector((state) => state.session);
 
   // Drawer.
-  const disclosure = useDisclosure();
+  const disclosureRight = useDisclosure();
+  const disclosureLeft = useDisclosure();
 
   return (
     <Box
@@ -28,13 +30,15 @@ function Navbar() {
       {/* Toolbar. */}
       <Flex minH="64px" px="50px" align="center" justify="space-between">
         {/* Navbar Header. ( LeftSide ) */}
-        <NavbarHeader />
+        <NavbarHeader disclosure={disclosureLeft} />
 
         {/* Navbar Footer. ( RightSide ) */}
-        <NavbarFooter disclosure={disclosure} />
+        <NavbarFooter disclosure={disclosureRight} />
 
-        {/* Drawer. */}
-        {isAuthenticated && <NavDrawer disclosure={disclosure} />}
+        {/* LeftDrawer. */}
+        {isAuthenticated && <NavLeftDrawer disclosure={disclosureLeft} />}
+        {/* RightDrawer. */}
+        {isAuthenticated && <NavRightDrawer disclosure={disclosureRight} />}
       </Flex>
     </Box>
   );
