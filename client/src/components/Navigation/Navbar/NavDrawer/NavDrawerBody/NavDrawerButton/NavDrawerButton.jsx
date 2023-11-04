@@ -1,9 +1,9 @@
 // Hooks.
-import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../../hooks/Theme";
 // Components.
 import { Button, HStack, Text } from "@chakra-ui/react";
 
-// Component.
+// SubComponent ( NavDrawerBody ).
 function NavDrawerButton({ children, icon = null, onClick }) {
   const { isDark } = useThemeInfo();
   return (

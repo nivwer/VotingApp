@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useSelector } from "react-redux";
 // Components.
 import {
@@ -13,7 +13,7 @@ import {
 // Icons.
 import { FaEllipsis } from "react-icons/fa6";
 
-// Component.
+// SubComponent ( CommentCardFooter ).
 function CommentCardMenu({ id, user_id, poll_id, deleteComment, isLoading }) {
   const { isDark } = useThemeInfo();
   const { isAuthenticated, token, user } = useSelector(

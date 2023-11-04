@@ -10,8 +10,7 @@ import {
   useUpdatePollMutation,
 } from "../../../api/pollApiSlice";
 // Components.
-import PollFormBody from "./PollFormBody";
-import CustomProgress from "../../Progress/CustomProgress";
+import CustomProgress from "../../Progress/CustomProgress/CustomProgress";
 import {
   useDisclosure,
   Button,
@@ -26,10 +25,12 @@ import {
   Text,
   HStack,
 } from "@chakra-ui/react";
+// SubComponents.
+import PollFormBody from "./PollFormBody/PollFormBody";
 
 // Component.
 function PollModal({ poll = false, buttonStyles, icon = false }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { ThemeColor, isDark } = useThemeInfo();
   const { token, user } = useSelector((state) => state.session);
   // Modal.
@@ -123,7 +124,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
         if (res.data) {
           onClose();
           useDefaultValues();
-          navigate(`/${user.username}/${res.data.id}`)
+          navigate(`/${user.username}/${res.data.id}`);
         }
       }
 

@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import {
   Box,
@@ -21,7 +21,7 @@ import {
 // Icons.
 import { FaPlus, FaTrash } from "react-icons/fa6";
 
-// Component.
+// SubComponent ( PollModal ).
 function PollFormBody({
   poll,
   register,

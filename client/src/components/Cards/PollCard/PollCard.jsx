@@ -3,7 +3,7 @@ import { useThemeInfo } from "../../../hooks/Theme";
 import { useState } from "react";
 import { useDeletePollMutation } from "../../../api/pollApiSlice";
 // Components.
-import CustomProgress from "../../Progress/CustomProgress";
+import CustomProgress from "../../Progress/CustomProgress/CustomProgress";
 import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
 // SubComponents.
 import PollCardHeader from "./PollCardHeader/PollCardHeader";

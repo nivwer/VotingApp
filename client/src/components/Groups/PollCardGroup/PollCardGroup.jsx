@@ -1,6 +1,6 @@
 // Components.
 import { Box } from "@chakra-ui/react";
-import CustomSpinner from "../../Spinners/CustomSpinner";
+import CustomSpinner from "../../Spinners/CustomSpinner/CustomSpinner";
 import PollCard from "../../Cards/PollCard/PollCard";
 
 // Component.

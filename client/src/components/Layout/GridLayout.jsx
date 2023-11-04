@@ -1,9 +1,9 @@
 // Hooks.
 import { useThemeInfo } from "../../hooks/Theme";
 // Components.
+import Navbar from "../Navigation/Navbar/Navbar";
 import SideBar from "../Navigation/SideBar/SideBar";
 import { Outlet } from "react-router-dom";
-import Navbar from "../Navigation/NavBar/Navbar";
 import {
   useBreakpointValue,
   Grid,
@@ -11,7 +11,7 @@ import {
   Container,
 } from "@chakra-ui/react";
 
-// Component.
+// Layout.
 function GridLayout({ layout = "simple", section = "main" }) {
   const { isDark } = useThemeInfo();
 
