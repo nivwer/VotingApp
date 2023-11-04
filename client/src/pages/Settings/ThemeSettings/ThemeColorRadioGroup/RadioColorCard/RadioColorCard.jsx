@@ -1,12 +1,12 @@
 // Hooks.
 import { useRadio } from "@chakra-ui/react";
-import { useThemeInfo } from "../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 // Components.
 import { Box } from "@chakra-ui/react";
 // Icons.
 import { FaCheck } from "react-icons/fa6";
 
-// Component.
+// SubComponent ( ThemeColorRadioGroup ).
 function RadioColorCard(props) {
   const { isDark } = useThemeInfo();
   const { getInputProps, getRadioProps } = useRadio(props);

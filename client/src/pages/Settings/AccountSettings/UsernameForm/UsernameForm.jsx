@@ -1,6 +1,6 @@
 // Hooks.
 import { useSelector } from "react-redux";
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 import { useForm } from "react-hook-form";
 // Components.
 import {
@@ -12,9 +12,9 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/react";
-import { useUpdateUsernameMutation } from "../../../api/authApiSlice";
+import { useUpdateUsernameMutation } from "../../../../api/authApiSlice";
 
-// Component.
+// SubComponent ( AccountSettings ).
 function UsernameForm() {
   const { isDark } = useThemeInfo();
   const { token, user } = useSelector((state) => state.session);

@@ -1,9 +1,11 @@
 // Hooks.
 import { useColorMode, useRadioGroup } from "@chakra-ui/react";
 // Components.
-import RadioBackgroundCard from "./Components/RadioBackgroundCard";
 import { Box, HStack } from "@chakra-ui/react";
+// SubComponents.
+import RadioBackgroundCard from "./RadioBackgroundCard/RadioBackgroundCard";
 
+// SubComponent ( ThemeSettings ).
 function ThemeBackgroundRadioGroup() {
   // Theme background mode.
   const { colorMode, setColorMode } = useColorMode();

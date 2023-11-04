@@ -2,7 +2,7 @@
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useState } from "react";
 // Components.
-import CustomProgress from "../../../components/Progress/CustomProgress";
+import CustomProgress from "../../../components/Progress/CustomProgress/CustomProgress";
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 // Icons.
-import ToggleShowPassword from "../../../components/Toggles/ShowPassword/ToggleShowPassword";
+import ToggleShowPassword from "../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
 
 // Page.
 function AuthForm({

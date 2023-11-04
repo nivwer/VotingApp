@@ -2,12 +2,13 @@
 import { useDispatch } from "react-redux";
 import { useRadioGroup } from "@chakra-ui/react";
 // Actions.
-import { changeColor } from "../../../features/theme/themeSlice";
+import { changeColor } from "../../../../features/theme/themeSlice";
 // Components.
-import RadioColorCard from "./Components/RadioColorCard";
 import { Box, HStack } from "@chakra-ui/react";
+// SubComponents.
+import RadioColorCard from "./RadioColorCard/RadioColorCard";
 
-// Component.
+// SubComponent ( ThemeSettings ).
 function ThemeColorRadioGroup() {
   const dispatch = useDispatch();
 

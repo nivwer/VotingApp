@@ -1,10 +1,10 @@
 // Hooks.
 import { Flex, Text, useRadio } from "@chakra-ui/react";
-import { useThemeInfo } from "../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 // Components.
 import { Box } from "@chakra-ui/react";
 
-// Component.
+// SubComponent ( ThemeBackgroundRadioGroup ).
 function RadioBackgroundCard(props) {
   const { isDark, ThemeColor } = useThemeInfo();
   const { getInputProps, getRadioProps } = useRadio(props);

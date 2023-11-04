@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 // Components.
 import CommentInput from "../../../components/Cards/CommentCard/CommentInput";
 import CommentCard from "../../../components/Cards/CommentCard/CommentCard";
-import CustomSpinner from "../../../components/Spinners/CustomSpinner";
+import CustomSpinner from "../../../components/Spinners/CustomSpinner/CustomSpinner";
 
 // Components.
 function PollComments({ id }) {

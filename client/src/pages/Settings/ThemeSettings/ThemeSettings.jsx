@@ -1,8 +1,10 @@
 // Components.
-import ThemeColorRadioGroup from "./ThemeColorRadioGroup";
-import ThemeBackgroundRadioGroup from "./ThemeBackgroundRadioGroup";
 import { Box, Divider, Stack, Text } from "@chakra-ui/react";
+// SubComponents.
+import ThemeColorRadioGroup from "./ThemeColorRadioGroup/ThemeColorRadioGroup";
+import ThemeBackgroundRadioGroup from "./ThemeBackgroundRadioGroup/ThemeBackgroundRadioGroup";
 
+// Page
 function ThemeSettings() {
   return (
     <Box opacity={"0.9"} w={"100%"} p={10}>

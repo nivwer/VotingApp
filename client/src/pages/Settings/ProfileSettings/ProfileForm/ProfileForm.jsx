@@ -1,13 +1,12 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import {
   useGetCountriesQuery,
   useProfileMeUpdateMutation,
-} from "../../../api/profileApiSlice";
+} from "../../../../api/profileApiSlice";
 // Components.
-import ProfileInputURL from "./ProfileInputURL";
 import {
   Avatar,
   Box,
@@ -24,11 +23,13 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
+// SubComponents.
+import ProfileInputURL from "./ProfileInputURL/ProfileInputURL";
 // Icons.
 import { FaImage, FaLink } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 
-// Component.
+// SubComponent ( ProfileSettings ).
 function ProfileForm({ profile = false }) {
   const { isDark, ThemeColor } = useThemeInfo();
   const { token } = useSelector((state) => state.session);

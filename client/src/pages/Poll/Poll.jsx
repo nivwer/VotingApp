@@ -5,8 +5,9 @@ import { useSelector } from "react-redux";
 import { useReadPollQuery } from "../../api/pollApiSlice";
 // Components.
 import PollCard from "../../components/Cards/PollCard/PollCard";
-import PollComments from "./components/PollComments";
-import CustomSpinner from "../../components/Spinners/CustomSpinner";
+import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
+// SubComponents.
+import PollComments from "./PollComments/PollComments";
 
 // Page.
 function Poll() {

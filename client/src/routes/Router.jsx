@@ -22,7 +22,7 @@ import GridLayout from "../components/Layout/GridLayout";
 
 // Router.
 function Router() {
-  const session = useSelector((state) => state.session);
+  const { isAuthenticated } = useSelector((state) => state.session);
 
   return (
     <Routes>
@@ -31,7 +31,7 @@ function Router() {
       {/* Simple Column Layout. */}
       <Route element={<GridLayout layout="simple" section="main" />}>
         {/* Authentication Pages. */}
-        <Route element={<ProtectedRoute isAllowed={!session.token} />}>
+        <Route element={<ProtectedRoute isAllowed={!isAuthenticated} />}>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
         </Route>
@@ -68,7 +68,7 @@ function Router() {
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="settings" />}>
         {/* Settings pages. */}
-        <Route element={<ProtectedRoute isAllowed={!!session.token} />}>
+        <Route element={<ProtectedRoute isAllowed={!!isAuthenticated} />}>
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/account" element={<AccountSettings />} />
           <Route path="/settings/profile" element={<ProfileSettings />} />

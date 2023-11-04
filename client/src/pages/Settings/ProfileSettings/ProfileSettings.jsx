@@ -1,9 +1,10 @@
 // Hooks.
 import { useSelector } from "react-redux";
 // Components.
-import ProfileForm from "./ProfileForm";
 import { NavLink } from "react-router-dom";
 import { Box, Button, Divider, HStack, Stack, Text } from "@chakra-ui/react";
+// SubComponents.
+import ProfileForm from "./ProfileForm/ProfileForm";
 
 // Page.
 function ProfileSettings() {

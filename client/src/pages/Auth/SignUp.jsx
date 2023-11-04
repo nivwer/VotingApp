@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useSignUpMutation } from "../../api/authApiSlice";
 // Components.
-import AuthForm from "./components/AuthForm";
+import AuthForm from "./AuthForm/AuthForm";
 import { Center, Container } from "@chakra-ui/react";
 
 // Page.

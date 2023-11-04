@@ -6,7 +6,7 @@ import { Box, Button, HStack, Icon, Stack, Text } from "@chakra-ui/react";
 // Icons.
 import { FaUserGear, FaUserPen, FaPaintbrush } from "react-icons/fa6";
 
-// Component.
+// SubComponent ( Settings ).
 function SettingLinkButton({ children, to, icon }) {
   return (
     <NavLink to={`/settings/${to}`}>

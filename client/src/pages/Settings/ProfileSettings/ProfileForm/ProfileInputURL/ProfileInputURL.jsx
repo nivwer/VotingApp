@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 // Components.
 import {
   Flex,
@@ -10,7 +10,7 @@ import {
   InputGroup,
 } from "@chakra-ui/react";
 
-// Component.
+// SubComponent ( ProfileForm ).
 function ProfileInputURL({
   register,
   defaultValue,

@@ -9,7 +9,7 @@ import { login } from "./features/auth/sessionSlice";
 // Components..
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
-import InitialSpinner from "./components/Spinners/InitialSpinner";
+import InitialSpinner from "./components/Spinners/InitialSpinner/InitialSpinner";
 import { Container } from "@chakra-ui/react";
 
 // App.
@@ -25,7 +25,6 @@ function App() {
     data: dataSession,
     status: statusSession,
     isLoading: isCheckSessionLoading,
-    isFetching: isCheckSessionFetching,
     isUninitialized: isCheckSessionUninitialized,
   } = useUserSessionCheckQuery();
 

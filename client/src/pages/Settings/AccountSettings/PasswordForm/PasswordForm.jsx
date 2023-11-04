@@ -1,7 +1,7 @@
 // Hooks.
 import { useForm } from "react-hook-form";
-import { useUpdatePasswordMutation } from "../../../api/authApiSlice";
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useUpdatePasswordMutation } from "../../../../api/authApiSlice";
+import { useThemeInfo } from "../../../../hooks/Theme";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 // Components.
@@ -16,9 +16,9 @@ import {
   InputRightElement,
   Stack,
 } from "@chakra-ui/react";
-import ToggleShowPassword from "../../../components/Toggles/ShowPassword/ToggleShowPassword";
+import ToggleShowPassword from "../../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
 
-// Component.
+// SubComponent ( AccountSettings ).
 function PasswordForm() {
   const { isDark } = useThemeInfo();
   const { token } = useSelector((state) => state.session);
