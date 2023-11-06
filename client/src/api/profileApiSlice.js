@@ -52,7 +52,7 @@ export const profileApiSlice = createApi({
     // Search Users.
     searchUsers: builder.query({
       query: (data) => ({
-        url: `profile/search`,
+        url: `search?query=${data.query}&page=${data.page}`,
         method: "GET",
         headers: data.headers,
       }),

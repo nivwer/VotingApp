@@ -22,8 +22,7 @@ from apps.profiles.models import UserProfile
 
 # Handles the users searches.
 @api_view(['GET'])
-@authentication_classes([AllowAny])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def search_users(request):
     keyword = request.GET.get('query')
 
@@ -32,6 +31,8 @@ def search_users(request):
         if keyword:
             users = User.objects.filter(
                 username__icontains=keyword
+            ).order_by(
+                '-date_joined'
             ).values(
                 'username', 'id')
         else:
@@ -43,20 +44,28 @@ def search_users(request):
             paginator = Paginator(users, 10)
             page_obj = paginator.get_page(page_number)
 
-            page_values_json = json_util._json_convert(page_obj.object_list)
-
-        # Users res.
-        users_list = page_values_json if request.GET.get('page') else users
+        # Users list.
+        users_list = page_obj.object_list if request.GET.get('page') else users
 
         profiles_list = []
         for user in users_list:
             # Get the user profile.
-            user_profile = User.objects.filter(id=user.id).values(
-                'username', 'userprofile__profile_picture', 'userprofile__profile_name').first()
+            user_data = User.objects.filter(
+                id=user['id']
+            ).values(
+                'username',
+                'userprofile__profile_picture',
+                'userprofile__profile_name'
+            ).first()
 
-            profiles_list.append(user_profile)
+            profiles_list.append(
+                {
+                    'username': user_data['username'],
+                    'profile_picture': user_data['userprofile__profile_picture'],
+                    'profile_name': user_data['userprofile__profile_name']
+                })
 
-        return Response(users_list)
+        return Response(profiles_list)
 
     # Handle validation errors.
     except ValidationError as e:

@@ -1,7 +1,7 @@
 // Hooks.
 import { useThemeInfo } from "../../../../../hooks/Theme";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 // Components.
 import {
@@ -25,16 +25,33 @@ import { SearchIcon } from "@chakra-ui/icons";
 function NavbarSearchInput() {
   const navigate = useNavigate();
   const { isDark } = useThemeInfo();
-  const [searchType, setSearchType] = useState("type");
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("query") || "";
+  const type = searchParams.get("type") || "";
+
+  const [searchType, setSearchType] = useState(type ? type : "type");
 
   // React hook form.
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
     const type = searchType == "type" ? "polls" : searchType;
-    navigate(`/results?type=${type}&query=${data.search}`);
+    navigate(`/results?type=${type}&query=${data.query}`);
   });
+
+  const handleType = (type) => {
+    setSearchType(type);
+    onSubmit();
+  };
+
+  // useEffect(() => {
+  //   type ? setSearchType(type) : setSearchType("type");
+  // }, [type]);
+
+  // useEffect(() => {
+  //   query ? setValue("query", query) : setValue("query", "");
+  // }, [query]);
 
   return (
     <form onSubmit={onSubmit}>
@@ -62,7 +79,8 @@ function NavbarSearchInput() {
             }
           />
           <Input
-            {...register("search", { required: true })}
+            {...register("query", { required: true })}
+            defaultValue={query ? query : ""}
             pl={"55px"}
             variant={"filled"}
             size={"sm"}
@@ -94,15 +112,9 @@ function NavbarSearchInput() {
                   <Text>{searchType}</Text>
                 </MenuButton>
                 <MenuList>
-                  <MenuItem onClick={() => setSearchType("type")}>
-                    Type
-                  </MenuItem>
-                  <MenuItem onClick={() => setSearchType("users")}>
-                    Users
-                  </MenuItem>
-                  <MenuItem onClick={() => setSearchType("polls")}>
-                    Polls
-                  </MenuItem>
+                  <MenuItem onClick={() => handleType("type")}>Type</MenuItem>
+                  <MenuItem onClick={() => handleType("users")}>Users</MenuItem>
+                  <MenuItem onClick={() => handleType("polls")}>Polls</MenuItem>
                 </MenuList>
               </Menu>
             }
