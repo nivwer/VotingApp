@@ -97,11 +97,11 @@ function NavbarSearchInput() {
                   <MenuItem onClick={() => setSearchType("type")}>
                     Type
                   </MenuItem>
-                  <MenuItem onClick={() => setSearchType("user")}>
-                    User
+                  <MenuItem onClick={() => setSearchType("users")}>
+                    Users
                   </MenuItem>
-                  <MenuItem onClick={() => setSearchType("poll")}>
-                    Poll
+                  <MenuItem onClick={() => setSearchType("polls")}>
+                    Polls
                   </MenuItem>
                 </MenuList>
               </Menu>
