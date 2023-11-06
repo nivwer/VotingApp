@@ -40,13 +40,22 @@ export const profileApiSlice = createApi({
       providesTags: ["Profile"],
     }),
 
-    // Get countries.
+    // GET countries.
     getCountries: builder.query({
       query: () => ({
         url: "countries",
         method: "GET",
       }),
       providesTags: ["Countries"],
+    }),
+
+    // Search Users.
+    searchUsers: builder.query({
+      query: (data) => ({
+        url: `profile/search`,
+        method: "GET",
+        headers: data.headers,
+      }),
     }),
   }),
 });
@@ -56,4 +65,5 @@ export const {
   useProfileMeUpdateMutation,
   useProfileByUsernameQuery,
   useGetCountriesQuery,
+  useSearchUsersQuery,
 } = profileApiSlice;

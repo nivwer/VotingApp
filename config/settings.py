@@ -37,14 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "corsheaders",
-    "rest_framework",
-    "rest_framework.authtoken",
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
     'adrf',  # Async Rest Framework support.
-    "apps.accounts",
-    "apps.polls",
-    "apps.profiles",
-    "apps.settings",
+    'apps.accounts',
+    'apps.polls',
+    'apps.profiles',
+    'apps.settings',
 ]
 
 MIDDLEWARE = [
@@ -160,7 +160,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_AGE =  30 * 24 * 60 * 60
+CSRF_COOKIE_AGE = 30 * 24 * 60 * 60
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
 ]

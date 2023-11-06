@@ -636,7 +636,6 @@ async def user_bookmarked_polls(request, id):
 
         # Polls res.
         res = page_values_json if request.GET.get('page') else polls
-        res.reverse()
 
         # Response.
         return Response(

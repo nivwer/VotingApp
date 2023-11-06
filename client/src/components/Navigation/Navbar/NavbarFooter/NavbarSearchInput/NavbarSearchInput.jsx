@@ -25,19 +25,15 @@ import { SearchIcon } from "@chakra-ui/icons";
 function NavbarSearchInput() {
   const navigate = useNavigate();
   const { isDark } = useThemeInfo();
-  const [searchType, setSearchType] = useState("poll");
+  const [searchType, setSearchType] = useState("type");
 
   // React hook form.
   const { register, handleSubmit } = useForm();
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
-    // if (searchType == "user") {
-    //   navigate(`/${data.search}`);
-    // }
-    // if (searchType == "poll") {
-    //     navigate(`/${data.search}`);
-    // }
+    const type = searchType == "type" ? "polls" : searchType;
+    navigate(`/results?type=${type}&query=${data.search}`);
   });
 
   return (
@@ -46,13 +42,15 @@ function NavbarSearchInput() {
         <InputGroup size={"sm"}>
           <InputLeftElement
             w={"45px"}
+            ml={1}
             children={
               <IconButton
-                size={"sm"}
+                size={"xs"}
                 variant={"ghost"}
                 borderLeftRadius={"full"}
                 w={"45px"}
                 type="submit"
+                // colorScheme={"blue"}
               >
                 <SearchIcon
                   ml={2}
@@ -65,7 +63,7 @@ function NavbarSearchInput() {
           />
           <Input
             {...register("search", { required: true })}
-            pl={"50px"}
+            pl={"55px"}
             variant={"filled"}
             size={"sm"}
             fontWeight={"medium"}
@@ -79,11 +77,13 @@ function NavbarSearchInput() {
               <Menu>
                 <MenuButton
                   as={Button}
-                  size={"sm"}
+                  size={"xs"}
                   variant={"ghost"}
+                  //   colorScheme={"blue"}
                   borderRightRadius={"full"}
                   w={"auto"}
                   pr={5}
+                  mr={1}
                   leftIcon={
                     <SearchIcon
                       opacity={0.5}
@@ -91,9 +91,12 @@ function NavbarSearchInput() {
                     />
                   }
                 >
-                  <Text mt={"2px"}>{searchType}</Text>
+                  <Text>{searchType}</Text>
                 </MenuButton>
                 <MenuList>
+                  <MenuItem onClick={() => setSearchType("type")}>
+                    Type
+                  </MenuItem>
                   <MenuItem onClick={() => setSearchType("user")}>
                     User
                   </MenuItem>
