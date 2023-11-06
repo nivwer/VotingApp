@@ -32,7 +32,7 @@ function NavbarSearchInput() {
   const [searchType, setSearchType] = useState(type ? type : "type");
 
   // React hook form.
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm();
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
@@ -40,18 +40,18 @@ function NavbarSearchInput() {
     navigate(`/results?type=${type}&query=${data.query}`);
   });
 
-  const handleType = (type) => {
-    setSearchType(type);
-    onSubmit();
-  };
+  useEffect(() => {
+    const searchQuery = watch("query");
+    searchType && searchQuery && onSubmit();
+  }, [searchType]);
 
-  // useEffect(() => {
-  //   type ? setSearchType(type) : setSearchType("type");
-  // }, [type]);
+  useEffect(() => {
+    type ? setSearchType(type) : setSearchType("type");
+  }, [type]);
 
-  // useEffect(() => {
-  //   query ? setValue("query", query) : setValue("query", "");
-  // }, [query]);
+  useEffect(() => {
+    query ? setValue("query", query) : setValue("query", "");
+  }, [query]);
 
   return (
     <form onSubmit={onSubmit}>
@@ -112,9 +112,15 @@ function NavbarSearchInput() {
                   <Text>{searchType}</Text>
                 </MenuButton>
                 <MenuList>
-                  <MenuItem onClick={() => handleType("type")}>Type</MenuItem>
-                  <MenuItem onClick={() => handleType("users")}>Users</MenuItem>
-                  <MenuItem onClick={() => handleType("polls")}>Polls</MenuItem>
+                  <MenuItem onClick={() => setSearchType("type")}>
+                    Type
+                  </MenuItem>
+                  <MenuItem onClick={() => setSearchType("users")}>
+                    Users
+                  </MenuItem>
+                  <MenuItem onClick={() => setSearchType("polls")}>
+                    Polls
+                  </MenuItem>
                 </MenuList>
               </Menu>
             }
