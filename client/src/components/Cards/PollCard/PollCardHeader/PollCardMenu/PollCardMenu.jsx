@@ -63,6 +63,8 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
             borderRadius={"full"}
             variant={"ghost"}
             opacity={0.6}
+            position={"absolute"}
+            right={5}
           />
           {poll.is_owner ? (
             <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>

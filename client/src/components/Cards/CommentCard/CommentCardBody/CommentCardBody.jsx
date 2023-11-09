@@ -1,18 +1,19 @@
 // Hooks.
 import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
-import { Flex, HStack, Text } from "@chakra-ui/react";
+import { Button, Flex, HStack, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 // Others.
 import {
-    format,
-    isToday,
-    differenceInMinutes,
-    differenceInHours,
-  } from "date-fns";
+  format,
+  isToday,
+  differenceInMinutes,
+  differenceInHours,
+} from "date-fns";
+import CommentCardMenu from "./CommentCardMenu/CommentCardMenu";
 
 // SubComponent ( CommentCard ).
-function CommentCardBody({ comment, isLoading }) {
+function CommentCardBody({ comment, isLoading, deleteComment }) {
   const { isDark } = useThemeInfo();
 
   // Time Ago.
@@ -29,27 +30,37 @@ function CommentCardBody({ comment, isLoading }) {
 
   return (
     <>
-      <HStack fontSize={"md"} spacing={1}>
-        {/* Profile Name. */}
-        <NavLink to={`/${comment.user_profile.username}`}>
-          <Text fontWeight={"extrabold"} opacity={isDark ? 1 : 0.9}>
-            {comment.user_profile.profile_name}
-          </Text>
-        </NavLink>
-        {/* Username. */}
-        <NavLink to={`/${comment.user_profile.username}`}>
-          <Text fontWeight={"medium"} opacity={0.5}>
-            @{comment.user_profile.username}
-          </Text>
-        </NavLink>
-        <HStack spacing={1} fontWeight="medium" opacity={0.5}>
-          {/* Divider. */}
-          <Text>·</Text>
-          {/* Time Ago. */}
-          <Text>{timeAgo}</Text>
+      <HStack justify={"space-between"}>
+        <HStack fontSize={"md"} spacing={1}>
+          {/* Profile Name. */}
+          <NavLink to={`/${comment.user_profile.username}`}>
+            <Text h={5} fontWeight={"extrabold"} opacity={isDark ? 1 : 0.9}>
+              {comment.user_profile.profile_name}
+            </Text>
+          </NavLink>
+          {/* Username. */}
+          <NavLink to={`/${comment.user_profile.username}`}>
+            <Text h={5} fontWeight={"medium"} opacity={0.5}>
+              @{comment.user_profile.username}
+            </Text>
+          </NavLink>
+          <HStack spacing={1} fontWeight="medium" opacity={0.5}>
+            {/* Divider. */}
+            <Text h={5}>·</Text>
+            {/* Time Ago. */}
+            <Text h={5}>{timeAgo}</Text>
+          </HStack>
         </HStack>
+
+        <CommentCardMenu
+          id={comment._id}
+          user_id={comment.user_id}
+          poll_id={comment.poll_id}
+          deleteComment={deleteComment}
+          isLoading={isLoading}
+        />
       </HStack>
-      <Flex px={0} fontSize={"md"}>
+      <Flex px={0} mt={1} fontSize={"md"}>
         <Text
           opacity={0.8}
           w={"auto"}

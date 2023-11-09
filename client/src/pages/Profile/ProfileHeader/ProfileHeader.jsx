@@ -50,13 +50,13 @@ function ProfileHeader({ profile }) {
 
         <Stack spacing={4}>
           <Box>
-            <HStack spacing={2}>
+            <HStack spacing={2} my={"2px"}>
               {/* Profile name. */}
-              <Heading opacity={isDark ? 1 : 0.9} size="md">
+              <Heading h={5} opacity={isDark ? 1 : 0.9} size="md">
                 {profile.profile_name}
               </Heading>
               {/* Pronouns. */}
-              <Text opacity={0.5} fontWeight="medium">
+              <Text h={5} opacity={0.5} fontWeight="medium">
                 {profile.pronouns}
               </Text>
             </HStack>

@@ -91,15 +91,15 @@ function CommentInput({ id }) {
       >
         <CardHeader as={Flex} pr={3}>
           {/* Profile Picture. */}
-          <Flex flex="1" gap="3" minH={"40px"}>
+          <Flex flex="1" gap="3" minH={"36px"}>
             <Box h={"100%"}>
               <NavLink to={`/${user.username}`}>
                 <IconButton isDisabled={isLoading} variant={"unstyled"}>
                   <Avatar
                     src={profile.profile_picture}
                     size={"md"}
-                    h={"45px"}
-                    w={"45px"}
+                    h={"42px"}
+                    w={"42px"}
                     bg={"gray.400"}
                   />
                 </IconButton>

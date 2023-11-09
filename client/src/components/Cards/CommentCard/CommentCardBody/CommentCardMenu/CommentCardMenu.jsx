@@ -13,7 +13,7 @@ import {
 // Icons.
 import { FaEllipsis } from "react-icons/fa6";
 
-// SubComponent ( CommentCardFooter ).
+// SubComponent ( CommentCardBody ).
 function CommentCardMenu({ id, user_id, poll_id, deleteComment, isLoading }) {
   const { isDark } = useThemeInfo();
   const { isAuthenticated, token, user } = useSelector(
@@ -58,6 +58,8 @@ function CommentCardMenu({ id, user_id, poll_id, deleteComment, isLoading }) {
             borderRadius={"full"}
             variant={"ghost"}
             opacity={0.6}
+            position={"absolute"}
+            right={5}
           />
 
           <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>

@@ -32,40 +32,48 @@ function PollCardHeader({ poll, deletePoll, isLoading }) {
   return (
     <>
       <HStack w={"100%"}>
-        <HStack flex={1} mt={3}>
+        <HStack flex={1} mt={4}>
           {/* Profile Picture. */}
           <NavLink to={`/${poll.profile.username}`}>
             <IconButton isDisabled={isLoading} variant={"unstyled"}>
               <Avatar
                 src={poll.profile.profile_picture}
                 size={"md"}
-                h={"45px"}
-                w={"45px"}
+                h={"42px"}
+                w={"42px"}
                 bg={"gray.400"}
               />
             </IconButton>
           </NavLink>
 
-          <Stack mt={2} fontSize={"md"} spacing={0}>
-            <HStack spacing={1}>
-              {/* Profile Name. */}
-              <NavLink to={`/${poll.profile.username}`}>
-                <Text fontWeight={"black"} opacity={isDark ? 1 : 0.9}>
-                  {poll.profile.profile_name}
-                </Text>
-              </NavLink>
-              {/* Username. */}
-              <NavLink to={`/${poll.profile.username}`}>
-                <Text fontWeight={"medium"} opacity={0.5}>
-                  @{poll.profile.username}
-                </Text>
-              </NavLink>
-              <HStack spacing={1} fontWeight="medium" opacity={0.5}>
-                {/* Divider. */}
-                <Text>·</Text>
-                {/* Time Ago. */}
-                <Text>{timeAgo}</Text>
+          <Stack w={"100%"} mt={1} ml={1} fontSize={"md"} spacing={0}>
+            <HStack justify={"space-between"}>
+              <HStack spacing={1}>
+                {/* Profile Name. */}
+                <NavLink to={`/${poll.profile.username}`}>
+                  <Text h={5} fontWeight={"black"} opacity={isDark ? 1 : 0.9}>
+                    {poll.profile.profile_name}
+                  </Text>
+                </NavLink>
+                {/* Username. */}
+                <NavLink to={`/${poll.profile.username}`}>
+                  <Text h={5} fontWeight={"medium"} opacity={0.5}>
+                    @{poll.profile.username}
+                  </Text>
+                </NavLink>
+                <HStack spacing={1} fontWeight="medium" opacity={0.5}>
+                  {/* Divider. */}
+                  <Text h={5}>·</Text>
+                  {/* Time Ago. */}
+                  <Text h={5}>{timeAgo}</Text>
+                </HStack>
               </HStack>
+              {/* Menu. */}
+              <PollCardMenu
+                poll={poll}
+                isLoading={isLoading}
+                deletePoll={deletePoll}
+              />
             </HStack>
 
             {/* Total Votes. */}
@@ -74,14 +82,14 @@ function PollCardHeader({ poll, deletePoll, isLoading }) {
             </Text>
           </Stack>
         </HStack>
-        <HStack justify={"space-between"}>
-          {/* Menu. */}
-          <PollCardMenu
+        {/* <HStack justify={"space-between"}> */}
+        {/* Menu. */}
+        {/* <PollCardMenu
             poll={poll}
             isLoading={isLoading}
             deletePoll={deletePoll}
           />
-        </HStack>
+        </HStack> */}
       </HStack>
     </>
   );

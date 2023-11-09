@@ -20,11 +20,11 @@ function NavRightDrawerHeader() {
       />
       <Box color={isDark ? "whiteAlpha.900" : "blackAlpha.900"} ml={3}>
         {/* Profile name. */}
-        <Heading opacity={isDark ? 0.9 : 0.8} pt={1} fontSize="md">
+        <Heading h={5} opacity={isDark ? 0.9 : 0.8} pt={1} fontSize="md">
           {profile.profile_name}
         </Heading>
         {/* Username. */}
-        <Text opacity={0.5} fontWeight="medium" fontSize="sm">
+        <Text h={5} opacity={0.5} fontWeight="medium" fontSize="sm">
           @{user.username}
         </Text>
       </Box>

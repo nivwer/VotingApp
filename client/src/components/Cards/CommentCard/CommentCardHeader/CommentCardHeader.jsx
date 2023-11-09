@@ -13,8 +13,8 @@ function CommentCardHeader({ comment, isLoading }) {
             <Avatar
               src={comment.user_profile.profile_picture}
               size={"md"}
-              h={"45px"}
-              w={"45px"}
+              h={"42px"}
+              w={"42px"}
               bg={"gray.400"}
             />
           </IconButton>

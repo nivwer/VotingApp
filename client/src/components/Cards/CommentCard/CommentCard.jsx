@@ -6,7 +6,7 @@ import { Card, CardBody, CardFooter, CardHeader, Flex } from "@chakra-ui/react";
 // SubComponents.
 import CommentCardHeader from "./CommentCardHeader/CommentCardHeader";
 import CommentCardBody from "./CommentCardBody/CommentCardBody";
-import CommentCardFooter from "./CommentCardFooter/CommentCardFooter";
+
 
 // Component.
 function CommentCard({ comment }) {
@@ -25,25 +25,30 @@ function CommentCard({ comment }) {
         borderBottom={"1px solid"}
         borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
         opacity={isLoading ? 0.6 : 1}
+        px={2}
       >
         {/* Card Header. */}
-        <CardHeader as={Flex} spacing={"4"} pt={0} pr={2}>
+        <CardHeader spacing={"4"} pt={2} px={3}>
           <CommentCardHeader comment={comment} isLoading={isLoading} />
         </CardHeader>
 
         {/* Card Body. */}
-        <CardBody py={5} px={0}>
-          <CommentCardBody comment={comment} isLoading={isLoading} />
+        <CardBody py={5} px={0} pr={5}>
+          <CommentCardBody
+            comment={comment}
+            isLoading={isLoading}
+            deleteComment={deleteComment}
+          />
         </CardBody>
 
         {/* Card Footer. */}
-        <CardFooter py={3}>
+        {/* <CardFooter py={3}>
           <CommentCardFooter
             comment={comment}
             isLoading={isLoading}
             deleteComment={deleteComment}
           />
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </>
   );
