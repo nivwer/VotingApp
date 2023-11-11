@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 // SubComponents.
 import NavRightDrawerButton from "./NavRightDrawerButton/NavRightDrawerButton";
 // Icons.
-import { FaUser, FaGear, FaGripLines } from "react-icons/fa6";
+import { FaUser, FaGear, FaHashtag } from "react-icons/fa6";
 
 // SubComponent ( NavRightDrawer ).
 function NavRightDrawerBody({ handleLogout, onClose }) {
@@ -31,22 +31,22 @@ function NavRightDrawerBody({ handleLogout, onClose }) {
       {/* User Pages. */}
       <Stack spacing={0}>
         <NavLink to={`/${user.username}`}>
-          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
             Your Polls
           </NavRightDrawerButton>
         </NavLink>
         <NavLink to={`/${user.username}?tab=votes`}>
-          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
             Your Votes
           </NavRightDrawerButton>
         </NavLink>
         <NavLink to={`/${user.username}?tab=shares`}>
-          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
             Your Shares
           </NavRightDrawerButton>
         </NavLink>
         <NavLink to={`/${user.username}?tab=bookmarks`}>
-          <NavRightDrawerButton icon={<FaGripLines />} onClick={onClose}>
+          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
             Your Bookmarks
           </NavRightDrawerButton>
         </NavLink>

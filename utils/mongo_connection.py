@@ -1,6 +1,5 @@
 # Standard.
 import os
-from datetime import datetime
 # Virtualenv.
 from dotenv import load_dotenv
 # MongoDB.
@@ -31,7 +30,7 @@ class MongoDBSingleton:
             self.client = AsyncIOMotorClient(MONGO_URI)
 
             # If the connection is successful.
-            print(f'{self._get_current_timestamp()} "MongoDB connection successful"')
+            print('"MongoDB connection successful..."')
 
         # Handle MongoDB server selection timeout error.
         except errors.ServerSelectionTimeoutError as e:
@@ -48,6 +47,3 @@ class MongoDBSingleton:
         # Handle MongoDB configuration error.
         except errors.ConfigurationError as e:
             print(f'{self._get_current_timestamp()} MongoDB configuration error: {e}')
-
-    def _get_current_timestamp(self):
-        return datetime.now().strftime("[%d/%b/%Y %H:%M:%S]")

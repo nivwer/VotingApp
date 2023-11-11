@@ -12,6 +12,8 @@ from .views.user import user_polls, user_voted_polls, user_shared_polls, user_bo
 # Categories.
 from .views.categories import categories, categories_data
 from .views.category import category_polls
+# Search.
+from .views.search import search_polls
 
 
 urlpatterns = [
@@ -60,4 +62,7 @@ urlpatterns = [
     path('categories', categories, name="categories"),
     path('categories/data', categories_data, name="data_categories"),
     path('category/<str:category>', category_polls, name='category_polls'),
+
+    # Search.
+    path('search', search_polls, name='search_polls'),
 ]

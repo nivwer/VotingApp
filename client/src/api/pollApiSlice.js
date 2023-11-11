@@ -258,6 +258,17 @@ export const pollApiSlice = createApi({
       }),
       providesTags: ["Categories"],
     }),
+
+
+    // Search Users.
+    searchPolls: builder.query({
+      query: (data) => ({
+        url: `search?query=${data.query}&page=${data.page}`,
+        method: "GET",
+        headers: data.headers,
+      }),
+    }),
+
   }),
 });
 
@@ -284,4 +295,5 @@ export const {
   useUnSharePollMutation,
   useBookmarkPollMutation,
   useUnBookmarkPollMutation,
+  useSearchPollsQuery,
 } = pollApiSlice;

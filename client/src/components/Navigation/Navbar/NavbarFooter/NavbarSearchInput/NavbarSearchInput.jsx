@@ -14,19 +14,18 @@ import {
   InputLeftElement,
   Menu,
   MenuButton,
-  MenuItem,
   MenuList,
   Text,
 } from "@chakra-ui/react";
 // Icons.
 import { SearchIcon } from "@chakra-ui/icons";
-import { FaUserGroup, FaGripLines, FaHashtag } from "react-icons/fa6";
+import { FaUserGroup, FaHashtag } from "react-icons/fa6";
 import NavbarMenuItem from "./NavbarMenuItem/NavbarMenuItem";
 
 // SubComponent ( NavbarFooter ).
 function NavbarSearchInput() {
   const navigate = useNavigate();
-  const { isDark } = useThemeInfo();
+  const { isDark, ThemeColor } = useThemeInfo();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
   const type = searchParams.get("type") || "";
@@ -70,12 +69,15 @@ function NavbarSearchInput() {
                   borderLeftRadius={"full"}
                   w={"45px"}
                   type="submit"
-                  // colorScheme={"blue"}
                 >
                   <SearchIcon
                     ml={2}
-                    opacity={0.5}
-                    color={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
+                    opacity={isDark ? 0.5 : 1}
+                    _hover={{
+                      color: isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`,
+                      opacity: 1,
+                    }}
+                    color={isDark ? "whiteAlpha.900" : "blackAlpha.500"}
                     boxSize={4}
                   />
                 </IconButton>
@@ -97,18 +99,20 @@ function NavbarSearchInput() {
           <Menu>
             {searchType && (
               <MenuButton
-                opacity={0.9}
+                opacity={isDark ? 0.5 : 1}
                 as={Button}
                 size={"sm"}
+                color={isDark ? "whiteAlpha.900" : "blackAlpha.500"}
                 variant={"solid"}
                 borderRightRadius={"full"}
                 w={"100px"}
                 pr={7}
                 leftIcon={
                   <>
-                    {searchType == "type" && <FaHashtag />}
+                    {(searchType == "type" || searchType == "polls") && (
+                      <FaHashtag />
+                    )}
                     {searchType == "users" && <FaUserGroup />}
-                    {searchType == "polls" && <FaGripLines />}
                   </>
                 }
               >
@@ -135,7 +139,7 @@ function NavbarSearchInput() {
                 Users
               </NavbarMenuItem>
               <NavbarMenuItem
-                icon={<FaGripLines />}
+                icon={<FaHashtag />}
                 value={"polls"}
                 setSearchType={setSearchType}
               >
