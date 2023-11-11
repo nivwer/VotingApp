@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 // Icons.
 import { SearchIcon } from "@chakra-ui/icons";
-import { FaUserGroup, FaMagnifyingGlass } from "react-icons/fa6";
+import { FaUserGroup, FaGripLines, FaHashtag } from "react-icons/fa6";
 import NavbarMenuItem from "./NavbarMenuItem/NavbarMenuItem";
 
 // SubComponent ( NavbarFooter ).
@@ -95,27 +95,33 @@ function NavbarSearchInput() {
             />
           </InputGroup>
           <Menu>
-            <MenuButton
-              as={Button}
-              size={"sm"}
-              variant={"solid"}
-              //   colorScheme={"blue"}
-              borderRightRadius={"full"}
-              w={"auto"}
-              pr={5}
-              mr={1}
-              leftIcon={
-                <FaUserGroup
-                  opacity={0.5}
-                  color={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
-                />
-              }
-            >
-              <Text>{searchType}</Text>
-            </MenuButton>
+            {searchType && (
+              <MenuButton
+                opacity={0.9}
+                as={Button}
+                size={"sm"}
+                variant={"solid"}
+                borderRightRadius={"full"}
+                w={"100px"}
+                pr={7}
+                leftIcon={
+                  <>
+                    {searchType == "type" && <FaHashtag />}
+                    {searchType == "users" && <FaUserGroup />}
+                    {searchType == "polls" && <FaGripLines />}
+                  </>
+                }
+              >
+                <Text mt={"2px"} fontWeight={"semibold"}>
+                  {searchType == "type" && "Type"}
+                  {searchType == "users" && "Users"}
+                  {searchType == "polls" && "Polls"}
+                </Text>
+              </MenuButton>
+            )}
             <MenuList>
               <NavbarMenuItem
-                icon={<FaUserGroup />}
+                icon={<FaHashtag />}
                 value={"type"}
                 setSearchType={setSearchType}
               >
@@ -129,7 +135,7 @@ function NavbarSearchInput() {
                 Users
               </NavbarMenuItem>
               <NavbarMenuItem
-                icon={<FaUserGroup />}
+                icon={<FaGripLines />}
                 value={"polls"}
                 setSearchType={setSearchType}
               >
