@@ -7,11 +7,11 @@ import { useForm } from "react-hook-form";
 import {
   Button,
   FormControl,
+  HStack,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
-  InputRightElement,
   Menu,
   MenuButton,
   MenuItem,
@@ -20,6 +20,8 @@ import {
 } from "@chakra-ui/react";
 // Icons.
 import { SearchIcon } from "@chakra-ui/icons";
+import { FaUserGroup, FaMagnifyingGlass } from "react-icons/fa6";
+import NavbarMenuItem from "./NavbarMenuItem/NavbarMenuItem";
 
 // SubComponent ( NavbarFooter ).
 function NavbarSearchInput() {
@@ -56,76 +58,86 @@ function NavbarSearchInput() {
   return (
     <form onSubmit={onSubmit}>
       <FormControl>
-        <InputGroup size={"sm"}>
-          <InputLeftElement
-            w={"45px"}
-            ml={1}
-            children={
-              <IconButton
-                size={"xs"}
-                variant={"ghost"}
-                borderLeftRadius={"full"}
-                w={"45px"}
-                type="submit"
-                // colorScheme={"blue"}
-              >
-                <SearchIcon
-                  ml={2}
+        <HStack spacing={0}>
+          <InputGroup size={"sm"}>
+            <InputLeftElement
+              w={"45px"}
+              children={
+                <IconButton
+                  size={"sm"}
+                  p={"auto"}
+                  variant={"unstyled"}
+                  borderLeftRadius={"full"}
+                  w={"45px"}
+                  type="submit"
+                  // colorScheme={"blue"}
+                >
+                  <SearchIcon
+                    ml={2}
+                    opacity={0.5}
+                    color={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
+                    boxSize={4}
+                  />
+                </IconButton>
+              }
+            />
+            <Input
+              {...register("query", { required: true })}
+              defaultValue={query ? query : ""}
+              pl={"50px"}
+              variant={"filled"}
+              size={"sm"}
+              fontWeight={"medium"}
+              borderRadius={0}
+              borderLeftRadius={"full"}
+              placeholder="Search"
+              focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
+            />
+          </InputGroup>
+          <Menu>
+            <MenuButton
+              as={Button}
+              size={"sm"}
+              variant={"solid"}
+              //   colorScheme={"blue"}
+              borderRightRadius={"full"}
+              w={"auto"}
+              pr={5}
+              mr={1}
+              leftIcon={
+                <FaUserGroup
                   opacity={0.5}
                   color={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
-                  boxSize={4}
                 />
-              </IconButton>
-            }
-          />
-          <Input
-            {...register("query", { required: true })}
-            defaultValue={query ? query : ""}
-            pl={"55px"}
-            variant={"filled"}
-            size={"sm"}
-            fontWeight={"medium"}
-            borderRadius={"full"}
-            placeholder="Search"
-            focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
-          />
-          <InputRightElement
-            w={"auto"}
-            children={
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  size={"xs"}
-                  variant={"ghost"}
-                  //   colorScheme={"blue"}
-                  borderRightRadius={"full"}
-                  w={"auto"}
-                  pr={5}
-                  mr={1}
-                  leftIcon={
-                    <SearchIcon
-                      opacity={0.5}
-                      color={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
-                    />
-                  }
-                >
-                  <Text>{searchType}</Text>
-                </MenuButton>
-                <MenuList>
-                  <MenuItem onClick={() => setSearchType("type")}>
-                    Type
-                  </MenuItem>
-                  <MenuItem onClick={() => setSearchType("users")}>
-                    Users
-                  </MenuItem>
-                  <MenuItem onClick={() => setSearchType("polls")}>
-                    Polls
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            }
-          />
-        </InputGroup>
+              }
+            >
+              <Text>{searchType}</Text>
+            </MenuButton>
+            <MenuList>
+              <NavbarMenuItem
+                icon={<FaUserGroup />}
+                value={"type"}
+                setSearchType={setSearchType}
+              >
+                Type
+              </NavbarMenuItem>
+              <NavbarMenuItem
+                icon={<FaUserGroup />}
+                value={"users"}
+                setSearchType={setSearchType}
+              >
+                Users
+              </NavbarMenuItem>
+              <NavbarMenuItem
+                icon={<FaUserGroup />}
+                value={"polls"}
+                setSearchType={setSearchType}
+              >
+                Polls
+              </NavbarMenuItem>
+            </MenuList>
+          </Menu>
+        </HStack>
       </FormControl>
     </form>
   );
