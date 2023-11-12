@@ -159,22 +159,30 @@ export const pollApiSlice = createApi({
 
     // Bookmark action.
     bookmarkPoll: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/bookmark`,
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/bookmark`,
         method: "POST",
-        headers: data.headers,
+        headers: headers,
       }),
-      invalidatesTags: ["Polls"],
+      // invalidatesTags: ["Polls"],
+      invalidatesTags: (result, error, id) => [
+        { type: "Polls", id: result.id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // UnBookmark action.
     unBookmarkPoll: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/unbookmark`,
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/unbookmark`,
         method: "DELETE",
-        headers: data.headers,
+        headers: headers,
       }),
-      invalidatesTags: ["Polls"],
+      // invalidatesTags: ["Polls"],
+      invalidatesTags: (result, error, id) => [
+        { type: "Polls", id: result.id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // GET Polls. //
@@ -188,7 +196,19 @@ export const pollApiSlice = createApi({
         method: "GET",
         headers: data.headers,
       }),
-      providesTags: ["Polls"],
+      // providesTags: ["Polls"],
+      providesTags: (result, error, page) =>
+        result
+          ? [
+              // Provides a tag for each post in the current page,
+              // as well as the 'PARTIAL-LIST' tag.
+              ...result.polls.map(({ _id }) => ({
+                type: "Polls",
+                id: _id,
+              })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Get User voted Polls.
@@ -259,16 +279,26 @@ export const pollApiSlice = createApi({
       providesTags: ["Categories"],
     }),
 
-
     // Search Users.
     searchPolls: builder.query({
-      query: (data) => ({
-        url: `search?query=${data.query}&page=${data.page}`,
+      query: ({ headers, query, page = 1 }) => ({
+        url: `search?query=${query}&page=${page}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
+      providesTags: (result, error, page) =>
+        result && result.polls
+          ? [
+              // Provides a tag for each post in the current page,
+              // as well as the 'PARTIAL-LIST' tag.
+              ...result.polls.map(({ _id }) => ({
+                type: "Polls",
+                id: _id,
+              })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
-
   }),
 });
 

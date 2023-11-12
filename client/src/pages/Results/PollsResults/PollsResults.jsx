@@ -4,7 +4,6 @@ import { useSearchPollsQuery } from "../../../api/pollApiSlice";
 import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 // Components.
-import UserCard from "../../../components/Cards/UserCard/UserCard";
 import CustomSpinner from "../../../components/Spinners/CustomSpinner/CustomSpinner";
 import { Box, Center, Stack, Text } from "@chakra-ui/react";
 // Icons.
@@ -20,80 +19,106 @@ function PollsResults() {
   const query = searchParams.get("query") || "";
   const type = searchParams.get("type") || "";
 
-  const [data, setData] = useState(false);
   const [page, setPage] = useState(1);
-  const [polls, setPolls] = useState([]);
+
+  const [pages, setPages] = useState([]);
+
   const [message, setMessage] = useState(false);
 
-  const {
-    data: dataPolls,
-    isLoading,
-    isFetching,
-  } = useSearchPollsQuery(data, {
-    skip: data ? false : true,
-  });
+  const [dataQuery, setDataQuery] = useState(false);
+
+  // const {
+  //   data: dataPolls,
+  //   isLoading,
+  //   isFetching,
+  // } = useSearchPollsQuery(data, {
+  //   skip: data ? false : true,
+  // });
+
+  // NEW infinite scroll
+
+  const { data: lastPage } = useSearchPollsQuery(
+    { ...dataQuery, page: page - 1 },
+    { skip: dataQuery && page > 1 ? false : true }
+  );
+  const { data: currentPage } = useSearchPollsQuery(
+    { ...dataQuery, page: page },
+    { skip: dataQuery ? false : true }
+  );
+  const { data: nextPage } = useSearchPollsQuery(
+    { ...dataQuery, page: page + 1 },
+    { skip: dataQuery ? false : true }
+  );
+
+  // NEW infinite scroll
 
   // Reset values.
   useEffect(() => {
     setPage(1);
-    setPolls([]);
+    setPages([]);
     setMessage(false);
   }, [query, type]);
 
+  // NEW infinite scroll
+
   // Update data to fetchs.
   useEffect(() => {
-    if (isAuthenticated) {
-      setData({
-        headers: { Authorization: `Token ${token}` },
-        query: query,
-        page: page,
-      });
-    } else {
-      setData({ query: query, page: page });
-    }
-  }, [query, page, isAuthenticated]);
+    const headers = isAuthenticated
+      ? { headers: { Authorization: `Token ${token}` } }
+      : {};
+
+    setDataQuery({ ...headers, query: query });
+  }, [query, isAuthenticated]);
+
+  // NEW infinite scroll
 
   // Scroll event.
-  const handleScroll = () => {
-    if (
-      window.innerHeight + window.scrollY >= document.body.scrollHeight - 30 &&
-      !isFetching &&
-      dataPolls &&
-      dataPolls.paginator.has_next
-    ) {
-      setPage(page + 1);
-    }
-  };
+  // const handleScroll = () => {
+  //   if (
+  //     window.innerHeight + window.scrollY >= document.body.scrollHeight - 30 &&
+  //     !isFetching &&
+  //     dataPolls &&
+  //     dataPolls.paginator.has_next
+  //   ) {
+  //     setPage(page + 1);
+  //   }
+  // };
 
+  // useEffect(() => {
+  //   window.addEventListener("scroll", handleScroll);
+
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [dataPolls, isFetching]);
+
+  // Add the pages in the pages state.
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    if ((lastPage || page <= 1) && currentPage && nextPage) {
+      setPages((prevPages) => {
+        if (page > 1) {
+          prevPages[page - 2] = lastPage.items;
+        }
+        prevPages[page - 1] = currentPage.items;
+        prevPages[page] = nextPage.items;
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [dataPolls, isFetching]);
-
-  // Add the users in the polls state.
-  useEffect(() => {
-    if (dataPolls) {
-      dataPolls.polls && setPolls([...polls, ...dataPolls.polls]);
-      dataPolls.message && setMessage(true);
-      !dataPolls.paginator.has_next && setMessage(true);
+        return prevPages;
+      });
     }
-  }, [dataPolls]);
+  }, [page, lastPage, currentPage, nextPage]);
 
   // Load more items.
-  useEffect(() => {
-    if (
-      document.getElementById("container").clientHeight < window.innerHeight &&
-      !isFetching &&
-      !isLoading &&
-      dataPolls &&
-      dataPolls.paginator.has_next
-    ) {
-      setPage(page + 1);
-    }
-  }, [polls]);
+  // useEffect(() => {
+  //   if (
+  //     document.getElementById("container").clientHeight < window.innerHeight &&
+  //     !isFetching &&
+  //     !isLoading &&
+  //     dataPolls &&
+  //     dataPolls.paginator.has_next
+  //   ) {
+  //     setPage(page + 1);
+  //   }
+  // }, [polls]);
 
   return (
     <Box
@@ -103,10 +128,16 @@ function PollsResults() {
       flexDir={"column"}
       alignItems={"center"}
     >
-      {polls &&
-        polls.map((poll, index) => <PollCard key={index} poll={poll} />)}
+      {pages &&
+        pages.map((page) =>
+          page.map((poll, index) => <PollCard key={`${page}-${index}`} poll={poll} />)
+        )}
 
-      <Box h={"100px"} w={"100%"}>
+      {/* {pages &&
+        pages[1] &&
+        pages[1].map((poll, index) => <PollCard key={index} poll={poll} />)} */}
+
+      {/* <Box h={"100px"} w={"100%"}>
         {!polls || !message ? (
           <CustomSpinner
             opacity={
@@ -139,7 +170,7 @@ function PollsResults() {
             </Stack>
           </Center>
         )}
-      </Box>
+      </Box> */}
     </Box>
   );
 }

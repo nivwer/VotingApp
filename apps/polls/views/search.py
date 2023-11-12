@@ -124,13 +124,12 @@ async def search_polls(request):
                 # Convert the BSON to a JSON.
                 user_actions_json = json_util._json_convert((user_actions_doc))
 
-                poll['user_actions'] = user_actions_json if user_actions_json is not None else {
-                }
+                poll['user_actions'] = user_actions_json if user_actions_json is not None else {}
 
             polls.append(poll)
 
         return Response({
-            'polls': polls,
+            'items': polls,
             'paginator': {
                 'has_next': has_next,
                 'total_pages':  total_pages,

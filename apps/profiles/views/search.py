@@ -33,7 +33,7 @@ def search_users(request):
         # Pagination.
         if request.GET.get('page'):
             page_number = int(request.GET.get('page'))
-            paginator = Paginator(users, 6)
+            paginator = Paginator(users, 12)
 
             total_pages = paginator.num_pages
             total_items = paginator.count

@@ -115,7 +115,11 @@ async def bookmark_action(request, id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('Poll shared successfully')
+                return Response(
+                    {
+                        'message': 'Poll bookmarked successfully',
+                        'id': id,
+                    })
 
     # Handle validation errors.
     except ValidationError as e:
@@ -142,7 +146,6 @@ async def bookmark_action(request, id):
     finally:
         if session:
             await session.end_session()
-
 
 
 # Handles the unbookmarking process in a poll.
@@ -204,7 +207,11 @@ async def unbookmark_action(request, id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('Poll shared successfully')
+                return Response(
+                    {
+                        'message': 'Poll unbookmarked successfully',
+                        'id': id,
+                    })
 
     # Handle validation errors.
     except ValidationError as e:
@@ -231,4 +238,3 @@ async def unbookmark_action(request, id):
     finally:
         if session:
             await session.end_session()
-

@@ -113,7 +113,7 @@ function PollCardFooter({ poll, isLoading, state }) {
         {/* Bookmark. */}
         <PollCardButton
           onClick={() => handleBookmark()}
-          active={poll.user_actions.has_bookmarked ? true : false}
+          active={poll.user_actions.has_bookmarked ? true : false || false}
           icon={
             poll.user_actions.has_bookmarked ? <FaBookmark /> : <FaRegBookmark />
           }
