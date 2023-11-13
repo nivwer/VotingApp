@@ -1,3 +1,6 @@
+# Bson.
+from bson import json_util
+from bson.objectid import ObjectId
 # Django.
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
@@ -11,29 +14,30 @@ from rest_framework.permissions import AllowAny
 from adrf.decorators import api_view
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
-from bson import json_util
-from bson.objectid import ObjectId
-# MongoDB.
+# PyMongo.
 from pymongo import DESCENDING
 from pymongo.errors import PyMongoError
 
 
-# Get databases.
-polls_db = MongoDBSingleton().client['polls_db']
-
-
 # Views.
 
-# Handles the users searches.
+
+# Handles the polls searches.
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def search_polls(request):
     # If user is login.
     is_login = True if request.user else False
 
+    # Get Params.
     keyword = request.GET.get('query')
+    page = request.GET.get('page') or '1'
+    page_size = request.GET.get('page_size') or '4'
 
     try:
+        # Get databases.
+        polls_db = MongoDBSingleton().client['polls_db']
+
         # Get the polls.
         if keyword:
             polls_bson = await polls_db.polls.find(
@@ -47,46 +51,54 @@ async def search_polls(request):
                             'privacy': 'private',
                             'user_id': request.user.id
                         }
-                    ]},
+                    ]
+                },
+                sort=[('votes', DESCENDING)]
             ).to_list(None)
         else:
             raise ValidationError('Keyword not exist')
 
-        # Convert the BSON response to a JSON response.
+        # Convert the BSON  to a JSON.
         polls_json = json_util._json_convert(polls_bson)
 
-        # Pagination.
-        if request.GET.get('page'):
-            page_number = int(request.GET.get('page'))
-            paginator = Paginator(polls_json, 3)
+        ### PAGINATION. ###
+
+        if page:
+            page_number = int(page)
+            page_size_number = int(page_size)
+            paginator = Paginator(polls_json, page_size_number)
 
             total_pages = paginator.num_pages
             total_items = paginator.count
 
-            if page_number > total_pages or total_items == 0:
+            if total_items == 0 or page_number > total_pages:
                 return Response({
                     'message': 'No result found',
                     'paginator':
                     {
-                        'has_next': False,
                         'total_pages':  total_pages,
                         'total_items': total_items,
+                        'has_previous': False,
+                        'has_next': False,
                     }
                 })
 
             page_obj = paginator.get_page(page_number)
+            has_previous = page_obj.has_previous()
             has_next = page_obj.has_next()
 
+        ### PAGINATION. ###
+
         # Polls list.
-        polls_list = page_obj.object_list if request.GET.get(
-            'page') else polls_json
+        polls_list = page_obj.object_list if page else polls_json
 
         # Filter the polls.
         polls = []
         for poll in polls_list:
 
-            # Fix poll data.
-            poll['_id'] = poll['_id']['$oid']
+            # Simplify poll data.
+            poll['id'] = poll['_id']['$oid']
+            del poll['_id']
             poll['created_at'] = poll['created_at']['$date']
 
             # Get the user data.
@@ -105,13 +117,12 @@ async def search_polls(request):
                     'profile_name': user_data['userprofile__profile_name']
                 }
 
-            # If is login.
+            # Find the user actions..
             if is_login:
-                # Find the user actions.
-                user_actions_doc = await polls_db.user_actions.find_one(
+                user_actions_bson = await polls_db.user_actions.find_one(
                     {
                         'user_id': request.user.id,
-                        'poll_id': ObjectId(poll['_id'])
+                        'poll_id': ObjectId(poll['id'])
                     },
                     projection={
                         '_id': 0,
@@ -122,18 +133,20 @@ async def search_polls(request):
                 )
 
                 # Convert the BSON to a JSON.
-                user_actions_json = json_util._json_convert((user_actions_doc))
+                user_actions_json = json_util._json_convert(
+                    (user_actions_bson))
 
-                poll['user_actions'] = user_actions_json if user_actions_json is not None else {}
+                poll['user_actions'] = user_actions_json or {}
 
             polls.append(poll)
 
         return Response({
-            'items': polls,
+            'polls': polls,
             'paginator': {
-                'has_next': has_next,
-                'total_pages':  total_pages,
                 'total_items': total_items,
+                'total_pages':  total_pages,
+                'has_previous': has_previous,
+                'has_next': has_next,
             },
         })
 
@@ -149,7 +162,5 @@ async def search_polls(request):
 
     # Handle other exceptions.
     except Exception as e:
-        print(str(e))
         return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            {'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
