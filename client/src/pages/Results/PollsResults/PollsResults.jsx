@@ -15,29 +15,59 @@ import PollCard from "../../../components/Cards/PollCard/PollCard";
 // SubComponent ( Results ).
 function PollsResults() {
   const { isAuthenticated, token } = useSelector((state) => state.session);
+  const [initialRender, setInitialRender] = useState(false);
+
+  // Params.
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
   const type = searchParams.get("type") || "";
+  const [dataQuery, setDataQuery] = useState(false);
+
+  // Pages data.
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState([]);
   const [message, setMessage] = useState(false);
-  const [dataQuery, setDataQuery] = useState(false);
 
-  // const [ref, inView] = useInView({
-  //   rootMargin: "0px 0px -50% 0px",
-  // });
+  const defaultPaginatorValues = {
+    total_items: 0,
+    total_pages: 0,
+    has_previous: false,
+    has_next: false,
+  };
+  const [paginator, setPaginator] = useState(defaultPaginatorValues);
 
-  const { data: lastPage } = useSearchPollsQuery(
+  // Refresh items.
+  const [refreshItems, setRefreshItems] = useState(false);
+
+  // Active pages.
+  const {
+    data: lastPage,
+    isLoading: isLastPageLoading,
+    isFetching: isLastPageFetching,
+    status: statusLastPage,
+  } = useSearchPollsQuery(
     { ...dataQuery, page: page - 1 },
-    { skip: dataQuery && page > 1 ? false : true }
+    { skip: dataQuery && paginator.has_previous ? false : true }
   );
-  const { data: currentPage } = useSearchPollsQuery(
+
+  const {
+    data: currentPage,
+    isLoading: isCurrentPageloading,
+    isFetching: isCurrentPageFetching,
+    status: statusCurrentPage,
+  } = useSearchPollsQuery(
     { ...dataQuery, page: page },
     { skip: dataQuery ? false : true }
   );
-  const { data: nextPage } = useSearchPollsQuery(
+
+  const {
+    data: nextPage,
+    isLoading: isNextPageLoading,
+    isFetching: isNextPageFetching,
+    status: statusNextPage,
+  } = useSearchPollsQuery(
     { ...dataQuery, page: page + 1 },
-    { skip: dataQuery ? false : true }
+    { skip: dataQuery && paginator.has_next ? false : true }
   );
 
   // Reset values.
@@ -45,6 +75,8 @@ function PollsResults() {
     setPage(1);
     setPages([]);
     setMessage(false);
+    setPaginator(defaultPaginatorValues);
+    setInitialRender(false);
   }, [query, type]);
 
   // Update data to fetchs.
@@ -53,7 +85,7 @@ function PollsResults() {
       ? { headers: { Authorization: `Token ${token}` } }
       : {};
 
-    setDataQuery({ ...headers, query: query });
+    setDataQuery({ ...headers, query: query, page_size: 2 });
   }, [query, isAuthenticated]);
 
   // useEffect(() => {
@@ -67,20 +99,66 @@ function PollsResults() {
   //   }
   // }, [inView]);
 
+  useEffect(() => {
+    if (currentPage && currentPage.paginator != paginator) {
+      setPaginator(currentPage.paginator);
+    }
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (
+      dataQuery &&
+      !isLastPageLoading &&
+      !isCurrentPageloading &&
+      !isNextPageLoading &&
+      !isLastPageFetching &&
+      !isCurrentPageFetching &&
+      !isNextPageFetching
+    ) {
+      setRefreshItems(true);
+    }
+  }, [page, statusLastPage, statusCurrentPage, statusNextPage]);
+
   // Add the pages in the pages state.
   useEffect(() => {
-    if ((lastPage || page <= 1) && currentPage && nextPage) {
-      setPages((prevPages) => {
-        if (page > 1) {
-          prevPages[page - 2] = lastPage.items;
-        }
-        prevPages[page - 1] = currentPage.items;
-        prevPages[page] = nextPage.items;
+    if (refreshItems) {
+      if (
+        (lastPage || !currentPage.paginator.has_previous) &&
+        currentPage &&
+        (nextPage || !currentPage.paginator.has_next)
+      ) {
+        setPages((prevPages) => {
+          // If Current page has previous page.
+          if (
+            currentPage.paginator.has_previous &&
+            lastPage.paginator.page === page - 1
+          ) {
+            prevPages[page - 2] = lastPage.items;
+          }
 
-        return prevPages;
-      });
+          // Current page.
+          if (currentPage.paginator.page === page) {
+            prevPages[page - 1] = currentPage.items;
+          }
+
+          // If Current page has next page.
+          if (
+            currentPage.paginator.has_next &&
+            nextPage.paginator.page === page + 1
+          ) {
+            prevPages[page] = nextPage.items;
+          }
+
+          return prevPages;
+        });
+      }
+      setRefreshItems(false);
     }
-  }, [page, lastPage, currentPage, nextPage]);
+  }, [refreshItems]);
+
+  useEffect(() => {
+    console.log(paginator);
+  }, [paginator]);
 
   useEffect(() => {
     console.log(page);
@@ -94,34 +172,6 @@ function PollsResults() {
       flexDir={"column"}
       alignItems={"center"}
     >
-      {/* {pages &&
-        pages.map((page) => (
-          <Box key={page} ref={ref}>
-            {page.map((poll, index) => (
-              <PollCard key={index} poll={poll} />
-            ))}
-          </Box>
-        ))} */}
-
-      {/* {pages &&
-        pages.map((page, index) => (
-          <InView
-            key={index}
-            onChange={(inView, entry) => console.log(`Inview: ${index} `)}
-          >
-            {({ inView, ref, entry }) => (
-              <Box h={"1000px"}>
-                <Box w={0} h={0} >
-                  <div ref={ref}></div>
-                </Box>
-                <div>
-                  <h2>{`Header 1 inside viewport ${inView}.`}</h2>
-                </div>
-              </Box>
-            )}
-          </InView>
-        ))} */}
-
       {pages &&
         pages.map((page, indexPage) => (
           <InView
@@ -129,16 +179,25 @@ function PollsResults() {
             key={indexPage}
             onChange={(inView, entry) => {
               if (inView && indexPage + 1 !== page) {
+                if (initialRender) {
+                  setPaginator({
+                    ...paginator,
+                    has_next: false,
+                    has_previous: false,
+                  });
+                } else {
+                  setInitialRender(true);
+                }
                 setPage(indexPage + 1);
               }
             }}
           >
             {({ inView, ref, entry }) => (
-               <div ref={ref}>
+              <Box w={"100%"} ref={ref}>
                 {page.map((poll, index) => (
                   <PollCard key={index} poll={poll} />
                 ))}
-                </div>
+              </Box>
             )}
           </InView>
         ))}

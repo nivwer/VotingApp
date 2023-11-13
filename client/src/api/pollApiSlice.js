@@ -279,22 +279,19 @@ export const pollApiSlice = createApi({
       providesTags: ["Categories"],
     }),
 
-    // Search Users.
+    // Search Polls.
     searchPolls: builder.query({
-      query: ({ headers, query, page = 1 }) => ({
-        url: `search?query=${query}&page=${page}`,
+      query: ({ headers, query, page = 1, page_size = 4 }) => ({
+        url: `search?query=${query}&page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
       providesTags: (result, error, page) =>
-        result && result.polls
+        result && result.items
           ? [
-              // Provides a tag for each post in the current page,
+              // Provides a tag for each poll in the page,
               // as well as the 'PARTIAL-LIST' tag.
-              ...result.polls.map(({ _id }) => ({
-                type: "Polls",
-                id: _id,
-              })),
+              ...result.items.map(({ id }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],

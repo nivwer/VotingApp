@@ -76,6 +76,7 @@ async def search_polls(request):
                     'message': 'No result found',
                     'paginator':
                     {
+                        'page': page_number,
                         'total_pages':  total_pages,
                         'total_items': total_items,
                         'has_previous': False,
@@ -141,8 +142,9 @@ async def search_polls(request):
             polls.append(poll)
 
         return Response({
-            'polls': polls,
+            'items': polls,
             'paginator': {
+                'page': page_number,
                 'total_items': total_items,
                 'total_pages':  total_pages,
                 'has_previous': has_previous,
