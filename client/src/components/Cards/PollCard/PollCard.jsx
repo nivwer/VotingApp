@@ -11,7 +11,7 @@ import PollCardBody from "./PollCardBody/PollCardBody";
 import PollCardFooter from "./PollCardFooter/PollCardFooter";
 
 // Component.
-function PollCard({ poll }) {
+function PollCard({ item: poll }) {
   const { isDark } = useThemeInfo();
 
   // Request to delete polls.
