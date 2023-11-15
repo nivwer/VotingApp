@@ -5,7 +5,7 @@ import { Flex, Spinner } from "@chakra-ui/react";
 function CustomSpinner({ opacity = 0.7 }) {
   return (
     <Flex
-      h={"100px"}
+      h={"100%"}
       w={"100%"}
       align={"center"}
       justify={"center"}

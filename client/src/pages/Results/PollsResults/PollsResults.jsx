@@ -20,17 +20,19 @@ function PollsResults() {
 
   // Update data to fetchs.
   useEffect(() => {
-    const headers = isAuthenticated
-      ? { headers: { Authorization: `Token ${token}` } }
-      : {};
+    if (resetValues) {
+      const headers = isAuthenticated
+        ? { headers: { Authorization: `Token ${token}` } }
+        : {};
 
-    setDataQuery({ ...headers, query: query, page_size: 2 });
-  }, [query, isAuthenticated]);
+      setDataQuery({ ...headers, query: query, page_size: 2 });
+      setResetValues(false)
+    }
+  }, [resetValues]);
 
-  // Reset pagination values.
   useEffect(() => {
-    setResetValues(true);
-  }, [query, type]);
+    setResetValues(true)
+  }, [query, type, isAuthenticated]);
 
   return (
     <Pagination
