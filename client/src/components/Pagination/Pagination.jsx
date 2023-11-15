@@ -17,10 +17,8 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
   // Pages data.
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState([]);
-
   // Message.
   const [message, setMesagge] = useState({ message: "", icon: null });
-
   // Paginator data.
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);

@@ -1,4 +1,5 @@
 // Hooks.
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   useBookmarkPollMutation,
@@ -25,7 +26,10 @@ import {
 function PollCardFooter({ poll, isLoading, state }) {
   const navigate = useNavigate();
   const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { has_shared, has_bookmarked } = poll.user_actions;
   const { showInputOption, setShowInputOption } = state;
+  // Mutation.
+  const [dataMutation, setDataMutation] = useState(false);
 
   // Share poll mananger.
   const [sharePoll, { isLoading: isShareLoading }] = useSharePollMutation();
@@ -42,20 +46,9 @@ function PollCardFooter({ poll, isLoading, state }) {
   const handleShare = async () => {
     if (isAuthenticated) {
       try {
-        const data = {
-          headers: { Authorization: `Token ${token}` },
-          id: poll._id,
-        };
-        let res = "";
-        if (!poll.user_actions.has_shared) {
-          res = await sharePoll(data);
-        } else {
-          res = await unsharePoll(data);
-        }
-
-        // If server error.
-        if (res.error) {
-        }
+        const res = !has_shared
+          ? await sharePoll(dataMutation)
+          : await unsharePoll(dataMutation);
       } catch (error) {
         console.error(error);
       }
@@ -68,20 +61,9 @@ function PollCardFooter({ poll, isLoading, state }) {
   const handleBookmark = async () => {
     if (isAuthenticated) {
       try {
-        const data = {
-          headers: { Authorization: `Token ${token}` },
-          id: poll._id,
-        };
-        let res = "";
-        if (!poll.user_actions.has_bookmarked) {
-          res = await bookmarkPoll(data);
-        } else {
-          res = await unbookmarkPoll(data);
-        }
-
-        // If server error.
-        if (res.error) {
-        }
+        const res = !has_bookmarked
+          ? await bookmarkPoll({ dataMutation })
+          : await unbookmarkPoll(dataMutation);
       } catch (error) {
         console.error(error);
       }
@@ -89,6 +71,15 @@ function PollCardFooter({ poll, isLoading, state }) {
       navigate("/signin");
     }
   };
+
+  // Update data to mutations.
+  useEffect(() => {
+    const headers = isAuthenticated
+      ? { headers: { Authorization: `Token ${token}` } }
+      : {};
+
+    setDataMutation({ ...headers, id: poll.id });
+  }, [isAuthenticated]);
 
   return (
     <HStack w={"100%"} justify={"space-between"}>
@@ -102,7 +93,7 @@ function PollCardFooter({ poll, isLoading, state }) {
         {/* Share. */}
         <PollCardButton
           onClick={() => handleShare()}
-          active={poll.user_actions.has_shared ? true : false}
+          active={has_shared ? true : false}
           icon={<FaRetweet />}
           isLoading={isShareLoading || isUnshareLoading}
           isDisabled={isLoading}
@@ -113,10 +104,8 @@ function PollCardFooter({ poll, isLoading, state }) {
         {/* Bookmark. */}
         <PollCardButton
           onClick={() => handleBookmark()}
-          active={poll.user_actions.has_bookmarked ? true : false || false}
-          icon={
-            poll.user_actions.has_bookmarked ? <FaBookmark /> : <FaRegBookmark />
-          }
+          active={has_bookmarked ? true : false || false}
+          icon={has_bookmarked ? <FaBookmark /> : <FaRegBookmark />}
           isLoading={isBookmarkLoading || isUnbookmarkLoading}
           isDisabled={isLoading}
         >

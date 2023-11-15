@@ -10,11 +10,9 @@ import Pagination from "../../../components/Pagination/Pagination";
 // SubComponent ( Results ).
 function PollsResults() {
   const { isAuthenticated, token } = useSelector((state) => state.session);
-  // Params.
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
   const type = searchParams.get("type") || "";
-  // Query.
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
 
@@ -25,11 +23,12 @@ function PollsResults() {
         ? { headers: { Authorization: `Token ${token}` } }
         : {};
 
-      setDataQuery({ ...headers, query: query, page_size: 2 });
+      setDataQuery({ ...headers, query: query, page_size: 4 });
       setResetValues(false)
     }
   }, [resetValues]);
 
+  // Reset the values.
   useEffect(() => {
     setResetValues(true)
   }, [query, type, isAuthenticated]);

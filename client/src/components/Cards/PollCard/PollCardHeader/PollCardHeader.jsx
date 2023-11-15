@@ -82,14 +82,6 @@ function PollCardHeader({ poll, deletePoll, isLoading }) {
             </Text>
           </Stack>
         </HStack>
-        {/* <HStack justify={"space-between"}> */}
-        {/* Menu. */}
-        {/* <PollCardMenu
-            poll={poll}
-            isLoading={isLoading}
-            deletePoll={deletePoll}
-          />
-        </HStack> */}
       </HStack>
     </>
   );

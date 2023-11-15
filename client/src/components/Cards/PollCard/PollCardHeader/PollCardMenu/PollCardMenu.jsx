@@ -19,7 +19,9 @@ import { FaEllipsis } from "react-icons/fa6";
 function PollCardMenu({ poll, deletePoll, isLoading }) {
   const navigate = useNavigate();
   const { isDark } = useThemeInfo();
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { isAuthenticated, user, token } = useSelector(
+    (state) => state.session
+  );
   const { id } = useParams();
 
   // Delete poll.
@@ -66,7 +68,7 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
             position={"absolute"}
             right={5}
           />
-          {poll.is_owner ? (
+          {user.id == poll.user_id ? (
             <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>
               <MenuItem
                 as={PollModal}
@@ -76,7 +78,7 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
               />
               <MenuItem
                 as={Button}
-                onClick={() => handleDeletePoll(poll._id)}
+                onClick={() => handleDeletePoll(poll.id)}
                 {...itemStyle}
                 isDisabled={isLoading}
               >

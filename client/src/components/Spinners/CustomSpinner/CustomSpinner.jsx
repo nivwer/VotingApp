@@ -2,15 +2,9 @@
 import { Flex, Spinner } from "@chakra-ui/react";
 
 // Component.
-function CustomSpinner({ opacity = 0.7 }) {
+function CustomSpinner() {
   return (
-    <Flex
-      h={"100%"}
-      w={"100%"}
-      align={"center"}
-      justify={"center"}
-      opacity={opacity}
-    >
+    <Flex h={"100%"} w={"100%"} align={"center"} justify={"center"}>
       <Spinner size="md" />
     </Flex>
   );
