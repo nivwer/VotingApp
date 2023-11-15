@@ -1,39 +1,29 @@
 // Hooks.
 import { useEffect, useState } from "react";
+import { useThemeInfo } from "../../hooks/Theme";
 // Components.
 import { Box, Center, Stack, Text } from "@chakra-ui/react";
 // Icons.
 import { FaRegFaceFrown, FaRegFaceMehBlank } from "react-icons/fa6";
 // Others.
 import { InView } from "react-intersection-observer";
+import CustomSpinner from "../Spinners/CustomSpinner/CustomSpinner";
 
 // Component.
 function Pagination({ Card, usePageQuery, dataQuery, reset }) {
-  // Initial Render.
+  const { isDark } = useThemeInfo();
   const [initialRender, setInitialRender] = useState(false);
-  // Reset values.
   const { resetValues, setResetValues } = reset;
-
   // Pages data.
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState([]);
   // Message.
   const [message, setMessage] = useState(false);
-
   // Paginator data.
   const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [hasPrevious, setHasPrevious] = useState(false);
   const [hasNext, setHasNext] = useState(false);
-
-//   const defaultPaginatorValues = {
-//     total_items: 0,
-//     total_pages: 0,
-//     has_previous: false,
-//     has_next: false,
-//   };
-//   const [paginator, setPaginator] = useState(defaultPaginatorValues);
-
   // Refresh items.
   const [refreshItems, setRefreshItems] = useState(false);
 
@@ -72,18 +62,16 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
   useEffect(() => {
     setPage(1);
     setPages([]);
-
     setMessage(false);
-    // setPaginator(defaultPaginatorValues);
-    setTotalItems(0)
-    setTotalPages(0)
-    setHasPrevious(false)
-    setHasNext(false)
-
+    setTotalItems(0);
+    setTotalPages(1);
+    setHasPrevious(false);
+    setHasNext(false);
     setInitialRender(false);
     setResetValues(false);
   }, [resetValues]);
 
+  // Update paginator values.
   useEffect(() => {
     if (currentPage) {
       currentPage.paginator.total_items != totalItems &&
@@ -100,6 +88,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
     }
   }, [currentPage]);
 
+  // Activate the refresh pages in the pages state.
   useEffect(() => {
     if (
       dataQuery &&
@@ -132,7 +121,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
           }
 
           // Current page.
-          if (currentPage.paginator.page === page) {
+          if (currentPage.items && currentPage.paginator.page === page) {
             prevPages[page - 1] = currentPage.items;
           }
 
@@ -147,6 +136,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
           return prevPages;
         });
       }
+      
       setRefreshItems(false);
     }
   }, [refreshItems]);
@@ -159,7 +149,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
       flexDir={"column"}
       alignItems={"center"}
     >
-      {pages &&
+      {pages && totalItems > 0 &&
         pages.map((page, indexPage) => (
           <InView
             rootMargin={"-50% 0px -50% 0px"}
@@ -167,8 +157,8 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
             onChange={(inView, entry) => {
               if (inView && indexPage + 1 !== page) {
                 if (initialRender) {
-                  setHasPrevious(false)
-                  setHasNext(false)
+                  setHasPrevious(false);
+                  setHasNext(false);
                 } else {
                   setInitialRender(true);
                 }
@@ -185,6 +175,30 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
             )}
           </InView>
         ))}
+
+      <Box h={"150px"} w={"100%"}>
+        {/* <CustomSpinner /> */}
+
+        {currentPage && (
+          <Center opacity={isDark ? 0.7 : 0.5} w={"100%"} h={"100%"}>
+            <Stack>
+              <Text fontWeight={"semibold"}>
+                {totalItems === 0 && "Results not found"}
+                {pages && pages.length === totalPages && "No more results"}
+              </Text>
+              <Center fontSize={"3xl"}>
+                {/* <Box>
+                  {dataUsers && dataUsers.message ? (
+                    <FaRegFaceFrown />
+                  ) : (
+                    <FaRegFaceMehBlank />
+                  )}
+                </Box> */}
+              </Center>
+            </Stack>
+          </Center>
+        )}
+      </Box>
     </Box>
   );
 }
