@@ -322,5 +322,6 @@ export const {
   useUnSharePollMutation,
   useBookmarkPollMutation,
   useUnBookmarkPollMutation,
+  // Search Polls
   useSearchPollsQuery,
 } = pollApiSlice;

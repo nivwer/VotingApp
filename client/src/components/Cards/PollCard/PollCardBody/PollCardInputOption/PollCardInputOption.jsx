@@ -1,5 +1,7 @@
 // Hooks.
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useAddOptionMutation } from "../../../../../api/pollApiSlice";
@@ -17,8 +19,10 @@ import { FaPlus } from "react-icons/fa6";
 
 // SubComponent( PollCardBody ).
 function PollCardInputOption({ id, setShowInputOption }) {
-  const { token } = useSelector((state) => state.session);
+  const navigate = useNavigate();
+  const { isAuthenticated, token } = useSelector((state) => state.session);
   const { isDark } = useThemeInfo();
+  const [dataMutation, setDataMutation] = useState(false);
 
   // React hook form.
   const {
@@ -33,29 +37,34 @@ function PollCardInputOption({ id, setShowInputOption }) {
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
-    try {
-      let res = "";
-      if (token) {
-        res = await addOption({
-          id: id,
-          headers: { Authorization: `Token ${token}` },
-          body: data,
-        });
-      }
+    if (isAuthenticated) {
+      const body = { body: data };
+      try {
+        const res = await addOption({ ...dataMutation, ...body });
+        res.data && setShowInputOption(false);
 
-      if (res.data) {
-        setShowInputOption(false);
-      }
-      // If server error.
-      if (res.error) {
-        for (const fieldName in res.error.data) {
-          setError(fieldName, { message: res.error.data[fieldName][0] });
+        // If server error.
+        if (res.error) {
+          for (const fieldName in res.error.data) {
+            setError(fieldName, { message: res.error.data[fieldName][0] });
+          }
         }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
+    } else {
+      navigate("/signin");
     }
   });
+
+  // Update data to mutations.
+  useEffect(() => {
+    const headers = isAuthenticated
+      ? { headers: { Authorization: `Token ${token}` } }
+      : {};
+
+    setDataMutation({ ...headers, id: id });
+  }, [isAuthenticated]);
 
   return (
     <form onSubmit={onSubmit}>

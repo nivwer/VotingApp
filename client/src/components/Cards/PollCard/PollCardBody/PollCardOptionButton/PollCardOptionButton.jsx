@@ -1,5 +1,5 @@
 // Hooks.
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useThemeInfo } from "../../../../../hooks/Theme";
@@ -16,17 +16,17 @@ function PollCardOptionButton({ poll, option, voteState, disabledState }) {
   const navigate = useNavigate();
   const { isDark, ThemeColor } = useThemeInfo();
   const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { has_voted } = poll.user_actions;
   const { vote, setVote } = voteState;
   const { isDisabled, setIsDisabled } = disabledState;
+  const [dataMutation, setDataMutation] = useState(false);
 
   // Add user vote.
   const [addUserVote, { isLoading: isAddVoteLoading }] =
     useAddUserVoteMutation();
-
   // Update user vote.
   const [updateUserVote, { isLoading: isUpdateVoteLoading }] =
     useUpdateUserVoteMutation();
-
   // Delete user vote.
   const [deleteUserVote, { isLoading: isDeleteVoteLoading }] =
     useDeleteUserVoteMutation();
@@ -35,41 +35,35 @@ function PollCardOptionButton({ poll, option, voteState, disabledState }) {
     isAddVoteLoading || isUpdateVoteLoading || isDeleteVoteLoading;
 
   const handleUserVote = async (value) => {
-    let res = "";
-    const data = {
-      id: poll._id,
-      headers: { Authorization: `Token ${token}` },
-      body: { vote: value },
-    };
+    const body = { body: { vote: value } };
     const oldVote = vote;
 
-    if (!isAuthenticated) {
-      navigate("/signin");
-    } else if (value != vote) {
-      setVote(value);
-      try {
-        if (vote === "") {
-          res = await addUserVote(data);
-        } else {
-          res = await updateUserVote(data);
-        }
+    if (isAuthenticated) {
+      if (value != vote) {
+        setVote(value);
+        try {
+          const res =
+            vote === ""
+              ? await addUserVote({ ...dataMutation, ...body })
+              : await updateUserVote({ ...dataMutation, ...body });
 
-        res.error && setVote(oldVote);
-      } catch (error) {
-        setVote(oldVote);
-        console.log(error);
+          res.error && setVote(oldVote);
+        } catch (error) {
+          setVote(oldVote);
+          console.log(error);
+        }
+      } else {
+        setVote("");
+        try {
+          const res = vote != "" && (await deleteUserVote(data));
+          res.error && setVote(oldVote);
+        } catch (error) {
+          setVote(oldVote);
+          console.log(error);
+        }
       }
     } else {
-      setVote("");
-      try {
-        if (vote != "") {
-          res = await deleteUserVote(data);
-        }
-        res.error && setVote(oldVote);
-      } catch (error) {
-        setVote(oldVote);
-        console.log(error);
-      }
+      navigate("/signin");
     }
   };
 
@@ -78,10 +72,17 @@ function PollCardOptionButton({ poll, option, voteState, disabledState }) {
   }, [isLoading]);
 
   useEffect(() => {
-    setVote(
-      poll.user_actions.has_voted ? poll.user_actions.has_voted.vote : ""
-    );
+    setVote(has_voted ? has_voted.vote : "");
   }, [poll]);
+
+  // Update data to mutations.
+  useEffect(() => {
+    const headers = isAuthenticated
+      ? { headers: { Authorization: `Token ${token}` } }
+      : {};
+
+    setDataMutation({ ...headers, id: poll.id });
+  }, [isAuthenticated]);
 
   return (
     <Button
