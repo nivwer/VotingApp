@@ -1,5 +1,8 @@
 # Standard.
 from datetime import datetime
+# BSON.
+from bson import json_util
+from bson.objectid import ObjectId
 # Django.
 from django.contrib.auth.models import User
 # Rest Framework.
@@ -13,10 +16,8 @@ from rest_framework.authentication import TokenAuthentication
 from adrf.decorators import api_view
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
-# MongoDB.
+# PyMongo.
 from pymongo.errors import PyMongoError
-from bson import json_util
-from bson.objectid import ObjectId
 # Models and Serializers.
 from ..serializers import PollSerializer, OptionsSerializer
 
@@ -150,16 +151,16 @@ async def poll_create(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def poll_read(request, id):
-    # If the current user is authenticated.
+    # Check if the current user is authenticated.
     is_authenticated = True if request.user else False
 
     # If poll ID is invalid.
     if len(id) != 24:
         raise ValidationError(
-            detail={'message': 'Invalid poll id.'})
+            detail={'message': 'Invalid poll ID'})
 
     try:
-        # Get databases.
+        # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
@@ -249,13 +250,13 @@ async def poll_read(request, id):
     # Handle MongoDB errors.
     except PyMongoError as error:
         return Response(
-            data={'error': 'Internal Server Error'},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as error:
         return Response(
-            data={'error': 'Internal Server Error'},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
