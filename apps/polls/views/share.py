@@ -1,7 +1,5 @@
 # Standard.
 from datetime import datetime
-# Virtualenv.
-from dotenv import load_dotenv
 # Rest Framework.
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -17,21 +15,6 @@ from utils.mongo_connection import MongoDBSingleton
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
 
-# Load the virtual environment.
-load_dotenv()
-
-
-# Helpers.
-
-# Get collections from a database in MongoDB.
-class GetCollectionsMongoDB:
-    def __init__(self, database, collections):
-        # Get database.
-        db = MongoDBSingleton().client[database]
-        # Get collections.
-        for collection in collections:
-            setattr(self, collection, db[collection])
-
 
 # Views.
 
@@ -43,9 +26,8 @@ class GetCollectionsMongoDB:
 async def share_action(request, id):
     session = None
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_actions'])
+        # Get databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
@@ -115,7 +97,10 @@ async def share_action(request, id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('Poll shared successfully')
+                return Response({
+                    'message': 'Poll shared successfully',
+                    'id': id
+                })
 
     # Handle validation errors.
     except ValidationError as e:
@@ -151,9 +136,8 @@ async def share_action(request, id):
 async def unshare_action(request, id):
     session = None
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_actions'])
+        # Get databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
@@ -203,7 +187,10 @@ async def unshare_action(request, id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('Poll shared successfully')
+                return Response({
+                    'message': 'Poll unshared successfully',
+                    'id': id
+                })
 
     # Handle validation errors.
     except ValidationError as e:

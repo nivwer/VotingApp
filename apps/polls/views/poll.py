@@ -1,12 +1,10 @@
 # Standard.
 from datetime import datetime
-# Virtualenv.
-from dotenv import load_dotenv
 # Django.
 from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.exceptions import ValidationError, PermissionDenied, NotFound
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -21,22 +19,6 @@ from bson import json_util
 from bson.objectid import ObjectId
 # Models and Serializers.
 from ..serializers import PollSerializer, OptionsSerializer
-
-
-# Load the virtual environment.
-load_dotenv()
-
-
-# Helpers.
-
-# Get collections from a database in MongoDB.
-class GetCollectionsMongoDB:
-    def __init__(self, database, collections):
-        # Get database.
-        db = MongoDBSingleton().client[database]
-        # Get collections.
-        for collection in collections:
-            setattr(self, collection, db[collection])
 
 
 # Views.
@@ -72,8 +54,8 @@ async def poll_create(request):
                 }
             )
 
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+        # Get databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -137,17 +119,48 @@ async def poll_create(request):
             await session.end_session()
 
 
-# Handles the read to a polls.
+# View: "Poll Read"
+
+# View to retrieve and display details of a poll.
+# This view supports GET requests and is open to any user (no authentication required).
+
+# --- Purpose ---
+# Fetches and displays details of a poll using the provided poll ID.
+
+# --- Access Control ---
+# For private polls, only the owner can access the information.
+# The view returns a JSON response with the poll details and actions of the authenticated user.
+
+# --- Responses ---
+# - 200 OK: Poll details and actions of the authenticated user.
+# - 400 Bad Request: Invalid poll ID.
+# - 404 Not Found: Poll not found.
+# - 403 Forbidden: Permission issues (private poll access).
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- Error Handling ---
+# Handles different scenarios with appropriate HTTP response codes.
+# Specific handling for invalid poll ID, poll not found, and permission issues.
+# MongoDB errors and other exceptions result in a 500 Internal Server Error.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-15
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def poll_read(request, id):
-    # If user is login.
-    is_login = True if request.user else False
+    # If the current user is authenticated.
+    is_authenticated = True if request.user else False
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll id.'})
 
     try:
-       # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'user_actions'])
+        # Get databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -155,67 +168,94 @@ async def poll_read(request, id):
 
         # If poll is not found.
         if not poll_bson:
-            raise ValidationError('Poll is not found.')
+            raise NotFound(
+                detail={'message': 'Poll not found'})
 
-        # Convert the BSON response to a JSON response.
+        # Convert BSON to JSON.
         poll_json = json_util._json_convert((poll_bson))
 
-        # If privacy of poll is private.
+        # Poll privacy.
         is_private = poll_bson['privacy'] == 'private'
         is_owner = poll_bson['user_id'] == request.user.id
+
         if (not is_owner) and is_private:
-            raise PermissionDenied('This poll is private.')
+            raise PermissionDenied(
+                detail={'message': 'This poll is private'})
 
-        # If privacy of poll is friends_only. ?
-
-        # Fix data.
-        poll_json['_id'] = poll_json['_id']['$oid']
+        # Simplify poll data.
+        poll_json['id'] = poll_json['_id']['$oid']
+        del poll_json['_id']
         poll_json['created_at'] = poll_json['created_at']['$date']
-        poll_json['is_owner'] = is_owner
 
-        # Get the user data.
-        user_data = await User.objects.filter(id=poll_json['user_id']).values(
-            'username', 'userprofile__profile_picture', 'userprofile__profile_name').afirst()
+        # Get poll user data.
+        user_data = await User.objects.filter(
+            id=poll_json['user_id']
+        ).values(
+            'username',
+            'userprofile__profile_picture',
+            'userprofile__profile_name'
+        ).afirst()
 
-        poll_json['profile'] = {
+        poll_json['user_profile'] = {
             'username': user_data['username'],
             'profile_picture': user_data['userprofile__profile_picture'],
             'profile_name': user_data['userprofile__profile_name']
         }
 
-        # If is login.
-        if is_login:
-            # Find the user actions.
-            user_actions_doc = await polls_db.user_actions.find_one(
-                {'user_id': request.user.id,
-                 'poll_id': ObjectId(id)})
+        # If the current user is authenticated.
+        if is_authenticated:
+            # Find user actions of the authenticated user. ( Current user )
+            user_actions_bson = await polls_db.user_actions.find_one(
+                {'user_id': request.user.id, 'poll_id': ObjectId(id)},
+                projection={
+                    '_id': 0,
+                    'has_voted': 1,
+                    'has_shared': 1,
+                    'has_bookmarked': 1
+                },
+            )
 
-            # Convert the BSON to a JSON.
-            user_actions_json = json_util._json_convert((user_actions_doc))
+            # Convert BSON to JSON.
+            user_actions_json = json_util._json_convert((user_actions_bson))
 
-            poll_json['user_actions'] = user_actions_json if user_actions_json is not None else {}
+            authenticated_user_actions = user_actions_json or {}
 
         # Response.
-        return Response(poll_json)
+        return Response(
+            data={
+                'poll': poll_json,
+                'authenticated_user_actions': authenticated_user_actions
+            },
+            status=status.HTTP_200_OK)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         return Response(
-            {'error': str(e)},
+            data={'error': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
+    except Exception as error:
         return Response(
-            {'error': str(e)},
+            data={'error': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -226,8 +266,8 @@ async def poll_read(request, id):
 async def poll_update(request, id):
     session = None
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+        # Get databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -349,6 +389,10 @@ async def poll_update(request, id):
     except PermissionDenied as e:
         return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
 
+    # Handle validation errors.
+    except NotFound as e:
+        return Response(e.detail, status=status.HTTP_404_NOT_FOUND)
+
     # Handle MongoDB errors.
     except PyMongoError as e:
         if session:
@@ -365,6 +409,7 @@ async def poll_update(request, id):
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # End session.
     finally:
         if session:
             await session.end_session()
@@ -377,9 +422,8 @@ async def poll_update(request, id):
 async def poll_delete(request, id):
     session = None
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'comments'])
+        # Get databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll = await polls_db.polls.find_one(
