@@ -54,7 +54,7 @@ from ..serializers import CommentSerializer
 # - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
 
 # --- MongoDB Transaction ---
-# Uses a MongoDB transaction to ensure atomicity while adding the comment and updating the comment counter.
+# Uses a MongoDB transaction to ensure atomicity while adding the comment and updating the comment counter of the poll.
 
 # --- Privacy Check ---
 # Checks if the poll is private and the user is not the owner, raising a PermissionDenied error.
@@ -124,7 +124,7 @@ async def comment_add(request, id):
 
                 comment_id = comment.inserted_id
 
-                # Add comment in comment counter.
+                # Add comment in comment counter of the poll.
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
@@ -337,12 +337,61 @@ async def comment_update(request, id, comment_id):
             await session.end_session()
 
 
-# Handles the process of removing a comment in a poll.
+# View: "Comment Delete"
+
+# View to delete an existing comment for a specific poll.
+# This view supports DELETE requests and requires token-based authentication.
+
+# --- Purpose ---
+# Deletes an existing comment in a specified poll, considering ownership checks.
+# Returns a JSON response indicating the success of the comment deletion.
+
+# --- Path Parameters ---
+# - id (required): The ID of the poll to which the comment belongs.
+# - comment_id (required): The ID of the comment to be deleted.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only authenticated users who are the owners of the comment are allowed to delete it.
+
+# --- Responses ---
+# - 200 OK: Comment deleted successfully, includes the ID of the poll and the comment.
+# - 400 Bad Request: Invalid poll ID, invalid comment ID, or validation error in the request payload.
+# - 403 Forbidden: Permission issues (authentication failure or not the owner of the comment).
+# - 404 Not Found: Poll not found or comment not found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- MongoDB Transaction ---
+# Uses a MongoDB transaction to ensure atomicity while deleting the comment.
+
+# --- Ownership Check ---
+# Checks if the user is the owner of the comment, raising a PermissionDenied error if not.
+
+# --- Error Handling ---
+# Handles different scenarios with appropriate HTTP response codes.
+# Specific handling for invalid poll ID, invalid comment ID, authentication failure, validation errors, ownership issues, poll not found, comment not found, and MongoDB errors.
+# Rolls back the MongoDB transaction in case of errors.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-16
+
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def comment_delete(request, id, comment_id):
     session = None
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
+    # If poll ID is invalid.
+    if len(comment_id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid comment ID'})
+
     try:
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
@@ -353,13 +402,18 @@ async def comment_delete(request, id, comment_id):
 
         # If poll is not found.
         if not poll_bson:
-            raise ValidationError('Poll is not found.')
+            raise NotFound(
+                detail={'message': 'Poll not found'})
 
-         # If user is not authorized.
-        is_owner = poll_bson['user_id'] == request.user.id
+        # Find the comment in the comments collection.
+        comment_bson = await polls_db.comments.find_one(
+            {'_id': ObjectId(comment_id)})
+
+        # If user is not authorized.
+        is_owner = comment_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
-                'You are not authorized to remove this comment.')
+                detail={'message': 'Not authorized.'})
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -372,7 +426,7 @@ async def comment_delete(request, id, comment_id):
                     session=session
                 )
 
-                # Remove comment in comment counter.
+                # Remove comment in comment counter of the poll.
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
@@ -387,39 +441,56 @@ async def comment_delete(request, id, comment_id):
                 if isNotRemoved:
                     await session.abort_transaction()
                     raise PyMongoError(
-                        'An error occurred while processing your request.',
+                        {'error': 'An error occurred while processing your request.'},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                 # Save transaction.
                 await session.commit_transaction()
 
                 # Response.
-                return Response('Comment updated successfully')
+                return Response(
+                    data={
+                        'message': 'Comment removed successfully',
+                        'id': id,
+                        'comment_id': comment_id,
+                    },
+                    status=status.HTTP_200_OK)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
+    except Exception as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # End session.
     finally:
         if session:
             await session.end_session()

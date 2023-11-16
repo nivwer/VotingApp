@@ -127,13 +127,13 @@ async def poll_create(request):
 
 # --- Purpose ---
 # Fetches and displays details of a poll using the provided poll ID.
+# Returns a JSON response with poll details and user actions.
 
 # --- Path Parameters ---
 # - id (required): The ID of the poll.
 
 # --- Access Control ---
 # For private polls, only the owner can access the information.
-# The view returns a JSON response with the poll details and actions of the authenticated user.
 
 # --- Responses ---
 # - 200 OK: Poll details and actions of the authenticated user.
