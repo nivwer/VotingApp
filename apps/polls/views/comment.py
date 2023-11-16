@@ -185,7 +185,48 @@ async def comment_add(request, id):
             await session.end_session()
 
 
-# Handles the process of updating a comment in a poll.
+# View: "Comment Update"
+
+# View to update an existing comment for a specific poll.
+# This view supports PATCH requests and requires token-based authentication.
+
+# --- Purpose ---
+# Updates the text of an existing comment in a specified poll, considering ownership checks.
+# Returns a JSON response indicating the success of the comment update.
+
+# --- Path Parameters ---
+# - id (required): The ID of the poll to which the comment belongs.
+# - comment_id (required): The ID of the comment to be updated.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only authenticated users who are the owners of the comment are allowed to update it.
+
+# --- Request Body ---
+# Expects a JSON payload with a 'comment' field containing the updated text of the comment.
+
+# --- Responses ---
+# - 200 OK: Comment updated successfully, includes the ID of the poll and the comment.
+# - 400 Bad Request: Invalid poll ID, invalid comment ID, or validation error in the request payload.
+# - 403 Forbidden: Permission issues (authentication failure or not the owner of the comment).
+# - 404 Not Found: Poll not found or comment not found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- MongoDB Transaction ---
+# Uses a MongoDB transaction to ensure atomicity while updating the comment.
+
+# --- Ownership Check ---
+# Checks if the user is the owner of the comment, raising a PermissionDenied error if not.
+
+# --- Error Handling ---
+# Handles different scenarios with appropriate HTTP response codes.
+# Specific handling for invalid poll ID, invalid comment ID, authentication failure, validation errors, ownership issues, poll not found, comment not found, and MongoDB errors.
+# Rolls back the MongoDB transaction in case of errors.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-16
+
 @api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -196,6 +237,11 @@ async def comment_update(request, id, comment_id):
     if len(id) != 24:
         raise ValidationError(
             detail={'message': 'Invalid poll ID'})
+
+     # If poll ID is invalid.
+    if len(comment_id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid comment ID'})
 
     try:
         # Connect to the MongoDB databases.
@@ -210,8 +256,12 @@ async def comment_update(request, id, comment_id):
             raise NotFound(
                 detail={'message': 'Poll not found'})
 
+        # Find the comment in the comments collection.
+        comment_bson = await polls_db.comments.find_one(
+            {'_id': ObjectId(comment_id)})
+
         # If user is not authorized.
-        is_owner = poll_bson['user_id'] == request.user.id
+        is_owner = comment_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
                 detail={'message': 'Not authorized.'})
@@ -248,29 +298,40 @@ async def comment_update(request, id, comment_id):
                     status=status.HTTP_200_OK)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
+    except Exception as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # End session.
     finally:
         if session:
             await session.end_session()
