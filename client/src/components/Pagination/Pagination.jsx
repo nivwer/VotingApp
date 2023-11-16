@@ -4,7 +4,11 @@ import { useThemeInfo } from "../../hooks/Theme";
 // Components.
 import { Box, Center, Stack, Text } from "@chakra-ui/react";
 // Icons.
-import { FaRegFaceFrown, FaRegFaceMehBlank } from "react-icons/fa6";
+import {
+  FaRegFaceFrown,
+  FaRegFaceMehBlank,
+  FaCircleExclamation,
+} from "react-icons/fa6";
 // Others.
 import { InView } from "react-intersection-observer";
 import CustomSpinner from "../Spinners/CustomSpinner/CustomSpinner";
@@ -40,6 +44,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
 
   const {
     data: currentPage,
+    error,
     isLoading: isCurrentPageloading,
     isFetching: isCurrentPageFetching,
     status: statusCurrentPage,
@@ -140,29 +145,27 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
           });
         }
 
-        // If the server response a message, you can insert in here.
-        if (currentPage.paginator.total_items === 0) {
+        if (!currentPage.has_next && currentPage.message) {
           setMesagge({
-            message: "Results not found",
-            icon: <FaRegFaceFrown />,
-          });
-        }
-        if (
-          currentPage.paginator.total_items > 0 &&
-          !currentPage.paginator.has_next
-        ) {
-          setMesagge({
-            message: "No more results",
+            message: currentPage.message,
             icon: <FaRegFaceMehBlank />,
           });
         }
       }
 
       if (error) {
-        {error.status === 400 && <FaRegFaceFrown />}
-        {error.status === 403 && <FaLock />}
+        {
+          setMesagge({
+            message: error.data.message,
+            icon:
+              error.status === 404 ? (
+                <FaRegFaceFrown />
+              ) : (
+                <FaCircleExclamation />
+              ),
+          });
+        }
       }
-
 
       setRefreshItems(false);
     }
@@ -207,7 +210,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
       <Box h={"150px"} w={"100%"}>
         {!message.message && <CustomSpinner />}
 
-        {currentPage && message.message && (
+        {(currentPage || error) && message.message && (
           <Center opacity={isDark ? 0.7 : 0.5} w={"100%"} h={"100%"}>
             <Stack>
               <Text fontWeight={"semibold"}>{message.message}</Text>

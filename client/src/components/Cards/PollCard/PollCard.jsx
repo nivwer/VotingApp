@@ -11,14 +11,13 @@ import PollCardBody from "./PollCardBody/PollCardBody";
 import PollCardFooter from "./PollCardFooter/PollCardFooter";
 
 // Component.
-function PollCard({ item: poll }) {
+function PollCard({ item }) {
+  const { poll, authenticated_user_actions: userActions } = item;
   const { isDark } = useThemeInfo();
+  const [showInputOption, setShowInputOption] = useState(false);
 
   // Request to delete polls.
   const [deletePoll, { isLoading }] = useDeletePollMutation();
-
-  // Show input option.
-  const [showInputOption, setShowInputOption] = useState(false);
 
   return (
     <>
@@ -47,6 +46,7 @@ function PollCard({ item: poll }) {
           <CardBody pt={2}>
             <PollCardBody
               poll={poll}
+              userActions={userActions}
               isLoading={isLoading}
               state={{
                 showInputOption: showInputOption,
@@ -59,6 +59,7 @@ function PollCard({ item: poll }) {
           <CardFooter py={3}>
             <PollCardFooter
               poll={poll}
+              userActions={userActions}
               isLoading={isLoading}
               state={{
                 showInputOption: showInputOption,

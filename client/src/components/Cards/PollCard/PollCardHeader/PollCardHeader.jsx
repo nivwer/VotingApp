@@ -33,11 +33,11 @@ function PollCardHeader({ poll, deletePoll, isLoading }) {
     <>
       <HStack w={"100%"}>
         <HStack flex={1} mt={4}>
-          {/* Profile Picture. */}
-          <NavLink to={`/${poll.profile.username}`}>
+          {/* user_Profile Picture. */}
+          <NavLink to={`/${poll.user_profile.username}`}>
             <IconButton isDisabled={isLoading} variant={"unstyled"}>
               <Avatar
-                src={poll.profile.profile_picture}
+                src={poll.user_profile.profile_picture}
                 size={"md"}
                 h={"42px"}
                 w={"42px"}
@@ -49,16 +49,16 @@ function PollCardHeader({ poll, deletePoll, isLoading }) {
           <Stack w={"100%"} mt={1} ml={1} fontSize={"md"} spacing={0}>
             <HStack justify={"space-between"}>
               <HStack spacing={1}>
-                {/* Profile Name. */}
-                <NavLink to={`/${poll.profile.username}`}>
+                {/* user_Profile Name. */}
+                <NavLink to={`/${poll.user_profile.username}`}>
                   <Text h={5} fontWeight={"black"} opacity={isDark ? 1 : 0.9}>
-                    {poll.profile.profile_name}
+                    {poll.user_profile.profile_name}
                   </Text>
                 </NavLink>
                 {/* Username. */}
-                <NavLink to={`/${poll.profile.username}`}>
+                <NavLink to={`/${poll.user_profile.username}`}>
                   <Text h={5} fontWeight={"medium"} opacity={0.5}>
-                    @{poll.profile.username}
+                    @{poll.user_profile.username}
                   </Text>
                 </NavLink>
                 <HStack spacing={1} fontWeight="medium" opacity={0.5}>

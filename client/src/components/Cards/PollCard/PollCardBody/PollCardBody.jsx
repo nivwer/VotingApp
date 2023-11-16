@@ -9,8 +9,8 @@ import PollCardOptionButton from "./PollCardOptionButton/PollCardOptionButton";
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 
 // SubComponent ( PollCard ).
-function PollCardBody({ poll, isLoading, state }) {
-  const { has_voted } = poll.user_actions;
+function PollCardBody({ poll, userActions, isLoading, state }) {
+  const { has_voted } = userActions;
   const [vote, setVote] = useState(has_voted ? has_voted.vote : "");
   const { showInputOption, setShowInputOption } = state;
   const [showAllOptions, setShowAllOptions] = useState(false);
@@ -40,6 +40,7 @@ function PollCardBody({ poll, isLoading, state }) {
               <PollCardOptionButton
                 key={index}
                 poll={poll}
+                userActions={userActions}
                 option={option}
                 voteState={{ vote: vote, setVote: setVote }}
                 disabledState={{

@@ -23,10 +23,10 @@ import {
 } from "react-icons/fa6";
 
 // SubComponent ( PollCard ).
-function PollCardFooter({ poll, isLoading, state }) {
+function PollCardFooter({ poll, userActions, isLoading, state }) {
   const navigate = useNavigate();
   const { isAuthenticated, token } = useSelector((state) => state.session);
-  const { has_shared, has_bookmarked } = poll.user_actions;
+  const { has_shared, has_bookmarked } = userActions
   const { showInputOption, setShowInputOption } = state;
   // Mutation.
   const [dataMutation, setDataMutation] = useState(false);
@@ -85,7 +85,7 @@ function PollCardFooter({ poll, isLoading, state }) {
     <HStack w={"100%"} justify={"space-between"}>
       <HStack mx={5} spacing={4}>
         {/* Comment. */}
-        <Link to={`/${poll.profile.username}/${poll.id}`}>
+        <Link to={`/${poll.user_profile.username}/${poll.id}`}>
           <PollCardButton icon={<FaRegComment />} isDisabled={isLoading}>
             {poll.comments_counter}
           </PollCardButton>

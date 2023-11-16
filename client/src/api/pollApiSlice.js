@@ -294,10 +294,10 @@ export const pollApiSlice = createApi({
         method: "GET",
         headers: headers,
       }),
-      providesTags: ({ items }) =>
-        items
+      providesTags: (res) =>
+      res
           ? [
-              ...items.map(({ id }) => ({ type: "Polls", id: id })),
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],

@@ -13,7 +13,11 @@ function PollComments({ id }) {
   const [dataQuery, setDataQuery] = useState(false);
 
   // Query to the backend to get the comments.
-  const { data: dataComments , error, isLoading } = useReadCommentsQuery(dataQuery, {
+  const {
+    data: dataComments,
+    error,
+    isLoading,
+  } = useReadCommentsQuery(dataQuery, {
     skip: dataQuery ? false : true,
   });
 

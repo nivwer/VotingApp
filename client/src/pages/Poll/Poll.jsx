@@ -10,7 +10,7 @@ import { Box, Center, Stack, Text } from "@chakra-ui/react";
 // SubComponents.
 import PollComments from "./PollComments/PollComments";
 // Icons.
-import { FaRegFaceFrown, FaLock } from "react-icons/fa6";
+import { FaRegFaceFrown, FaLock, FaCircleExclamation } from "react-icons/fa6";
 import { useThemeInfo } from "../../hooks/Theme";
 
 // Page.
@@ -33,13 +33,13 @@ function Poll() {
     setDataQuery({ ...headers, id: id });
   }, [id, isAuthenticated]);
 
-  error && console.log(error)
+  error && console.log(error);
 
   return (
     <>
       {data && !isLoading ? (
         <>
-          <PollCard item={data.poll} />
+          <PollCard item={data} />
           <PollComments id={id} />
         </>
       ) : (
@@ -52,8 +52,11 @@ function Poll() {
                 <Text fontWeight={"semibold"}>{error.data.message}</Text>
                 <Center fontSize={"3xl"}>
                   <Box>
-                    {error.status === 400 && <FaRegFaceFrown />}
                     {error.status === 403 && <FaLock />}
+                    {error.status === 404 && <FaRegFaceFrown />}
+                    {(error.status === 400 || error.status === 500) && (
+                      <FaCircleExclamation />
+                    )}
                   </Box>
                 </Center>
               </Stack>

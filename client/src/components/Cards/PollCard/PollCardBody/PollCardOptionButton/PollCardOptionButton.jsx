@@ -12,11 +12,17 @@ import {
 import { Button, HStack, Text } from "@chakra-ui/react";
 
 // SubComponent ( PollCardBody ).
-function PollCardOptionButton({ poll, option, voteState, disabledState }) {
+function PollCardOptionButton({
+  poll,
+  userActions,
+  option,
+  voteState,
+  disabledState,
+}) {
   const navigate = useNavigate();
   const { isDark, ThemeColor } = useThemeInfo();
   const { isAuthenticated, token } = useSelector((state) => state.session);
-  const { has_voted } = poll.user_actions;
+  const { has_voted } = userActions;
   const { vote, setVote } = voteState;
   const { isDisabled, setIsDisabled } = disabledState;
   const [dataMutation, setDataMutation] = useState(false);
