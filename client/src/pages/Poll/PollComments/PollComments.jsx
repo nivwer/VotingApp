@@ -9,24 +9,21 @@ import CustomSpinner from "../../../components/Spinners/CustomSpinner/CustomSpin
 
 // Components.
 function PollComments({ id }) {
-  const [data, setData] = useState(false);
   const { isAuthenticated, token } = useSelector((state) => state.session);
+  const [dataQuery, setDataQuery] = useState(false);
 
   // Query to the backend to get the comments.
-  const { data: dataComments, isLoading } = useReadCommentsQuery(data, {
-    skip: data ? false : true,
+  const { data: dataComments , error, isLoading } = useReadCommentsQuery(dataQuery, {
+    skip: dataQuery ? false : true,
   });
 
   // Update data to fetchs.
   useEffect(() => {
-    if (isAuthenticated) {
-      setData({
-        headers: { Authorization: `Token ${token}` },
-        id: id,
-      });
-    } else {
-      setData({ id: id });
-    }
+    const headers = isAuthenticated
+      ? { headers: { Authorization: `Token ${token}` } }
+      : {};
+
+    setDataQuery({ ...headers, id: id });
   }, [id, isAuthenticated]);
 
   return (

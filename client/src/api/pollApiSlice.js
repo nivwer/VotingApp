@@ -70,34 +70,43 @@ export const pollApiSlice = createApi({
 
     // Add user vote.
     addUserVote: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/vote`,
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/vote`,
         method: "POST",
-        headers: data.headers,
-        body: data.body,
+        headers: headers,
+        body: body,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // Update user vote.
     updateUserVote: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/vote/update`,
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/vote/update`,
         method: "PATCH",
-        headers: data.headers,
-        body: data.body,
+        headers: headers,
+        body: body,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // Delete user vote.
     deleteUserVote: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/vote/delete`,
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/vote/delete`,
         method: "DELETE",
-        headers: data.headers,
+        headers: headers,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // CRUD Comment. //
@@ -137,22 +146,28 @@ export const pollApiSlice = createApi({
 
     // Share action.
     sharePoll: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/share`,
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/share`,
         method: "POST",
-        headers: data.headers,
+        headers: headers,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // UnShare action.
     unSharePoll: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/unshare`,
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/unshare`,
         method: "DELETE",
-        headers: data.headers,
+        headers: headers,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // Bookmark manager. //
@@ -164,9 +179,8 @@ export const pollApiSlice = createApi({
         method: "POST",
         headers: headers,
       }),
-      // invalidatesTags: ["Polls"],
-      invalidatesTags: (result, error, id) => [
-        { type: "Polls", id: result.id },
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
         { type: "Polls", id: "PARTIAL-LIST" },
       ],
     }),
@@ -178,9 +192,8 @@ export const pollApiSlice = createApi({
         method: "DELETE",
         headers: headers,
       }),
-      // invalidatesTags: ["Polls"],
-      invalidatesTags: (result, error, id) => [
-        { type: "Polls", id: result.id },
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
         { type: "Polls", id: "PARTIAL-LIST" },
       ],
     }),
@@ -197,15 +210,10 @@ export const pollApiSlice = createApi({
         headers: data.headers,
       }),
       // providesTags: ["Polls"],
-      providesTags: (result, error, page) =>
+      providesTags: (result) =>
         result
           ? [
-              // Provides a tag for each post in the current page,
-              // as well as the 'PARTIAL-LIST' tag.
-              ...result.polls.map(({ _id }) => ({
-                type: "Polls",
-                id: _id,
-              })),
+              ...result.polls.map(({ id }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -286,12 +294,10 @@ export const pollApiSlice = createApi({
         method: "GET",
         headers: headers,
       }),
-      providesTags: (result, error, page) =>
-        result && result.items
+      providesTags: ({ items }) =>
+        items
           ? [
-              // Provides a tag for each poll in the page,
-              // as well as the 'PARTIAL-LIST' tag.
-              ...result.items.map(({ id }) => ({ type: "Polls", id: id })),
+              ...items.map(({ id }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -300,28 +306,36 @@ export const pollApiSlice = createApi({
 });
 
 export const {
-  useGetUserPollsQuery,
-  useGetUserVotedPollsQuery,
-  useGetUserSharedPollsQuery,
-  useGetUserBookmarkedPollsQuery,
+  // CRUD Poll.
   useCreatePollMutation,
   useReadPollQuery,
   useUpdatePollMutation,
   useDeletePollMutation,
+  // CRUD Vote.
   useAddUserVoteMutation,
   useUpdateUserVoteMutation,
   useDeleteUserVoteMutation,
-  useGetCategoriesQuery,
-  useGetPollsCategoryQuery,
+  // Option Mutation.
   useAddOptionMutation,
-  useGetCategoriesDataQuery,
-  useAddCommentMutation,
+  // Comment CRUD.
   useReadCommentsQuery,
+  useAddCommentMutation,
   useDeleteCommentMutation,
+  // Share Mutations.
   useSharePollMutation,
   useUnSharePollMutation,
+  // Bookmark Mutations.
   useBookmarkPollMutation,
   useUnBookmarkPollMutation,
-  // Search Polls
+  // User polls Querys.
+  useGetUserPollsQuery,
+  useGetUserVotedPollsQuery,
+  useGetUserSharedPollsQuery,
+  useGetUserBookmarkedPollsQuery,
+  // Search Polls Query.
   useSearchPollsQuery,
+  // Categories Querys.
+  useGetCategoriesQuery,
+  useGetCategoriesDataQuery,
+  useGetPollsCategoryQuery,
 } = pollApiSlice;

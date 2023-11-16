@@ -62,7 +62,7 @@ function PollCardFooter({ poll, isLoading, state }) {
     if (isAuthenticated) {
       try {
         const res = !has_bookmarked
-          ? await bookmarkPoll({ dataMutation })
+          ? await bookmarkPoll(dataMutation)
           : await unbookmarkPoll(dataMutation);
       } catch (error) {
         console.error(error);

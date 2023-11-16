@@ -158,6 +158,12 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
         }
       }
 
+      if (error) {
+        {error.status === 400 && <FaRegFaceFrown />}
+        {error.status === 403 && <FaLock />}
+      }
+
+
       setRefreshItems(false);
     }
   }, [refreshItems]);

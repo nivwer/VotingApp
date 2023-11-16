@@ -4,7 +4,7 @@ import { Flex, Spinner } from "@chakra-ui/react";
 // Component.
 function CustomSpinner() {
   return (
-    <Flex h={"100%"} w={"100%"} align={"center"} justify={"center"}>
+    <Flex minH={"150px"} h={"100%"} w={"100%"} align={"center"} justify={"center"}>
       <Spinner size="md" />
     </Flex>
   );
