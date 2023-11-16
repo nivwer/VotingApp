@@ -27,7 +27,47 @@ from ..serializers import CommentSerializer
 # Views.
 
 
-# Handle the process of creating comments in a poll.
+# View: "Comment Add"
+
+# View to add a new comment to a specific poll.
+# This view supports POST requests and requires token-based authentication.
+
+# --- Purpose ---
+# Adds a new comment to a specified poll and updates the comment counter of the poll.
+# Returns a JSON response indicating the success of the comment creation.
+
+# --- Path Parameters ---
+# - id (required): The ID of the poll to which the comment will be added.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only authenticated users are allowed to add comments.
+
+# --- Request Body ---
+# Expects a JSON payload with a 'comment' field containing the text of the comment.
+
+# --- Responses ---
+# - 201 Created: Comment added successfully, includes the ID of the poll and the comment.
+# - 400 Bad Request: Invalid poll ID or validation error in the request payload.
+# - 403 Forbidden: Permission issues (authentication failure or unauthorized access, or private poll).
+# - 404 Not Found: Poll not found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- MongoDB Transaction ---
+# Uses a MongoDB transaction to ensure atomicity while adding the comment and updating the comment counter.
+
+# --- Privacy Check ---
+# Checks if the poll is private and the user is not the owner, raising a PermissionDenied error.
+
+# --- Error Handling ---
+# Handles different scenarios with appropriate HTTP response codes.
+# Specific handling for invalid poll ID, authentication failure, validation errors, poll not found, and MongoDB errors.
+# Rolls back the MongoDB transaction in case of errors.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-16
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -51,6 +91,15 @@ async def comment_add(request, id):
         if not poll_bson:
             raise NotFound(
                 detail={'message': 'Poll not found'})
+
+        # Poll privacy.
+        is_private = poll_bson['privacy'] == 'private'
+        is_owner = poll_bson['user_id'] == request.user.id
+
+        # If poll private.
+        if (not is_owner) and is_private:
+            raise PermissionDenied(
+                detail={'message': 'This poll is private'})
 
         # Initialize a Comment Serializer instance.
         comment_serializer = CommentSerializer(data=request.data)
@@ -91,8 +140,8 @@ async def comment_add(request, id):
                 return Response(
                     data={
                         'message': 'Comment created successfully',
-                        'comment_id' : comment_id,
-                        'id': id
+                        'id': id,
+                        'comment_id': comment_id,
                     },
                     status=status.HTTP_201_CREATED)
 
@@ -142,6 +191,12 @@ async def comment_add(request, id):
 @permission_classes([IsAuthenticated])
 async def comment_update(request, id, comment_id):
     session = None
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
     try:
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
@@ -152,13 +207,14 @@ async def comment_update(request, id, comment_id):
 
         # If poll is not found.
         if not poll_bson:
-            raise ValidationError('Poll is not found.')
+            raise NotFound(
+                detail={'message': 'Poll not found'})
 
-         # If user is not authorized.
+        # If user is not authorized.
         is_owner = poll_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
-                'You are not authorized to update this comment.')
+                detail={'message': 'Not authorized.'})
 
         # Initialize a Comment Serializer instance.
         comment_serializer = CommentSerializer(data=request.data)
@@ -183,7 +239,13 @@ async def comment_update(request, id, comment_id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('Comment updated successfully')
+                return Response(
+                    data={
+                        'message': 'Comment updated successfully',
+                        'id': id,
+                        'comment_id': comment_id,
+                    },
+                    status=status.HTTP_200_OK)
 
     # Handle validation errors.
     except ValidationError as e:
@@ -339,7 +401,7 @@ async def comment_delete(request, id, comment_id):
 
 # --- Authorship and Date ---
 # Author: nivwer
-# Last Updated: 2023-11-15
+# Last Updated: 2023-11-16
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
