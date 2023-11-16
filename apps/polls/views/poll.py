@@ -128,6 +128,9 @@ async def poll_create(request):
 # --- Purpose ---
 # Fetches and displays details of a poll using the provided poll ID.
 
+# --- Path Parameters ---
+# - id (required): The ID of the poll.
+
 # --- Access Control ---
 # For private polls, only the owner can access the information.
 # The view returns a JSON response with the poll details and actions of the authenticated user.
@@ -179,6 +182,7 @@ async def poll_read(request, id):
         is_private = poll_bson['privacy'] == 'private'
         is_owner = poll_bson['user_id'] == request.user.id
 
+        # If poll private.
         if (not is_owner) and is_private:
             raise PermissionDenied(
                 detail={'message': 'This poll is private'})

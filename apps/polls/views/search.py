@@ -184,9 +184,9 @@ async def search_polls(request):
                 user_actions_json = json_util._json_convert(
                     (user_actions_bson))
 
-                item = {}
-                item['poll'] = poll
-                item['authenticated_user_actions'] = user_actions_json or {}
+            item = {}
+            item['poll'] = poll
+            item['authenticated_user_actions'] = user_actions_json or {}
 
             items.append(item)
 
@@ -205,7 +205,7 @@ async def search_polls(request):
             },
             status=status.HTTP_200_OK)
 
-     # Handle validation errors.
+    # Handle validation errors.
     except ValidationError as error:
         return Response(
             data=error.detail,

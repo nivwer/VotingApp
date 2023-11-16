@@ -1,13 +1,14 @@
 # Standard.
 from datetime import datetime
-# Virtualenv.
-from dotenv import load_dotenv
+# BSON.
+from bson import json_util
+from bson.objectid import ObjectId
 # Django.
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.exceptions import ValidationError, PermissionDenied, NotFound
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -16,29 +17,12 @@ from rest_framework.authentication import TokenAuthentication
 from adrf.decorators import api_view
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
-# MongoDB.
+# PyMongo.
 from pymongo import DESCENDING
 from pymongo.errors import PyMongoError
-from bson import json_util
-from bson.objectid import ObjectId
 # Models and Serializers.
 from ..serializers import CommentSerializer
 
-
-# Load the virtual environment.
-load_dotenv()
-
-
-# Helpers.
-
-# Get collections from a database in MongoDB.
-class GetCollectionsMongoDB:
-    def __init__(self, database, collections):
-        # Get database.
-        db = MongoDBSingleton().client[database]
-        # Get collections.
-        for collection in collections:
-            setattr(self, collection, db[collection])
 
 # Views.
 
@@ -49,10 +33,15 @@ class GetCollectionsMongoDB:
 @permission_classes([IsAuthenticated])
 async def comment_add(request, id):
     session = None
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'comments'])
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -60,7 +49,8 @@ async def comment_add(request, id):
 
         # If poll is not found.
         if not poll_bson:
-            raise ValidationError('Poll is not found.')
+            raise NotFound(
+                detail={'message': 'Poll not found'})
 
         # Initialize a Comment Serializer instance.
         comment_serializer = CommentSerializer(data=request.data)
@@ -73,7 +63,7 @@ async def comment_add(request, id):
             async with session.start_transaction():
 
                 # Add the comment in comments document.
-                await polls_db.comments.insert_one(
+                comment = await polls_db.comments.insert_one(
                     {
                         'user_id': request.user.id,
                         'comment': comment,
@@ -82,6 +72,8 @@ async def comment_add(request, id):
                     },
                     session=session
                 )
+
+                comment_id = comment.inserted_id
 
                 # Add comment in comment counter.
                 await polls_db.polls.update_one(
@@ -96,28 +88,49 @@ async def comment_add(request, id):
                 await session.commit_transaction()
 
                 # Response.
-                return Response('Comment created successfully')
+                return Response(
+                    data={
+                        'message': 'Comment created successfully',
+                        'comment_id' : comment_id,
+                        'id': id
+                    },
+                    status=status.HTTP_201_CREATED)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle permission denied.
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
+    except Exception as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # End session.
     finally:
         if session:
             await session.end_session()
@@ -130,9 +143,8 @@ async def comment_add(request, id):
 async def comment_update(request, id, comment_id):
     session = None
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'comments'])
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -209,9 +221,8 @@ async def comment_update(request, id, comment_id):
 async def comment_delete(request, id, comment_id):
     session = None
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'comments'])
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -291,14 +302,60 @@ async def comment_delete(request, id, comment_id):
             await session.end_session()
 
 
-# Handles the process of obtaining comments.
+# View: "Comments Read"
+
+# View to retrieve and display comments for a specific poll.
+# This view supports GET requests and is open to any user (no authentication required).
+
+# --- Purpose ---
+# Retrieves and displays comments for a given poll, with optional pagination.
+# Returns a JSON response with a list of items, each containing details of a comment.
+
+# --- Path Parameters ---
+# - id (required): The ID of the poll for which comments are requested.
+
+# --- Query Parameters ---
+# - page (optional, default=1): The page number for pagination.
+# - page_size (optional, default=4): The number of comments to display per page.
+
+# --- Access Control ---
+# Open to any user; no authentication required.
+
+# --- Responses ---
+# - 200 OK: List of items, each containing details of a comment, with pagination details.
+#   Additionally, includes a message if the current page has no next page.
+# - 400 Bad Request: Invalid poll ID.
+# - 403 Forbidden: Permission issues (private poll access).
+# - 404 Not Found: Poll not found or no comments found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- Pagination ---
+# Supports paginating through the comments with details like total pages, total items, etc.
+
+# --- Error Handling ---
+# Handles different scenarios with appropriate HTTP response codes.
+# Specific handling for invalid poll ID, permission issues, poll not found, and MongoDB errors.
+# Other exceptions result in a 500 Internal Server Error.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-15
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def comments_read(request, id):
+    # Get query parameters.
+    page = request.GET.get('page') or '1'
+    page_size = request.GET.get('page_size') or '4'
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB(
-            'polls_db', ['polls', 'comments'])
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Find the poll in the polls collection.
         poll_bson = await polls_db.polls.find_one(
@@ -306,38 +363,78 @@ async def comments_read(request, id):
 
         # If poll is not found.
         if not poll_bson:
-            raise ValidationError('Poll is not found.')
+            raise NotFound(
+                detail={'message': 'Poll not found'})
 
-        # Convert the BSON to a JSON.
+        # Convert BSON to JSON.
         poll_json = json_util._json_convert(poll_bson)
 
-        # Verify the privacy of polls.
+        # Poll privacy.
         is_private = poll_json['privacy'] == 'private'
         is_owner = poll_json['user_id'] == request.user.id
 
         # If poll private.
         if (not is_owner) and is_private:
-            raise PermissionDenied('This poll is private.')
+            raise PermissionDenied(
+                detail={'message': 'This poll is private'})
 
-        # If privacy of poll is friends_only. ?
-
-        # Find the poll comments document in comments collection.
+        # Find the poll comments in comments collection.
         comments_bson = await polls_db.comments.find(
             {'poll_id': ObjectId(id)},
             sort=[('created_at', DESCENDING)]
         ).to_list(length=None)
 
-        # Convert the BSON to a JSON.
+        # Convert BSON to JSON.
         comments_json = json_util._json_convert(comments_bson)
 
-        comments = []
-        for comment in comments_json:
-            # Fix data.
-            comment['_id'] = comment['_id']['$oid']
+        ### PAGINATION. ###
+
+        if page:
+            page_number = int(page)
+            page_size_number = int(page_size)
+            paginator = Paginator(comments_json, page_size_number)
+
+            total_pages = paginator.num_pages
+            total_items = paginator.count
+
+            if total_items == 0:
+                raise NotFound(
+                    detail={
+                        'message': 'No comment found',
+                        'paginator':
+                        {
+                            'page': page_number,
+                            'total_pages':  total_pages,
+                            'total_items': total_items,
+                            'has_previous': False,
+                            'has_next': False,
+                        }
+                    })
+
+            page_obj = paginator.get_page(page_number)
+            has_previous = page_obj.has_previous()
+            has_next = page_obj.has_next()
+
+            message = ''
+            if not has_next:
+                message = 'No more comments'
+
+        ### PAGINATION. ###
+
+        # Polls list.
+        comments_list = page_obj.object_list if page else comments_json
+
+        # Extract relevant information for each comment.
+        items = []
+        for comment in comments_list:
+
+            # Simplify poll data.
+            comment['id'] = comment['_id']['$oid']
+            del comment['_id']
             comment['created_at'] = comment['created_at']['$date']
             comment['poll_id'] = comment['poll_id']['$oid']
 
-            # Get the user data.
+            # Get comment user data.
             user_data = await User.objects.filter(
                 id=comment['user_id']
             ).values(
@@ -353,52 +450,52 @@ async def comments_read(request, id):
                     'profile_name': user_data['userprofile__profile_name']
                 }
 
-            comments.append(comment)
+        item = {}
+        item['comment'] = comment
 
-        # If polls not found.
-        if not comments:
-            return Response(
-                {'message': 'Comments not found.'})
-
-        # In case the frontend has pagination or an integrated infinite scroll.
-        if request.GET.get('page'):
-            page_number = request.GET.get('page')
-            paginator = Paginator(comments, 10)
-            page_obj = paginator.get_page(page_number)
-
-            page_values_json = json_util._json_convert(page_obj.object_list)
-
-        # Polls res.
-        res = page_values_json if request.GET.get('page') else comments
+        items.append(item)
 
         # Response.
         return Response(
-            {'comments':  res},
+            data={
+                'items': items,
+                'message': message,
+                'paginator': {
+                    'page': page_number,
+                    'total_items': total_items,
+                    'total_pages':  total_pages,
+                    'has_previous': has_previous,
+                    'has_next': has_next,
+                },
+            },
             status=status.HTTP_200_OK)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
-
-    # Handle if the user is not found.
-    except User.DoesNotExist:
+    except ValidationError as error:
         return Response(
-            {'username': ['User is not found.']},
-            status=status.HTTP_404_NOT_FOUND)
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
-        print(str(e))
+    except Exception as error:
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
