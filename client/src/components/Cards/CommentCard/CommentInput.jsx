@@ -28,9 +28,11 @@ import { useEffect, useState } from "react";
 // Component.
 function CommentInput({ id }) {
   const { isDark, ThemeColor } = useThemeInfo();
-  const { token, user, profile } = useSelector((state) => state.session);
-
+  const { isAuthenticated, token, user, profile } = useSelector(
+    (state) => state.session
+  );
   const [commentLength, setCommentLength] = useState(0);
+  const [dataMutation, setDataMutation] = useState(false);
 
   const [addComment, { isLoading }] = useAddCommentMutation();
 
@@ -49,24 +51,17 @@ function CommentInput({ id }) {
 
   useEffect(() => {
     const comment = watch("comment");
-    if (comment.length > 143) {
-      setValue("comment", comment.slice(0, -1));
-    } else {
-      setCommentLength(comment.length);
-    }
+    comment.length > 143
+      ? setValue("comment", comment.slice(0, -1))
+      : setCommentLength(comment.length);
   }, [isWriting]);
 
   // Add Comment onSubmit.
   const onSubmit = handleSubmit(async (data) => {
+    const body = { body: data };
     try {
-      const res = await addComment({
-        headers: { Authorization: `Token ${token}` },
-        id: id,
-        body: data,
-      });
-      if (res.data) {
-        setValue("comment", "");
-      }
+      const res = await addComment({ ...dataMutation, ...body });
+      res.data && setValue("comment", "");
 
       // If server error.
       if (res.error) {
@@ -78,6 +73,15 @@ function CommentInput({ id }) {
       console.error(error);
     }
   });
+
+  // Update data to mutations.
+  useEffect(() => {
+    const headers = isAuthenticated
+      ? { headers: { Authorization: `Token ${token}` } }
+      : {};
+
+    setDataMutation({ ...headers, id: id });
+  }, [id, isAuthenticated]);
 
   return (
     <form onSubmit={onSubmit}>

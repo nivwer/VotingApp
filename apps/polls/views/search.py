@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 # Rest Framework.
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 # Async Rest Framework support.
@@ -44,7 +44,6 @@ from pymongo.errors import PyMongoError
 #   Additionally, includes for each item the actions of the authenticated user (if applicable).
 #   Additionally, includes a message if the current page has no next page.
 # - 400 Bad Request: Missing or invalid keyword.
-# - 404 Not Found: No polls found for the given keyword.
 # - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
 
 # --- Pagination ---
@@ -82,7 +81,7 @@ async def search_polls(request):
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find polls based on the keyword.
+        # Find polls document based on the keyword in the polls collection.
         polls_bson = await polls_db.polls.find(
             {
                 '$text': {'$search': keyword},
@@ -113,9 +112,10 @@ async def search_polls(request):
             total_items = paginator.count
 
             if total_items == 0:
-                raise NotFound(
-                    detail={
-                        'message': 'No result found',
+                return Response(
+                    data={
+                        'items': [],
+                        'message': 'No comment found',
                         'paginator':
                         {
                             'page': page_number,
@@ -210,12 +210,6 @@ async def search_polls(request):
         return Response(
             data=error.detail,
             status=status.HTTP_400_BAD_REQUEST)
-
-    # Handle validation errors.
-    except NotFound as error:
-        return Response(
-            data=error.detail,
-            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
     except PyMongoError as error:

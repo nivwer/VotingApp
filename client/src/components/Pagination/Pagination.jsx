@@ -145,9 +145,30 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
           });
         }
 
-        if (!currentPage.has_next && currentPage.message) {
+        if (currentPage.paginator.total_items === 0 && currentPage.message) {
           setMesagge({
             message: currentPage.message,
+            icon: <FaRegFaceFrown />,
+          });
+        }
+
+        if (
+          currentPage.paginator.total_items > 0 &&
+          !currentPage.paginator.has_next &&
+          currentPage.message
+        ) {
+          setMesagge({
+            message: currentPage.message,
+            icon: <FaRegFaceMehBlank />,
+          });
+        } else if (
+          currentPage.paginator.total_items > 0 &&
+          nextPage &&
+          !nextPage.paginator.has_next &&
+          nextPage.message
+        ) {
+          setMesagge({
+            message: nextPage.message,
             icon: <FaRegFaceMehBlank />,
           });
         }
@@ -157,12 +178,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
         {
           setMesagge({
             message: error.data.message,
-            icon:
-              error.status === 404 ? (
-                <FaRegFaceFrown />
-              ) : (
-                <FaCircleExclamation />
-              ),
+            icon: <FaCircleExclamation />,
           });
         }
       }

@@ -1,7 +1,7 @@
 // Hooks.
 import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
-import { Button, Flex, HStack, Text } from "@chakra-ui/react";
+import { Flex, HStack, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 // Others.
 import {
@@ -53,9 +53,7 @@ function CommentCardBody({ comment, isLoading, deleteComment }) {
         </HStack>
 
         <CommentCardMenu
-          id={comment._id}
-          user_id={comment.user_id}
-          poll_id={comment.poll_id}
+          comment={comment}
           deleteComment={deleteComment}
           isLoading={isLoading}
         />

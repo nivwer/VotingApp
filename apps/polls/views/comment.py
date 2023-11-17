@@ -83,11 +83,11 @@ async def comment_add(request, id):
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find the poll in the polls collection.
+        # Find the poll document in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
-        # If poll is not found.
+        # If poll document is not found.
         if not poll_bson:
             raise NotFound(
                 detail={'message': 'Poll not found'})
@@ -96,7 +96,7 @@ async def comment_add(request, id):
         is_private = poll_bson['privacy'] == 'private'
         is_owner = poll_bson['user_id'] == request.user.id
 
-        # If poll private.
+        # If the poll is private.
         if (not is_owner) and is_private:
             raise PermissionDenied(
                 detail={'message': 'This poll is private'})
@@ -111,7 +111,7 @@ async def comment_add(request, id):
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                # Add the comment in comments document.
+                # Add the comment document in comments collection.
                 comment = await polls_db.comments.insert_one(
                     {
                         'user_id': request.user.id,
@@ -124,7 +124,7 @@ async def comment_add(request, id):
 
                 comment_id = comment.inserted_id
 
-                # Add comment in comment counter of the poll.
+                # Add count to comment counter in the poll document.
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
@@ -141,7 +141,7 @@ async def comment_add(request, id):
                     data={
                         'message': 'Comment created successfully',
                         'id': id,
-                        'comment_id': comment_id,
+                        'comment_id': str(comment_id)
                     },
                     status=status.HTTP_201_CREATED)
 
@@ -247,20 +247,20 @@ async def comment_update(request, id, comment_id):
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find the poll in the polls collection.
+        # Find the poll document in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
-        # If poll is not found.
+        # If poll document is not found.
         if not poll_bson:
             raise NotFound(
                 detail={'message': 'Poll not found'})
 
-        # Find the comment in the comments collection.
+        # Find the comment document in the comments collection.
         comment_bson = await polls_db.comments.find_one(
             {'_id': ObjectId(comment_id)})
 
-        # If user is not authorized.
+        # If the authenticated user is not authorized.
         is_owner = comment_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
@@ -276,7 +276,7 @@ async def comment_update(request, id, comment_id):
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                # Update the comment in comments document.
+                # Update the comment document in comments collection.
                 await polls_db.comments.update_one(
                     {'_id': ObjectId(comment_id)},
                     {
@@ -293,7 +293,7 @@ async def comment_update(request, id, comment_id):
                     data={
                         'message': 'Comment updated successfully',
                         'id': id,
-                        'comment_id': comment_id,
+                        'comment_id': comment_id
                     },
                     status=status.HTTP_200_OK)
 
@@ -396,20 +396,20 @@ async def comment_delete(request, id, comment_id):
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find the poll in the polls collection.
+        # Find the poll document in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
-        # If poll is not found.
+        # If poll document is not found.
         if not poll_bson:
             raise NotFound(
                 detail={'message': 'Poll not found'})
 
-        # Find the comment in the comments collection.
+        # Find the comment document in the comments collection.
         comment_bson = await polls_db.comments.find_one(
             {'_id': ObjectId(comment_id)})
 
-        # If user is not authorized.
+        # If the authenticated user is not authorized.
         is_owner = comment_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
@@ -420,13 +420,13 @@ async def comment_delete(request, id, comment_id):
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                # Remove the comment in comments document.
+                # Remove the comment document in comments collection.
                 rm_comment_result = await polls_db.comments.delete_one(
                     {'_id': ObjectId(comment_id)},
                     session=session
                 )
 
-                # Remove comment in comment counter of the poll.
+                # Remove count to comment counter in the poll document.
                 await polls_db.polls.update_one(
                     {'_id': ObjectId(id)},
                     {
@@ -452,7 +452,7 @@ async def comment_delete(request, id, comment_id):
                     data={
                         'message': 'Comment removed successfully',
                         'id': id,
-                        'comment_id': comment_id,
+                        'comment_id': comment_id
                     },
                     status=status.HTTP_200_OK)
 
@@ -520,7 +520,7 @@ async def comment_delete(request, id, comment_id):
 #   Additionally, includes a message if the current page has no next page.
 # - 400 Bad Request: Invalid poll ID.
 # - 403 Forbidden: Permission issues (private poll access).
-# - 404 Not Found: Poll not found or no comments found.
+# - 404 Not Found: Poll not found.
 # - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
 
 # --- Pagination ---
@@ -551,11 +551,11 @@ async def comments_read(request, id):
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find the poll in the polls collection.
+        # Find the poll document in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
-        # If poll is not found.
+        # If poll document is not found.
         if not poll_bson:
             raise NotFound(
                 detail={'message': 'Poll not found'})
@@ -567,12 +567,12 @@ async def comments_read(request, id):
         is_private = poll_json['privacy'] == 'private'
         is_owner = poll_json['user_id'] == request.user.id
 
-        # If poll private.
+        # If the poll is private.
         if (not is_owner) and is_private:
             raise PermissionDenied(
                 detail={'message': 'This poll is private'})
 
-        # Find the poll comments in comments collection.
+        # Find the poll comment documents in comments collection.
         comments_bson = await polls_db.comments.find(
             {'poll_id': ObjectId(id)},
             sort=[('created_at', DESCENDING)]
@@ -592,8 +592,9 @@ async def comments_read(request, id):
             total_items = paginator.count
 
             if total_items == 0:
-                raise NotFound(
-                    detail={
+                return Response(
+                    data={
+                        'items': [],
                         'message': 'No comment found',
                         'paginator':
                         {
@@ -644,10 +645,10 @@ async def comments_read(request, id):
                     'profile_name': user_data['userprofile__profile_name']
                 }
 
-        item = {}
-        item['comment'] = comment
+            item = {}
+            item['comment'] = comment
 
-        items.append(item)
+            items.append(item)
 
         # Response.
         return Response(

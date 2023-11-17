@@ -14,7 +14,7 @@ import {
 import { FaEllipsis } from "react-icons/fa6";
 
 // SubComponent ( CommentCardBody ).
-function CommentCardMenu({ id, user_id, poll_id, deleteComment, isLoading }) {
+function CommentCardMenu({ comment, deleteComment, isLoading }) {
   const { isDark } = useThemeInfo();
   const { isAuthenticated, token, user } = useSelector(
     (state) => state.session
@@ -48,7 +48,7 @@ function CommentCardMenu({ id, user_id, poll_id, deleteComment, isLoading }) {
 
   return (
     <>
-      {isAuthenticated && user.id == user_id && (
+      {isAuthenticated && user.id == comment.user_id && (
         <Menu>
           <MenuButton
             isDisabled={isLoading}
@@ -65,7 +65,7 @@ function CommentCardMenu({ id, user_id, poll_id, deleteComment, isLoading }) {
           <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>
             <MenuItem
               as={Button}
-              onClick={() => handleDeleteComment(poll_id, id)}
+              onClick={() => handleDeleteComment(comment.poll_id, comment.id)}
               {...itemStyle}
               isDisabled={isLoading}
             >

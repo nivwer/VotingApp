@@ -33,8 +33,6 @@ function Poll() {
     setDataQuery({ ...headers, id: id });
   }, [id, isAuthenticated]);
 
-  error && console.log(error);
-
   return (
     <>
       {data && !isLoading ? (

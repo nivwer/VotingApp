@@ -166,11 +166,11 @@ async def poll_read(request, id):
         # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find the poll in the polls collection.
+        # Find the poll document in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
-        # If poll is not found.
+        # If poll document is not found.
         if not poll_bson:
             raise NotFound(
                 detail={'message': 'Poll not found'})
@@ -182,7 +182,7 @@ async def poll_read(request, id):
         is_private = poll_bson['privacy'] == 'private'
         is_owner = poll_bson['user_id'] == request.user.id
 
-        # If poll private.
+        # If the poll is private.
         if (not is_owner) and is_private:
             raise PermissionDenied(
                 detail={'message': 'This poll is private'})

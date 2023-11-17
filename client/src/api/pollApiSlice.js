@@ -24,12 +24,19 @@ export const pollApiSlice = createApi({
 
     // Read Poll.
     readPoll: builder.query({
-      query: (data) => ({
-        url: `poll/${data.id}`,
+      query: ({ headers, id }) => ({
+        url: `poll/${id}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
       providesTags: ["Polls"],
+      providesTags: (res) =>
+        res
+          ? [
+              { type: "Polls", id: res.poll.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Update Poll.
@@ -113,33 +120,55 @@ export const pollApiSlice = createApi({
 
     // Create comment.
     addComment: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/comment`,
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/comment`,
         method: "POST",
-        headers: data.headers,
-        body: data.body,
+        headers: headers,
+        body: body,
       }),
-      invalidatesTags: ["Comments", "Polls"],
+      // invalidatesTags: ["Comments", "Polls"],
+      invalidatesTags: ({ id, comment_id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+        { type: "Comments", id: comment_id },
+        { type: "Comments", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // Remove comment.
     deleteComment: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/comment/${data.comment_id}/delete`,
+      query: ({ headers, id, comment_id }) => ({
+        url: `poll/${id}/comment/${comment_id}/delete`,
         method: "DELETE",
-        headers: data.headers,
+        headers: headers,
       }),
-      invalidatesTags: ["Comments", "Polls"],
+      // invalidatesTags: ["Comments", "Polls"],
+      invalidatesTags: ({ id, comment_id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+        { type: "Comments", id: comment_id },
+        { type: "Comments", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // Read comments.
     readComments: builder.query({
-      query: (data) => ({
-        url: `poll/${data.id}/comments`,
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `poll/${id}/comments?page=${page}&page_size=${page_size}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
-      providesTags: ["Comments"],
+      // providesTags: ["Comments"],
+      providesTags: (res) =>
+        res
+          ? [
+              ...res.items.map(({ comment: { id } }) => ({
+                type: "Comments",
+                id: id,
+              })),
+              { type: "Comments", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Comments", id: "PARTIAL-LIST" }],
     }),
 
     // Share manager. //
@@ -295,9 +324,12 @@ export const pollApiSlice = createApi({
         headers: headers,
       }),
       providesTags: (res) =>
-      res
+        res
           ? [
-              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
+              ...res.items.map(({ poll: { id } }) => ({
+                type: "Polls",
+                id: id,
+              })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
