@@ -42,31 +42,21 @@ function PollCardOptionButton({
 
   const handleUserVote = async (value) => {
     const body = { body: { vote: value } };
-    const oldVote = vote;
+    const currentVote = vote;
 
     if (isAuthenticated) {
-      if (value != vote) {
-        setVote(value);
-        try {
-          const res =
-            vote === ""
+      setVote(value != currentVote ? value : "");
+      try {
+        const res =
+          value != currentVote
+            ? currentVote === ""
               ? await addUserVote({ ...dataMutation, ...body })
-              : await updateUserVote({ ...dataMutation, ...body });
-
-          res.error && setVote(oldVote);
-        } catch (error) {
-          setVote(oldVote);
-          console.log(error);
-        }
-      } else {
-        setVote("");
-        try {
-          const res = vote != "" && (await deleteUserVote(data));
-          res.error && setVote(oldVote);
-        } catch (error) {
-          setVote(oldVote);
-          console.log(error);
-        }
+              : await updateUserVote({ ...dataMutation, ...body })
+            : await deleteUserVote(dataMutation);
+        res.error && setVote(currentVote);
+      } catch (error) {
+        setVote(currentVote);
+        console.log(error);
       }
     } else {
       navigate("/signin");
@@ -74,7 +64,7 @@ function PollCardOptionButton({
   };
 
   useEffect(() => {
-    isLoading ? setIsDisabled(true) : setIsDisabled(false);
+    setIsDisabled(isLoading ? true : false);
   }, [isLoading]);
 
   useEffect(() => {

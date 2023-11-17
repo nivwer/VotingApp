@@ -26,7 +26,14 @@ import {
 function PollCardFooter({ poll, userActions, isLoading, state }) {
   const navigate = useNavigate();
   const { isAuthenticated, token } = useSelector((state) => state.session);
-  const { has_shared, has_bookmarked } = userActions
+  
+  const [hasShared, setHasShared] = useState(
+    userActions.has_shared ? userActions.has_shared : false
+  );
+  const [hasBookmarked, setHasBookmarked] = useState(
+    userActions.has_bookmarked ? userActions.has_bookmarked : false
+  );
+
   const { showInputOption, setShowInputOption } = state;
   // Mutation.
   const [dataMutation, setDataMutation] = useState(false);
@@ -45,12 +52,16 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
   // Share.
   const handleShare = async () => {
     if (isAuthenticated) {
-      try {
-        const res = !has_shared
-          ? await sharePoll(dataMutation)
-          : await unsharePoll(dataMutation);
-      } catch (error) {
-        console.error(error);
+      if (userActions.has_shared == hasShared) {
+        try {
+          setHasShared(!hasShared);
+          const res = !hasShared
+            ? await sharePoll(dataMutation)
+            : await unsharePoll(dataMutation);
+          res.error && setHasShared(!hasShared);
+        } catch (error) {
+          console.error(error);
+        }
       }
     } else {
       navigate("/signin");
@@ -60,12 +71,16 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
   // Bookmark.
   const handleBookmark = async () => {
     if (isAuthenticated) {
-      try {
-        const res = !has_bookmarked
-          ? await bookmarkPoll(dataMutation)
-          : await unbookmarkPoll(dataMutation);
-      } catch (error) {
-        console.error(error);
+      if (userActions.has_bookmarked == hasBookmarked) {
+        try {
+          setHasBookmarked(!hasBookmarked);
+          const res = !hasBookmarked
+            ? await bookmarkPoll(dataMutation)
+            : await unbookmarkPoll(dataMutation);
+          setHasBookmarked(!hasBookmarked);
+        } catch (error) {
+          console.error(error);
+        }
       }
     } else {
       navigate("/signin");
@@ -81,6 +96,12 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
     setDataMutation({ ...headers, id: poll.id });
   }, [isAuthenticated]);
 
+  // Update user actions.
+  useEffect(() => {
+    setHasShared(userActions.has_shared);
+    setHasBookmarked(userActions.has_bookmarked);
+  }, [userActions]);
+
   return (
     <HStack w={"100%"} justify={"space-between"}>
       <HStack mx={5} spacing={4}>
@@ -93,7 +114,7 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
         {/* Share. */}
         <PollCardButton
           onClick={() => handleShare()}
-          active={has_shared ? true : false}
+          active={hasShared ? true : false}
           icon={<FaRetweet />}
           isLoading={isShareLoading || isUnshareLoading}
           isDisabled={isLoading}
@@ -104,8 +125,8 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
         {/* Bookmark. */}
         <PollCardButton
           onClick={() => handleBookmark()}
-          active={has_bookmarked ? true : false || false}
-          icon={has_bookmarked ? <FaBookmark /> : <FaRegBookmark />}
+          active={hasBookmarked ? true : false}
+          icon={hasBookmarked ? <FaBookmark /> : <FaRegBookmark />}
           isLoading={isBookmarkLoading || isUnbookmarkLoading}
           isDisabled={isLoading}
         >

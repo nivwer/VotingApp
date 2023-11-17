@@ -25,10 +25,10 @@ function PollCardButton({
               : `${ThemeColor}.500`
             : "default"
         }
-        isDisabled={isDisabled}
+        isDisabled={isDisabled || isLoading}
         onClick={onClick}
         borderRadius={"full"}
-        isLoading={isLoading}
+        // isLoading={isLoading}
         opacity={active ? 0.9 : 0.6}
       >
         {icon}
