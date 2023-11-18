@@ -25,7 +25,49 @@ from ..serializers import PollSerializer, OptionsSerializer
 # Views.
 
 
-# Handles the creation process for the polls.
+# View: "Poll Create"
+
+# View to handle the creation of a new poll.
+# This view supports POST requests and requires token-based authentication.
+
+# --- Purpose ---
+# Allows authenticated users to create a new poll with specified options.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only authenticated users are allowed to create polls.
+
+# --- Request Data ---
+# Expects JSON data with the following structure:
+# {
+#   "title": "Poll Title",
+#   "description": "Poll Description",
+#   "privacy": "public/private",
+#   "category": "Poll Category",
+#   "options": {
+#     "add_options": ["Option 1", "Option 2", ...]
+#   }
+# }
+
+# --- Responses ---
+# - 201 Created: Poll created successfully. Includes the ID of the created poll.
+# - 400 Bad Request: Validation errors in the request data.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- Validations ---
+# Validates the poll data using PollSerializer.
+# Validates the options data using OptionsSerializer.
+
+# --- MongoDB Session and Transaction ---
+# Initializes a MongoDB session and transaction for atomicity.
+
+# --- Error Handling ---
+# Handles validation errors, MongoDB errors, and other unexpected exceptions with appropriate HTTP response codes.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-18
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -55,7 +97,7 @@ async def poll_create(request):
                 }
             )
 
-        # Get databases.
+        # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
         # Initialize a MongoDB session.
@@ -89,32 +131,35 @@ async def poll_create(request):
 
                 # Response.
                 return Response(
-                    {
+                    data={
                         'message': 'Poll created successfully',
                         'id': str(poll_id)
                     },
                     status=status.HTTP_201_CREATED)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
+    except Exception as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # End Session.
     finally:
         if session:
             await session.end_session()
@@ -264,36 +309,92 @@ async def poll_read(request, id):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Handles the update process for the polls.
+# View: "Poll Update"
+
+# View to handle the update of an existing poll.
+# This view supports PATCH requests and requires token-based authentication.
+
+# --- Purpose ---
+# Allows authenticated users who own a poll to update its details, including adding or removing options.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only the owner of the poll is authorized to update it.
+
+# --- Request Data ---
+# Expects JSON data with the following structure:
+# {
+#   "title": "Updated Poll Title",
+#   "description": "Updated Poll Description",
+#   "privacy": "public/private",
+#   "category": "Updated Poll Category",
+#   "options": {
+#     "add_options": ["New Option 1", "New Option 2", ...],
+#     "del_options": ["Option to Remove 1", "Option to Remove 2", ...]
+#   }
+# }
+
+# --- Responses ---
+# - 200 OK: Poll updated successfully. Includes the ID of the updated poll.
+# - 400 Bad Request: Validation errors in the request data.
+# - 403 Forbidden: Permission denied if the authenticated user is not the owner.
+# - 404 Not Found: Poll not found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- Validations ---
+# Validates the poll data using PollSerializer.
+# Validates the options data using OptionsSerializer.
+
+# --- MongoDB Session and Transaction ---
+# Initializes a MongoDB session and transaction for atomicity.
+
+# --- Add and Remove Options ---
+# Adds new options to the poll document.
+# Removes specified options from the poll document.
+
+# --- Error Handling ---
+# Handles validation errors, permission denied, poll not found, MongoDB errors, and other unexpected exceptions.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-18
+
 @api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def poll_update(request, id):
     session = None
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
     try:
-        # Get databases.
+        # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find the poll in the polls collection.
+        # Find the poll document in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
-        # If poll is not found.
+        # If poll document is not found.
         if not poll_bson:
-            raise ValidationError('Poll is not found.')
+            raise NotFound(
+                detail={'message': 'Poll not found'})
 
-        # If user is not authorized.
+        # If the authenticated user is not authorized.
         is_owner = poll_bson['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
-                'You are not authorized to update this poll.')
+                detail={'message':  'Not Authorized.'})
 
         # Initialize a Poll Serializers instance.
         poll_serializer = PollSerializer(data=request.data, partial=True)
         poll_serializer.is_valid(raise_exception=True)
         data = poll_serializer.validated_data
 
-        # Get poll options.
+        # Options.
         poll_json = json_util._json_convert((poll_bson))
         options = poll_json['options']
 
@@ -328,7 +429,7 @@ async def poll_update(request, id):
 
                 if exist:
                     raise ValidationError(
-                        f"This options '{option}' already exist.")
+                        detail={'message': f"This options '{option}' already exist."})
 
                 add_options_object.append(
                     {
@@ -345,7 +446,7 @@ async def poll_update(request, id):
 
                 if not exist:
                     raise ValidationError(
-                        f"This option '{option}' not exist.")
+                        detail={'message':  f"This option '{option}' not exist."})
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
@@ -383,81 +484,126 @@ async def poll_update(request, id):
 
                 # Response.
                 return Response(
-                    {'message': 'Poll updated successfully.'},
+                    data={
+                        'message': 'Poll updated successfully.',
+                        'id': id
+                    },
                     status=status.HTTP_200_OK)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
 
     # Handle validation errors.
-    except NotFound as e:
-        return Response(e.detail, status=status.HTTP_404_NOT_FOUND)
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
+    except Exception as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # End session.
+    # End Session.
     finally:
         if session:
             await session.end_session()
 
 
-# Handles the remove process for the polls.
+# View: "Poll Delete"
+
+# View to handle the deletion of an existing poll.
+# This view supports DELETE requests and requires token-based authentication.
+
+# --- Purpose ---
+# Allows authenticated users who own a poll to delete it, along with its associated comments.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only the owner of the poll is authorized to delete it.
+
+# --- Responses ---
+# - 200 OK: Poll and associated comments removed successfully. Includes the ID of the deleted poll.
+# - 400 Bad Request: Validation errors in the request data.
+# - 403 Forbidden: Permission denied if the authenticated user is not the owner.
+# - 404 Not Found: Poll not found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- MongoDB Session and Transaction ---
+# Initializes a MongoDB session and transaction for atomicity.
+
+# --- Remove Comment Documents ---
+# Deletes comment documents associated with the poll from the comments collection.
+
+# --- Error Handling ---
+# Handles validation errors, permission denied, poll not found, MongoDB errors, and other unexpected exceptions.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-18
+
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def poll_delete(request, id):
     session = None
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
     try:
-        # Get databases.
+        # Connect to the MongoDB databases.
         polls_db = MongoDBSingleton().client['polls_db']
 
-        # Find the poll in the polls collection.
+        # Find the poll document in the polls collection.
         poll = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
 
-        # If poll is not found.
+        # If poll document is not found.
         if not poll:
-            raise ValidationError(
-                'Poll is not found.',
-                status=status.HTTP_404_NOT_FOUND)
-
-        # If user is not authorized.
+            raise NotFound(
+                detail={'message': 'Poll not found'})
+        
+        # If the authenticated user is not authorized.
         is_owner = poll['user_id'] == request.user.id
         if not is_owner:
             raise PermissionDenied(
-                'You are not authorized to remove this poll.')
+                detail={'message':  'Not Authorized.'})
 
         # Initialize a MongoDB session.
         async with await MongoDBSingleton().client.start_session() as session:
             # Initialize a MongoDB transaccion.
             async with session.start_transaction():
 
-                # Remove the poll.
+                # Remove the poll document in the polls collection.
                 rm_poll_result = await polls_db.polls.delete_one(
                     {'_id': poll['_id']},
                     session=session)
 
                 comments_is_not_removed = True
-                # comments_result Remove the poll.
+                # Remove the comment documents of the poll in the comments collection.
                 if poll['comments_counter'] > 0:
                     rm_comments_result = await polls_db.comments.delete_many(
                         {'poll_id': id},
@@ -471,46 +617,57 @@ async def poll_delete(request, id):
 
                 poll_is_not_removed = rm_poll_result.deleted_count == 0
 
-                # If not removed.
+                # If the poll document is not removed.
                 if poll_is_not_removed or comments_is_not_removed:
                     await session.abort_transaction()
-                    raise PyMongoError(
-                        'An error occurred while processing your request.',
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    raise PyMongoError()
 
                 # Save transaction.
                 await session.commit_transaction()
 
                 # Response.
                 return Response(
-                    {'message': 'Poll removed successfully.'},
+                    data={
+                        'message': 'Poll removed successfully.',
+                        'id': id
+                    },
                     status=status.HTTP_200_OK)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
-        print(f'error: {str(e)}')
+    except Exception as error:
         if session:
             await session.abort_transaction()
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    # End Session.
     finally:
         if session:
             await session.end_session()

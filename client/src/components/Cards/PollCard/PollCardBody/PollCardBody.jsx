@@ -18,7 +18,7 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
 
   return (
     <Flex justifyContent={"center"}>
-      <Stack spacing={6} w={"90%"}>
+      <Stack spacing={3} w={"90%"}>
         <Stack textAlign={"center"}>
           {/* Title. */}
           <Heading size={"md"} opacity={0.9}>
@@ -35,7 +35,7 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
           {poll.options
             .slice(0, poll.options.length)
             .sort((a, b) => b.votes - a.votes)
-            .slice(0, showAllOptions ? poll.options.length : 4)
+            .slice(0, showAllOptions ? poll.options.length : 3)
             .map((option, index) => (
               <PollCardOptionButton
                 key={index}
@@ -57,8 +57,8 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
           )}
         </Stack>
         {/* Show all options button. */}
-        {poll.options && poll.options.length > 4 && (
-          <Flex opacity={0.8} justify={"center"}>
+        {poll.options && poll.options.length > 3 && (
+          <Flex opacity={0.6} justify={"center"}>
             <Button
               onClick={() => setShowAllOptions(!showAllOptions)}
               size={"sm"}

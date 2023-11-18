@@ -124,9 +124,11 @@ async def share_action(request, id):
                     await polls_db.user_actions.update_one(
                         {'user_id': request.user.id, 'poll_id': ObjectId(id)},
                         {
-                            '$set': {'has_shared': {
-                                'shared_at': datetime.now(),
-                            }}
+                            '$set': {
+                                'has_shared': {
+                                    'shared_at': datetime.now()
+                                }
+                            }
                         },
                         upsert=True,
                         session=session
@@ -157,7 +159,7 @@ async def share_action(request, id):
             data=error.detail,
             status=status.HTTP_400_BAD_REQUEST)
 
-     # Handle validation errors.
+    # Handle validation errors.
     except NotFound as error:
         return Response(
             data=error.detail,

@@ -70,10 +70,13 @@ export const pollApiSlice = createApi({
         headers: headers,
         body: body,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Vote manager //
@@ -86,10 +89,13 @@ export const pollApiSlice = createApi({
         headers: headers,
         body: body,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Update user vote.
@@ -100,10 +106,13 @@ export const pollApiSlice = createApi({
         headers: headers,
         body: body,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Delete user vote.
@@ -113,10 +122,13 @@ export const pollApiSlice = createApi({
         method: "DELETE",
         headers: headers,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // CRUD Comment. //
@@ -129,13 +141,18 @@ export const pollApiSlice = createApi({
         headers: headers,
         body: body,
       }),
-      // invalidatesTags: ["Comments", "Polls"],
-      invalidatesTags: ({ id, comment_id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-        { type: "Comments", id: comment_id },
-        { type: "Comments", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+              { type: "Comments", id: res.comment_id },
+              { type: "Comments", id: "PARTIAL-LIST" },
+            ]
+          : [
+              { type: "Polls", id: "PARTIAL-LIST" },
+              { type: "Comments", id: "PARTIAL-LIST" },
+            ],
     }),
 
     // Remove comment.
@@ -145,13 +162,18 @@ export const pollApiSlice = createApi({
         method: "DELETE",
         headers: headers,
       }),
-      // invalidatesTags: ["Comments", "Polls"],
-      invalidatesTags: ({ id, comment_id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-        { type: "Comments", id: comment_id },
-        { type: "Comments", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+              { type: "Comments", id: res.comment_id },
+              { type: "Comments", id: "PARTIAL-LIST" },
+            ]
+          : [
+              { type: "Polls", id: "PARTIAL-LIST" },
+              { type: "Comments", id: "PARTIAL-LIST" },
+            ],
     }),
 
     // Read comments.
@@ -162,7 +184,7 @@ export const pollApiSlice = createApi({
         headers: headers,
       }),
       // providesTags: ["Comments"],
-      providesTags: (res) =>
+      providesTags: (res, error) =>
         res
           ? [
               ...res.items.map(({ comment: { id } }) => ({
@@ -183,10 +205,13 @@ export const pollApiSlice = createApi({
         method: "POST",
         headers: headers,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // UnShare action.
@@ -196,10 +221,13 @@ export const pollApiSlice = createApi({
         method: "DELETE",
         headers: headers,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Bookmark manager. //
@@ -211,10 +239,13 @@ export const pollApiSlice = createApi({
         method: "POST",
         headers: headers,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // UnBookmark action.
@@ -224,10 +255,13 @@ export const pollApiSlice = createApi({
         method: "DELETE",
         headers: headers,
       }),
-      invalidatesTags: ({ id }) => [
-        { type: "Polls", id: id },
-        { type: "Polls", id: "PARTIAL-LIST" },
-      ],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // GET Polls. //
@@ -326,7 +360,7 @@ export const pollApiSlice = createApi({
         method: "GET",
         headers: headers,
       }),
-      providesTags: (res) =>
+      providesTags: (res, error) =>
         res
           ? [
               ...res.items.map(({ poll: { id } }) => ({

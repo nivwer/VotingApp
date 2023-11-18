@@ -43,7 +43,7 @@ function PollCard({ item }) {
           </CardHeader>
 
           {/* Card Body. */}
-          <CardBody pt={2}>
+          <CardBody py={2}>
             <PollCardBody
               poll={poll}
               userActions={userActions}

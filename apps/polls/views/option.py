@@ -111,7 +111,8 @@ async def option_add(request, id):
         if not is_owner:
             for o in options:
                 if o['user_id'] == request.user.id:
-                    raise ValidationError('You can only add one option.')
+                    raise ValidationError(
+                        detail={'option_text': ['You can only add one option.']})
 
         # Add the option in the poll document.
         await polls_db.polls.update_one(
@@ -251,7 +252,7 @@ async def option_delete(request, id):
 
         if not exist:
             raise ValidationError(
-                detail={'option_text': ['Option not exist.']})
+                detail={'message': 'Option not exist.'})
 
         # If the authenticated user not authorized.
         if not is_owner:
