@@ -24,7 +24,6 @@ urlpatterns = [
     path('poll/<str:id>/delete', poll_delete, name='delete_Poll'),
 
     # Option manager.
-#     path('poll/<str:id>/option', option_manager, name='option_manager'),
     path('poll/<str:id>/option', option_add, name='add_option'),
     path('poll/<str:id>/option/delete', option_delete, name='delete_option'),
 

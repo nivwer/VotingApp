@@ -20,8 +20,48 @@ from ..serializers import OptionSerializer
 
 # Views.
 
-# Handles the adding and removing options in a poll.
-@api_view(['POST', 'DELETE'])
+
+# View: "Option Add"
+
+# View to handle the addition of options to a poll.
+# This view supports POST requests and requires token-based authentication.
+
+# --- Purpose ---
+# Allows authenticated users to add new options to a poll.
+
+# --- Path Parameter ---
+# - id (required): The ID of the poll for which options are being added.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only authenticated users are allowed to add options.
+
+# --- Responses ---
+# - 200 OK: Option added successfully, includes the ID of the poll.
+# - 400 Bad Request: Invalid poll ID or other validation errors.
+# - 403 Forbidden: Permission denied if the poll is private and the user is not the owner.
+# - 404 Not Found: Poll not found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- Poll Privacy ---
+# Checks if the poll is private and if the user is the owner to determine permission.
+
+# --- Option Validation ---
+# Validates the option data using OptionSerializer.
+# Checks if the option already exists in the poll document to prevent duplication.
+
+# --- User Option Limitation ---
+# Restricts users to add only one option if they are not the owner of the poll.
+
+# --- Error Handling ---
+# Handles various scenarios with appropriate HTTP response codes.
+# Specific handling for invalid poll ID, permission denied, not found, MongoDB errors, and other exceptions.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-17
+
+@api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def option_add(request, id):
@@ -126,8 +166,47 @@ async def option_add(request, id):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# Handles the adding and removing options in a poll.
-@api_view(['POST', 'DELETE'])
+# View: "Option Delete"
+
+# View to handle the removal of options from a poll.
+# This view supports DELETE requests and requires token-based authentication.
+
+# --- Purpose ---
+# Allows authenticated users to remove options from a poll.
+
+# --- Path Parameter ---
+# - id (required): The ID of the poll from which options are being removed.
+
+# --- Authentication ---
+# Requires token-based authentication using TokenAuthentication.
+# Only authenticated users are allowed to remove options.
+
+# --- Responses ---
+# - 200 OK: Option removed successfully, includes the ID of the poll.
+# - 400 Bad Request: Invalid poll ID, option not found, or other validation errors.
+# - 403 Forbidden: Permission denied if the poll is private and the user is not the owner.
+# - 404 Not Found: Poll not found.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- Poll Privacy ---
+# Checks if the poll is private and if the user is the owner to determine permission.
+
+# --- Option Validation ---
+# Validates the option data using OptionSerializer.
+# Checks if the option exists in the poll document to prevent removal of non-existent options.
+
+# --- User Authorization ---
+# Ensures that only the owner of the poll is authorized to remove options.
+
+# --- Error Handling ---
+# Handles various scenarios with appropriate HTTP response codes.
+# Specific handling for invalid poll ID, option not found, permission denied, MongoDB errors, and other exceptions.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-17
+
+@api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 async def option_delete(request, id):
