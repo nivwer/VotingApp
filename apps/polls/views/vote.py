@@ -1,7 +1,6 @@
 # Standard.
 from datetime import datetime
 # BSON.
-from bson import json_util
 from bson.objectid import ObjectId
 # Rest Framework.
 from rest_framework import status
@@ -237,7 +236,6 @@ async def vote_add(request, id):
 # --- Authorship and Date ---
 # Author: nivwer
 # Last Updated: 2023-11-17
-
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])

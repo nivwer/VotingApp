@@ -2,7 +2,7 @@
 from django.urls import path
 # Poll.
 from .views.poll import poll_create, poll_read, poll_update, poll_delete
-from .views.option import option_manager
+from .views.option import option_add, option_delete
 from .views.vote import vote_add, vote_read, vote_update, vote_delete
 from .views.comment import comment_add, comment_update, comment_delete, comments_read
 from .views.share import share_action, unshare_action
@@ -24,7 +24,9 @@ urlpatterns = [
     path('poll/<str:id>/delete', poll_delete, name='delete_Poll'),
 
     # Option manager.
-    path('poll/<str:id>/option', option_manager, name='option_manager'),
+#     path('poll/<str:id>/option', option_manager, name='option_manager'),
+    path('poll/<str:id>/option', option_add, name='add_option'),
+    path('poll/<str:id>/option/delete', option_delete, name='delete_option'),
 
     # CRUD Vote.
     path('poll/<str:id>/vote', vote_add, name='add_vote'),

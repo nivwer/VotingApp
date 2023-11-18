@@ -7,7 +7,7 @@ export const pollApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000/polls/",
   }),
-  tagTypes: ["Polls", "Categories", "Comments"],
+  tagTypes: ["Polls", "Comments", "Categories"],
   endpoints: (builder) => ({
     // CRUD Poll. //
 
@@ -64,13 +64,16 @@ export const pollApiSlice = createApi({
 
     // Add option.
     addOption: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/option`,
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/option`,
         method: "POST",
-        headers: data.headers,
-        body: data.body,
+        headers: headers,
+        body: body,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: ({ id }) => [
+        { type: "Polls", id: id },
+        { type: "Polls", id: "PARTIAL-LIST" },
+      ],
     }),
 
     // Vote manager //

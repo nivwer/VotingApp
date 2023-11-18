@@ -1,8 +1,9 @@
-# Virtualenv.
-from dotenv import load_dotenv
+# BSON.
+from bson import json_util
+from bson.objectid import ObjectId
 # Rest Framework.
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.exceptions import ValidationError, PermissionDenied, NotFound
 from rest_framework.response import Response
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -13,26 +14,8 @@ from adrf.decorators import api_view
 from utils.mongo_connection import MongoDBSingleton
 # MongoDB.
 from pymongo.errors import PyMongoError
-from bson import json_util
-from bson.objectid import ObjectId
 # Serializers.
 from ..serializers import OptionSerializer
-
-
-# Load the virtual environment.
-load_dotenv()
-
-
-# Helpers.
-
-# Get collections from a database in MongoDB.
-class GetCollectionsMongoDB:
-    def __init__(self, database, collections):
-        # Get database.
-        db = MongoDBSingleton().client[database]
-        # Get collections.
-        for collection in collections:
-            setattr(self, collection, db[collection])
 
 
 # Views.
@@ -41,104 +24,207 @@ class GetCollectionsMongoDB:
 @api_view(['POST', 'DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-async def option_manager(request, id):
+async def option_add(request, id):
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
-        # Find the poll in the polls collection.
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
+
+        # Find the poll document in the polls collection.
         poll_bson = await polls_db.polls.find_one(
             {'_id': ObjectId(id)})
-        # If poll is not found.
-        if not poll_bson:
-            raise ValidationError('Poll is not found.')
 
-        # If privacy of poll is private.
+        # If poll document is not found.
+        if not poll_bson:
+            raise NotFound(
+                detail={'message': 'Poll not found'})
+
+        # Poll privacy.
         is_private = poll_bson['privacy'] == 'private'
         is_owner = poll_bson['user_id'] == request.user.id
-        if not is_owner and is_private:
-            raise PermissionDenied('This poll is private.')
 
-        # If privacy of poll is friends_only. ?
+        if (not is_owner) and is_private:
+            raise PermissionDenied(
+                detail={'message': 'This poll is private.'})
 
         # Initialize a OptionSerializer instance.
         option_serializer = OptionSerializer(data=request.data, partial=True)
         option_serializer.is_valid(raise_exception=True)
         option = option_serializer.validated_data
 
-        # Convert the BSON response to a JSON response.
+        # Convert BSON to JSON.
         poll_json = json_util._json_convert((poll_bson))
         options = poll_json['options']
 
-        # If the option already exist.
+        # If the option already exist in poll document.
         exist = any(o['option_text'] == option['option_text'] for o in options)
 
-        # Method POST.
-        if request.method == 'POST':
-            if exist:
-                raise ValidationError({
-                    'option_text': ['Option already exist.']})
+        if exist:
+            raise ValidationError(
+                detail={'option_text': ['Option already exist.']})
 
-            if not is_owner:
-                for o in options:
-                    if o['user_id'] == request.user.id:
-                        raise ValidationError('You can only add one option.')
+        if not is_owner:
+            for o in options:
+                if o['user_id'] == request.user.id:
+                    raise ValidationError('You can only add one option.')
 
-            new_option = {
-                'user_id': request.user.id,
-                'option_text': option['option_text'],
-                'votes': 0
+        # Add the option in the poll document.
+        await polls_db.polls.update_one(
+            {'_id': ObjectId(id)},
+            {
+                '$push': {
+                    'options': {
+                        'user_id': request.user.id,
+                        'option_text': option['option_text'],
+                        'votes': 0
+                    }
+                }
             }
+        )
 
-            # Save the option object.
-            await polls_db.polls.update_one(
-                {'_id': ObjectId(id)},
-                {
-                    '$push': {'options': new_option}
-                }
-            )
-
-            # Response.
-            return Response(
-                {'message': 'Option added successfully'})
-
-        # Method DELETE.
-        if request.method == 'DELETE':
-            if not exist:
-                raise ValidationError(
-                    {'option_text': ['Option not exist.']})
-
-            # If the user not authorized.
-            if not is_owner:
-                raise PermissionDenied('Not Authorized.')
-
-            # Remove the option.
-            await polls_db.polls.update_one(
-                {'_id': ObjectId(id)},
-                {
-                    '$pull': {'options': {'option_text': option['option_text']}}
-                }
-            )
-
-            # Response.
-            return Response(
-                {'message': 'Option removed successfully'})
+        # Response.
+        return Response(
+            data={
+                'message': 'Option added successfully',
+                'id': id
+            },
+            status=status.HTTP_200_OK)
 
     # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle permission denied.
-    except PermissionDenied as e:
-        return Response(e.detail, status=status.HTTP_403_FORBIDDEN)
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
+    except PyMongoError as error:
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
+    except Exception as error:
         return Response(
-            {'error': str(e)},
+            data={'message': 'Internal Server Error'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# Handles the adding and removing options in a poll.
+@api_view(['POST', 'DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+async def option_delete(request, id):
+
+    # If poll ID is invalid.
+    if len(id) != 24:
+        raise ValidationError(
+            detail={'message': 'Invalid poll ID'})
+
+    try:
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
+
+        # Find the poll document in the polls collection.
+        poll_bson = await polls_db.polls.find_one(
+            {'_id': ObjectId(id)})
+
+        # If poll document is not found.
+        if not poll_bson:
+            raise NotFound(
+                detail={'message': 'Poll not found'})
+
+        # Poll privacy.
+        is_private = poll_bson['privacy'] == 'private'
+        is_owner = poll_bson['user_id'] == request.user.id
+
+        if (not is_owner) and is_private:
+            raise PermissionDenied(
+                detail={'message': 'This poll is private.'})
+
+        # Initialize a OptionSerializer instance.
+        option_serializer = OptionSerializer(data=request.data, partial=True)
+        option_serializer.is_valid(raise_exception=True)
+        option = option_serializer.validated_data
+
+        # Convert BSON to JSON.
+        poll_json = json_util._json_convert((poll_bson))
+        options = poll_json['options']
+
+        # If the option already exist in poll document.
+        exist = any(o['option_text'] == option['option_text'] for o in options)
+
+        if not exist:
+            raise ValidationError(
+                detail={'option_text': ['Option not exist.']})
+
+        # If the authenticated user not authorized.
+        if not is_owner:
+            raise PermissionDenied(
+                detail={'message': 'Not Authorized.'})
+
+        # Remove the option in the poll document.
+        await polls_db.polls.update_one(
+            {'_id': ObjectId(id)},
+            {
+                '$pull': {
+                    'options': {
+                        'option_text': option['option_text']
+                    }
+                }
+            }
+        )
+
+        # Response.
+        return Response(
+            data={
+                'message': 'Option removed successfully',
+                'id': id
+            },
+            status=status.HTTP_200_OK)
+
+    # Handle validation errors.
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle permission denied.
+    except PermissionDenied as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_403_FORBIDDEN)
+
+    # Handle validation errors.
+    except NotFound as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_404_NOT_FOUND)
+
+    # Handle MongoDB errors.
+    except PyMongoError as error:
+        return Response(
+            data={'message': 'Internal Server Error'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Handle other exceptions.
+    except Exception as error:
+        return Response(
+            data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
