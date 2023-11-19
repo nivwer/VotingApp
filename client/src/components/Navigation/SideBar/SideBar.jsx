@@ -13,6 +13,7 @@ import {
   Heading,
   IconButton,
   Stack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useThemeInfo } from "../../../hooks/Theme";
 // Icons.
@@ -21,6 +22,10 @@ import { FaPlus, FaHouse, FaSquarePollHorizontal } from "react-icons/fa6";
 // Component.
 function SideBar({ section }) {
   const { isDark, ThemeColor } = useThemeInfo();
+
+  // Poll Modal.
+  const disclosure = useDisclosure();
+
   // Request to get poll categories.
   const { data: categoriesData, isLoading: isCategoriesLoading } =
     useGetCategoriesQuery();
@@ -102,16 +107,17 @@ function SideBar({ section }) {
                 />
               </NavLink>
             </HStack>
-            <PollModal
+
+            <IconButton
+              onClick={disclosure.onOpen}
               icon={<FaPlus />}
-              buttonStyles={{
-                colorScheme: ThemeColor,
-                variant: "solid",
-                borderRadius: "full",
-                size: "md",
-                opacity: 0.9,
-              }}
+              colorScheme={ThemeColor}
+              variant={"solid"}
+              borderRadius={"full"}
+              size={"md"}
+              opacity={0.9}
             />
+            <PollModal disclosure={disclosure} />
           </Flex>
         </GridItem>
       </Grid>

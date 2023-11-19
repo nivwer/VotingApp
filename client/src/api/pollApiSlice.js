@@ -13,13 +13,19 @@ export const pollApiSlice = createApi({
 
     // Create Poll.
     createPoll: builder.mutation({
-      query: (data) => ({
+      query: ({ headers, body }) => ({
         url: "poll",
         method: "POST",
-        headers: data.headers,
-        body: data.body,
+        headers: headers,
+        body: body,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Read Poll.
@@ -30,7 +36,7 @@ export const pollApiSlice = createApi({
         headers: headers,
       }),
       providesTags: ["Polls"],
-      providesTags: (res) =>
+      providesTags: (res, error) =>
         res
           ? [
               { type: "Polls", id: res.poll.id },

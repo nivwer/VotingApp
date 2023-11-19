@@ -585,7 +585,7 @@ async def poll_delete(request, id):
         if not poll:
             raise NotFound(
                 detail={'message': 'Poll not found'})
-        
+
         # If the authenticated user is not authorized.
         is_owner = poll['user_id'] == request.user.id
         if not is_owner:
@@ -599,14 +599,14 @@ async def poll_delete(request, id):
 
                 # Remove the poll document in the polls collection.
                 rm_poll_result = await polls_db.polls.delete_one(
-                    {'_id': poll['_id']},
+                    {'_id': ObjectId(id)},
                     session=session)
 
                 comments_is_not_removed = True
                 # Remove the comment documents of the poll in the comments collection.
                 if poll['comments_counter'] > 0:
                     rm_comments_result = await polls_db.comments.delete_many(
-                        {'poll_id': id},
+                        {'poll_id': ObjectId(id)},
                         session=session)
 
                     comments_is_not_removed = rm_comments_result.deleted_count != poll[
@@ -620,7 +620,7 @@ async def poll_delete(request, id):
                 # If the poll document is not removed.
                 if poll_is_not_removed or comments_is_not_removed:
                     await session.abort_transaction()
-                    raise PyMongoError()
+                    raise PyMongoError('Internal Server Error')
 
                 # Save transaction.
                 await session.commit_transaction()
