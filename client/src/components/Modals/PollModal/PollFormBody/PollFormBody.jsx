@@ -24,19 +24,16 @@ import { FaPlus, FaTrash } from "react-icons/fa6";
 // SubComponent ( PollModal ).
 function PollFormBody({
   poll,
-  register,
-  watch,
-  reset,
-  setError,
-  errors,
-  options,
-  setOptions,
-  privacyValue,
-  setPrivacyValue,
+  form,
+  optionState,
+  privacyState,
   categories,
   isLoading,
 }) {
   const { isDark, ThemeColor } = useThemeInfo();
+  const { register, watch, reset, setError, errors } = form;
+  const { options, setOptions } = optionState;
+  const { privacyValue, setPrivacyValue } = privacyState;
 
   // Add the options.
   const handleAddOption = () => {
@@ -219,9 +216,6 @@ function PollFormBody({
             </Radio>
             <Radio value="private" colorScheme={ThemeColor}>
               Private
-            </Radio>
-            <Radio value="friends_only" colorScheme={ThemeColor}>
-              Friends
             </Radio>
           </Stack>
         </RadioGroup>

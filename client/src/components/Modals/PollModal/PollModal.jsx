@@ -12,7 +12,6 @@ import {
 // Components.
 import CustomProgress from "../../Progress/CustomProgress/CustomProgress";
 import {
-  useDisclosure,
   Button,
   Modal,
   ModalBody,
@@ -21,7 +20,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  IconButton,
   Text,
   HStack,
 } from "@chakra-ui/react";
@@ -29,12 +27,12 @@ import {
 import PollFormBody from "./PollFormBody/PollFormBody";
 
 // Component.
-function PollModal({ poll = false, buttonStyles, icon = false }) {
+function PollModal({ poll = false, disclosure }) {
+  const { isOpen, onClose } = disclosure;
   const navigate = useNavigate();
   const { ThemeColor, isDark } = useThemeInfo();
   const { token, user } = useSelector((state) => state.session);
-  // Modal.
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
   // React hook form.
   const {
     register,
@@ -57,11 +55,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
   const isLoading = isCreateLoading || isUpdateLoading || isCategoriesLoading;
 
   // Options list.
-  const initialOptionsState = {
-    options: [],
-    add_options: [],
-    del_options: [],
-  };
+  const initialOptionsState = { options: [], add_options: [], del_options: [] };
   const [options, setOptions] = useState(initialOptionsState);
   // Privacy Radio.
   const [privacyValue, setPrivacyValue] = useState("public");
@@ -89,7 +83,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
 
   // Load poll categories.
   useEffect(() => {
-    categoriesData ? setCategories(categoriesData.list) : setCategories(false);
+    setCategories(categoriesData ? categoriesData.list : false);
   }, [categoriesData]);
 
   // Submit.
@@ -98,29 +92,21 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
       data["privacy"] = privacyValue;
       data["options"] = options;
 
+      const dataMutation = {
+        headers: { Authorization: `Token ${token}` },
+        body: data,
+      };
+
       let res = "";
 
       if (poll) {
-        res = await updatePoll({
-          id: poll._id,
-          headers: { Authorization: `Token ${token}` },
-          body: data,
-        });
-        // If the values is valid.
+        res = await updatePoll({ ...dataMutation, id: poll.id });
         if (res.data) {
           onClose();
-          setOptions({
-            ...options,
-            add_options: [],
-            del_options: [],
-          });
+          setOptions({ ...options, add_options: [], del_options: [] });
         }
       } else {
-        res = await createPoll({
-          headers: { Authorization: `Token ${token}` },
-          body: data,
-        });
-        // If the values is valid.
+        res = await createPoll(dataMutation);
         if (res.data) {
           onClose();
           useDefaultValues();
@@ -131,9 +117,7 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
       // If server error.
       if (res.error) {
         for (const fieldName in res.error.data) {
-          setError(fieldName, {
-            message: res.error.data[fieldName][0],
-          });
+          setError(fieldName, { message: res.error.data[fieldName][0] });
         }
       }
     } catch (error) {
@@ -143,15 +127,6 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
 
   return (
     <>
-      {/* Button to open the Modal. */}
-      {icon ? (
-        <IconButton onClick={onOpen} {...buttonStyles} icon={icon} />
-      ) : (
-        <Button onClick={onOpen} {...buttonStyles}>
-          {poll ? "Edit" : "New poll"}
-        </Button>
-      )}
-
       {/* Modal. */}
       <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -176,15 +151,9 @@ function PollModal({ poll = false, buttonStyles, icon = false }) {
             <ModalBody maxH={"calc(100vh - 300px)"} overflow={"auto"} pb={6}>
               <PollFormBody
                 poll={poll && poll}
-                register={register}
-                watch={watch}
-                reset={reset}
-                setError={setError}
-                errors={errors}
-                options={options}
-                setOptions={setOptions}
-                privacyValue={privacyValue}
-                setPrivacyValue={setPrivacyValue}
+                form={{ register, watch, reset, setError, errors }}
+                optionState={{ options, setOptions }}
+                privacyState={{ privacyValue, setPrivacyValue }}
                 categories={categories}
                 isLoading={isLoading}
               />
