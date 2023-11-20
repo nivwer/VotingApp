@@ -47,23 +47,35 @@ export const pollApiSlice = createApi({
 
     // Update Poll.
     updatePoll: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/update`,
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/update`,
         method: "PATCH",
-        headers: data.headers,
-        body: data.body,
+        headers: headers,
+        body: body,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Delete Poll.
     deletePoll: builder.mutation({
-      query: (data) => ({
-        url: `poll/${data.id}/delete`,
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/delete`,
         method: "DELETE",
-        headers: data.headers,
+        headers: headers,
       }),
-      invalidatesTags: ["Polls"],
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Option manager //

@@ -10,10 +10,12 @@ import {
   GridItem,
   Container,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 // Layout.
 function GridLayout({ layout = "simple", section = "main" }) {
   const { isDark } = useThemeInfo();
+  const [isLayoutReady, setLayoutReady] = useState(false);
 
   const isSimple = layout === "simple";
   const isDouble = layout === "double";
@@ -46,6 +48,15 @@ function GridLayout({ layout = "simple", section = "main" }) {
       columns: "1fr 664px 1fr",
     },
   };
+
+  // Display the layout when ready.
+  useEffect(() => {
+    setLayoutReady(true);
+  }, [layoutBreakPoint]);
+
+  if (!isLayoutReady) {
+    return null;
+  }
 
   return (
     <Grid

@@ -64,7 +64,7 @@ function PollCardInputOption({ id, setShowInputOption }) {
       : {};
 
     setDataMutation({ ...headers, id: id });
-  }, [isAuthenticated]);
+  }, [id, isAuthenticated]);
 
   return (
     <form onSubmit={onSubmit}>

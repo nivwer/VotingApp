@@ -1,21 +1,13 @@
 // Hooks.
-import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useSelector } from "react-redux";
 // Components.
-import {
-  Button,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-} from "@chakra-ui/react";
+import CardMenu from "../../../../Menus/CardMenu/CardMenu";
+import CardMenuItem from "../../../../Menus/CardMenu/CardMenuItem/CardMenuItem";
 // Icons.
 import { FaEllipsis } from "react-icons/fa6";
 
 // SubComponent ( CommentCardBody ).
 function CommentCardMenu({ comment, deleteComment, isLoading }) {
-  const { isDark } = useThemeInfo();
   const { isAuthenticated, token, user } = useSelector(
     (state) => state.session
   );
@@ -33,46 +25,17 @@ function CommentCardMenu({ comment, deleteComment, isLoading }) {
     }
   };
 
-  const itemStyle = {
-    w: "100%",
-    h: "100%",
-    px: 3,
-    py: 2,
-    borderRadius: 0,
-    variant: "ghost",
-    justifyContent: "start",
-    color: isDark ? "whiteAlpha.900" : "blackAlpha.900",
-    bg: isDark ? "black" : "white",
-    opacity: isDark ? 0.9 : 0.7,
-  };
-
   return (
     <>
       {isAuthenticated && user.id == comment.user_id && (
-        <Menu>
-          <MenuButton
-            isDisabled={isLoading}
-            as={IconButton}
-            aria-label={"Options"}
-            icon={<FaEllipsis />}
-            borderRadius={"full"}
-            variant={"ghost"}
-            opacity={0.6}
-            position={"absolute"}
-            right={5}
-          />
-
-          <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>
-            <MenuItem
-              as={Button}
-              onClick={() => handleDeleteComment(comment.poll_id, comment.id)}
-              {...itemStyle}
-              isDisabled={isLoading}
-            >
-              Delete
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        <CardMenu>
+          <CardMenuItem
+            onClick={() => handleDeleteComment(comment.poll_id, comment.id)}
+            isLoading={isLoading}
+          >
+            Delete
+          </CardMenuItem>
+        </CardMenu>
       )}
     </>
   );

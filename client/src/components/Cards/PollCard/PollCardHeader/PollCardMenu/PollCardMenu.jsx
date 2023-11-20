@@ -39,7 +39,7 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
       : {};
 
     setDataMutation({ ...headers });
-  }, [isAuthenticated]);
+  }, [poll, isAuthenticated]);
 
   return (
     <>

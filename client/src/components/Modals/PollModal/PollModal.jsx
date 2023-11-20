@@ -79,7 +79,7 @@ function PollModal({ poll = false, disclosure }) {
       setOptions({ ...options, options: pollOptions });
       setPrivacyValue(poll.privacy);
     }
-  }, []);
+  }, [poll]);
 
   // Load poll categories.
   useEffect(() => {

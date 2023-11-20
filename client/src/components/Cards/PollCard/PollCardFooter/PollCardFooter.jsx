@@ -94,7 +94,7 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
       : {};
 
     setDataMutation({ ...headers, id: poll.id });
-  }, [isAuthenticated]);
+  }, [poll, isAuthenticated]);
 
   // Update user actions.
   useEffect(() => {

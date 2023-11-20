@@ -78,7 +78,7 @@ function PollCardOptionButton({
       : {};
 
     setDataMutation({ ...headers, id: poll.id });
-  }, [isAuthenticated]);
+  }, [poll, isAuthenticated]);
 
   return (
     <Button

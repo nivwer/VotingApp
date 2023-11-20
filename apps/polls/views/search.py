@@ -115,7 +115,7 @@ async def search_polls(request):
                 return Response(
                     data={
                         'items': [],
-                        'message': 'No comment found',
+                        'message': 'No result found',
                         'paginator':
                         {
                             'page': page_number,

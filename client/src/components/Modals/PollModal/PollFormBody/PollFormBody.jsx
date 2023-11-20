@@ -18,6 +18,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 // Icons.
 import { FaPlus, FaTrash } from "react-icons/fa6";
 
@@ -102,6 +103,12 @@ function PollFormBody({
       });
     }
   };
+
+  useEffect(()=> {
+    if(poll) {
+      reset()
+    }
+  }, [poll])
 
   const optionStyles = {
     justifyContent: "space-between",
