@@ -6,10 +6,10 @@ import { useSearchParams } from "react-router-dom";
 import { Box, Flex, Grid } from "@chakra-ui/react";
 // SubComponents.
 import ProfileTabButton from "./ProfileTabButton/ProfileTabButton";
-import ProfileUserPolls from "./ProfileUserPolls/ProfileUserPolls";
-import ProfileVotedPolls from "./ProfileVotedPolls/ProfileVotedPolls";
-import ProfileSharedPolls from "./ProfileSharedPolls/ProfileSharedPolls";
-import ProfileBookmarkedPolls from "./ProfileBookmarkedPolls/ProfileBookmarkedPolls";
+import ProfileUserPolls from "./ProfileTabs/ProfileUserPolls/ProfileUserPolls";
+import ProfileVotedPolls from "./ProfileTabs/ProfileVotedPolls/ProfileVotedPolls";
+import ProfileSharedPolls from "./ProfileTabs/ProfileSharedPolls/ProfileSharedPolls";
+import ProfileBookmarkedPolls from "./ProfileTabs/ProfileBookmarkedPolls/ProfileBookmarkedPolls";
 
 // SubComponent ( Profile ).
 function ProfileBody({ profile, username, isLoading }) {

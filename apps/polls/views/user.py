@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 # Rest Framework.
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
@@ -631,7 +631,7 @@ async def user_shared_polls(request, id):
             ).afirst()
 
             if user_data:
-                poll['profile'] = {
+                poll['user_profile'] = {
                     'username': user_data['username'],
                     'profile_picture': user_data['userprofile__profile_picture'],
                     'profile_name': user_data['userprofile__profile_name']
@@ -872,7 +872,7 @@ async def user_bookmarked_polls(request, id):
             ).afirst()
 
             if user_data:
-                poll['profile'] = {
+                poll['user_profile'] = {
                     'username': user_data['username'],
                     'profile_picture': user_data['userprofile__profile_picture'],
                     'profile_name': user_data['userprofile__profile_name']

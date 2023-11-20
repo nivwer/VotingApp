@@ -15,33 +15,28 @@ function Profile() {
   const { isDark } = useThemeInfo();
   const { isAuthenticated, token } = useSelector((state) => state.session);
   const { username } = useParams();
-  const [data, setData] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [dataQuery, setDataQuery] = useState(false);
 
   // Query to get User Profile.
   const [profile, setProfile] = useState(null);
-  const { data: dataProfile } = useProfileByUsernameQuery(data, {
-    skip: data ? false : true,
-  });
+  const { data, status, isLoading, isFetching } = useProfileByUsernameQuery(
+    dataQuery,
+    { skip: dataQuery ? false : true }
+  );
 
   // Update data to fetchs.
   useEffect(() => {
-    setIsLoading(true);
-    if (isAuthenticated) {
-      setData({
-        headers: { Authorization: `Token ${token}` },
-        username: username,
-      });
-    } else {
-      setData({ username: username });
-    }
+    const headers = isAuthenticated
+      ? { headers: { Authorization: `Token ${token}` } }
+      : {};
+
+    setDataQuery({ ...headers, username: username });
   }, [username, isAuthenticated]);
 
   // Load Profile.
   useEffect(() => {
-    dataProfile && setProfile(dataProfile.profile);
-    setIsLoading(false);
-  }, [dataProfile]);
+    data && setProfile(data.profile);
+  }, [status]);
 
   return (
     <>
@@ -55,14 +50,18 @@ function Profile() {
         color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
         overflow={"hidden"}
       >
-        {!isLoading && profile && <ProfileHeader profile={profile} />}
+        {!isLoading && !isFetching && profile && (
+          <ProfileHeader profile={profile} />
+        )}
       </Box>
       {/* Profile Body. */}
-      <ProfileBody
-        profile={profile}
-        isLoading={isLoading}
-        username={username}
-      />
+      {!isLoading && !isFetching && profile && (
+        <ProfileBody
+          profile={profile}
+          isLoading={isLoading}
+          username={username}
+        />
+      )}
     </>
   );
 }

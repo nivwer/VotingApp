@@ -286,18 +286,18 @@ export const pollApiSlice = createApi({
 
     // Get User Polls.
     getUserPolls: builder.query({
-      query: (data) => ({
-        url: data.page
-          ? `user/${data.id}?page=${data.page}`
-          : `user/${data.id}`,
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `user/${id}?page=${page}&page_size=${page_size}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
-      // providesTags: ["Polls"],
-      providesTags: (result) =>
-        result
+      providesTags: (res, error) =>
+        res
           ? [
-              ...result.polls.map(({ id }) => ({ type: "Polls", id: id })),
+              ...res.items.map(({ poll: { id } }) => ({
+                type: "Polls",
+                id: id,
+              })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -305,38 +305,59 @@ export const pollApiSlice = createApi({
 
     // Get User voted Polls.
     getUserVotedPolls: builder.query({
-      query: (data) => ({
-        url: data.page
-          ? `user/${data.id}/votes?page=${data.page}`
-          : `user/${data.id}/votes`,
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `user/${id}/votes?page=${page}&page_size=${page_size}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
-      providesTags: ["Polls"],
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({
+                type: "Polls",
+                id: id,
+              })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Get User shared Polls.
     getUserSharedPolls: builder.query({
-      query: (data) => ({
-        url: data.page
-          ? `user/${data.id}/shares?page=${data.page}`
-          : `user/${data.id}/shares`,
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `user/${id}/shares?page=${page}&page_size=${page_size}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
-      providesTags: ["Polls"],
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({
+                type: "Polls",
+                id: id,
+              })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Get User bookmarked Polls.
     getUserBookmarkedPolls: builder.query({
-      query: (data) => ({
-        url: data.page
-          ? `user/${data.id}/bookmarks?page=${data.page}`
-          : `user/${data.id}/bookmarks`,
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `user/${id}/bookmarks?page=${page}&page_size=${page_size}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
-      providesTags: ["Polls"],
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({
+                type: "Polls",
+                id: id,
+              })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Get category polls.
