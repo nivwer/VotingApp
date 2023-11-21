@@ -1,11 +1,11 @@
 // Hooks.
+import { useThemeInfo } from "../../../hooks/Theme";
 import { useGetCategoriesQuery } from "../../../api/pollApiSlice";
 // Components.
 import PollModal from "../../Modals/PollModal/PollModal";
 import { NavLink } from "react-router-dom";
 import {
   Box,
-  Button,
   Flex,
   Grid,
   GridItem,
@@ -15,9 +15,14 @@ import {
   Stack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useThemeInfo } from "../../../hooks/Theme";
+// SubComponent.
+import SideBarCategoryButton from "./SideBarCategoryButton/SideBarCategoryButton";
 // Icons.
-import { FaPlus, FaHouse, FaSquarePollHorizontal } from "react-icons/fa6";
+import {
+  FaPlus,
+  FaHouse,
+  FaSquarePollHorizontal,
+} from "react-icons/fa6";
 
 // Component.
 function SideBar({ section }) {
@@ -58,23 +63,15 @@ function SideBar({ section }) {
             </Heading>
           </Flex>
           <Flex opacity={isDark ? 0.8 : 0.6} justify={"center"}>
-            <Stack w={"82%"} spacing={0} fontWeight={"semibold"}>
+            <Stack w={"87%"} spacing={0} fontWeight={"semibold"}>
               {categoriesData &&
                 categoriesData.list.map((category, index) => (
-                  <NavLink to={`/categories/${category.value}`} key={index}>
-                    <Button
-                      variant={"ghost"}
-                      justifyContent={"start"}
-                      w={"100%"}
-                      size={"sm"}
-                    >
-                      {category.text}
-                    </Button>
-                  </NavLink>
+                  <SideBarCategoryButton key={index} category={category} />
                 ))}
             </Stack>
           </Flex>
         </GridItem>
+
         <GridItem>
           <Flex
             h={"100%"}
