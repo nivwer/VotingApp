@@ -12,6 +12,7 @@ function CategoryPolls() {
   const { isAuthenticated, token } = useSelector((state) => state.session);
   const { category } = useParams();
   const [dataQuery, setDataQuery] = useState(false);
+  const [resetValues, setResetValues] = useState(false);
 
   // Update data to fetchs.
   useEffect(() => {

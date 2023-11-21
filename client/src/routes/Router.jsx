@@ -10,8 +10,6 @@ import SignIn from "../pages/Auth/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
 import Profile from "../pages/Profile/Profile";
 import Poll from "../pages/Poll/Poll";
-import Categories from "../pages/Polls/Categories/Categories";
-import CategoryPolls from "../pages/Polls/Categories/CategoryPolls";
 import Settings from "../pages/Settings/Settings";
 import AccountSettings from "../pages/Settings/AccountSettings/AccountSettings";
 import ProfileSettings from "../pages/Settings/ProfileSettings/ProfileSettings";
@@ -20,6 +18,8 @@ import Results from "../pages/Results/Results";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
+import CategoryPolls from "../pages/Categories/CategoryPolls/CategoryPolls";
+import Categories from "../pages/Categories/Categories";
 
 // Router.
 function Router() {

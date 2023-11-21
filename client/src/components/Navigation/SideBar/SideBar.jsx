@@ -58,7 +58,7 @@ function SideBar({ section }) {
               <NavLink to={"/categories"}>Categories</NavLink>
             </Heading>
           </Flex>
-          <Flex opacity={isDark ? 0.8 : 0.6} justify={"center"}>
+          <Flex mb={5} opacity={isDark ? 0.8 : 0.6} justify={"center"}>
             <Stack w={"87%"} spacing={0} fontWeight={"semibold"}>
               {categoriesData &&
                 categoriesData.list.map((category, index) => (

@@ -1,8 +1,6 @@
 // Hooks.
-import { useGetCategoriesDataQuery } from "../../api/pollApiSlice";
 // Components.
 import { NavLink } from "react-router-dom";
-import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
 import {
   Button,
   Table,
@@ -15,14 +13,23 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { useGetCategoriesDataQuery, useGetCategoriesQuery } from "../../api/pollApiSlice";
+import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
 
 // Page.
 function Categories() {
   const { data, isLoading, isFetching } = useGetCategoriesDataQuery();
+  // Request to get poll categories.
+  const { data: categoriesData, isLoading: isCategoriesLoading } =
+    useGetCategoriesQuery();
 
   return (
     <>
-      {data ? (
+
+
+
+
+      {/* {data ? (
         <TableContainer p={"6"}>
           <Table size={"sm"} variant="simple">
             <TableCaption>Categories data.</TableCaption>
@@ -66,7 +73,7 @@ function Categories() {
         <CustomSpinner />
       ) : (
         data.message
-      )}
+      )} */}
     </>
   );
 }
