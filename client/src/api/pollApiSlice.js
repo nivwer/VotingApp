@@ -362,14 +362,21 @@ export const pollApiSlice = createApi({
 
     // Get category polls.
     getPollsCategory: builder.query({
-      query: (data) => ({
-        url: data.page
-          ? `category/${data.category}?page=${data.page}`
-          : `category/${data.category}`,
+      query: ({ headers, category, page = 1, page_size = 4 }) => ({
+        url: `category/${category}?page=${page}&page_size=${page_size}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
-      providesTags: ["Polls"],
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({
+                type: "Polls",
+                id: id,
+              })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
     // Others. //
