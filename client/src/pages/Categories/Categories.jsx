@@ -1,8 +1,8 @@
 // Hooks.
-import { useGetCategoriesDataQuery } from "../../../api/pollApiSlice";
+import { useGetCategoriesDataQuery } from "../../api/pollApiSlice";
 // Components.
 import { NavLink } from "react-router-dom";
-import CustomSpinner from "../../../components/Spinners/CustomSpinner/CustomSpinner";
+import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
 import {
   Button,
   Table,

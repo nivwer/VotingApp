@@ -18,11 +18,7 @@ import {
 // SubComponent.
 import SideBarCategoryButton from "./SideBarCategoryButton/SideBarCategoryButton";
 // Icons.
-import {
-  FaPlus,
-  FaHouse,
-  FaSquarePollHorizontal,
-} from "react-icons/fa6";
+import { FaPlus, FaHouse, FaSquarePollHorizontal } from "react-icons/fa6";
 
 // Component.
 function SideBar({ section }) {
