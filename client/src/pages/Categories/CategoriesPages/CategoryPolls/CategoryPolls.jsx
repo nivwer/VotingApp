@@ -2,10 +2,10 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { useGetPollsCategoryQuery } from "../../../api/pollApiSlice";
+import { useGetPollsCategoryQuery } from "../../../../api/pollApiSlice";
 // Components.
-import Pagination from "../../../components/Pagination/Pagination";
-import PollCard from "../../../components/Cards/PollCard/PollCard";
+import Pagination from "../../../../components/Pagination/Pagination";
+import PollCard from "../../../../components/Cards/PollCard/PollCard";
 
 // Page.
 function CategoryPolls() {

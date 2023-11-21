@@ -1,6 +1,8 @@
 // Components.
 import { Button, HStack, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
+// Icons.
+import { FaHashtag } from "react-icons/fa6";
 // Utils.
 import categoryIcons from "../../../../utils/categoryIcons";
 

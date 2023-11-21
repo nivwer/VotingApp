@@ -15,11 +15,11 @@ import AccountSettings from "../pages/Settings/AccountSettings/AccountSettings";
 import ProfileSettings from "../pages/Settings/ProfileSettings/ProfileSettings";
 import ThemeSettings from "../pages/Settings/ThemeSettings/ThemeSettings";
 import Results from "../pages/Results/Results";
+import Categories from "../pages/Categories/Categories";
+import CategoryPolls from "../pages/Categories/CategoriesPages/CategoryPolls/CategoryPolls";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
-import CategoryPolls from "../pages/Categories/CategoryPolls/CategoryPolls";
-import Categories from "../pages/Categories/Categories";
 
 // Router.
 function Router() {
