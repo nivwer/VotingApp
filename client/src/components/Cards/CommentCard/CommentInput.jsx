@@ -91,7 +91,7 @@ function CommentInput({ id }) {
         direction={"row"}
         borderRadius="0"
         borderBottom={"1px solid"}
-        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
       >
         <CardHeader as={Flex} pr={3}>
           {/* Profile Picture. */}

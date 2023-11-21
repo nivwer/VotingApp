@@ -11,15 +11,15 @@ import NotFoundPage from "../pages/NotFoundPage";
 import Profile from "../pages/Profile/Profile";
 import Poll from "../pages/Poll/Poll";
 import Settings from "../pages/Settings/Settings";
-import AccountSettings from "../pages/Settings/AccountSettings/AccountSettings";
-import ProfileSettings from "../pages/Settings/ProfileSettings/ProfileSettings";
-import ThemeSettings from "../pages/Settings/ThemeSettings/ThemeSettings";
 import Results from "../pages/Results/Results";
 import Categories from "../pages/Categories/Categories";
 import CategoryPolls from "../pages/Categories/CategoriesPages/CategoryPolls/CategoryPolls";
 // Components.
 import ProtectedRoute from "./ProtectedRoute";
 import GridLayout from "../components/Layout/GridLayout";
+import ThemeSettings from "../pages/Settings/SettingsPages/ThemeSettings/ThemeSettings";
+import AccountSettings from "../pages/Settings/SettingsPages/AccountSettings/AccountSettings";
+import ProfileSettings from "../pages/Settings/SettingsPages/ProfileSettings/ProfileSettings";
 
 // Router.
 function Router() {

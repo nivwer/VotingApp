@@ -17,7 +17,7 @@ function NavRightDrawerBody({ handleLogout, onClose }) {
   return (
     <Stack spacing={3}>
       {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"} />
+      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
       {/* Profile Page. */}
       <NavLink to={`/${user.username}`}>
         <NavRightDrawerButton icon={<FaUser />} onClick={onClose}>
@@ -26,7 +26,7 @@ function NavRightDrawerBody({ handleLogout, onClose }) {
       </NavLink>
 
       {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"} />
+      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
 
       {/* User Pages. */}
       <Stack spacing={0}>
@@ -53,7 +53,7 @@ function NavRightDrawerBody({ handleLogout, onClose }) {
       </Stack>
 
       {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"} />
+      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
 
       {/* Settings Pages. */}
       <Stack spacing={0}>
@@ -65,7 +65,7 @@ function NavRightDrawerBody({ handleLogout, onClose }) {
       </Stack>
 
       {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"} />
+      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
 
       {/* Sign Out. */}
       <NavRightDrawerButton onClick={handleLogout}>

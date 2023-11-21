@@ -27,7 +27,7 @@ function PollCard({ item }) {
           w="100%"
           borderRadius="0"
           borderBottom={"1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
           opacity={isLoading ? 0.6 : 1}
           boxShadow={"none"}
         >

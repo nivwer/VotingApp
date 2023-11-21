@@ -1,9 +1,9 @@
 // Hooks.
 import { useForm } from "react-hook-form";
-import { useUpdatePasswordMutation } from "../../../../api/authApiSlice";
-import { useThemeInfo } from "../../../../hooks/Theme";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useUpdatePasswordMutation } from "../../../../../api/authApiSlice";
 // Components.
 import {
   Box,
@@ -16,7 +16,7 @@ import {
   InputRightElement,
   Stack,
 } from "@chakra-ui/react";
-import ToggleShowPassword from "../../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
+import ToggleShowPassword from "../../../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
 
 // SubComponent ( AccountSettings ).
 function PasswordForm() {

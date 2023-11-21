@@ -22,7 +22,7 @@ function UserCard({ user }) {
       borderRadius="0"
       direction={"row"}
       borderBottom={"1px solid"}
-      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
       px={2}
     >
       {/* Card Header. */}
@@ -35,11 +35,6 @@ function UserCard({ user }) {
         {/* <CommentCardBody comment={comment} isLoading={isLoading} /> */}
         <UserCardBody user={user} />
       </CardBody>
-
-      {/* Card Footer. */}
-      {/* <CardFooter py={3}>
-        <Button>Profile</Button>
-      </CardFooter> */}
     </Card>
   );
 }

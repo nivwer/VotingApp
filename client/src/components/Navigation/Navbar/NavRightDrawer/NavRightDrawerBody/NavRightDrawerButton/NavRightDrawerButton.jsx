@@ -15,7 +15,7 @@ function NavRightDrawerButton({ children, icon = null, onClick }) {
       px={icon ? "3" : "5"}
       onClick={onClick}
       justifyContent="start"
-      opacity={isDark ? 0.9 : 0.5}
+      opacity={isDark ? 0.9 : 0.6}
     >
       <HStack spacing={2}>
         {icon}

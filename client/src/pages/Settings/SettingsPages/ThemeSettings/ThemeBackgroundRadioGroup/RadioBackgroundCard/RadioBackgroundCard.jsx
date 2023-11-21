@@ -1,6 +1,6 @@
 // Hooks.
 import { Flex, Text, useRadio } from "@chakra-ui/react";
-import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../../hooks/Theme";
 // Components.
 import { Box } from "@chakra-ui/react";
 

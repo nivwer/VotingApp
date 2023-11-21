@@ -60,7 +60,7 @@ function NavRightDrawer({ disclosure }) {
         <DrawerContent
           bg={isDark ? "black" : "white"}
           border={"1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
           borderLeftRadius="14px"
         >
           <DrawerCloseButton />

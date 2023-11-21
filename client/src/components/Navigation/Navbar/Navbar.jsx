@@ -25,7 +25,7 @@ function Navbar() {
       bg={isDark ? "black" : "white"}
       color={isDark ? "whiteAlpha.900" : "blackAlpha.800"}
       borderBottom={isDark ? "1px solid" : "1px solid"}
-      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
     >
       {/* Toolbar. */}
       <Flex minH="64px" px="50px" align="center" justify="space-between">

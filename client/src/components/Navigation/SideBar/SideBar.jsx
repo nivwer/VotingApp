@@ -23,16 +23,11 @@ import { FaPlus, FaHouse, FaSquarePollHorizontal } from "react-icons/fa6";
 // Component.
 function SideBar({ section }) {
   const { isDark, ThemeColor } = useThemeInfo();
-
   // Poll Modal.
   const disclosure = useDisclosure();
 
   // Request to get poll categories.
-  const { data: categoriesData, isLoading: isCategoriesLoading } =
-    useGetCategoriesQuery();
-
-  // Is loading.
-  const isLoading = isCategoriesLoading;
+  const { data, isLoading } = useGetCategoriesQuery();
 
   return (
     <Box pos={"fixed"} w={"295px"} h={"calc(100vh - 64px)"}>
@@ -60,8 +55,8 @@ function SideBar({ section }) {
           </Flex>
           <Flex mb={5} opacity={isDark ? 0.8 : 0.6} justify={"center"}>
             <Stack w={"87%"} spacing={0} fontWeight={"semibold"}>
-              {categoriesData &&
-                categoriesData.list.map((category, index) => (
+              {data &&
+                data.list.map((category, index) => (
                   <SideBarCategoryButton key={index} category={category} />
                 ))}
             </Stack>
@@ -78,7 +73,7 @@ function SideBar({ section }) {
             borderTopLeftRadius={"3xl"}
             border={"1px solid"}
             borderRight={"0px solid"}
-            borderColor={isDark ? "whiteAlpha.200" : "blackAlpha.200"}
+            borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
           >
             <HStack opacity={isDark ? 0.9 : 0.8} spacing={1}>
               <NavLink to={"/home"}>

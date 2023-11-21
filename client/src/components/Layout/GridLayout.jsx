@@ -84,7 +84,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
           p={0}
           maxW={"664px"}
           borderX={layout === "simple" ? "0px solid" : "1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
         >
           <Outlet />
         </Container>

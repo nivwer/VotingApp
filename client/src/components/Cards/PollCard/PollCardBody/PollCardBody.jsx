@@ -21,7 +21,7 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
       <Stack spacing={3} w={"90%"}>
         <Stack textAlign={"center"}>
           {/* Title. */}
-          <Heading size={"md"} opacity={0.9}>
+          <Heading size={"md"} opacity={0.8}>
             {poll.title}
           </Heading>
           {/* Description. */}

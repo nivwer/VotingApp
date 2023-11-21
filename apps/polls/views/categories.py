@@ -1,8 +1,7 @@
 # Standard.
 from datetime import datetime, timedelta
+# JSON.
 import json
-# Virtualenv.
-from dotenv import load_dotenv
 # Django.
 from django.http import HttpResponse
 # Rest Framework.
@@ -15,31 +14,39 @@ from rest_framework.permissions import AllowAny
 from adrf.decorators import api_view
 # MongoDB connection.
 from utils.mongo_connection import MongoDBSingleton
-# MongoDB.
+# PyMongo.
 from pymongo.errors import PyMongoError
 # Utils.
 from apps.polls.utils.categorys import CATEGORIES
 
 
-# Load the virtual environment.
-load_dotenv()
-
-
-# Helpers.
-
-# Get collections from a database in MongoDB.
-class GetCollectionsMongoDB:
-    def __init__(self, database, collections):
-        # Get database.
-        db = MongoDBSingleton().client[database]
-        # Get collections.
-        for collection in collections:
-            setattr(self, collection, db[collection])
-
-
 # Views.
 
-# Get poll categories.
+# Endpoint: "Categories"
+
+# Endpoint to retrieve a list of poll categories.
+# This view supports GET requests and allows any user (authenticated or unauthenticated) to access the categories.
+
+# --- Purpose ---
+# Retrieves a predefined list of poll categories. The response is cached for a specified time period to enhance
+# performance and reduce the load on the server.
+
+# --- Cache Configuration ---
+# - TTL: Time To Live for the cache set to one week.
+# - Cache-Control: Specifies the maximum age of the cache in seconds.
+# - Expires: Indicates the expiration date and time of the cache.
+
+# --- Response ---
+# Returns a JSON object containing a list of predefined poll categories.
+
+# --- Caching Strategy ---
+# The response is cached to improve efficiency, and the cache headers ensure that clients use the cached
+# data until the expiration date is reached.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-16
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def categories(request):
@@ -57,13 +64,40 @@ def categories(request):
     return res
 
 
-# Handles the get process for categories data.
+# Endpoint: "Categories Data"
+
+# Endpoint to retrieve aggregated data on poll categories.
+# This view supports GET requests and allows any user (authenticated or unauthenticated) to access the categories data.
+
+# --- Purpose ---
+# Retrieves aggregated data on poll categories, including the total number of polls and votes for each category.
+# The response is cached for a specified time period to enhance performance and reduce the load on the server.
+
+# --- Cache Configuration ---
+# - TTL: Time To Live for the cache set to one day.
+# - Cache-Control: Specifies the maximum age of the cache in seconds.
+# - Expires: Indicates the expiration date and time of the cache.
+
+# --- Response ---
+# Returns a JSON object containing aggregated data on poll categories, including total polls and votes for each category.
+
+# --- Caching Strategy ---
+# The response is cached to improve efficiency, and the cache headers ensure that clients use the cached
+# data until the expiration date is reached.
+
+# --- Error Handling ---
+# Handles validation errors, MongoDB errors, and other exceptions, providing appropriate responses and status codes.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-16
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def categories_data(request):
     try:
-        # Get collections from the polls database.
-        polls_db = GetCollectionsMongoDB('polls_db', ['polls'])
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
         # Get the categories data.
         aggregated_data = await polls_db.polls.aggregate(
@@ -120,15 +154,20 @@ async def categories_data(request):
         # Response.
         return res
 
-    # Handle validation errors.
-    except ValidationError as e:
-        return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+     # Handle validation errors.
+    except ValidationError as error:
+        return Response(
+            data=error.detail,
+            status=status.HTTP_400_BAD_REQUEST)
 
     # Handle MongoDB errors.
-    except PyMongoError as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except PyMongoError as error:
+        return Response(
+            data={'message': 'Internal Server Error'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
-    except Exception as e:
-        print(str(e))
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as error:
+        return Response(
+            data={'message': 'Internal Server Error'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)

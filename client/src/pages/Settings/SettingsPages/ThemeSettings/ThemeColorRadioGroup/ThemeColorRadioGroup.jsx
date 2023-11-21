@@ -2,7 +2,7 @@
 import { useDispatch } from "react-redux";
 import { useRadioGroup } from "@chakra-ui/react";
 // Actions.
-import { changeColor } from "../../../../features/theme/themeSlice";
+import { changeColor } from "../../../../../features/theme/themeSlice";
 // Components.
 import { Box, HStack } from "@chakra-ui/react";
 // SubComponents.

@@ -52,7 +52,7 @@ function ProfileHeader({ profile }) {
           <Box>
             <HStack spacing={2} my={"2px"}>
               {/* Profile name. */}
-              <Heading h={5} opacity={isDark ? 1 : 0.9} size="md">
+              <Heading h={5} opacity={isDark ? 1 : 0.8} size="md">
                 {profile.profile_name}
               </Heading>
               {/* Pronouns. */}
@@ -68,7 +68,7 @@ function ProfileHeader({ profile }) {
           <Stack spacing={2}>
             {/* Biography. */}
             {profile.bio && (
-              <Text opacity={0.9} fontWeight="medium">
+              <Text opacity={0.8} fontWeight="medium">
                 {profile.bio}
               </Text>
             )}

@@ -22,7 +22,7 @@ function CommentCard({ item }) {
       borderRadius="0"
       direction={"row"}
       borderBottom={"1px solid"}
-      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
       opacity={isLoading ? 0.6 : 1}
       px={2}
     >

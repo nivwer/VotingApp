@@ -1,11 +1,12 @@
 // Hooks.
-import { useThemeInfo } from "../../../../hooks/Theme";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 import {
   useGetCountriesQuery,
   useProfileMeUpdateMutation,
-} from "../../../../api/profileApiSlice";
+} from "../../../../../api/profileApiSlice";
 // Components.
 import {
   Avatar,
@@ -27,7 +28,6 @@ import {
 import ProfileInputURL from "./ProfileInputURL/ProfileInputURL";
 // Icons.
 import { FaImage, FaLink } from "react-icons/fa6";
-import { useSelector } from "react-redux";
 
 // SubComponent ( ProfileSettings ).
 function ProfileForm({ profile = false }) {
