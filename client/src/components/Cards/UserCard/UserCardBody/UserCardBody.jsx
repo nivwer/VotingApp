@@ -13,7 +13,7 @@ function UserCardBody({ user }) {
         <Stack fontSize={"md"} spacing={0}>
           {/* Profile Name. */}
           <NavLink to={`/${user.username}`}>
-            <Text h={5} fontWeight={"extrabold"} opacity={isDark ? 1 : 0.9}>
+            <Text h={5} fontWeight={"extrabold"} opacity={0.9}>
               {user.profile_name}
             </Text>
           </NavLink>
@@ -25,7 +25,7 @@ function UserCardBody({ user }) {
           </NavLink>
         </Stack>
         <NavLink to={`/${user.username}`}>
-          <Button h={9} w={24} borderRadius={"full"}>
+          <Button opacity={0.9} h={9} w={24} borderRadius={"full"}>
             Profile
           </Button>
         </NavLink>

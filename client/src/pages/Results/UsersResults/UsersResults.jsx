@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 // Components.
 import UserCard from "../../../components/Cards/UserCard/UserCard";
+import Pagination from "../../../components/Pagination/Pagination";
 
 // SubComponent ( Results ).
 function UsersResults() {

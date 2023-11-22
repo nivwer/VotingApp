@@ -119,14 +119,16 @@ def search_users(request):
                 'userprofile__bio'
             ).first()
 
-            items.append(
-                {
-                    'username': user_data['username'],
-                    'profile_picture': user_data['userprofile__profile_picture'],
-                    'profile_name': user_data['userprofile__profile_name'],
-                    'bio': user_data['userprofile__bio']
-                }
-            )
+            item = {}
+
+            item['user'] = {
+                'username': user_data['username'],
+                'profile_picture': user_data['userprofile__profile_picture'],
+                'profile_name': user_data['userprofile__profile_name'],
+                'bio': user_data['userprofile__bio']
+            }
+
+            items.append(item)
 
         # Response.
         return Response(

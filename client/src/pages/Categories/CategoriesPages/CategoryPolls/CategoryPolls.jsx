@@ -66,7 +66,7 @@ function CategoryPolls() {
           h={"200px"}
           w={"100%"}
         >
-          {currentCategory && (
+          {currentCategory && currentCategory.value === category && (
             <>
               <Box p={"6"} borderRadius={"full"} position={"absolute"}>
                 <Text fontSize={"6xl"}>
@@ -81,7 +81,7 @@ function CategoryPolls() {
         </Stack>
       </Box>
 
-      {currentCategory && (
+      {currentCategory && currentCategory.value === category && (
         <Pagination
           Card={PollCard}
           usePageQuery={useGetPollsCategoryQuery}

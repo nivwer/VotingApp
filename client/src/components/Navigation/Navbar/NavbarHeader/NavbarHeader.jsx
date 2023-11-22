@@ -25,7 +25,7 @@ function NavbarHeader({ disclosure }) {
         icon={<FaBars />}
       ></IconButton>
 
-      <HStack spacing={5} pt={"4px"}>
+      <HStack  opacity={0.9} spacing={5} pt={"4px"}>
         {/* Logotipo. */}
         <NavLink to={"/home"}>
           <Heading fontSize="xl">VotingApp</Heading>

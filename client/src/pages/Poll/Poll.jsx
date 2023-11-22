@@ -35,7 +35,7 @@ function Poll() {
 
   return (
     <>
-      {data && !isLoading ? (
+      {data && !isLoading && data.poll.id === id ? (
         <>
           <PollCard item={data} />
           <PollComments id={id} />

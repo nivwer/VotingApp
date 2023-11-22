@@ -26,6 +26,7 @@ function Profile() {
 
   // Update data to fetchs.
   useEffect(() => {
+    setProfile(null);
     const headers = isAuthenticated
       ? { headers: { Authorization: `Token ${token}` } }
       : {};
@@ -35,8 +36,12 @@ function Profile() {
 
   // Load Profile.
   useEffect(() => {
-    data && setProfile(data.profile);
-  }, [status]);
+    data &&
+      !isFetching &&
+      !isLoading &&
+      data.profile.username === username &&
+      setProfile(data.profile);
+  }, [data, status]);
 
   return (
     <>
@@ -50,18 +55,22 @@ function Profile() {
         color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
         overflow={"hidden"}
       >
-        {!isLoading && !isFetching && profile && (
-          <ProfileHeader profile={profile} />
-        )}
+        {!isLoading &&
+          !isFetching &&
+          profile &&
+          profile.username === username && <ProfileHeader profile={profile} />}
       </Box>
       {/* Profile Body. */}
-      {!isLoading && !isFetching && profile && (
-        <ProfileBody
-          profile={profile}
-          isLoading={isLoading}
-          username={username}
-        />
-      )}
+      {!isLoading &&
+        !isFetching &&
+        profile &&
+        profile.username === username && (
+          <ProfileBody
+            profile={profile}
+            isLoading={isLoading}
+            username={username}
+          />
+        )}
     </>
   );
 }

@@ -141,7 +141,7 @@ function PollModal({ poll = false, disclosure }) {
           {isLoading && <CustomProgress />}
           {/* Header. */}
           <ModalHeader>
-            <Text fontSize={"xl"} fontWeight={"medium"}>
+            <Text fontSize={"xl"} fontWeight={"medium"} opacity={0.9}>
               {poll ? "Edit poll" : "New poll"}
             </Text>
           </ModalHeader>

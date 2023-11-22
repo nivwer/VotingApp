@@ -15,7 +15,7 @@ function UserCard({ item: { user } }) {
       borderRadius="0"
       direction={"row"}
       borderBottom={"1px solid"}
-      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
+      borderColor={isDark ? "whiteAlpha.100" : "blackAlpha.100"}
       px={2}
     >
       {/* Card Header. */}

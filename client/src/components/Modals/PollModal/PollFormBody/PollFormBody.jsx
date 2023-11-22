@@ -123,7 +123,7 @@ function PollFormBody({
   const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700";
 
   return (
-    <Stack textAlign="start" spacing={3}>
+    <Stack textAlign="start" spacing={4} opacity={0.9}>
       {/* Title. */}
       <FormControl isDisabled={isLoading} isInvalid={errors.title}>
         <FormLabel htmlFor="title" fontWeight={"bold"}>

@@ -33,7 +33,7 @@ function ProfileBody({ profile, username, isLoading }) {
           }
           color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
           borderBottom={"1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
+          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
         >
           <ProfileTabButton tab={tab} username={username}>
             Polls

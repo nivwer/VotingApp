@@ -93,7 +93,12 @@ function NavbarSearchInput() {
               borderRadius={0}
               borderLeftRadius={"full"}
               placeholder="Search"
-              focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
+              border={isDark ? "1px solid" : "2px solid"}
+              borderColor={"transparent"}
+              color={isDark ? "whiteAlpha.800" : "blackAlpha.800"}
+              focusBorderColor={
+                isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`
+              }
             />
           </InputGroup>
           <Menu>
