@@ -1,19 +1,12 @@
 // Components.
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Flex,
-} from "@chakra-ui/react";
+import { Card, CardBody, CardHeader } from "@chakra-ui/react";
 // SubComponents.
 import UserCardHeader from "./UserCardHeader/UserCardHeader";
 import { useThemeInfo } from "../../../hooks/Theme";
 import UserCardBody from "./UserCardBody/UserCardBody";
 
 // Component.
-function UserCard({ user }) {
+function UserCard({ item: { user } }) {
   const { isDark } = useThemeInfo();
   return (
     <Card
@@ -32,7 +25,6 @@ function UserCard({ user }) {
 
       {/* Card Body. */}
       <CardBody py={5} px={0} pr={3}>
-        {/* <CommentCardBody comment={comment} isLoading={isLoading} /> */}
         <UserCardBody user={user} />
       </CardBody>
     </Card>

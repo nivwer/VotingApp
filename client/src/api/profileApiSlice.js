@@ -11,31 +11,31 @@ export const profileApiSlice = createApi({
   endpoints: (builder) => ({
     // GET user private profile.
     profileMe: builder.query({
-      query: (data) => ({
+      query: ({ headers }) => ({
         url: "profile/user/me",
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
       providesTags: ["Profile"],
     }),
 
     // Update user profile.
     profileMeUpdate: builder.mutation({
-      query: (data) => ({
+      query: ({ headers, body }) => ({
         url: "profile/user/me/update",
         method: "PATCH",
-        headers: data.headers,
-        body: data.body,
+        headers: headers,
+        body: body,
       }),
       invalidatesTags: ["Profile"],
     }),
 
     // GET user public profile.
     profileByUsername: builder.query({
-      query: (data) => ({
-        url: `profile/user/${data.username}`,
+      query: ({headers, username}) => ({
+        url: `profile/user/${username}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
       providesTags: ["Profile"],
     }),
@@ -51,10 +51,10 @@ export const profileApiSlice = createApi({
 
     // Search Users.
     searchUsers: builder.query({
-      query: (data) => ({
-        url: `search?query=${data.query}&page=${data.page}`,
+      query: ({ headers, query, page = 1, page_size = 4}) => ({
+        url: `search?query=${query}&page=${page}&page_size=${page_size}`,
         method: "GET",
-        headers: data.headers,
+        headers: headers,
       }),
     }),
   }),
