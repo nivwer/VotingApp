@@ -39,10 +39,6 @@ from apps.polls.utils.categorys import CATEGORIES
 # --- Response ---
 # Returns a JSON object containing a list of predefined poll categories.
 
-# --- Caching Strategy ---
-# The response is cached to improve efficiency, and the cache headers ensure that clients use the cached
-# data until the expiration date is reached.
-
 # --- Authorship and Date ---
 # Author: nivwer
 # Last Updated: 2023-11-16
@@ -80,10 +76,6 @@ def categories(request):
 
 # --- Response ---
 # Returns a JSON object containing aggregated data on poll categories, including total polls and votes for each category.
-
-# --- Caching Strategy ---
-# The response is cached to improve efficiency, and the cache headers ensure that clients use the cached
-# data until the expiration date is reached.
 
 # --- Error Handling ---
 # Handles validation errors, MongoDB errors, and other exceptions, providing appropriate responses and status codes.
@@ -154,7 +146,7 @@ async def categories_data(request):
         # Response.
         return res
 
-     # Handle validation errors.
+    # Handle validation errors.
     except ValidationError as error:
         return Response(
             data=error.detail,

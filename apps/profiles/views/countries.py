@@ -1,5 +1,6 @@
 # Standard.
 from datetime import datetime, timedelta
+# JSON.
 import json
 # Django.
 from django.http import HttpResponse
@@ -14,7 +15,31 @@ from apps.profiles.utils.countries import COUNTRIES
 
 # Views.
 
-# Get poll categories.
+# Endpoint: "Countries"
+
+# Endpoint that provides a list of countries.
+# This view supports GET requests and is open to any user, requiring no specific authentication.
+
+# --- Purpose ---
+# Retrieves and returns a list of countries, allowing any user to access this information.
+
+# --- Access Control ---
+# Open to any user; no authentication required.
+
+# --- Data Source ---
+# The list of countries is provided by the COUNTRIES data source.
+
+# --- Response ---
+# Returns a JSON response containing the list of countries.
+
+# --- Caching Details ---
+# - TTL: Time To Live for the cache is set to one week.
+# - Cache Control Headers: Utilizes headers to control caching behavior, specifying the maximum age and expiration date of the cache.
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-11-21
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def countries(request):
