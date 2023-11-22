@@ -108,8 +108,7 @@ def sign_up(request):
             # Response.
             response = JsonResponse(
                 data={'message': "Account created successfully."},
-                status=status.HTTP_200_OK,
-            )
+                status=status.HTTP_200_OK)
 
             # Associate the session with the cookie.
             response.set_cookie(
@@ -298,8 +297,10 @@ def sign_out(request):
 # - Requires Session Authentication: Users must be authenticated through an active session.
 # - Permission is restricted to authenticated users only.
 
-# --- Cookies ---
-# - Includes Cache Control headers to manage caching and session expiration.
+
+# --- Caching Details ---
+# - TTL: Time To Live for the cache is set to 1 day.
+# - Cache Control Headers: Utilizes headers to control caching behavior, specifying the maximum age and expiration date of the cache.
 
 # --- Response ---
 #   - 200 OK: Returns a JSON response with the user's token, user details (excluding password), and user profile information.
@@ -336,7 +337,7 @@ def user_me_session_check(request):
         profile_data = UserProfileSerializer(instance=user_profile).data
 
         # Time To Live.
-        TTL = timedelta(hours=3)
+        TTL = timedelta(days=1)
         expiration_date = datetime.utcnow() + TTL
 
         # Response.

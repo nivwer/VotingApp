@@ -51,9 +51,7 @@ def profile_by_username(request, username):
 
         # Response.
         return Response(
-            {
-                'profile': profile_data
-            },
+            {'profile': profile_data},
             status=status.HTTP_200_OK)
 
     # Handle validation errors.
