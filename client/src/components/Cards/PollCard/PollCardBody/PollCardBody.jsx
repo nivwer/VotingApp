@@ -1,7 +1,7 @@
 // Hooks.
 import { useState } from "react";
 // Components.
-import { Button, Flex, Heading, Icon, Stack, Text } from "@chakra-ui/react";
+import { Button, Flex, Icon, Stack, Text } from "@chakra-ui/react";
 // SubComponents.
 import PollCardInputOption from "./PollCardInputOption/PollCardInputOption";
 import PollCardOptionButton from "./PollCardOptionButton/PollCardOptionButton";
@@ -21,9 +21,9 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
       <Stack spacing={3} w={"90%"}>
         <Stack textAlign={"center"}>
           {/* Title. */}
-          <Heading size={"md"} opacity={0.8}>
+          <Text size={"md"} opacity={0.8} fontWeight={"black"}>
             {poll.title}
-          </Heading>
+          </Text>
           {/* Description. */}
           <Text fontSize={"md"} fontWeight={"medium"} opacity={0.8}>
             {poll.description}

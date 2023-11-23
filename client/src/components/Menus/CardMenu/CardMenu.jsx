@@ -21,7 +21,7 @@ function CardMenu({ children, isLoading }) {
         position={"absolute"}
         right={5}
       />
-      <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>
+      <MenuList bg={isDark ? "black" : "white"} zIndex={1600}>
         {children}
       </MenuList>
     </Menu>

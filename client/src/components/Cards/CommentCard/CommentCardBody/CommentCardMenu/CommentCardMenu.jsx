@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import CardMenu from "../../../../Menus/CardMenu/CardMenu";
 import CardMenuItem from "../../../../Menus/CardMenu/CardMenuItem/CardMenuItem";
 // Icons.
-import { FaEllipsis } from "react-icons/fa6";
+import { FaEllipsis, FaTrash } from "react-icons/fa6";
 
 // SubComponent ( CommentCardBody ).
 function CommentCardMenu({ comment, deleteComment, isLoading }) {
@@ -32,8 +32,9 @@ function CommentCardMenu({ comment, deleteComment, isLoading }) {
           <CardMenuItem
             onClick={() => handleDeleteComment(comment.poll_id, comment.id)}
             isLoading={isLoading}
+            icon={<FaTrash />}
           >
-            Delete
+            Remove
           </CardMenuItem>
         </CardMenu>
       )}

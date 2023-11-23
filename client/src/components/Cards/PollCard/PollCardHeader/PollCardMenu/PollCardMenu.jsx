@@ -8,7 +8,7 @@ import PollModal from "../../../../Modals/PollModal/PollModal";
 import CardMenu from "../../../../Menus/CardMenu/CardMenu";
 import CardMenuItem from "../../../../Menus/CardMenu/CardMenuItem/CardMenuItem";
 // Icons.
-import { FaEllipsis } from "react-icons/fa6";
+import { FaPenToSquare, FaTrash } from "react-icons/fa6";
 
 // SubComponent ( PollCardHeader ).
 function PollCardMenu({ poll, deletePoll, isLoading }) {
@@ -43,25 +43,22 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
 
   return (
     <>
-      {isAuthenticated && (
+      {isAuthenticated && user.id == poll.user_id && (
         <CardMenu isLoading={isLoading}>
-          {user.id == poll.user_id ? (
-            <>
-              <CardMenuItem onClick={disclosure.onOpen} isLoading={isLoading}>
-                Edit
-              </CardMenuItem>
-              <CardMenuItem
-                onClick={() => handleDeletePoll(poll.id)}
-                isLoading={isLoading}
-              >
-                Delete
-              </CardMenuItem>
-            </>
-          ) : (
-            <>
-              <CardMenuItem>Hola</CardMenuItem>
-            </>
-          )}
+          <CardMenuItem
+            onClick={disclosure.onOpen}
+            isLoading={isLoading}
+            icon={<FaPenToSquare />}
+          >
+            Edit
+          </CardMenuItem>
+          <CardMenuItem
+            onClick={() => handleDeletePoll(poll.id)}
+            isLoading={isLoading}
+            icon={<FaTrash />}
+          >
+            Remove
+          </CardMenuItem>
         </CardMenu>
       )}
 

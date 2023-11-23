@@ -33,19 +33,19 @@ function GridLayout({ layout = "simple", section = "main" }) {
       area: `"header header header header header"
                "l-none left main right r-none"`,
       rows: "64px 1fr",
-      columns: "1fr 295px 664px 295px 1fr",
+      columns: "1fr 295px 610px 343px 1fr",
     },
     double: {
       area: `"header header header header" 
               "l-none left main r-none"`,
       rows: "64px 1fr",
-      columns: "1fr 295px 664px 1fr",
+      columns: "1fr 295px 610px 1fr",
     },
     simple: {
       area: `"header header header"
              "l-none main r-none"`,
       rows: "64px 1fr",
-      columns: "1fr 664px 1fr",
+      columns: "1fr 610px 1fr",
     },
   };
 
@@ -65,7 +65,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
       gridTemplateColumns={layouts[layoutBreakPoint].columns}
     >
       {/* Header */}
-      <GridItem zIndex={1000} area={"header"}>
+      <GridItem area={"header"}>
         <Navbar />
       </GridItem>
 

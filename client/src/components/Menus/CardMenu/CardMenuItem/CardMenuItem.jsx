@@ -1,28 +1,19 @@
 // Hooks.
 import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
-import { Button, MenuItem } from "@chakra-ui/react";
+import { HStack, MenuItem, Text } from "@chakra-ui/react";
 
 // SubComponent ( CardMenu ).
-function CardMenuItem({ children, onClick, isLoading }) {
+function CardMenuItem({ children, onClick, icon, isLoading }) {
   const { isDark } = useThemeInfo();
   return (
-    <MenuItem
-      as={Button}
-      onClick={onClick}
-      isDisabled={isLoading}
-      w="100%"
-      h="100%"
-      px={3}
-      py={2}
-      borderRadius={0}
-      variant="ghost"
-      justifyContent="start"
-      color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
-      bg={isDark ? "black" : "white"}
-      opacity={isDark ? 0.9 : 0.7}
-    >
-      {children}
+    <MenuItem onClick={onClick} isDisabled={isLoading}>
+      <HStack opacity={0.6}>
+        <Text>{icon}</Text>
+        <Text mt={"3px"} fontWeight={"semibold"}>
+          {children}
+        </Text>
+      </HStack>
     </MenuItem>
   );
 }
