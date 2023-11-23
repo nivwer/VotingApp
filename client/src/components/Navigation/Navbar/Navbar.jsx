@@ -19,28 +19,38 @@ function Navbar() {
   const disclosureLeft = useDisclosure();
 
   return (
-    <Box
-      w={"100%"}
-      pos={"fixed"}
-      bg={isDark ? "black" : "white"}
-      color={isDark ? "whiteAlpha.900" : "blackAlpha.800"}
-      borderBottom={isDark ? "1px solid" : "1px solid"}
-      borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
-    >
-      {/* Toolbar. */}
-      <Flex minH="64px" px="50px" align="center" justify="space-between">
-        {/* Navbar Header. ( LeftSide ) */}
-        <NavbarHeader disclosure={disclosureLeft} />
+    <>
+      <Box
+        w={"100%"}
+        pos={"fixed"}
+        bg={isDark ? "black" : "white"}
+        zIndex={1300}
+      >
+        {/* Toolbar. */}
+        <Flex minH="63px" px="50px" align="center" justify="space-between">
+          {/* Navbar Header. ( LeftSide ) */}
+          <NavbarHeader disclosure={disclosureLeft} />
 
-        {/* Navbar Footer. ( RightSide ) */}
-        <NavbarFooter disclosure={disclosureRight} />
+          {/* Navbar Footer. ( RightSide ) */}
+          <NavbarFooter disclosure={disclosureRight} />
 
-        {/* LeftDrawer. */}
-        {isAuthenticated && <NavLeftDrawer disclosure={disclosureLeft} />}
-        {/* RightDrawer. */}
-        {isAuthenticated && <NavRightDrawer disclosure={disclosureRight} />}
-      </Flex>
-    </Box>
+          {/* LeftDrawer. */}
+          {isAuthenticated && <NavLeftDrawer disclosure={disclosureLeft} />}
+          {/* RightDrawer. */}
+          {isAuthenticated && <NavRightDrawer disclosure={disclosureRight} />}
+        </Flex>
+      </Box>
+      <Box
+        w={"100%"}
+        pos={"fixed"}
+        minH="64px"
+        zIndex={900}
+        bg={isDark ? "black" : "white"}
+        color={isDark ? "whiteAlpha.900" : "blackAlpha.800"}
+        borderBottom={isDark ? "1px solid" : "1px solid"}
+        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
+      ></Box>
+    </>
   );
 }
 

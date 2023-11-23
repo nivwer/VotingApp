@@ -7,19 +7,16 @@ import { useSignOutMutation } from "../../../../api/authApiSlice";
 import { logout } from "../../../../features/auth/sessionSlice";
 // Components.
 import {
-  Button,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
 } from "@chakra-ui/react";
 // SubComponents.
 import NavRightDrawerHeader from "./NavRightDrawerHeader/NavRightDrawerHeader";
 import NavRightDrawerBody from "./NavRightDrawerBody/NavRightDrawerBody";
-import NavRightDrawerFooter from "./NavRightDrawerFooter/NavRightDrawerFooter";
 // Cookies.
 import Cookies from "js-cookie";
 
@@ -54,34 +51,27 @@ function NavRightDrawer({ disclosure }) {
   };
 
   return (
-    <>
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent
-          bg={isDark ? "black" : "white"}
-          border={"1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
-          borderLeftRadius="14px"
-        >
-          <DrawerCloseButton />
+    <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+      <DrawerOverlay />
+      <DrawerContent
+        bg={isDark ? "black" : "white"}
+        border={"1px solid"}
+        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
+        borderLeftRadius="14px"
+      >
+        <DrawerCloseButton />
 
-          {/* Drawer Header. */}
-          <DrawerHeader>
-            <NavRightDrawerHeader />
-          </DrawerHeader>
+        {/* Drawer Header. */}
+        <DrawerHeader>
+          <NavRightDrawerHeader />
+        </DrawerHeader>
 
-          {/* Drawer Body. */}
-          <DrawerBody>
-            <NavRightDrawerBody handleLogout={handleLogout} onClose={onClose} />
-          </DrawerBody>
-
-          {/* Drawer Footer. */}
-          <DrawerFooter>
-            <NavRightDrawerFooter onClose={onClose} />
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    </>
+        {/* Drawer Body. */}
+        <DrawerBody>
+          <NavRightDrawerBody handleLogout={handleLogout} onClose={onClose} />
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
   );
 }
 

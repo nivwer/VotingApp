@@ -13,7 +13,6 @@ import { NavLink } from "react-router-dom";
 // SubComponents.
 import NavbarSearchInput from "./NavbarSearchInput/NavbarSearchInput";
 
-
 // SubComponent ( Navbar ).
 function NavbarFooter({ disclosure }) {
   const { isAuthenticated, profile } = useSelector((state) => state.session);
