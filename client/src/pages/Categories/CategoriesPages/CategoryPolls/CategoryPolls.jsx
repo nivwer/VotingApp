@@ -23,7 +23,7 @@ function CategoryPolls() {
   const { category } = useParams();
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState(null);
 
   const { data } = useGetCategoriesQuery();
 
@@ -41,15 +41,16 @@ function CategoryPolls() {
 
   // Reset the values.
   useEffect(() => {
+    setCurrentCategory(null);
     setResetValues(true);
   }, [category, isAuthenticated]);
 
   useEffect(() => {
-    if (data) {
+    if (data && !resetValues) {
       const categoryData = data.list.find((item) => item.value === category);
       setCurrentCategory(categoryData);
     }
-  }, [category, data]);
+  }, [data, resetValues]);
 
   return (
     <>

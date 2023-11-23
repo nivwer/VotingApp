@@ -39,22 +39,24 @@ function ProfileHeader({ profile }) {
           {/* Avatar. */}
           <Avatar bg={"gray.400"} size="2xl" src={profile.profile_picture} />
           {/* Button to edit the profile. */}
-          {isAuthenticated && user.username === profile.username && (
-            <NavLink to={`/settings/profile`}>
-              <Button variant={"outline"} size={"sm"} borderRadius={"full"}>
-                Edit profile
-              </Button>
-            </NavLink>
-          )}
+          <Box>
+            {isAuthenticated && user.username === profile.username && (
+              <NavLink to={`/settings/profile`}>
+                <Button variant={"outline"} size={"sm"} borderRadius={"full"}>
+                  Edit profile
+                </Button>
+              </NavLink>
+            )}
+          </Box>
         </Flex>
 
         <Stack spacing={4}>
           <Box>
             <HStack spacing={2} my={"2px"}>
               {/* Profile name. */}
-              <Heading h={5} opacity={isDark ? 1 : 0.8} size="md">
+              <Text h={5} opacity={isDark ? 1 : 0.8} size="md" fontWeight={"black"}>
                 {profile.profile_name}
-              </Heading>
+              </Text>
               {/* Pronouns. */}
               <Text h={5} opacity={0.5} fontWeight="medium">
                 {profile.pronouns}

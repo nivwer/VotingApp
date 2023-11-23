@@ -23,9 +23,9 @@ function ProfileBody({ profile, username, isLoading }) {
       {/* Profile Tabs. */}
       <Box
         bg={isDark ? "black" : "white"}
-        zIndex={1000}
+        zIndex={1200}
         pos={"sticky"}
-        top={"64px"}
+        top={"63px"}
       >
         <Grid
           templateColumns={
