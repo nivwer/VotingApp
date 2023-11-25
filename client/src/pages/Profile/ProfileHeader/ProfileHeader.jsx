@@ -8,7 +8,6 @@ import {
   Button,
   Flex,
   HStack,
-  Heading,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -35,50 +34,73 @@ function ProfileHeader({ profile }) {
   return (
     <>
       <Flex spacing="2" flex="1" dir="column" wrap="wrap" align="start">
-        <Flex justify="space-between" w="100%" p={5} px={3}>
+        <Flex justify="space-between" w="100%" pb={5} px={2}>
           {/* Avatar. */}
-          <Avatar bg={"gray.400"} size="2xl" src={profile.profile_picture} />
+          <Box mt={2}>
+            <Avatar
+              bg={profile.profile_picture ? "transparent" : "gray.400"}
+              size="2xl"
+              src={profile.profile_picture}
+            />
+          </Box>
           {/* Button to edit the profile. */}
           <Box>
             {isAuthenticated && user.username === profile.username && (
               <NavLink to={`/settings/profile`}>
-                <Button variant={"outline"} size={"sm"} borderRadius={"full"}>
-                  Edit profile
+                <Button variant={"link"} size={"sm"} borderRadius={"full"}>
+                  <Text mt={"1px"} fontWeight={"extrabold"} opacity={0.9}>
+                    Edit profile
+                  </Text>
                 </Button>
               </NavLink>
             )}
           </Box>
         </Flex>
 
-        <Stack spacing={4}>
-          <Box>
+        <Stack w={"100%"} spacing={3}>
+          <Stack spacing={0} fontSize={"md"} fontWeight={"medium"}>
             <HStack spacing={2} my={"2px"}>
               {/* Profile name. */}
-              <Text h={5} opacity={isDark ? 1 : 0.8} size="md" fontWeight={"black"}>
+              <Text h={6} opacity={0.9} fontSize={"lg"} fontWeight={"black"}>
                 {profile.profile_name}
               </Text>
               {/* Pronouns. */}
-              <Text h={5} opacity={0.5} fontWeight="medium">
+              <Text h={5} opacity={0.5}>
                 {profile.pronouns}
               </Text>
             </HStack>
             {/* Username. */}
-            <Text opacity={0.5} fontWeight="medium">
-              @{profile.username}
-            </Text>
-          </Box>
-          <Stack spacing={2}>
-            {/* Biography. */}
-            {profile.bio && (
-              <Text opacity={0.8} fontWeight="medium">
-                {profile.bio}
-              </Text>
-            )}
+            <Text opacity={0.5}>@{profile.username}</Text>
+          </Stack>
+          <Stack spacing={3}>
+            <Stack spacing={0}>
+              {/* Biography. */}
+              {profile.bio && (
+                <Text opacity={0.8} fontWeight="medium">
+                  {profile.bio}
+                </Text>
+              )}
+
+              {/* Tags. */}
+              <HStack spacing={0} wrap={"wrap"}>
+                {/* Joined date. */}
+                <ProfileTag icon={<FaRegCalendar />}>
+                  Joined {dateJoined}
+                </ProfileTag>
+                {/* Location. */}
+                {profile.country && (
+                  <ProfileTag icon={<FaLocationDot />}>
+                    {profile.country}
+                    {profile.city && ` (${profile.city})`}
+                  </ProfileTag>
+                )}
+              </HStack>
+            </Stack>
 
             {/* Links. */}
             <Stack
               color={isDark ? `${ThemeColor}.100` : `${ThemeColor}.600`}
-              opacity={ThemeColor === "default" ? 0.6 : 0.8}
+              opacity={0.8}
               spacing={0}
               fontSize={"md"}
             >
@@ -87,39 +109,26 @@ function ProfileHeader({ profile }) {
                 <HStack spacing={1} fontWeight={"semibold"}>
                   <Box
                     color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
-                    opacity={ThemeColor === "default" ? 1 : 0.8}
+                    opacity={0.8}
                   >
                     <FaLink />
                   </Box>
-                  <ProfileLink link={profile.website_link} />
+                  <ProfileLink link={profile.website_link} website={true} />
                 </HStack>
               )}
               {/* Social Links. */}
               {(profile.social_link_one ||
                 profile.social_link_two ||
                 profile.social_link_three) && (
-                <HStack spacing={2}>
-                  <ProfileLink link={profile.social_link_one} />
-                  <ProfileLink link={profile.social_link_two} />
-                  <ProfileLink link={profile.social_link_three} />
-                </HStack>
+                <Box>
+                  <HStack spacing={0} align={"center"} wrap={"wrap"}>
+                    <ProfileLink link={profile.social_link_one} />
+                    <ProfileLink link={profile.social_link_two} />
+                    <ProfileLink link={profile.social_link_three} />
+                  </HStack>
+                </Box>
               )}
             </Stack>
-
-            {/* Tags. */}
-            <HStack spacing={5}>
-              {/* Joined date. */}
-              <ProfileTag icon={<FaRegCalendar />}>
-                Joined {dateJoined}
-              </ProfileTag>
-              {/* Location. */}
-              {profile.country && (
-                <ProfileTag icon={<FaLocationDot />}>
-                  {profile.country}
-                  {profile.city && ` (${profile.city})`}
-                </ProfileTag>
-              )}
-            </HStack>
           </Stack>
         </Stack>
       </Flex>

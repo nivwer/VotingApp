@@ -120,7 +120,7 @@ function ProfileForm({ profile = false }) {
     },
     {
       name: "social_link_three",
-      default_value: profile.social_link_two,
+      default_value: profile.social_link_three,
     },
   ];
 

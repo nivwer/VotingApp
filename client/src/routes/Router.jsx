@@ -15,8 +15,8 @@ import Results from "../pages/Results/Results";
 import Categories from "../pages/Categories/Categories";
 import CategoryPolls from "../pages/Categories/CategoriesPages/CategoryPolls/CategoryPolls";
 // Components.
-import ProtectedRoute from "./ProtectedRoute";
-import GridLayout from "../components/Layout/GridLayout";
+import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
+import GridLayout from "../layout/GridLayout/GridLayout";
 import ThemeSettings from "../pages/Settings/SettingsPages/ThemeSettings/ThemeSettings";
 import AccountSettings from "../pages/Settings/SettingsPages/AccountSettings/AccountSettings";
 import ProfileSettings from "../pages/Settings/SettingsPages/ProfileSettings/ProfileSettings";

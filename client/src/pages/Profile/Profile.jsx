@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useProfileByUsernameQuery } from "../../api/profileApiSlice";
 // Components.
-import { Box } from "@chakra-ui/react";
+import { Box, Stack } from "@chakra-ui/react";
 // SubComponents.
 import ProfileHeader from "./ProfileHeader/ProfileHeader";
 import ProfileBody from "./ProfileBody/ProfileBody";
@@ -45,32 +45,40 @@ function Profile() {
 
   return (
     <>
-      {/* Profile Header. */}
-      <Box
-        w={"100%"}
-        minHeight={"328px"}
-        p={"7"}
-        pb={"10"}
-        bg={isDark ? "black" : "white"}
-        color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
-        overflow={"hidden"}
-      >
-        {!isLoading &&
-          !isFetching &&
-          profile &&
-          profile.username === username && <ProfileHeader profile={profile} />}
-      </Box>
-      {/* Profile Body. */}
-      {!isLoading &&
-        !isFetching &&
-        profile &&
-        profile.username === username && (
-          <ProfileBody
-            profile={profile}
-            isLoading={isLoading}
-            username={username}
-          />
-        )}
+      <Stack spacing={4}>
+        {/* Profile Header. */}
+        <Box
+          w={"100%"}
+          minHeight={"304px"}
+          bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
+          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+          py={6}
+          px={7}
+          borderRadius={{ base: 0, md: "3xl" }}
+          overflow={"hidden"}
+        >
+          {!isLoading &&
+            !isFetching &&
+            profile &&
+            profile.username === username && (
+              <ProfileHeader profile={profile} />
+            )}
+        </Box>
+
+        {/* Profile Body. */}
+        <Box w={"100%"} color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}>
+          {!isLoading &&
+            !isFetching &&
+            profile &&
+            profile.username === username && (
+              <ProfileBody
+                profile={profile}
+                isLoading={isLoading}
+                username={username}
+              />
+            )}
+        </Box>
+      </Stack>
     </>
   );
 }

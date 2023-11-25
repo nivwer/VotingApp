@@ -10,7 +10,7 @@ import { login } from "./features/auth/sessionSlice";
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
 import InitialSpinner from "./components/Spinners/InitialSpinner/InitialSpinner";
-import { Container } from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
 
 // App.
 function App() {
@@ -69,7 +69,6 @@ function App() {
         p={"0"}
         maxW="100vw"
         minH="100vh"
-        bg={isDark ? "black" : "white"}
         color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
       >
         {isLoading ? <InitialSpinner /> : <Router />}
