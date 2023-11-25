@@ -89,9 +89,11 @@ function CommentInput({ id }) {
         bg={isDark ? "black" : "white"}
         w="100%"
         direction={"row"}
-        borderRadius="0"
-        borderBottom={"1px solid"}
-        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
+        borderBottom={"3px solid"}
+        borderRadius={"3px"}
+        borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
+        boxShadow={"none"}
+        mb={3}
       >
         <CardHeader as={Flex} pr={3}>
           {/* Profile Picture. */}
@@ -101,10 +103,10 @@ function CommentInput({ id }) {
                 <IconButton isDisabled={isLoading} variant={"unstyled"}>
                   <Avatar
                     src={profile.profile_picture}
+                    bg={profile.profile_picture ? "transparent" : "gray.400"}
                     size={"md"}
                     h={"42px"}
                     w={"42px"}
-                    bg={"gray.400"}
                   />
                 </IconButton>
               </NavLink>
@@ -125,10 +127,15 @@ function CommentInput({ id }) {
                 p={1}
                 variant={"unstyled"}
                 resize={"none"}
+                opacity={0.9}
                 focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
                 minH="50px"
                 h={isWriting ? "85px" : "auto"}
                 onBlur={() => clearErrors()}
+                _placeholder={{
+                  color: isDark ? "gothicPurple.100" : "gothicPurple.600",
+                  opacity: isDark ? 0.4 : 0.5,
+                }}
               />
               {errors.comment && (
                 <FormErrorMessage>{errors.comment.message}</FormErrorMessage>
@@ -140,7 +147,12 @@ function CommentInput({ id }) {
             <Flex w={"100%"} justify={"space-between"}>
               {isWriting && (
                 <HStack fontSize={"sm"} fontWeight={"bold"}>
-                  <Text opacity={0.5}>{commentLength} / 143</Text>
+                  <Text
+                    color={isDark ? "gothicPurple.100" : "gothicPurple.600"}
+                    opacity={isDark ? 0.4 : 0.5}
+                  >
+                    {commentLength} / 143
+                  </Text>
                 </HStack>
               )}
               <HStack>
@@ -149,22 +161,28 @@ function CommentInput({ id }) {
                     size={"sm"}
                     borderRadius={"full"}
                     isDisabled={isLoading}
+                    opacity={0.8}
+                    color={isDark ? "white" : "black"}
+                    colorScheme="gothicPurpleAlpha"
+                    p={4}
                     onClick={() => setValue("comment", "")}
                   >
-                    <Text fontWeight={"bold"}>Cancel</Text>
+                    <Text fontWeight={"extrabold"}>Cancel</Text>
                   </Button>
                 )}
                 <Button
                   type="submit"
                   size={"sm"}
                   variant={"solid"}
+                  opacity={0.9}
                   colorScheme={ThemeColor}
                   borderRadius={"full"}
+                  p={4}
                   isLoading={isLoading}
                   isDisabled={!isWriting}
-                  loadingText={<Text fontWeight={"bold"}>Comment</Text>}
+                  loadingText={<Text fontWeight={"extrabold"}>Comment</Text>}
                 >
-                  <Text fontWeight={"bold"}>Comment</Text>
+                  <Text fontWeight={"extrabold"}>Comment</Text>
                 </Button>
               </HStack>
             </Flex>

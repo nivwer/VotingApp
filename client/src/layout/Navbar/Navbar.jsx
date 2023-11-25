@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useThemeInfo } from "../../hooks/Theme";
 import { useSelector } from "react-redux";
 // Components.
 import { useDisclosure, Box, Flex } from "@chakra-ui/react";
@@ -27,12 +27,14 @@ function Navbar() {
         zIndex={1300}
       >
         {/* Toolbar. */}
-        <Flex minH="63px" px="50px" align="center" justify="space-between">
-          {/* Navbar Header. ( LeftSide ) */}
-          <NavbarHeader disclosure={disclosureLeft} />
+        <Flex minH="64px" w={"100%"} justify={"center"}>
+          <Flex maxW="1248px" px={"10px"} w="100%" align="center" justify="space-between">
+            {/* Navbar Header. ( LeftSide ) */}
+            <NavbarHeader disclosure={disclosureLeft} />
 
-          {/* Navbar Footer. ( RightSide ) */}
-          <NavbarFooter disclosure={disclosureRight} />
+            {/* Navbar Footer. ( RightSide ) */}
+            <NavbarFooter disclosure={disclosureRight} />
+          </Flex>
 
           {/* LeftDrawer. */}
           {isAuthenticated && <NavLeftDrawer disclosure={disclosureLeft} />}
@@ -40,16 +42,6 @@ function Navbar() {
           {isAuthenticated && <NavRightDrawer disclosure={disclosureRight} />}
         </Flex>
       </Box>
-      <Box
-        w={"100%"}
-        pos={"fixed"}
-        minH="64px"
-        zIndex={900}
-        bg={isDark ? "black" : "white"}
-        color={isDark ? "whiteAlpha.900" : "blackAlpha.800"}
-        borderBottom={isDark ? "1px solid" : "1px solid"}
-        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
-      ></Box>
     </>
   );
 }

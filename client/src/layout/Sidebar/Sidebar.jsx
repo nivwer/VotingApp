@@ -1,9 +1,9 @@
 // Hooks.
-import { useThemeInfo } from "../../../hooks/Theme";
-import { useGetCategoriesQuery } from "../../../api/pollApiSlice";
+import { useThemeInfo } from "../../hooks/Theme";
+import { useGetCategoriesQuery } from "../../api/pollApiSlice";
 // Components.
-import PollModal from "../../Modals/PollModal/PollModal";
 import { NavLink } from "react-router-dom";
+import PollModal from "../../components/Modals/PollModal/PollModal";
 import {
   Box,
   Flex,
@@ -16,12 +16,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 // SubComponent.
-import SideBarCategoryButton from "./SideBarCategoryButton/SideBarCategoryButton";
+import SidebarCategoryButton from "./SidebarCategoryButton/SidebarCategoryButton";
 // Icons.
 import { FaPlus, FaHouse, FaSquarePollHorizontal } from "react-icons/fa6";
 
 // Component.
-function SideBar({ section }) {
+function Sidebar({ section }) {
   const { isDark, ThemeColor } = useThemeInfo();
   // Poll Modal.
   const disclosure = useDisclosure();
@@ -37,14 +37,18 @@ function SideBar({ section }) {
         gap="1"
         h={"100%"}
       >
-        <GridItem overflow={"auto"}>
+        <GridItem
+          overflow={"auto"}
+          bg={isDark ? "gothicPurpleAlpha.100" : "white"}
+          mr={4}
+          borderRadius={"3xl"}
+        >
           {/* Categories */}
           <Flex
             zIndex={"100"}
             opacity={0.9}
             justify={"center"}
             w={"100%"}
-            bg={isDark ? "black" : "white"}
             p={3}
             py={2}
             mt={5}
@@ -57,13 +61,13 @@ function SideBar({ section }) {
             <Stack w={"87%"} spacing={0} fontWeight={"semibold"}>
               {data &&
                 data.list.map((category, index) => (
-                  <SideBarCategoryButton key={index} category={category} />
+                  <SidebarCategoryButton key={index} category={category} />
                 ))}
             </Stack>
           </Flex>
         </GridItem>
 
-        <GridItem>
+        {/* <GridItem>
           <Flex
             h={"100%"}
             pl={5}
@@ -107,10 +111,10 @@ function SideBar({ section }) {
             />
             <PollModal disclosure={disclosure} />
           </Flex>
-        </GridItem>
+        </GridItem> */}
       </Grid>
     </Box>
   );
 }
 
-export default SideBar;
+export default Sidebar;

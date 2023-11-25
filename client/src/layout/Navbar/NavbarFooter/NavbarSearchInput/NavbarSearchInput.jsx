@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

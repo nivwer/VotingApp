@@ -37,11 +37,13 @@ function PollCardHeader({ poll, deletePoll, isLoading }) {
           <NavLink to={`/${poll.user_profile.username}`}>
             <IconButton isDisabled={isLoading} variant={"unstyled"}>
               <Avatar
+                bg={
+                  poll.user_profile.profile_picture ? "transparent" : "gray.400"
+                }
                 src={poll.user_profile.profile_picture}
                 size={"md"}
                 h={"42px"}
                 w={"42px"}
-                bg={"gray.400"}
               />
             </IconButton>
           </NavLink>

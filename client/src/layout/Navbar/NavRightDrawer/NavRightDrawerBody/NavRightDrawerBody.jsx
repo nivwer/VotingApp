@@ -1,6 +1,6 @@
 // Hooks.
-import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useSelector } from "react-redux";
+import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import { Divider, Stack } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";

@@ -1,10 +1,10 @@
 // Hooks.
-import { useThemeInfo } from "../../../../hooks/Theme";
 import { useDispatch } from "react-redux";
+import { useThemeInfo } from "../../../hooks/Theme";
 import { useNavigate } from "react-router-dom";
-import { useSignOutMutation } from "../../../../api/authApiSlice";
+import { useSignOutMutation } from "../../../api/authApiSlice";
 // Actions.
-import { logout } from "../../../../features/auth/sessionSlice";
+import { logout } from "../../../features/auth/sessionSlice";
 // Components.
 import {
   Drawer,

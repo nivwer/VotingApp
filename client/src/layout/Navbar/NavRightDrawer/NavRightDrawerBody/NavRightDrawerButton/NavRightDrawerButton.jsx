@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 // Components.
 import { Button, HStack, Text } from "@chakra-ui/react";
 

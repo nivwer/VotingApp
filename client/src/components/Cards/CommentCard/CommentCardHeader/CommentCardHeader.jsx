@@ -11,11 +11,15 @@ function CommentCardHeader({ comment, isLoading }) {
         <NavLink to={`/${comment.user_profile.username}`}>
           <IconButton isDisabled={isLoading} variant={"unstyled"}>
             <Avatar
+              bg={
+                comment.user_profile.profile_picture
+                  ? "transparent"
+                  : "gray.400"
+              }
               src={comment.user_profile.profile_picture}
               size={"md"}
               h={"42px"}
               w={"42px"}
-              bg={"gray.400"}
             />
           </IconButton>
         </NavLink>

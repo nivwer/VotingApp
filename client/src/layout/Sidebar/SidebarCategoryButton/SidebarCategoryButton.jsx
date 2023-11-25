@@ -4,10 +4,10 @@ import { NavLink } from "react-router-dom";
 // Icons.
 import { FaHashtag } from "react-icons/fa6";
 // Utils.
-import categoryIcons from "../../../../utils/categoryIcons";
+import categoryIcons from "../../../utils/categoryIcons";
 
 // SubComponent ( SideBar ).
-function SideBarCategoryButton({ category }) {
+function SidebarCategoryButton({ category }) {
   return (
     <NavLink to={`/categories/${category.value}`}>
       <Button variant={"ghost"} justifyContent={"start"} w={"100%"} size={"md"}>
@@ -20,4 +20,4 @@ function SideBarCategoryButton({ category }) {
   );
 }
 
-export default SideBarCategoryButton;
+export default SidebarCategoryButton;

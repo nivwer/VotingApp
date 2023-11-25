@@ -1,6 +1,6 @@
 // Hooks.
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
 

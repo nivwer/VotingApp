@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../../hooks/Theme";
 // Components.
 import { Button, Menu, MenuButton, MenuList, Text } from "@chakra-ui/react";
 // Icons.

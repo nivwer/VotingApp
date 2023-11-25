@@ -23,12 +23,11 @@ function PollCard({ item }) {
     <>
       {poll && (
         <Card
-          bg={isDark ? "black" : "white"}
+          bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           w="100%"
-          borderRadius="0"
-          borderBottom={"1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
+          borderRadius="3xl"
           opacity={isLoading ? 0.6 : 1}
+          mb={4}
           boxShadow={"none"}
         >
           {isLoading && <CustomProgress />}

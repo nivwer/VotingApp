@@ -1,6 +1,6 @@
 // Hooks.
 import { useSelector } from "react-redux";
-import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import { Avatar, Box, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 

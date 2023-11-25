@@ -1,5 +1,5 @@
 // Hooks.
-import { useThemeInfo } from "../../../../hooks/Theme";
+import { useThemeInfo } from "../../../hooks/Theme";
 // Components.
 import { Box, HStack, Heading, IconButton, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
@@ -15,7 +15,7 @@ function NavbarHeader({ disclosure }) {
   return (
     <HStack spacing={3}>
       {/* Open Left Drawer */}
-      <IconButton
+      {/* <IconButton
         opacity={isDark ? 0.9 : 0.8}
         onClick={onOpen}
         variant={"ghost"}
@@ -23,7 +23,7 @@ function NavbarHeader({ disclosure }) {
         size={"md"}
         fontSize={"xl"}
         icon={<FaBars />}
-      ></IconButton>
+      ></IconButton> */}
 
       <HStack opacity={0.9} spacing={5}>
         {/* Logotipo. */}
