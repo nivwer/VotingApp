@@ -26,7 +26,10 @@ function NavbarBreadcrumb() {
   };
 
   return (
-    <Breadcrumb fontSize={"md"} opacity={isDark ? 0.9 : 0.7}>
+    <Breadcrumb
+      fontSize={"md"}
+      color={isDark ? "whiteAlpha.700" : "blackAlpha.700"}
+    >
       {path && path[0] && (
         <BreadcrumbItem isCurrentPage={path[1] ? false : true}>
           <BreadcrumbLink
@@ -38,24 +41,13 @@ function NavbarBreadcrumb() {
         </BreadcrumbItem>
       )}
 
-      {path && path[1] && (
+      {path && path[1] && !username && (
         <BreadcrumbItem isCurrentPage={path[2] ? false : true}>
           <BreadcrumbLink
             onClick={() => navigate(`/${path[0]}/${path[1]}`)}
             fontWeight={path[2] ? "medium" : "bold"}
           >
             {formatPathSegment(path[1])}
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-      )}
-
-      {path && path[2] && (
-        <BreadcrumbItem isCurrentPage={true}>
-          <BreadcrumbLink
-            onClick={() => navigate(`/${path[0]}/${path[1]}/${path[2]}`)}
-            fontWeight={"bold"}
-          >
-            {formatPathSegment(path[2])}
           </BreadcrumbLink>
         </BreadcrumbItem>
       )}

@@ -24,11 +24,12 @@ function Navbar() {
         w={"100%"}
         pos={"fixed"}
         bg={isDark ? "black" : "white"}
+        // bg={isDark ? "whiteAlpha.100" : "white"}
         zIndex={1300}
       >
         {/* Toolbar. */}
-        <Flex minH="64px" w={"100%"} justify={"center"}>
-          <Flex maxW="1248px" px={"10px"} w="100%" align="center" justify="space-between">
+        <Flex minH="80px" w={"100%"} justify={"center"}>
+          <Flex maxW="1248px" px={6} w="100%" align="center" justify="space-between">
             {/* Navbar Header. ( LeftSide ) */}
             <NavbarHeader disclosure={disclosureLeft} />
 

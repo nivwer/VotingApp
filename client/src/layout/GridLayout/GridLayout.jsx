@@ -35,25 +35,25 @@ function GridLayout({ layout = "simple", section = "main" }) {
     triple: {
       area: `"header header header header header"
                "l-none left main right r-none"`,
-      rows: "64px 1fr",
+      rows: "80px 1fr",
       columns: "1fr 295px 610px 343px 1fr",
     },
     double: {
       area: `"header header header header" 
               "l-none left main r-none"`,
-      rows: "64px 1fr",
+      rows: "80px 1fr",
       columns: "1fr 295px 610px 1fr",
     },
     simple: {
       area: `"header header header"
              "l-none main r-none"`,
-      rows: "64px 1fr",
+      rows: "80px 1fr",
       columns: "1fr 610px 1fr",
     },
     responsive: {
       area: `"header"
              "main"`,
-      rows: "64px 1fr",
+      rows: "80px 1fr",
       columns: "1fr",
     },
   };
@@ -91,7 +91,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
 
         {/* Main */}
         <GridItem area={"main"}>
-          <Container minH={"calc(100vh - 64px)"} p={0} maxW={"608px"}>
+          <Container minH={"calc(100vh - 80px)"} p={0} maxW={"608px"}>
             <Outlet />
           </Container>
         </GridItem>

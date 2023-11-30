@@ -6,6 +6,7 @@ import { NavLink } from "react-router-dom";
 import PollModal from "../../components/Modals/PollModal/PollModal";
 import {
   Box,
+  Button,
   Flex,
   Grid,
   GridItem,
@@ -30,7 +31,12 @@ function Sidebar({ section }) {
   const { data, isLoading } = useGetCategoriesQuery();
 
   return (
-    <Box pos={"fixed"} w={"295px"} h={"calc(100vh - 64px)"}>
+    <Box
+      pos={"fixed"}
+      w={"295px"}
+      //  h={"calc(100vh - 64px)"}
+      h={"96%"}
+    >
       <Grid
         gridTemplateRows={"1fr 70px"}
         gridTemplateColumns={"100%"}
@@ -39,9 +45,10 @@ function Sidebar({ section }) {
       >
         <GridItem
           overflow={"auto"}
-          bg={isDark ? "gothicPurpleAlpha.100" : "white"}
+          bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           mr={4}
           borderRadius={"3xl"}
+          boxShadow={"xs"}
         >
           {/* Categories */}
           <Flex

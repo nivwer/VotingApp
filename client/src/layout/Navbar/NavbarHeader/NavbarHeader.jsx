@@ -25,16 +25,21 @@ function NavbarHeader({ disclosure }) {
         icon={<FaBars />}
       ></IconButton> */}
 
-      <HStack opacity={0.9} spacing={5}>
+      <HStack opacity={1} spacing={5}>
         {/* Logotipo. */}
         <NavLink to={"/home"}>
-          <Text pt={"1px"} fontSize="xl" fontWeight={"bold"}>
+          <Text fontSize="xl" fontWeight={"bold"}>
             VotingApp
           </Text>
         </NavLink>
 
         {/* Breadcrumb. */}
-        <Box pt={"3px"}>
+        <Box
+          bg={isDark ? "gothicPurpleAlpha.100" :"gothicPurpleAlpha.200"}
+          p={"5px"}
+          px={"25px"}
+          borderRadius={"3xl"}
+        >
           <NavbarBreadcrumb />
         </Box>
       </HStack>
