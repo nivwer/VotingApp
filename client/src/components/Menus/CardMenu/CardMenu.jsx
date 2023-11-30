@@ -9,7 +9,7 @@ import { FaEllipsis } from "react-icons/fa6";
 function CardMenu({ children, isLoading }) {
   const { isDark } = useThemeInfo();
   return (
-    <Menu>
+    <Menu initialFocusRef>
       <MenuButton
         isDisabled={isLoading}
         as={IconButton}
@@ -21,7 +21,15 @@ function CardMenu({ children, isLoading }) {
         position={"absolute"}
         right={5}
       />
-      <MenuList bg={isDark ? "black" : "white"} zIndex={1600}>
+      <MenuList
+        bg={isDark ? "black" : "white"}
+        zIndex={1600}
+        borderRadius={"2xl"}
+        border={"1px solid"}
+        borderColor={"gothicPurpleAlpha.300"}
+        py={4}
+        boxShadow={"dark-lg"}
+      >
         {children}
       </MenuList>
     </Menu>
