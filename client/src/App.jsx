@@ -10,7 +10,7 @@ import { login } from "./features/auth/sessionSlice";
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
 import InitialSpinner from "./components/Spinners/InitialSpinner/InitialSpinner";
-import { Box, Container } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
 
 // App.
 function App() {

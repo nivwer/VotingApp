@@ -56,6 +56,7 @@ function Profile() {
           px={7}
           borderRadius={{ base: 0, md: "3xl" }}
           overflow={"hidden"}
+          boxShadow={"md"}
         >
           {!isLoading &&
             !isFetching &&
