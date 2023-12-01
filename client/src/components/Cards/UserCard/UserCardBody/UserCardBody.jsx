@@ -25,8 +25,10 @@ function UserCardBody({ user }) {
           </NavLink>
         </Stack>
         <NavLink to={`/${user.username}`}>
-          <Button opacity={0.9} h={9} w={24} borderRadius={"full"}>
-            Profile
+          <Button variant={"link"} size={"sm"} borderRadius={"full"}>
+            <Text mx={3} fontWeight={"extrabold"} opacity={0.9}>
+              Profile
+            </Text>
           </Button>
         </NavLink>
       </HStack>

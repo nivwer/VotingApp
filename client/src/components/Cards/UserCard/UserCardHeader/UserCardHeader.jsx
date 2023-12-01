@@ -14,11 +14,11 @@ function UserCardHeader({ user }) {
         <NavLink to={`/${user.username}`}>
           <IconButton isDisabled={isLoading} variant={"unstyled"}>
             <Avatar
-              src={user.profile_picture}
+              bg={user.profile_picture ? "transparent" : "gray.400"}
               size={"md"}
               h={"42px"}
               w={"42px"}
-              bg={"gray.400"}
+              src={user.profile_picture}
             />
           </IconButton>
         </NavLink>

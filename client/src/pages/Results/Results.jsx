@@ -26,6 +26,7 @@ function Results() {
         top={"80px"}
         pos={"sticky"}
         mb={4}
+        bg={isDark ? "black" : "white"}
       >
         <SearchInput />
       </Center>
