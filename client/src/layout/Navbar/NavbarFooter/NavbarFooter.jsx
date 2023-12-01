@@ -15,7 +15,13 @@ import {
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 // Icons.
-import { FaPlus, FaHouse, FaMagnifyingGlass, FaUser, FaGear } from "react-icons/fa6";
+import {
+  FaPlus,
+  FaHouse,
+  FaMagnifyingGlass,
+  FaUser,
+  FaGear,
+} from "react-icons/fa6";
 import { useThemeInfo } from "../../../hooks/Theme";
 import NavbarMenu from "./NavbarMenu/NavbarMenu";
 import NavbarMenuItem from "./NavbarMenu/NavbarMenuItem/NavbarMenuItem";
@@ -32,27 +38,31 @@ function NavbarFooter({ disclosure }) {
       {isAuthenticated ? (
         <HStack spacing={6}>
           <HStack>
-            <IconButton
-              size={"md"}
-              variant={"ghost"}
-              borderRadius={"full"}
-              icon={<FaPlus />}
-              color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
-            />
+              <IconButton
+                size={"md"}
+                variant={"ghost"}
+                borderRadius={"full"}
+                icon={<FaPlus />}
+                color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
+              />
+            <NavLink to={"/home"}>
             <IconButton
               size={"md"}
               variant={"ghost"}
               opacity={isDark ? 0.9 : 0.8}
               borderRadius={"full"}
               icon={<FaHouse />}
-            />
+              />
+              </NavLink>
+            <NavLink to={"/search"}>
             <IconButton
               size={"md"}
               variant={"ghost"}
               opacity={isDark ? 0.9 : 0.8}
               borderRadius={"full"}
               icon={<FaMagnifyingGlass />}
-            />
+              />
+              </NavLink>
           </HStack>
           {/* <IconButton
             variant={"unstyled"}

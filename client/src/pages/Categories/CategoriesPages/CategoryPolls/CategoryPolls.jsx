@@ -56,9 +56,10 @@ function CategoryPolls() {
     <>
       <Box
         w={"100%"}
-        opacity={0.9}
-        borderBottom={"1px solid"}
-        borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"}
+        borderBottom={"3px solid"}
+        borderRadius={"3px"}
+        borderColor={isDark ? "gothicPurpleAlpha.200" : "gothicPurpleAlpha.200"}
+        mb={4}
       >
         <Stack
           spacing={4}
@@ -69,12 +70,22 @@ function CategoryPolls() {
         >
           {currentCategory && currentCategory.value === category && (
             <>
-              <Box p={"6"} borderRadius={"full"} position={"absolute"}>
+              <Box
+                p={"6"}
+                borderRadius={"full"}
+                position={"absolute"}
+                opacity={isDark ? 0.9 : 0.8}
+              >
                 <Text fontSize={"6xl"}>
                   {categoryIcons[currentCategory.value] || <FaHashtag />}
                 </Text>
               </Box>
-              <Text mt={28} fontSize={"xl"} fontWeight={"bold"}>
+              <Text
+                mt={28}
+                fontSize={"xl"}
+                fontWeight={"bold"}
+                opacity={isDark ? 0.9 : 0.8}
+              >
                 {currentCategory.text}
               </Text>
             </>

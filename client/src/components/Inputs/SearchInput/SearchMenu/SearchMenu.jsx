@@ -1,25 +1,31 @@
 // Hooks.
-import { useThemeInfo } from "../../../../../hooks/Theme";
+import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import { Button, Menu, MenuButton, MenuList, Text } from "@chakra-ui/react";
 // Icons.
 import { FaHashtag, FaUserGroup } from "react-icons/fa6";
 
-// SubComponent ( NavbarSearchInput ).
-function NavbarMenu({ children, searchType }) {
+// SubComponent ( SearchInput ).
+function SearchMenu({ children, searchType }) {
   const { isDark } = useThemeInfo();
   return (
-    <Menu>
+    <Menu initialFocusRef>
       {searchType && (
         <MenuButton
-          opacity={isDark ? 0.5 : 1}
           as={Button}
-          size={"sm"}
-          color={isDark ? "whiteAlpha.900" : "blackAlpha.500"}
+          size={"md"}
+          color={isDark ? "whiteAlpha.700" : "blackAlpha.600"}
           variant={"solid"}
           borderRightRadius={"full"}
-          w={"100px"}
-          pr={7}
+          w={"120px"}
+          pr={14}
+          bg={isDark ? "gothicPurpleAlpha.200" : "gothicPurpleAlpha.200"}
+          _hover={{
+            bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+          }}
+          _active={{
+            bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+          }}
           leftIcon={
             <>
               {(searchType == "type" || searchType == "polls") && <FaHashtag />}
@@ -34,11 +40,19 @@ function NavbarMenu({ children, searchType }) {
           </Text>
         </MenuButton>
       )}
-      <MenuList bg={isDark ? "black" : "white"} zIndex={1100}>
+      <MenuList
+        bg={isDark ? "black" : "white"}
+        zIndex={1600}
+        borderRadius={"2xl"}
+        border={"1px solid"}
+        borderColor={"gothicPurpleAlpha.300"}
+        py={4}
+        boxShadow={"dark-lg"}
+      >
         {children}
       </MenuList>
     </Menu>
   );
 }
 
-export default NavbarMenu;
+export default SearchMenu;

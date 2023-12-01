@@ -24,6 +24,7 @@ function Categories() {
           </Stack>
         </Box>
       )}
+
       {isLoading || isFetching || (!data && <CustomSpinner />)}
     </>
   );

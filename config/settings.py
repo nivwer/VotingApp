@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.polls',
     'apps.profiles',
-    'apps.settings',
 ]
 
 MIDDLEWARE = [

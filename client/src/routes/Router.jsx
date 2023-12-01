@@ -11,6 +11,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import Profile from "../pages/Profile/Profile";
 import Poll from "../pages/Poll/Poll";
 import Settings from "../pages/Settings/Settings";
+import Search from "../pages/Search/Search";
 import Results from "../pages/Results/Results";
 import Categories from "../pages/Categories/Categories";
 import CategoryPolls from "../pages/Categories/CategoriesPages/CategoryPolls/CategoryPolls";
@@ -53,6 +54,8 @@ function Router() {
         <Route path="/categories" element={<Categories />} />
         <Route path="/categories/:category" element={<CategoryPolls />} />
 
+        {/* Search page. */}
+        <Route path="/search" element={<Search />} />
         {/* Results pages. */}
         <Route path="/results" element={<Results />} />
       </Route>

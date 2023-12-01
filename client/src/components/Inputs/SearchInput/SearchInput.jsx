@@ -1,8 +1,8 @@
 // Hooks.
-import { useThemeInfo } from "../../../../hooks/Theme";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useThemeInfo } from "../../../hooks/Theme";
+import { useEffect, useState } from "react";
 // Components.
 import {
   FormControl,
@@ -12,14 +12,15 @@ import {
   InputGroup,
   InputLeftElement,
 } from "@chakra-ui/react";
+// SubComponents.
+import SearchMenu from "./SearchMenu/SearchMenu";
+import SearchMenuItem from "./SearchMenuItem/SearchMenuItem";
 // Icons.
 import { SearchIcon } from "@chakra-ui/icons";
-import { FaUserGroup, FaHashtag } from "react-icons/fa6";
-import NavbarMenuItem from "./NavbarMenuItem/NavbarMenuItem";
-import NavbarMenu from "./NavbarMenu/NavbarMenu";
+import { FaHashtag, FaUserGroup } from "react-icons/fa6";
 
-// SubComponent ( NavbarFooter ).
-function NavbarSearchInput() {
+// Component.
+function SearchInput() {
   const navigate = useNavigate();
   const { isDark, ThemeColor } = useThemeInfo();
   const [searchParams] = useSearchParams();
@@ -53,27 +54,28 @@ function NavbarSearchInput() {
   return (
     <form onSubmit={onSubmit}>
       <FormControl>
-        <HStack spacing={0}>
-          <InputGroup size={"sm"} maxW={"220px"}>
+        <HStack spacing={0} boxShadow={"base"} borderRadius={"3xl"}>
+          <InputGroup
+            size={"md"}
+            //  maxW={"220px"}
+          >
             <InputLeftElement
-              w={"45px"}
+              // w={"45px"}
               children={
                 <IconButton
-                  size={"sm"}
+                  size={"md"}
                   p={"auto"}
                   variant={"unstyled"}
                   borderLeftRadius={"full"}
-                  w={"45px"}
+                  // w={"45px"}
                   type="submit"
                 >
                   <SearchIcon
-                    ml={2}
-                    opacity={isDark ? 0.5 : 1}
+                    ml={"5px"}
                     _hover={{
                       color: isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`,
-                      opacity: 1,
                     }}
-                    color={isDark ? "whiteAlpha.900" : "blackAlpha.500"}
+                    color={isDark ? "whiteAlpha.700" : "blackAlpha.600"}
                     boxSize={4}
                   />
                 </IconButton>
@@ -82,48 +84,56 @@ function NavbarSearchInput() {
             <Input
               {...register("query", { required: true })}
               defaultValue={query ? query : ""}
+              placeholder="Search"
               pl={"50px"}
               variant={"filled"}
-              size={"sm"}
+              size={"md"}
               fontWeight={"medium"}
-              borderRadius={0}
-              borderLeftRadius={"full"}
-              placeholder="Search"
+              borderRadius={"0"}
+              borderLeftRadius={"3xl"}
               border={isDark ? "1px solid" : "2px solid"}
               borderColor={"transparent"}
               color={isDark ? "whiteAlpha.800" : "blackAlpha.800"}
+              bg={isDark ? "gothicPurpleAlpha.200" : "gothicPurpleAlpha.200"}
+              _hover={{
+                bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+              }}
+              _focus={{
+                bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+              }}
               focusBorderColor={
                 isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`
               }
             />
           </InputGroup>
-          <NavbarMenu searchType={searchType}>
-            <NavbarMenuItem
+
+          <SearchMenu searchType={searchType}>
+            <SearchMenuItem
               icon={<FaHashtag />}
               value={"type"}
               setSearchType={setSearchType}
             >
               Type
-            </NavbarMenuItem>
-            <NavbarMenuItem
+            </SearchMenuItem>
+            <SearchMenuItem
               icon={<FaUserGroup />}
               value={"users"}
               setSearchType={setSearchType}
             >
               Users
-            </NavbarMenuItem>
-            <NavbarMenuItem
+            </SearchMenuItem>
+            <SearchMenuItem
               icon={<FaHashtag />}
               value={"polls"}
               setSearchType={setSearchType}
             >
               Polls
-            </NavbarMenuItem>
-          </NavbarMenu>
+            </SearchMenuItem>
+          </SearchMenu>
         </HStack>
       </FormControl>
     </form>
   );
 }
 
-export default NavbarSearchInput;
+export default SearchInput;
