@@ -48,7 +48,8 @@ function Sidebar({ section }) {
           bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           mr={4}
           borderRadius={"3xl"}
-          boxShadow={"xs"}
+          boxShadow={"base"}
+          py={6}
         >
           {/* Categories */}
           <Flex
@@ -56,16 +57,14 @@ function Sidebar({ section }) {
             opacity={0.9}
             justify={"center"}
             w={"100%"}
-            p={3}
-            py={2}
-            mt={5}
+            px={3} py={1}
           >
             <Heading w={"87%"} fontSize={"lg"}>
               <NavLink to={"/categories"}>Categories</NavLink>
             </Heading>
           </Flex>
-          <Flex mb={5} opacity={isDark ? 0.8 : 0.6} justify={"center"}>
-            <Stack w={"87%"} spacing={0} fontWeight={"semibold"}>
+          <Flex mt={"2px"} opacity={isDark ? 0.8 : 0.6} justify={"center"}>
+            <Stack w={"87%"} spacing={0} fontWeight={"black"}>
               {data &&
                 data.list.map((category, index) => (
                   <SidebarCategoryButton key={index} category={category} />

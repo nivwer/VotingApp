@@ -90,7 +90,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
         )}
 
         {/* Main */}
-        <GridItem area={"main"}>
+        <GridItem area={"main"} mx={{ base: 0, sm: 3, md: 0 }}>
           <Container minH={"calc(100vh - 80px)"} p={0} maxW={"608px"}>
             <Outlet />
           </Container>
