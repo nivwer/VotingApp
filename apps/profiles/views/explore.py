@@ -1,15 +1,12 @@
-# Standard.
-from datetime import datetime
 # BSON.
 from bson import json_util
-from bson.objectid import ObjectId
 # Django.
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 # Rest Framework.
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 # Async Rest Framework support.
@@ -23,66 +20,67 @@ from pymongo.errors import PyMongoError
 # Views.
 
 
+# Endpoint: "Explore Users"
+
+# Endpoint that allows users to explore other users.
+# This view supports GET requests and does not require authentication.
+
+# --- Purpose ---
+# Allows users to discover and explore profiles of other users.
+
+# --- Query Parameters ---
+# - page (optional, default=1): The page number for pagination.
+# - page_size (optional, default=4): The number of polls to display per page.
+
+# --- Access Control ---
+# Open to any user; no authentication required.
+
+# --- Responses ---
+# - 200 OK: List of items, with pagination details.
+#   Additionally, includes a message if the current page has no next page.
+# - 400 Bad Request: Validation errors.
+# - 500 Internal Server Error: MongoDB errors or other unexpected exceptions.
+
+# --- Pagination ---
+# Supports paginating through the search results with details like total pages, total items, etc.
+
+# --- Error Handling ---
+# - Handles validation errors, MongoDB errors, and other exceptions gracefully.
+# - Returns appropriate error responses with status codes:
+
+# --- Authorship and Date ---
+# Author: nivwer
+# Last Updated: 2023-12-2
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 async def explore_users(request):
-    # Check if the current user is authenticated.
-    is_authenticated = True if request.user else False
 
     # Get query parameters.
     page = request.GET.get('page') or '1'
     page_size = request.GET.get('page_size') or '4'
 
     try:
-        if is_authenticated:
-            # Connect to the MongoDB databases.
-            polls_db = MongoDBSingleton().client['polls_db']
+        # Connect to the MongoDB databases.
+        polls_db = MongoDBSingleton().client['polls_db']
 
-            # Find the users that interacted with the same polls that the authenticated user interacted.
-            users_bson = await polls_db.user_actions.aggregate([
-                {
-                    '$match': {'user_id': request.user.id}
-                },
-                {
-                    '$lookup': {
-                        'from': 'user_actions',
-                        'localField': 'poll_id',
-                        'foreignField': 'poll_id',
-                        'as': 'interactions'
-                    }
-                },
-                {
-                    '$group': {
-                        '_id': '$interactions.user_id',
-                        'user_id': {'$first': '$interactions.user_id'}
-                    }
-                },
-                {
-                    '$unwind': '$interactions'
-                },
-                {
-                    '$project': {'_id': 0, 'interactions.user_id': 1}
-                }
-            ]).to_list(None)
-        else:
-            # If the user is not authenticated, find all the users
-            users_bson = await polls_db.user_actions.aggregate([
-                {
-                    '$group': {
-                        '_id': None,
-                        'unique_user_ids': {'$addToSet': '$user_id'}
-                    }
-                },
-                {
-                    '$unwind': '$unique_user_ids'
-                },
-                {
-                    '$project': {'_id': 0, 'user_id': '$unique_user_ids'}
-                }
-            ]).to_list(None)
+        user_poll_actions = await polls_db.user_actions.find(
+            {},
+            {'_id': 0, 'poll_id': 1}
+        ).to_list(None)
+
+        users_bson = await polls_db.user_actions.aggregate([
+            {'$match': {
+                'poll_id': {'$in': [x['poll_id'] for x in user_poll_actions]}}
+             },
+            {'$group': {'_id': '$user_id'}}
+        ]).to_list(None)
+
+        new_users_bson = [
+            user for user in users_bson if user['_id'] != request.user.id]
 
         # Convert BSON to JSON.
-        users_json = json_util._json_convert(users_json)
+        users_json = json_util._json_convert(new_users_bson)
 
         ### PAGINATION. ###
 
@@ -127,7 +125,7 @@ async def explore_users(request):
         for user in users_list:
             # Get poll user data.
             user_data = await User.objects.filter(
-                id=user['user_id']
+                id=user['_id']
             ).values(
                 'username',
                 'userprofile__profile_picture',
@@ -165,12 +163,14 @@ async def explore_users(request):
 
     # Handle MongoDB errors.
     except PyMongoError as error:
+        print(error)
         return Response(
             data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Handle other exceptions.
     except Exception as error:
+        print(error)
         return Response(
             data={'message': 'Internal Server Error'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

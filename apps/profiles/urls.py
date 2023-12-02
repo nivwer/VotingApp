@@ -3,6 +3,7 @@ from .views.profile import profile_me, profile_me_update
 from .views.profile_public import profile_by_username
 from .views.countries import countries
 from .views.search import search_users
+from .views.explore import explore_users
 
 urlpatterns = [
     # Countries.
@@ -18,4 +19,6 @@ urlpatterns = [
 
     # Search users
     path('search', search_users, name='search_users'),
+    # Explore users
+    path('explore', explore_users, name='explore_users'),
 ]
