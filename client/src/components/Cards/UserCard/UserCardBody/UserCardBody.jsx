@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import { Button, Flex, HStack, Stack, Text } from "@chakra-ui/react";
 
 // SubComponent ( UserCard ).
-function UserCardBody({ user }) {
+function UserCardBody({ user, hasBio }) {
   const { isDark } = useThemeInfo();
   return (
     <>
@@ -32,7 +32,7 @@ function UserCardBody({ user }) {
           </Button>
         </NavLink>
       </HStack>
-      {user.bio && (
+      {user.bio && hasBio && (
         <Flex px={0} mt={2} fontSize={"md"}>
           <Text
             opacity={0.8}

@@ -104,7 +104,7 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
 
   return (
     <HStack w={"100%"} justify={"space-between"}>
-      <HStack mx={5} spacing={4}>
+      <HStack mx={{ base: 0, sm: 5 }} spacing={4}>
         {/* Comment. */}
         <Link to={`/${poll.user_profile.username}/${poll.id}`}>
           <PollCardButton icon={<FaRegComment />} isDisabled={isLoading}>

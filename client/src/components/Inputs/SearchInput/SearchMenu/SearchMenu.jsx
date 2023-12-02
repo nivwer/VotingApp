@@ -16,15 +16,16 @@ function SearchMenu({ children, searchType }) {
           size={"md"}
           color={isDark ? "whiteAlpha.700" : "blackAlpha.600"}
           variant={"solid"}
-          borderRightRadius={"full"}
+          borderRadius={0}
+          borderRightRadius={{ base: 0, sm: "3xl" }}
           w={"120px"}
           pr={14}
-          bg={isDark ? "gothicPurpleAlpha.200" : "gothicPurpleAlpha.200"}
+          bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           _hover={{
-            bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+            bg: isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200",
           }}
           _active={{
-            bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+            bg: isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200",
           }}
           leftIcon={
             <>

@@ -25,10 +25,11 @@ function PollCard({ item }) {
         <Card
           bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           w="99%"
-          borderRadius="3xl"
+          borderRadius={{ base: 0, sm: "3xl" }}
           opacity={isLoading ? 0.6 : 1}
           mb={4}
           mx={"auto"}
+          boxShadow={"base"}
         >
           {isLoading && <CustomProgress />}
 

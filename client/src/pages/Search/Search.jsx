@@ -11,8 +11,8 @@ function Search() {
     <Center
       minH={"70px"}
       borderBottom={"3px solid"}
-      borderColor={isDark ? "gothicPurpleAlpha.200" : "gothicPurpleAlpha.200"}
-      borderRadius={"3px"}
+      borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
+      borderRadius={{base: 0, sm: "3px"}}
       pos={"sticky"}
       top={"80px"}
       mb={4}

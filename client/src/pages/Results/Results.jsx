@@ -18,11 +18,11 @@ function Results() {
   return (
     <>
       <Center
-        zIndex={"1600"}
+        zIndex={"1200"}
         minH={"70px"}
         borderBottom={"3px solid"}
-        borderColor={isDark ? "gothicPurpleAlpha.200" : "gothicPurpleAlpha.200"}
-        borderRadius={"3px"}
+        borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
+        borderRadius={{base: 0, sm: "3px"}}
         top={"80px"}
         pos={"sticky"}
         mb={4}

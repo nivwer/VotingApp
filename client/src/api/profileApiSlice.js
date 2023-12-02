@@ -32,7 +32,7 @@ export const profileApiSlice = createApi({
 
     // GET user public profile.
     profileByUsername: builder.query({
-      query: ({headers, username}) => ({
+      query: ({ headers, username }) => ({
         url: `profile/user/${username}`,
         method: "GET",
         headers: headers,
@@ -51,8 +51,17 @@ export const profileApiSlice = createApi({
 
     // Search Users.
     searchUsers: builder.query({
-      query: ({ headers, query, page = 1, page_size = 4}) => ({
+      query: ({ headers, query, page = 1, page_size = 4 }) => ({
         url: `search?query=${query}&page=${page}&page_size=${page_size}`,
+        method: "GET",
+        headers: headers,
+      }),
+    }),
+
+    // Explore Users.
+    exploreUsers: builder.query({
+      query: ({ headers, page = 1, page_size = 4 }) => ({
+        url: `explore?page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
@@ -66,4 +75,5 @@ export const {
   useProfileByUsernameQuery,
   useGetCountriesQuery,
   useSearchUsersQuery,
+  useExploreUsersQuery,
 } = profileApiSlice;

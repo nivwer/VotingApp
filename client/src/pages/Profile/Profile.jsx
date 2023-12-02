@@ -54,9 +54,9 @@ function Profile() {
           color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
           py={6}
           px={7}
-          borderRadius={{ base: 0, md: "3xl" }}
+          borderRadius={{ base: 0, sm: "3xl" }}
           overflow={"hidden"}
-          boxShadow={"md"}
+          boxShadow={"base"}
         >
           {!isLoading &&
             !isFetching &&

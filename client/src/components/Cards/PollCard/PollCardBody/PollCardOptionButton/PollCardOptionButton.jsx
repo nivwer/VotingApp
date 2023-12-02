@@ -94,7 +94,7 @@ function PollCardOptionButton({
       justifyContent="start"
       textAlign={"start"}
       style={{ whiteSpace: "normal", wordWrap: "break-word" }}
-      px={"5"}
+      px={5}
       py={"2.5"}
       h={"100%"}
     >

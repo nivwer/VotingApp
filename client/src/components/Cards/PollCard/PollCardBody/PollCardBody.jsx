@@ -18,7 +18,7 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
 
   return (
     <Flex justifyContent={"center"}>
-      <Stack spacing={3} w={"90%"}>
+      <Stack spacing={3} w={{ base: "100%", sm: "90%" }}>
         <Stack textAlign={"center"}>
           {/* Title. */}
           <Text size={"md"} opacity={0.8} fontWeight={"black"}>
@@ -31,7 +31,7 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
         </Stack>
 
         {/* Poll options. */}
-        <Stack px={4}>
+        <Stack px={{base: 1, sm: 4 }}>
           {poll.options
             .slice(0, poll.options.length)
             .sort((a, b) => b.votes - a.votes)

@@ -52,9 +52,13 @@ function SearchInput() {
   }, [query]);
 
   return (
-    <form onSubmit={onSubmit}>
-      <FormControl>
-        <HStack spacing={0} boxShadow={"base"} borderRadius={"3xl"}>
+    <FormControl w={"100%"}>
+      <form onSubmit={onSubmit}>
+        <HStack
+          spacing={0}
+          boxShadow={"base"}
+          borderRadius={{ base: 0, sm: "3xl" }}
+        >
           <InputGroup
             size={"md"}
             //  maxW={"220px"}
@@ -90,16 +94,16 @@ function SearchInput() {
               size={"md"}
               fontWeight={"medium"}
               borderRadius={"0"}
-              borderLeftRadius={"3xl"}
+              borderLeftRadius={{ base: 0, sm: "3xl" }}
               border={isDark ? "1px solid" : "2px solid"}
               borderColor={"transparent"}
               color={isDark ? "whiteAlpha.800" : "blackAlpha.800"}
-              bg={isDark ? "gothicPurpleAlpha.200" : "gothicPurpleAlpha.200"}
+              bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
               _hover={{
-                bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+                bg: isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200",
               }}
               _focus={{
-                bg: isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300",
+                bg: isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200",
               }}
               focusBorderColor={
                 isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`
@@ -131,8 +135,8 @@ function SearchInput() {
             </SearchMenuItem>
           </SearchMenu>
         </HStack>
-      </FormControl>
-    </form>
+      </form>
+    </FormControl>
   );
 }
 
