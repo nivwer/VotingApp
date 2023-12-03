@@ -10,7 +10,6 @@ import {
   useUpdatePollMutation,
 } from "../../../api/pollApiSlice";
 // Components.
-import CustomProgress from "../../Progress/CustomProgress/CustomProgress";
 import {
   Button,
   Modal,
@@ -126,62 +125,60 @@ function PollModal({ poll = false, disclosure }) {
   });
 
   return (
-    <>
-      {/* Modal. */}
-      <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent
-          m={"auto"}
-          bg={isDark ? "black" : "white"}
-          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
-          border={"1px solid"}
-          borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.200"}
-          borderRadius={"14px"}
-        >
-          {isLoading && <CustomProgress />}
-          {/* Header. */}
-          <ModalHeader>
-            <Text fontSize={"xl"} fontWeight={"medium"} opacity={0.9}>
-              {poll ? "Edit poll" : "New poll"}
-            </Text>
-          </ModalHeader>
-          <ModalCloseButton />
-          <form onSubmit={onSubmit}>
-            {/* Body. */}
-            <ModalBody maxH={"calc(100vh - 300px)"} overflow={"auto"} pb={6}>
-              <PollFormBody
-                poll={poll && poll}
-                form={{ register, watch, reset, setError, errors }}
-                optionState={{ options, setOptions }}
-                privacyState={{ privacyValue, setPrivacyValue }}
-                categories={categories}
-                isLoading={isLoading}
-              />
-            </ModalBody>
-            {/* Footer. */}
-            <ModalFooter>
-              <HStack>
-                <Button
-                  type="submit"
-                  colorScheme={ThemeColor}
-                  isDisabled={isLoading}
-                  borderRadius={"full"}
-                >
-                  {poll ? "Save" : "Create"}
-                </Button>
-                <Button
-                  borderRadius={"full"}
-                  onClick={onClose}
-                  isDisabled={isLoading}
-                >
-                  Cancel
-                </Button>
-              </HStack>
-            </ModalFooter>
-          </form>
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent
+        m={"auto"}
+        bg={isDark ? "black" : "white"}
+        border={"1px solid"}
+        borderColor={isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.300"}
+        borderRadius={"3xl"}
+      >
+        {/* Header. */}
+        <ModalHeader>
+          <Text fontSize={"xl"} fontWeight={"medium"} opacity={0.9}>
+            {poll ? "Edit poll" : "New poll"}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton />
+        <form onSubmit={onSubmit}>
+          {/* Body. */}
+          <ModalBody maxH={"calc(100vh - 300px)"} overflow={"auto"} pb={6}>
+            <PollFormBody
+              poll={poll && poll}
+              form={{ register, watch, reset, setError, errors }}
+              optionState={{ options, setOptions }}
+              privacyState={{ privacyValue, setPrivacyValue }}
+              categories={categories}
+              isLoading={isLoading}
+            />
+          </ModalBody>
+          {/* Footer. */}
+          <ModalFooter>
+            <HStack>
+              <Button
+                type="submit"
+                isDisabled={isLoading}
+                colorScheme={ThemeColor}
+                borderRadius={"full"}
+              >
+                {poll ? "Save" : "Create"}
+              </Button>
+              <Button
+                onClick={onClose}
+                isDisabled={isLoading}
+                opacity={0.8}
+                color={isDark ? "white" : "black"}
+                borderRadius={"full"}
+                colorScheme={"gothicPurpleAlpha"}
+              >
+                Cancel
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </form>
+      </ModalContent>
+    </Modal>
   );
 }
 

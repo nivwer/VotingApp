@@ -1,6 +1,12 @@
 // Hooks.
 import { useThemeInfo } from "../../../../hooks/Theme";
+import { useEffect } from "react";
 // Components.
+import CustomRadio from "../../../../components/Form/CustomRadio/CustomRadio";
+import CustomIconButton from "../../../Buttons/CustomIconButton/CustomIconButton";
+import CustomTextInput from "../../../Form/CustomTextInput/CustomTextInput";
+import CustomTextarea from "../../../Form/CustomTextarea/CustomTextarea";
+import CustomSelect from "../../../Form/CustomSelect/CustomSelect";
 import {
   Box,
   Flex,
@@ -8,17 +14,12 @@ import {
   FormErrorMessage,
   FormLabel,
   IconButton,
-  Input,
   InputGroup,
   InputRightElement,
-  Radio,
   RadioGroup,
-  Select,
   Stack,
   Text,
-  Textarea,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
 // Icons.
 import { FaPlus, FaTrash } from "react-icons/fa6";
 
@@ -32,24 +33,21 @@ function PollFormBody({
   isLoading,
 }) {
   const { isDark, ThemeColor } = useThemeInfo();
-  const { register, watch, reset, setError, errors } = form;
+  const { register, watch, reset, setError, errors: e } = form;
   const { options, setOptions } = optionState;
   const { privacyValue, setPrivacyValue } = privacyState;
 
   // Add the options.
   const handleAddOption = () => {
+    console.log("click");
     const option = watch("options").trim();
     const InOptions = options["options"].includes(option);
     const InDelOptions = options["del_options"].includes(option);
     if (option.length >= 1) {
       if (option.length >= 113) {
-        setError("options", {
-          message: "Maximum 113 characters allowed.",
-        });
+        setError("options", { message: "Maximum 113 characters allowed." });
       } else if (InOptions) {
-        setError("options", {
-          message: "This option already exist.",
-        });
+        setError("options", { message: "This option already exist." });
       } else if (InDelOptions) {
         const updatedDelOptions = options["del_options"].filter(
           (o) => o !== option
@@ -104,11 +102,9 @@ function PollFormBody({
     }
   };
 
-  useEffect(()=> {
-    if(poll) {
-      reset()
-    }
-  }, [poll])
+  useEffect(() => {
+    poll && reset();
+  }, [poll]);
 
   const optionStyles = {
     justifyContent: "space-between",
@@ -123,76 +119,47 @@ function PollFormBody({
   const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700";
 
   return (
-    <Stack textAlign="start" spacing={4} opacity={0.9}>
+    <Stack spacing={4} color={isDark ? "whiteAlpha.800" : "blackAlpha.800"}>
       {/* Title. */}
-      <FormControl isDisabled={isLoading} isInvalid={errors.title}>
-        <FormLabel htmlFor="title" fontWeight={"bold"}>
-          Title
-        </FormLabel>
-        <Input
-          {...register("title", {
-            required: "This field is required.",
-            maxLength: {
-              value: 113,
-              message: "Maximum 113 characters allowed.",
-            },
-          })}
-          variant={"outline"}
-          type="text"
-          fontWeight={"medium"}
-          opacity={"0.9"}
-          defaultValue={poll ? poll.title : ""}
+      <FormControl isInvalid={e.title} isDisabled={isLoading}>
+        <FormLabel children={"Title"} htmlFor="title" fontWeight={"bold"} />
+        <CustomTextInput
+          name={"title"}
           placeholder="This is my question."
-          focusBorderColor={focusBorderColor}
+          defaultValue={poll ? poll.title : ""}
+          register={register}
+          requirements={{ req: true, maxL: 113 }}
         />
-        {/* Handle errors. */}
-        {errors.title && (
-          <FormErrorMessage>{errors.title.message}</FormErrorMessage>
-        )}
+        {e.title && <FormErrorMessage children={e.title.message} />}
       </FormControl>
 
       {/* Description */}
-      <FormControl isDisabled={isLoading} isInvalid={errors.description}>
+      <FormControl isInvalid={e.description} isDisabled={isLoading}>
         <FormLabel htmlFor="description" fontWeight={"bold"}>
           Description
         </FormLabel>
-        <Textarea
-          {...register("description", {
-            required: false,
-            maxLength: {
-              value: 313,
-              message: "Maximum 313 characters allowed.",
-            },
-          })}
-          fontWeight={"medium"}
-          opacity={"0.9"}
-          defaultValue={poll ? poll.description : ""}
+        <CustomTextarea
+          name={"description"}
           placeholder="This is my description."
-          focusBorderColor={focusBorderColor}
-          resize={"none"}
+          defaultValue={poll ? poll.description : ""}
+          register={register}
+          requirements={{ maxL: 313 }}
         />
         {/* Handle errors. */}
-        {errors.description && (
-          <FormErrorMessage>{errors.description.message}</FormErrorMessage>
-        )}
+        {e.description && <FormErrorMessage children={e.description.message} />}
       </FormControl>
 
       {/* Category. */}
-      <FormControl isDisabled={isLoading} isInvalid={errors.category}>
+      <FormControl isInvalid={e.category} isDisabled={isLoading}>
         <FormLabel htmlFor="category" fontWeight={"bold"}>
           Category
         </FormLabel>
-        <Select
-          {...register("category", {
-            required: "This field is required.",
-          })}
-          opacity={isDark ? 0.9 : 0.7}
-          fontWeight={"semibold"}
-          variant={"filled"}
-          borderRadius={"xl"}
+        <CustomSelect
+          name={"category"}
+          register={register}
+          requirements={{ req: true }}
           defaultValue={poll ? poll.category : ""}
-          placeholder="Category..."
-          focusBorderColor={focusBorderColor}
+          placeholder={"Category..."}
         >
           {categories &&
             categories.map((category, index) => (
@@ -200,11 +167,9 @@ function PollFormBody({
                 {category.text}
               </option>
             ))}
-        </Select>
+        </CustomSelect>
         {/* Handle errors. */}
-        {errors.category && (
-          <FormErrorMessage>{errors.category.message}</FormErrorMessage>
-        )}
+        {e.category && <FormErrorMessage children={e.category.message} />}
       </FormControl>
 
       {/* Privacy. */}
@@ -217,19 +182,15 @@ function PollFormBody({
           value={privacyValue}
           defaultValue={poll ? poll.privacy : "public"}
         >
-          <Stack opacity={0.8} direction="row" fontWeight={"semibold"}>
-            <Radio value="public" colorScheme={ThemeColor}>
-              Public
-            </Radio>
-            <Radio value="private" colorScheme={ThemeColor}>
-              Private
-            </Radio>
+          <Stack direction="row" spacing={"3"} fontWeight={"medium"}>
+            <CustomRadio value="public" children={"Public"} />
+            <CustomRadio value="private" children={"Private"} />
           </Stack>
         </RadioGroup>
       </FormControl>
 
       {/* Options. */}
-      <FormControl isDisabled={isLoading} isInvalid={errors.options}>
+      <FormControl isInvalid={e.options} isDisabled={isLoading}>
         <FormLabel htmlFor="options" fontWeight={"bold"}>
           Options
         </FormLabel>
@@ -242,50 +203,50 @@ function PollFormBody({
                 wordBreak={"break-all"}
                 px={"15px"}
                 py={"4px"}
-              >
-                {option}
-              </Text>
+                children={option}
+              />
               <Box>
-                <IconButton
+                {/* <IconButton
                   isDisabled={isLoading}
                   borderRadius={"full"}
                   size={"sm"}
                   variant={"ghost"}
                   opacity={0.6}
                   onClick={() => handleDeleteOption(index, option)}
-                >
-                  <FaTrash />
-                </IconButton>
+                  icon={<FaTrash />}
+                /> */}
+
+                <CustomIconButton
+                  onClick={() => handleDeleteOption(index, option)}
+                  icon={<FaTrash />}
+                  isDisabled={isLoading}
+                  variant={"ghost"}
+                  size={"sm"}
+                />
               </Box>
             </Flex>
           ))}
+          {/* Option text input. */}
           <InputGroup>
-            <Input
-              {...register("options")}
-              type="text"
+            <CustomTextInput
+              name={"options"}
               placeholder="Add a option."
-              {...optionStyles}
-              px={"19px"}
-              focusBorderColor={focusBorderColor}
+              register={register}
+              variant="outline"
+              borderRadius="full"
             />
             <InputRightElement>
-              {/* Add options. */}
-              <IconButton
-                isDisabled={isLoading}
-                borderRadius={"full"}
-                size={"sm"}
-                opacity={0.9}
+              <CustomIconButton
                 onClick={() => handleAddOption()}
-              >
-                <FaPlus />
-              </IconButton>
+                icon={<FaPlus />}
+                isDisabled={isLoading}
+                size={"sm"}
+              />
             </InputRightElement>
           </InputGroup>
         </Stack>
         {/* Handle errors. */}
-        {errors.options && (
-          <FormErrorMessage>{errors.options.message}</FormErrorMessage>
-        )}
+        {e.options && <FormErrorMessage children={e.options.message} />}
       </FormControl>
     </Stack>
   );
