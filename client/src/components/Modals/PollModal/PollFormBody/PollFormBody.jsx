@@ -13,7 +13,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  IconButton,
   InputGroup,
   InputRightElement,
   RadioGroup,
@@ -24,104 +23,50 @@ import {
 import { FaPlus, FaTrash } from "react-icons/fa6";
 
 // SubComponent ( PollModal ).
-function PollFormBody({
-  poll,
-  form,
-  optionState,
-  privacyState,
-  categories,
-  isLoading,
-}) {
-  const { isDark, ThemeColor } = useThemeInfo();
-  const { register, watch, reset, setError, errors: e } = form;
+function PollFormBody({ poll, form, optionState, privacyState, categories, isLoading }) {
+  const { isDark } = useThemeInfo();
+  const { register, watch, reset, setError, errors } = form;
   const { options, setOptions } = optionState;
   const { privacyValue, setPrivacyValue } = privacyState;
 
-  // Add the options.
+  // Add options.
   const handleAddOption = () => {
-    console.log("click");
     const option = watch("options").trim();
-    const InOptions = options["options"].includes(option);
-    const InDelOptions = options["del_options"].includes(option);
-    if (option.length >= 1) {
-      if (option.length >= 113) {
-        setError("options", { message: "Maximum 113 characters allowed." });
-      } else if (InOptions) {
-        setError("options", { message: "This option already exist." });
-      } else if (InDelOptions) {
-        const updatedDelOptions = options["del_options"].filter(
-          (o) => o !== option
-        );
-        setOptions({
-          ...options,
-          options: [...options["options"], option],
-          del_options: updatedDelOptions,
-        });
-        reset({ options: "" });
-      } else {
-        setOptions({
-          ...options,
-          options: [...options["options"], option],
-          add_options: [...options["add_options"], option],
-        });
-        reset({ options: "" });
-      }
-    }
+    if (option.length < 1) return;
+    if (option.length >= 113)
+      return setError("options", { message: "Maximum 113 characters allowed." });
+    if (options["options"].includes(option))
+      return setError("options", { message: "This option already exist." });
+    setOptions({
+      ...options,
+      options: [...options["options"], option],
+      ...(options["del_options"].includes(option)
+        ? { del_options: options["del_options"].filter((o) => o !== option) }
+        : { add_options: [...options["add_options"], option] }),
+    });
+    reset({ options: "" });
+    return;
   };
 
-  // Remove the options.
+  // Remove options.
   const handleDeleteOption = (indexToDelete, option) => {
     const InDelOptions = options["del_options"].includes(option);
-    let delOption = false;
-    if (poll) {
-      for (const o of poll["options"]) {
-        if (o["option_text"] === option && !InDelOptions) {
-          delOption = true;
-        }
-      }
-    }
-    const updatedOptions = options["options"].filter(
-      (_, index) => index !== indexToDelete
-    );
-
-    if (delOption) {
-      setOptions({
-        ...options,
-        options: updatedOptions,
-        del_options: [...options["del_options"], option],
-      });
-    } else {
-      const updatedAddOptions = options["add_options"].filter(
-        (o) => o !== option
-      );
-      setOptions({
-        ...options,
-        options: updatedOptions,
-        add_options: updatedAddOptions,
-      });
-    }
+    setOptions({
+      ...options,
+      options: options["options"].filter((_, index) => index !== indexToDelete),
+      ...(poll && poll.options.some((o) => o.option_text === option && !InDelOptions)
+        ? { del_options: [...options["del_options"], option] }
+        : { add_options: options["add_options"].filter((o) => o !== option) }),
+    });
+    return;
   };
 
-  useEffect(() => {
-    poll && reset();
-  }, [poll]);
-
-  const optionStyles = {
-    justifyContent: "space-between",
-    fontWeight: "semibold",
-    borderRadius: "3xl",
-    border: "1px solid",
-    borderColor: isDark ? "whiteAlpha.300" : "blackAlpha.400",
-    opacity: 0.8,
-    p: "3px",
-  };
-
-  const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700";
+  useEffect(() => reset(), [poll]);
 
   return (
     <Stack spacing={4} color={isDark ? "whiteAlpha.800" : "blackAlpha.800"}>
       {/* Title. */}
-      <FormControl isInvalid={e.title} isDisabled={isLoading}>
+      <FormControl isInvalid={errors.title} isDisabled={isLoading}>
         <FormLabel children={"Title"} htmlFor="title" fontWeight={"bold"} />
         <CustomTextInput
           name={"title"}
@@ -130,14 +75,12 @@ function PollFormBody({
           register={register}
           requirements={{ req: true, maxL: 113 }}
         />
-        {e.title && <FormErrorMessage children={e.title.message} />}
+        {errors.title && <FormErrorMessage children={errors.title.message} />}
       </FormControl>
 
       {/* Description */}
-      <FormControl isInvalid={e.description} isDisabled={isLoading}>
-        <FormLabel htmlFor="description" fontWeight={"bold"}>
-          Description
-        </FormLabel>
+      <FormControl isInvalid={errors.description} isDisabled={isLoading}>
+        <FormLabel children={" Description"} htmlFor="description" fontWeight={"bold"} />
         <CustomTextarea
           name={"description"}
           placeholder="This is my description."
@@ -145,15 +88,12 @@ function PollFormBody({
           register={register}
           requirements={{ maxL: 313 }}
         />
-        {/* Handle errors. */}
-        {e.description && <FormErrorMessage children={e.description.message} />}
+        {errors.description && <FormErrorMessage children={errors.description.message} />}
       </FormControl>
 
       {/* Category. */}
-      <FormControl isInvalid={e.category} isDisabled={isLoading}>
-        <FormLabel htmlFor="category" fontWeight={"bold"}>
-          Category
-        </FormLabel>
+      <FormControl isInvalid={errors.category} isDisabled={isLoading}>
+        <FormLabel children={"Category"} htmlFor="category" fontWeight={"bold"} />
         <CustomSelect
           name={"category"}
           register={register}
@@ -168,15 +108,12 @@ function PollFormBody({
               </option>
             ))}
         </CustomSelect>
-        {/* Handle errors. */}
-        {e.category && <FormErrorMessage children={e.category.message} />}
+        {errors.category && <FormErrorMessage children={errors.category.message} />}
       </FormControl>
 
       {/* Privacy. */}
       <FormControl isDisabled={isLoading}>
-        <FormLabel htmlFor="privacy" fontWeight={"bold"}>
-          Privacy
-        </FormLabel>
+        <FormLabel children={"  Privacy"} htmlFor="privacy" fontWeight={"bold"} />
         <RadioGroup
           onChange={setPrivacyValue}
           value={privacyValue}
@@ -190,32 +127,30 @@ function PollFormBody({
       </FormControl>
 
       {/* Options. */}
-      <FormControl isInvalid={e.options} isDisabled={isLoading}>
-        <FormLabel htmlFor="options" fontWeight={"bold"}>
+      <FormControl isInvalid={errors.options} isDisabled={isLoading}>
+        <FormLabel children={"Options"} htmlFor="options" fontWeight={"bold"}>
           Options
         </FormLabel>
-        {/* Options list. */}
         <Stack w={"100%"}>
           {options["options"].map((option, index) => (
-            <Flex key={index} {...optionStyles} opacity={isLoading ? 0.4 : 1}>
+            <Flex
+              key={index}
+              justifyContent="space-between"
+              borderRadius="3xl"
+              outline="1px solid"
+              outlineColor={isDark ? "gothicPurpleAlpha.300" : "gothicPurpleAlpha.500"}
+              p="3px"
+              opacity={isLoading ? 0.4 : 1}
+            >
               <Text
-                opacity={0.7}
+                opacity={0.9}
+                fontWeight="medium"
                 wordBreak={"break-all"}
                 px={"15px"}
                 py={"4px"}
                 children={option}
               />
               <Box>
-                {/* <IconButton
-                  isDisabled={isLoading}
-                  borderRadius={"full"}
-                  size={"sm"}
-                  variant={"ghost"}
-                  opacity={0.6}
-                  onClick={() => handleDeleteOption(index, option)}
-                  icon={<FaTrash />}
-                /> */}
-
                 <CustomIconButton
                   onClick={() => handleDeleteOption(index, option)}
                   icon={<FaTrash />}
@@ -226,7 +161,6 @@ function PollFormBody({
               </Box>
             </Flex>
           ))}
-          {/* Option text input. */}
           <InputGroup>
             <CustomTextInput
               name={"options"}
@@ -234,6 +168,7 @@ function PollFormBody({
               register={register}
               variant="outline"
               borderRadius="full"
+              pr={"40px"}
             />
             <InputRightElement>
               <CustomIconButton
@@ -245,8 +180,7 @@ function PollFormBody({
             </InputRightElement>
           </InputGroup>
         </Stack>
-        {/* Handle errors. */}
-        {e.options && <FormErrorMessage children={e.options.message} />}
+        {errors.options && <FormErrorMessage children={errors.options.message} />}
       </FormControl>
     </Stack>
   );
