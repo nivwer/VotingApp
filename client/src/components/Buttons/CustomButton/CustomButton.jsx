@@ -1,13 +1,13 @@
 import { useThemeInfo } from "../../../hooks/Theme";
-import { IconButton } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 
-function CustomIconButton({ variant = "solid", ...props }) {
+function CustomButton({ variant = "solid", ...props }) {
   const { isDark } = useThemeInfo();
   const c = "gothicPurpleAlpha";
   return (
-    <IconButton
+    <Button
       variant={variant}
-      borderRadius={"full"}
+      borderRadius={"3xl"}
       color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
       colorScheme={"gothicPurpleAlpha"}
       border={"0px  solid"}
@@ -26,4 +26,4 @@ function CustomIconButton({ variant = "solid", ...props }) {
   );
 }
 
-export default CustomIconButton;
+export default CustomButton;
