@@ -1,4 +1,3 @@
-// Hooks.
 import { useSelector } from "react-redux";
 import { useColorMode } from "@chakra-ui/react";
 

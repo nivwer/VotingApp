@@ -1,9 +1,6 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-// Components.
 import { Radio } from "@chakra-ui/react";
 
-// Component.
 function CustomRadio(props) {
   const { isDark, ThemeColor } = useThemeInfo();
   return (

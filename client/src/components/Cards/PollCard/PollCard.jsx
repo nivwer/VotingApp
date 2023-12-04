@@ -1,22 +1,16 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useState } from "react";
 import { useDeletePollMutation } from "../../../api/pollApiSlice";
-// Components.
 import CustomProgress from "../../Progress/CustomProgress/CustomProgress";
 import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
-// SubComponents.
 import PollCardHeader from "./PollCardHeader/PollCardHeader";
 import PollCardBody from "./PollCardBody/PollCardBody";
 import PollCardFooter from "./PollCardFooter/PollCardFooter";
 
-// Component.
 function PollCard({ item }) {
   const { poll, authenticated_user_actions: userActions } = item;
   const { isDark } = useThemeInfo();
   const [showInputOption, setShowInputOption] = useState(false);
-
-  // Request to delete polls.
   const [deletePoll, { isLoading }] = useDeletePollMutation();
 
   return (
@@ -35,11 +29,7 @@ function PollCard({ item }) {
 
           {/* Card Header. */}
           <CardHeader pt={0}>
-            <PollCardHeader
-              poll={poll}
-              isLoading={isLoading}
-              deletePoll={deletePoll}
-            />
+            <PollCardHeader poll={poll} isLoading={isLoading} deletePoll={deletePoll} />
           </CardHeader>
 
           {/* Card Body. */}
@@ -48,10 +38,7 @@ function PollCard({ item }) {
               poll={poll}
               userActions={userActions}
               isLoading={isLoading}
-              state={{
-                showInputOption: showInputOption,
-                setShowInputOption: setShowInputOption,
-              }}
+              state={{ showInputOption: showInputOption, setShowInputOption: setShowInputOption }}
             />
           </CardBody>
 
@@ -61,10 +48,7 @@ function PollCard({ item }) {
               poll={poll}
               userActions={userActions}
               isLoading={isLoading}
-              state={{
-                showInputOption: showInputOption,
-                setShowInputOption: setShowInputOption,
-              }}
+              state={{ showInputOption: showInputOption, setShowInputOption: setShowInputOption }}
             />
           </CardFooter>
         </Card>

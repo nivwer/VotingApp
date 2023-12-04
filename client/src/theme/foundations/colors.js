@@ -13,7 +13,6 @@ const colors = {
     900: "#000000da",
   },
   gray: {
-    // Default.
     50: "#DBDBDB99",
     100: "#e4e4e4",
     200: "#dbdbdb",

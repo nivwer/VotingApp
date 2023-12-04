@@ -1,27 +1,29 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-// Components.
-import { Menu, MenuButton, IconButton, MenuList } from "@chakra-ui/react";
-// Icon.
+import { Menu, MenuButton, MenuList, IconButton } from "@chakra-ui/react";
 import { FaEllipsis } from "react-icons/fa6";
 
-// Component.
-function CardMenu({ children, isLoading }) {
+function CardMenu({ children, isLoading, ...props }) {
   const { isDark } = useThemeInfo();
   return (
     <Menu initialFocusRef>
       <MenuButton
-        isDisabled={isLoading}
         as={IconButton}
+        isDisabled={isLoading}
         aria-label={"Options"}
         icon={<FaEllipsis />}
-        borderRadius={"full"}
         variant={"ghost"}
-        opacity={0.6}
+        borderRadius={"full"}
+        color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+        colorScheme={"gothicPurpleAlpha"}
+        bg={"transparents"}
+        _hover={{ bg: "gothicPurpleAlpha.200" }}
+        _active={{ bg: "gothicPurpleAlpha.300" }}
         position={"absolute"}
         right={5}
+        {...props}
       />
       <MenuList
+        children={children}
         bg={isDark ? "black" : "white"}
         zIndex={1600}
         borderRadius={"2xl"}
@@ -29,9 +31,7 @@ function CardMenu({ children, isLoading }) {
         borderColor={"gothicPurpleAlpha.300"}
         py={4}
         boxShadow={"dark-lg"}
-      >
-        {children}
-      </MenuList>
+      />
     </Menu>
   );
 }

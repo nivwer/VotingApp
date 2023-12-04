@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 // Icons.
 import { FaHashtag } from "react-icons/fa6";
 // Utils.
-import categoryIcons from "../../../utils/categoryIcons";
+import categoryIcons from "../../../utils/icons/categoryIcons";
 
 // SubComponent ( SideBar ).
 function SidebarCategoryButton({ category }) {

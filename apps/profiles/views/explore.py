@@ -163,6 +163,7 @@ async def explore_users(request):
 
     # Handle MongoDB errors.
     except PyMongoError as error:
+        
         print(error)
         return Response(
             data={'message': 'Internal Server Error'},

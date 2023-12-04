@@ -5,8 +5,8 @@ import { useSearchParams } from "react-router-dom";
 import UsersResults from "./UsersResults/UsersResults";
 import PollsResults from "./PollsResults/PollsResults";
 import { Center } from "@chakra-ui/react";
-import SearchInput from "../../components/Inputs/SearchInput/SearchInput";
 import { useThemeInfo } from "../../hooks/Theme";
+import SearchInput from "../../components/Form/SearchInput/SearchInput";
 
 // Page.
 function Results() {

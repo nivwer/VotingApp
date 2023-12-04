@@ -1,16 +1,7 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-// Components.
 import { Input } from "@chakra-ui/react";
 
-// Component.
-function CustomTextInput({
-  name,
-  register,
-  requirements = {},
-  variant = "filled",
-  ...props
-}) {
+function CustomTextInput({ name, register, requirements = {}, variant = "filled", ...props }) {
   const { req = false, maxL = 0, minL = 0 } = requirements;
   const { isDark } = useThemeInfo();
   const c = "gothicPurpleAlpha";
@@ -18,14 +9,8 @@ function CustomTextInput({
     <Input
       {...register(name, {
         required: req && "This field is required.",
-        maxLength: maxL && {
-          value: maxL,
-          message: `Maximum ${maxL} characters allowed.`,
-        },
-        minLength: minL && {
-          value: minL,
-          message: `Minimum ${minL} characters allowed.`,
-        },
+        maxLength: maxL && { value: maxL, message: `Maximum ${maxL} characters allowed.` },
+        minLength: minL && { value: minL, message: `Minimum ${minL} characters allowed.` },
         ...requirements,
       })}
       variant={variant}
@@ -33,21 +18,10 @@ function CustomTextInput({
       outline={variant == "outline" ? "1px solid" : "0px solid"}
       outlineColor={isDark ? `${c}.300` : `${c}.500`}
       color={isDark ? "whiteAlpha.800" : "blackAlpha.700"}
-      bg={
-        variant == "filled" ? (isDark ? `${c}.100` : `${c}.200`) : "transparent"
-      }
-      border={
-        variant == "outline" ? "2px solid" : isDark ? "1px solid" : "2px solid"
-      }
+      bg={variant == "filled" ? (isDark ? `${c}.100` : `${c}.200`) : "transparent"}
+      border={variant == "outline" ? "2px solid" : isDark ? "1px solid" : "2px solid"}
       borderColor={"transparent"}
-      _hover={{
-        bg:
-          variant == "filled"
-            ? isDark
-              ? `${c}.100`
-              : `${c}.200`
-            : "transparent",
-      }}
+      _hover={{ bg: variant == "filled" ? (isDark ? `${c}.100` : `${c}.200`) : "transparent" }}
       _focus={{ bg: "transparent" }}
       focusBorderColor={isDark ? `${c}.300` : `${c}.500`}
       _placeholder={{

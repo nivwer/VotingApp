@@ -1,8 +1,8 @@
 // Hooks.
+import SearchInput from "../../components/Form/SearchInput/SearchInput";
 import { useThemeInfo } from "../../hooks/Theme";
 // Components.
 import { Center } from "@chakra-ui/react";
-import SearchInput from "../../components/Inputs/SearchInput/SearchInput";
 
 // Page.
 function Search() {

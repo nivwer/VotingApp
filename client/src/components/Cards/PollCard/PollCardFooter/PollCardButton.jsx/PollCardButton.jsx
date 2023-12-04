@@ -1,21 +1,12 @@
-// Hooks.
 import { useThemeInfo } from "../../../../../hooks/Theme";
-// Components.
-import { HStack, IconButton, Text } from "@chakra-ui/react";
+import CustomIconButton from "../../../../Buttons/CustomIconButton/CustomIconButton";
+import { HStack, Text } from "@chakra-ui/react";
 
-// SubComponent ( PollCardFooter ).
-function PollCardButton({
-  children,
-  isLoading,
-  isDisabled,
-  onClick,
-  icon,
-  active,
-}) {
+function PollCardButton({ children, isLoading, isDisabled, onClick, icon, active }) {
   const { isDark, ThemeColor } = useThemeInfo();
   return (
     <HStack spacing={0}>
-      <IconButton
+      <CustomIconButton
         size={"md"}
         variant={"ghost"}
         color={
@@ -23,19 +14,15 @@ function PollCardButton({
             ? isDark
               ? `${ThemeColor}.200`
               : `${ThemeColor}.500`
-            : "default"
+            : isDark
+            ? "whiteAlpha.600"
+            : "blackAlpha.600"
         }
         isDisabled={isDisabled || isLoading}
         onClick={onClick}
-        borderRadius={"full"}
-        // isLoading={isLoading}
-        opacity={active ? 0.9 : 0.6}
-      >
-        {icon}
-      </IconButton>
-      <Text opacity={0.6} p={0} fontSize={"sm"} fontWeight={"medium"}>
-        {children}
-      </Text>
+        children={icon}
+      />
+      <Text children={children} opacity={0.6} p={0} fontSize={"sm"} fontWeight={"medium"} />
     </HStack>
   );
 }

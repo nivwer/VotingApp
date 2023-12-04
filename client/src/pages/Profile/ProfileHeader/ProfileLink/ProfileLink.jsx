@@ -3,7 +3,7 @@ import { useThemeInfo } from "../../../../hooks/Theme";
 // Components.
 import { Link } from "@chakra-ui/react";
 // Utils.
-import socialMediaIcons from "../../../../utils/socialMediaIcons";
+import socialMediaIcons from "../../../../utils/icons/socialMediaIcons";
 
 // SubComponent ( ProfileHeader ).
 function ProfileLink({ link, website = false }) {

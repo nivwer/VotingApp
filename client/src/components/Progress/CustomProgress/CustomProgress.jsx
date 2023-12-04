@@ -1,7 +1,5 @@
-// Components.
 import { Progress } from "@chakra-ui/react";
 
-// Component.
 function CustomProgress() {
   return (
     <Progress

@@ -1,34 +1,21 @@
-// Hooks.
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "../../hooks/Theme";
-// Components.
-import { Box, Center, Stack, Text } from "@chakra-ui/react";
-// Icons.
-import {
-  FaRegFaceFrown,
-  FaRegFaceMehBlank,
-  FaCircleExclamation,
-} from "react-icons/fa6";
-// Others.
-import { InView } from "react-intersection-observer";
 import CustomSpinner from "../Spinners/CustomSpinner/CustomSpinner";
+import { Box, Center, Stack, Text } from "@chakra-ui/react";
+import { FaRegFaceFrown, FaRegFaceMehBlank, FaCircleExclamation } from "react-icons/fa6";
+import { InView } from "react-intersection-observer";
 
-// Component.
 function Pagination({ Card, usePageQuery, dataQuery, reset }) {
   const { isDark } = useThemeInfo();
   const [initialRender, setInitialRender] = useState(false);
   const { resetValues } = reset;
-  // Pages data.
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState([]);
-  // Message.
   const [message, setMesagge] = useState({ message: "", icon: null });
-  // Paginator data.
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [hasPrevious, setHasPrevious] = useState(false);
   const [hasNext, setHasNext] = useState(false);
-  // Refresh items.
   const [refreshItems, setRefreshItems] = useState(false);
 
   // Active pages.
@@ -48,10 +35,7 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
     isLoading: isCurrentPageloading,
     isFetching: isCurrentPageFetching,
     status: statusCurrentPage,
-  } = usePageQuery(
-    { ...dataQuery, page: page },
-    { skip: dataQuery ? false : true }
-  );
+  } = usePageQuery({ ...dataQuery, page: page }, { skip: dataQuery ? false : true });
 
   const {
     data: nextPage,
@@ -83,15 +67,11 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
       if (currentPage) {
         currentPage.paginator.total_items != totalItems &&
           setTotalItems(currentPage.paginator.total_items);
-
         currentPage.paginator.total_pages != totalPages &&
           setTotalPages(currentPage.paginator.total_pages);
-
         currentPage.paginator.has_previous != hasPrevious &&
           setHasPrevious(currentPage.paginator.has_previous);
-
-        currentPage.paginator.has_next != hasNext &&
-          setHasNext(currentPage.paginator.has_next);
+        currentPage.paginator.has_next != hasNext && setHasNext(currentPage.paginator.has_next);
       }
     }
   }, [currentPage]);
@@ -113,88 +93,52 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
 
   // Add the pages in the pages state.
   useEffect(() => {
-    if (refreshItems) {
-      if (currentPage) {
-        if (
-          (lastPage || !currentPage.paginator.has_previous) &&
-          (nextPage || !currentPage.paginator.has_next)
-        ) {
-          setPages((prevPages) => {
-            // If Current page has previous page.
-            if (
-              currentPage.paginator.has_previous &&
-              lastPage.paginator.page === page - 1
-            ) {
-              prevPages[page - 2] = lastPage.items;
-            }
+    if (!refreshItems) return;
+    if (currentPage) {
+      if (
+        (lastPage || !currentPage.paginator.has_previous) &&
+        (nextPage || !currentPage.paginator.has_next)
+      ) {
+        setPages((prevPages) => {
+          // If Current page has previous page.
+          if (currentPage.paginator.has_previous && lastPage.paginator.page === page - 1)
+            prevPages[page - 2] = lastPage.items;
+          // Current page.
+          if (currentPage.items && currentPage.paginator.page === page)
+            prevPages[page - 1] = currentPage.items;
+          // If Current page has next page.
+          if (currentPage.paginator.has_next && nextPage.paginator.page === page + 1)
+            prevPages[page] = nextPage.items;
 
-            // Current page.
-            if (currentPage.items && currentPage.paginator.page === page) {
-              prevPages[page - 1] = currentPage.items;
-            }
-
-            // If Current page has next page.
-            if (
-              currentPage.paginator.has_next &&
-              nextPage.paginator.page === page + 1
-            ) {
-              prevPages[page] = nextPage.items;
-            }
-
-            return prevPages;
-          });
-        }
-
-        if (currentPage.paginator.total_items === 0 && currentPage.message) {
-          setMesagge({
-            message: currentPage.message,
-            icon: <FaRegFaceFrown />,
-          });
-        }
-
-        if (
-          currentPage.paginator.total_items > 0 &&
-          !currentPage.paginator.has_next &&
-          currentPage.message
-        ) {
-          setMesagge({
-            message: currentPage.message,
-            icon: <FaRegFaceMehBlank />,
-          });
-        } else if (
-          currentPage.paginator.total_items > 0 &&
-          nextPage &&
-          !nextPage.paginator.has_next &&
-          nextPage.message
-        ) {
-          setMesagge({
-            message: nextPage.message,
-            icon: <FaRegFaceMehBlank />,
-          });
-        }
+          return prevPages;
+        });
       }
 
-      if (error) {
-        {
-          setMesagge({
-            message: error.data.message,
-            icon: <FaCircleExclamation />,
-          });
-        }
-      }
+      if (currentPage.paginator.total_items === 0 && currentPage.message)
+        setMesagge({ message: currentPage.message, icon: <FaRegFaceFrown /> });
 
-      setRefreshItems(false);
+      if (
+        currentPage.paginator.total_items > 0 &&
+        !currentPage.paginator.has_next &&
+        currentPage.message
+      ) {
+        setMesagge({ message: currentPage.message, icon: <FaRegFaceMehBlank /> });
+      } else if (
+        currentPage.paginator.total_items > 0 &&
+        nextPage &&
+        !nextPage.paginator.has_next &&
+        nextPage.message
+      ) {
+        setMesagge({ message: nextPage.message, icon: <FaRegFaceMehBlank /> });
+      }
     }
+
+    if (error) setMesagge({ message: error.data.message, icon: <FaCircleExclamation /> });
+    setRefreshItems(false);
   }, [refreshItems]);
 
   return (
-    <Box
-      id="container"
-      w={"100%"}
-      display={"flex"}
-      flexDir={"column"}
-      alignItems={"center"}
-    >
+    <Box id="container" w={"100%"} display={"flex"} flexDir={"column"} alignItems={"center"}>
       {pages &&
         totalItems > 0 &&
         pages.map((page, indexPage) => (
@@ -229,10 +173,8 @@ function Pagination({ Card, usePageQuery, dataQuery, reset }) {
         {(currentPage || error) && message.message && (
           <Center opacity={isDark ? 0.7 : 0.5} w={"100%"} h={"100%"}>
             <Stack>
-              <Text fontWeight={"semibold"}>{message.message}</Text>
-              <Center fontSize={"3xl"}>
-                <Box>{message.icon}</Box>
-              </Center>
+              <Text children={message.message} fontWeight={"semibold"} />
+              <Center children={<Box>{message.icon}</Box>} fontSize={"3xl"} />
             </Stack>
           </Center>
         )}

@@ -14,7 +14,7 @@ import { Box, Stack, Text } from "@chakra-ui/react";
 // Icons.
 import { FaHashtag } from "react-icons/fa6";
 // Utils.
-import categoryIcons from "../../../../utils/categoryIcons";
+import categoryIcons from "../../../../utils/icons/categoryIcons";
 
 // Page.
 function CategoryPolls() {

@@ -1,19 +1,10 @@
 // Hooks.
+import { useThemeInfo } from "../../../hooks/Theme";
 import { useSelector } from "react-redux";
 // Components.
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  HStack,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Divider, HStack, IconButton, useDisclosure } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
+import PollModal from "../../../components/Modals/PollModal/PollModal";
 // Icons.
 import {
   FaPlus,
@@ -22,7 +13,6 @@ import {
   FaUser,
   FaGear,
 } from "react-icons/fa6";
-import { useThemeInfo } from "../../../hooks/Theme";
 import NavbarMenu from "./NavbarMenu/NavbarMenu";
 import NavbarMenuItem from "./NavbarMenu/NavbarMenuItem/NavbarMenuItem";
 
@@ -33,36 +23,40 @@ function NavbarFooter({ disclosure }) {
     (state) => state.session
   );
   const { onOpen } = disclosure;
+  // Poll Modal.
+  const pollModalDisclosure = useDisclosure();
+  
   return (
     <Box>
       {isAuthenticated ? (
         <HStack spacing={6}>
           <HStack>
+            <IconButton
+              onClick={pollModalDisclosure.onOpen}
+              size={"md"}
+              variant={"ghost"}
+              borderRadius={"full"}
+              icon={<FaPlus />}
+              color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
+            />
+            <NavLink to={"/home"}>
               <IconButton
                 size={"md"}
                 variant={"ghost"}
+                opacity={isDark ? 0.9 : 0.8}
                 borderRadius={"full"}
-                icon={<FaPlus />}
-                color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
+                icon={<FaHouse />}
               />
-            <NavLink to={"/home"}>
-            <IconButton
-              size={"md"}
-              variant={"ghost"}
-              opacity={isDark ? 0.9 : 0.8}
-              borderRadius={"full"}
-              icon={<FaHouse />}
-              />
-              </NavLink>
+            </NavLink>
             <NavLink to={"/search"}>
-            <IconButton
-              size={"md"}
-              variant={"ghost"}
-              opacity={isDark ? 0.9 : 0.8}
-              borderRadius={"full"}
-              icon={<FaMagnifyingGlass />}
+              <IconButton
+                size={"md"}
+                variant={"ghost"}
+                opacity={isDark ? 0.9 : 0.8}
+                borderRadius={"full"}
+                icon={<FaMagnifyingGlass />}
               />
-              </NavLink>
+            </NavLink>
           </HStack>
           {/* <IconButton
             variant={"unstyled"}
@@ -93,6 +87,7 @@ function NavbarFooter({ disclosure }) {
               <NavbarMenuItem>Sign Out</NavbarMenuItem>
             </NavLink>
           </NavbarMenu>
+          <PollModal disclosure={pollModalDisclosure} />
         </HStack>
       ) : (
         <HStack spacing="3">

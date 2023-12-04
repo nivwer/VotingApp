@@ -1,103 +1,61 @@
-// Hooks.
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useAddOptionMutation } from "../../../../../api/pollApiSlice";
-// Components.
-import {
-  FormControl,
-  FormErrorMessage,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightElement,
-} from "@chakra-ui/react";
-// Icons.
+import { FormControl, FormErrorMessage, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa6";
+import CustomTextInput from "../../../../Form/CustomTextInput/CustomTextInput";
+import CustomIconButton from "../../../../Buttons/CustomIconButton/CustomIconButton";
 
-// SubComponent( PollCardBody ).
 function PollCardInputOption({ id, setShowInputOption }) {
   const navigate = useNavigate();
   const { isAuthenticated, token } = useSelector((state) => state.session);
-  const { isDark } = useThemeInfo();
   const [dataMutation, setDataMutation] = useState(false);
-
-  // React hook form.
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm();
-
-  // Request to the backend.
+  const { register, handleSubmit, formState, setError } = useForm();
   const [addOption, { isLoading }] = useAddOptionMutation();
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
-    if (isAuthenticated) {
-      const body = { body: data };
-      try {
-        const res = await addOption({ ...dataMutation, ...body });
-        res.data && setShowInputOption(false);
-
-        // If server error.
-        if (res.error) {
-          for (const fieldName in res.error.data) {
-            setError(fieldName, { message: res.error.data[fieldName][0] });
-          }
+    if (!isAuthenticated) return navigate("/signin");
+    const body = { body: data };
+    try {
+      const res = await addOption({ ...dataMutation, ...body });
+      if (res.data) setShowInputOption(false);
+      if (res.error) {
+        for (const fieldName in res.error.data) {
+          setError(fieldName, { message: res.error.data[fieldName][0] });
         }
-      } catch (error) {
-        console.error(error);
       }
-    } else {
-      navigate("/signin");
+    } catch (error) {
+      console.error(error);
     }
   });
 
-  // Update data to mutations.
   useEffect(() => {
-    const headers = isAuthenticated
-      ? { headers: { Authorization: `Token ${token}` } }
-      : {};
-
+    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
     setDataMutation({ ...headers, id: id });
   }, [id, isAuthenticated]);
 
   return (
     <form onSubmit={onSubmit}>
-      <FormControl isDisabled={isLoading} isInvalid={errors.option_text}>
+      <FormControl isDisabled={isLoading} isInvalid={formState.errors.option_text}>
         <InputGroup>
-          <Input
-            {...register("option_text", {
-              required: "This field is required.",
-            })}
-            type="text"
+          <CustomTextInput
+            name={"option_text"}
             placeholder="Add a option"
-            focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
+            register={register}
+            requirements={{ req: true }}
+            variant="outline"
             borderRadius={"full"}
-            borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.400"}
-            opacity={0.8}
-            justifyContent="start"
-            wordBreak={"break-all"}
-            pl={"5"}
+            pr={"40px"}
           />
           <InputRightElement>
-            <IconButton
-              type="submit"
-              borderRadius={"full"}
-              size={"sm"}
-              isLoading={isLoading}
-            >
-              <FaPlus />
-            </IconButton>
+            <CustomIconButton type="submit" icon={<FaPlus />} size={"sm"} isLoading={isLoading} />
           </InputRightElement>
         </InputGroup>
-        {/* Handle errors. */}
-        {errors.option_text && (
-          <FormErrorMessage>{errors.option_text.message}</FormErrorMessage>
+        {formState.errors.option_text && (
+          <FormErrorMessage children={formState.errors.option_text.message} />
         )}
       </FormControl>
     </form>

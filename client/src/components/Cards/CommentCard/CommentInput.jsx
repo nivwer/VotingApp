@@ -138,7 +138,7 @@ function CommentInput({ id }) {
                 }}
               />
               {errors.comment && (
-                <FormErrorMessage>{errors.comment.message}</FormErrorMessage>
+                <FormErrorMessage children={errors.comment.message} />
               )}
             </FormControl>
           </CardBody>
@@ -163,7 +163,7 @@ function CommentInput({ id }) {
                     isDisabled={isLoading}
                     opacity={0.8}
                     color={isDark ? "white" : "black"}
-                    colorScheme="gothicPurpleAlpha"
+                    colorScheme={"gothicPurpleAlpha"}
                     p={4}
                     onClick={() => setValue("comment", "")}
                   >

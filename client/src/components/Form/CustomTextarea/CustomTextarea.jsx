@@ -1,9 +1,6 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-// Components.
 import { Textarea } from "@chakra-ui/react";
 
-// Component.
 function CustomTextarea({ name, register, requirements = {}, ...props }) {
   const { req = false, maxL = 0, minL = 0 } = requirements;
   const { isDark } = useThemeInfo();
@@ -12,14 +9,8 @@ function CustomTextarea({ name, register, requirements = {}, ...props }) {
     <Textarea
       {...register(name, {
         required: req && "This field is required.",
-        maxLength: maxL && {
-          value: maxL,
-          message: `Maximum ${maxL} characters allowed.`,
-        },
-        minLength: minL && {
-          value: minL,
-          message: `Minimum ${minL} characters allowed.`,
-        },
+        maxLength: maxL && { value: maxL, message: `Maximum ${maxL} characters allowed.` },
+        minLength: minL && { value: minL, message: `Minimum ${minL} characters allowed.` },
         ...requirements,
       })}
       variant={"filled"}

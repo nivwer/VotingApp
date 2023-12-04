@@ -1,18 +1,26 @@
-// Hooks.
 import { useThemeInfo } from "../../../../hooks/Theme";
-// Components.
+import CustomButton from "../../../Buttons/CustomButton/CustomButton";
 import { HStack, MenuItem, Text } from "@chakra-ui/react";
 
-// SubComponent ( CardMenu ).
 function CardMenuItem({ children, onClick, icon, isLoading }) {
   const { isDark } = useThemeInfo();
   return (
-    <MenuItem onClick={onClick} isDisabled={isLoading} px={4}>
-      <HStack spacing={3} opacity={0.7}>
-        <Text>{icon}</Text>
-        <Text mt={"3px"} fontWeight={"semibold"}>
-          {children}
-        </Text>
+    <MenuItem
+      as={CustomButton}
+      onClick={onClick}
+      isDisabled={isLoading}
+      variant="ghost"
+      justifyContent={"start"}
+      borderRadius={0}
+      px={4}
+    >
+      <HStack
+        spacing={3}
+        color={isDark ? "gothicPurple.50" : "gothicPurple.900"}
+        opacity={isDark ? 0.7 : 0.6}
+      >
+        <Text children={icon} />
+        <Text children={children} mt={"3px"} fontWeight={"semibold"} />
       </HStack>
     </MenuItem>
   );

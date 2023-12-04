@@ -1,9 +1,6 @@
-// Components.
 import { IconButton } from "@chakra-ui/react";
-// Icons.
 import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 
-// Component.
 function ToggleShowPassword({ isLoading, showPassword, setShowPassword }) {
   return (
     <IconButton
@@ -13,12 +10,9 @@ function ToggleShowPassword({ isLoading, showPassword, setShowPassword }) {
       variant={"unstyled"}
       h="1.75rem"
       size="sm"
-      onClick={() => {
-        setShowPassword(!showPassword);
-      }}
-    >
-      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-    </IconButton>
+      onClick={() => setShowPassword(!showPassword)}
+      children={showPassword ? <ViewIcon /> : <ViewOffIcon />}
+    />
   );
 }
 

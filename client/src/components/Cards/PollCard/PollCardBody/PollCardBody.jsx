@@ -1,14 +1,10 @@
-// Hooks.
 import { useState } from "react";
-// Components.
-import { Button, Flex, Icon, Stack, Text } from "@chakra-ui/react";
-// SubComponents.
+import { Flex, Icon, Stack, Text } from "@chakra-ui/react";
 import PollCardInputOption from "./PollCardInputOption/PollCardInputOption";
 import PollCardOptionButton from "./PollCardOptionButton/PollCardOptionButton";
-// Icons.
 import { ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import CustomButton from "../../../Buttons/CustomButton/CustomButton";
 
-// SubComponent ( PollCard ).
 function PollCardBody({ poll, userActions, isLoading, state }) {
   const { has_voted } = userActions;
   const [vote, setVote] = useState(has_voted ? has_voted.vote : "");
@@ -20,18 +16,11 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
     <Flex justifyContent={"center"}>
       <Stack spacing={3} w={{ base: "100%", sm: "90%" }}>
         <Stack textAlign={"center"}>
-          {/* Title. */}
-          <Text size={"md"} opacity={0.8} fontWeight={"black"}>
-            {poll.title}
-          </Text>
-          {/* Description. */}
-          <Text fontSize={"md"} fontWeight={"medium"} opacity={0.8}>
-            {poll.description}
-          </Text>
+          <Text children={poll.title} size={"md"} opacity={0.8} fontWeight={"black"} />
+          <Text children={poll.description} fontSize={"md"} fontWeight={"medium"} opacity={0.8} />
         </Stack>
 
-        {/* Poll options. */}
-        <Stack px={{base: 1, sm: 4 }}>
+        <Stack px={{ base: 1, sm: 4 }}>
           {poll.options
             .slice(0, poll.options.length)
             .sort((a, b) => b.votes - a.votes)
@@ -50,30 +39,20 @@ function PollCardBody({ poll, userActions, isLoading, state }) {
               />
             ))}
           {showInputOption && (
-            <PollCardInputOption
-              id={poll.id}
-              setShowInputOption={setShowInputOption}
-            />
+            <PollCardInputOption id={poll.id} setShowInputOption={setShowInputOption} />
           )}
         </Stack>
-        {/* Show all options button. */}
+
         {poll.options && poll.options.length > 3 && (
           <Flex opacity={0.6} justify={"center"}>
-            <Button
+            <CustomButton
               onClick={() => setShowAllOptions(!showAllOptions)}
               size={"sm"}
               variant={"ghost"}
-              borderRadius={"full"}
               pl={6}
-              rightIcon={
-                <Icon
-                  boxSize={6}
-                  as={showAllOptions ? ChevronUpIcon : ChevronDownIcon}
-                />
-              }
-            >
-              {showAllOptions ? "Show less" : "Show more"}
-            </Button>
+              rightIcon={<Icon boxSize={6} as={showAllOptions ? ChevronUpIcon : ChevronDownIcon} />}
+              children={showAllOptions ? "Show less" : "Show more"}
+            />
           </Flex>
         )}
       </Stack>
