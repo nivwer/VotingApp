@@ -1,12 +1,8 @@
-// Redux Toolkit Query config.
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Requests to Polls API.
 export const pollApiSlice = createApi({
   reducerPath: "pollsApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/polls/",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/polls/" }),
   tagTypes: ["Polls", "Comments", "Categories"],
   endpoints: (builder) => ({
     // CRUD Poll. //
@@ -294,10 +290,7 @@ export const pollApiSlice = createApi({
       providesTags: (res, error) =>
         res
           ? [
-              ...res.items.map(({ poll: { id } }) => ({
-                type: "Polls",
-                id: id,
-              })),
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -313,10 +306,7 @@ export const pollApiSlice = createApi({
       providesTags: (res, error) =>
         res
           ? [
-              ...res.items.map(({ poll: { id } }) => ({
-                type: "Polls",
-                id: id,
-              })),
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -332,10 +322,7 @@ export const pollApiSlice = createApi({
       providesTags: (res, error) =>
         res
           ? [
-              ...res.items.map(({ poll: { id } }) => ({
-                type: "Polls",
-                id: id,
-              })),
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -351,10 +338,7 @@ export const pollApiSlice = createApi({
       providesTags: (res, error) =>
         res
           ? [
-              ...res.items.map(({ poll: { id } }) => ({
-                type: "Polls",
-                id: id,
-              })),
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -370,10 +354,7 @@ export const pollApiSlice = createApi({
       providesTags: (res, error) =>
         res
           ? [
-              ...res.items.map(({ poll: { id } }) => ({
-                type: "Polls",
-                id: id,
-              })),
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -409,10 +390,7 @@ export const pollApiSlice = createApi({
       providesTags: (res, error) =>
         res
           ? [
-              ...res.items.map(({ poll: { id } }) => ({
-                type: "Polls",
-                id: id,
-              })),
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
               { type: "Polls", id: "PARTIAL-LIST" },
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
@@ -421,35 +399,26 @@ export const pollApiSlice = createApi({
 });
 
 export const {
-  // CRUD Poll.
   useCreatePollMutation,
   useReadPollQuery,
   useUpdatePollMutation,
   useDeletePollMutation,
-  // CRUD Vote.
   useAddUserVoteMutation,
   useUpdateUserVoteMutation,
   useDeleteUserVoteMutation,
-  // Option Mutation.
   useAddOptionMutation,
-  // Comment CRUD.
   useReadCommentsQuery,
   useAddCommentMutation,
   useDeleteCommentMutation,
-  // Share Mutations.
   useSharePollMutation,
   useUnSharePollMutation,
-  // Bookmark Mutations.
   useBookmarkPollMutation,
   useUnBookmarkPollMutation,
-  // User polls Querys.
   useGetUserPollsQuery,
   useGetUserVotedPollsQuery,
   useGetUserSharedPollsQuery,
   useGetUserBookmarkedPollsQuery,
-  // Search Polls Query.
   useSearchPollsQuery,
-  // Categories Querys.
   useGetCategoriesQuery,
   useGetCategoriesDataQuery,
   useGetPollsCategoryQuery,

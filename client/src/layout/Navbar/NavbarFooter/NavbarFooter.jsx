@@ -1,61 +1,36 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useSelector } from "react-redux";
-// Components.
 import { Box, Button, Divider, HStack, IconButton, useDisclosure } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import PollModal from "../../../components/Modals/PollModal/PollModal";
-// Icons.
-import {
-  FaPlus,
-  FaHouse,
-  FaMagnifyingGlass,
-  FaUser,
-  FaGear,
-} from "react-icons/fa6";
+import { FaPlus, FaHouse, FaMagnifyingGlass, FaUser, FaGear } from "react-icons/fa6";
 import NavbarMenu from "./NavbarMenu/NavbarMenu";
 import NavbarMenuItem from "./NavbarMenu/NavbarMenuItem/NavbarMenuItem";
+import CustomIconButton from "../../../components/Buttons/CustomIconButton/CustomIconButton";
 
 // SubComponent ( Navbar ).
 function NavbarFooter({ disclosure }) {
   const { isDark, ThemeColor } = useThemeInfo();
-  const { isAuthenticated, user, profile } = useSelector(
-    (state) => state.session
-  );
+  const { isAuthenticated, user, profile } = useSelector((state) => state.session);
   const { onOpen } = disclosure;
-  // Poll Modal.
   const pollModalDisclosure = useDisclosure();
-  
+
   return (
     <Box>
       {isAuthenticated ? (
         <HStack spacing={6}>
           <HStack>
-            <IconButton
+            <CustomIconButton
               onClick={pollModalDisclosure.onOpen}
-              size={"md"}
               variant={"ghost"}
-              borderRadius={"full"}
               icon={<FaPlus />}
               color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
             />
             <NavLink to={"/home"}>
-              <IconButton
-                size={"md"}
-                variant={"ghost"}
-                opacity={isDark ? 0.9 : 0.8}
-                borderRadius={"full"}
-                icon={<FaHouse />}
-              />
+              <CustomIconButton variant={"ghost"} icon={<FaHouse />} />
             </NavLink>
             <NavLink to={"/search"}>
-              <IconButton
-                size={"md"}
-                variant={"ghost"}
-                opacity={isDark ? 0.9 : 0.8}
-                borderRadius={"full"}
-                icon={<FaMagnifyingGlass />}
-              />
+              <CustomIconButton variant={"ghost"} icon={<FaMagnifyingGlass />} />
             </NavLink>
           </HStack>
           {/* <IconButton
@@ -75,33 +50,26 @@ function NavbarFooter({ disclosure }) {
 
           <NavbarMenu profile={profile} user={user}>
             <NavLink to={`/${user.username}`}>
-              <NavbarMenuItem icon={<FaUser />}>Profile</NavbarMenuItem>
+              <NavbarMenuItem children={"Profile"} icon={<FaUser />} />
             </NavLink>
-
             <NavLink to={"/settings"}>
-              <NavbarMenuItem icon={<FaGear />}>Settings</NavbarMenuItem>
+              <NavbarMenuItem children={"Settings"} icon={<FaGear />} />
             </NavLink>
 
             <Divider my={2} bg={"gothicPurpleAlpha.50"} />
             <NavLink to={"/settings"}>
-              <NavbarMenuItem>Sign Out</NavbarMenuItem>
+              <NavbarMenuItem children={"Sign Out"} />
             </NavLink>
           </NavbarMenu>
           <PollModal disclosure={pollModalDisclosure} />
         </HStack>
       ) : (
         <HStack spacing="3">
-          {/* Sign In. */}
           <NavLink to={"/signin"}>
-            <Button colorScheme={"default"} size="sm" variant={"ghost"}>
-              Sign In
-            </Button>
+            <Button children={"Sign In"} colorScheme={"default"} size="sm" variant={"ghost"} />
           </NavLink>
-          {/* Sign Up. */}
           <NavLink to={"/signup"}>
-            <Button colorScheme={"default"} size="sm">
-              Sign Up
-            </Button>
+            <Button children={"Sign Up"} colorScheme={"default"} size="sm" />
           </NavLink>
         </HStack>
       )}

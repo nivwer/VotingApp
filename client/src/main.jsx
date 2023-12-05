@@ -1,11 +1,7 @@
-// React config.
 import React from "react";
 import ReactDOM from "react-dom/client";
-// App component.
 import App from "./App.jsx";
-// Default styles.
 import "./index.css";
-// Fonts.
 import "@fontsource/gothic-a1/100.css";
 import "@fontsource/gothic-a1/200.css";
 import "@fontsource/gothic-a1/300.css";
@@ -15,10 +11,8 @@ import "@fontsource/gothic-a1/600.css";
 import "@fontsource/gothic-a1/700.css";
 import "@fontsource/gothic-a1/800.css";
 import "@fontsource/gothic-a1/900.css";
-// Redux Toolkit Provider.
 import { store } from "./app/store/rootReducer.js";
 import { Provider } from "react-redux";
-// Chakra-ui Provider.
 import { ChakraProvider } from "@chakra-ui/react";
 import { ColorModeScript } from "@chakra-ui/color-mode";
 import theme from "./theme/theme.js";

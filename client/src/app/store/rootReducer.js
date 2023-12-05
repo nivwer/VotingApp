@@ -1,26 +1,17 @@
-// Redux Toolkit config Reducers.
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-// API Reducers.
 import { authApiSlice } from "../../api/authApiSlice";
 import { pollApiSlice } from "../../api/pollApiSlice";
 import { profileApiSlice } from "../../api/profileApiSlice";
-// Reducers.
 import sessionReducer from "../../features/auth/sessionSlice";
 import themeReducer from "../../features/theme/themeSlice";
 
-// Store.
 export const store = configureStore({
   reducer: {
-    // Requests for the backend authentication API.
     authApi: authApiSlice.reducer,
-    // Request for the backend polls API.
     pollsApi: pollApiSlice.reducer,
-    // Request for the backend profile API.
     profileApi: profileApiSlice.reducer,
-    // Session.
     session: sessionReducer,
-    // Theme Color.
     theme: themeReducer,
   },
 

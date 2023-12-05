@@ -1,8 +1,5 @@
-// React Router Components.
 import { Routes, Route } from "react-router-dom";
-// Hooks.
 import { useSelector } from "react-redux";
-// Pages.
 import Home from "../pages/Home";
 import About from "../pages/About";
 import SignUp from "../pages/Auth/SignUp";
@@ -15,7 +12,6 @@ import Search from "../pages/Search/Search";
 import Results from "../pages/Results/Results";
 import Categories from "../pages/Categories/Categories";
 import CategoryPolls from "../pages/Categories/CategoriesPages/CategoryPolls/CategoryPolls";
-// Components.
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import GridLayout from "../layout/GridLayout/GridLayout";
 import ThemeSettings from "../pages/Settings/SettingsPages/ThemeSettings/ThemeSettings";
@@ -32,31 +28,24 @@ function Router() {
 
       {/* Simple Column Layout. */}
       <Route element={<GridLayout layout="simple" section="main" />}>
-        {/* Authentication Pages. */}
         <Route element={<ProtectedRoute isAllowed={!isAuthenticated} />}>
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
         </Route>
 
-        {/* About page. */}
         <Route path="/about" element={<About />} />
 
-        {/* Page 404. */}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
 
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="main" />}>
-        {/* Home page. */}
         <Route path="/home" element={<Home />} />
 
-        {/* Categories pages. */}
         <Route path="/categories" element={<Categories />} />
         <Route path="/categories/:category" element={<CategoryPolls />} />
 
-        {/* Search page. */}
         <Route path="/search" element={<Search />} />
-        {/* Results pages. */}
         <Route path="/results" element={<Results />} />
       </Route>
 
@@ -64,9 +53,7 @@ function Router() {
 
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="user" />}>
-        {/* Profile page. */}
         <Route path="/:username" element={<Profile />} />
-        {/* Poll page. */}
         <Route path="/:username/:id" element={<Poll />} />
       </Route>
 
@@ -74,7 +61,6 @@ function Router() {
 
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="settings" />}>
-        {/* Settings pages. */}
         <Route element={<ProtectedRoute isAllowed={!!isAuthenticated} />}>
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/account" element={<AccountSettings />} />

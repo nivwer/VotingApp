@@ -30,7 +30,7 @@ function CardMenu({ children, isLoading, ...props }) {
         border={"1px solid"}
         borderColor={"gothicPurpleAlpha.300"}
         py={4}
-        boxShadow={"dark-lg"}
+        boxShadow={"2xl"}
       />
     </Menu>
   );

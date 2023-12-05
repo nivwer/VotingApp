@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  theme_color: localStorage.getItem("theme-color") || "default",
-};
+const initialState = { theme_color: localStorage.getItem("theme-color") || "default" };
 
 export const themeSlice = createSlice({
   name: "theme",
@@ -15,5 +13,4 @@ export const themeSlice = createSlice({
 });
 
 export const { changeColor } = themeSlice.actions;
-
 export default themeSlice.reducer;

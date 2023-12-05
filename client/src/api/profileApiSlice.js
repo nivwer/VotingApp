@@ -1,15 +1,10 @@
-// Redux Toolkit Query config.
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Requests to Profile API.
 export const profileApiSlice = createApi({
   reducerPath: "profileApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/profiles/",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/profiles/" }),
   tagTypes: ["Profile", "Countries"],
   endpoints: (builder) => ({
-    // GET user private profile.
     profileMe: builder.query({
       query: ({ headers }) => ({
         url: "profile/user/me",
@@ -19,7 +14,6 @@ export const profileApiSlice = createApi({
       providesTags: ["Profile"],
     }),
 
-    // Update user profile.
     profileMeUpdate: builder.mutation({
       query: ({ headers, body }) => ({
         url: "profile/user/me/update",
@@ -30,7 +24,6 @@ export const profileApiSlice = createApi({
       invalidatesTags: ["Profile"],
     }),
 
-    // GET user public profile.
     profileByUsername: builder.query({
       query: ({ headers, username }) => ({
         url: `profile/user/${username}`,
@@ -40,7 +33,6 @@ export const profileApiSlice = createApi({
       providesTags: ["Profile"],
     }),
 
-    // GET countries.
     getCountries: builder.query({
       query: () => ({
         url: "countries",
@@ -49,7 +41,6 @@ export const profileApiSlice = createApi({
       providesTags: ["Countries"],
     }),
 
-    // Search Users.
     searchUsers: builder.query({
       query: ({ headers, query, page = 1, page_size = 4 }) => ({
         url: `search?query=${query}&page=${page}&page_size=${page_size}`,
@@ -58,7 +49,6 @@ export const profileApiSlice = createApi({
       }),
     }),
 
-    // Explore Users.
     exploreUsers: builder.query({
       query: ({ headers, page = 1, page_size = 4 }) => ({
         url: `explore?page=${page}&page_size=${page_size}`,

@@ -1,57 +1,37 @@
-// Hooks.
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useUpdatePasswordMutation } from "../../../../../api/authApiSlice";
-// Components.
 import {
   Box,
-  Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input,
   InputGroup,
   InputRightElement,
   Stack,
 } from "@chakra-ui/react";
 import ToggleShowPassword from "../../../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
+import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
+import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
 
-// SubComponent ( AccountSettings ).
 function PasswordForm() {
-  const { isDark } = useThemeInfo();
   const { token } = useSelector((state) => state.session);
-
-  // Request to update password.
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
-
-  // React hook form.
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-    setValue,
-  } = useForm();
-
-  // Show Password fields.
+  const { register, handleSubmit, formState, setError, setValue } = useForm();
+  const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
-  // Update password onSubmit.
+  // Submit.
   const onSubmit = handleSubmit(async (data) => {
+    const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
     try {
-      const res = await updatePassword({
-        headers: { Authorization: `Token ${token}` },
-        body: data,
-      });
+      const res = await updatePassword({ ...dataMutation });
       if (res.data) {
         setValue("new_password", "");
         setValue("current_password", "");
       }
-
-      // If server error.
       if (res.error) {
         for (const fieldName in res.error.data) {
           setError(fieldName, { message: res.error.data[fieldName][0] });
@@ -63,31 +43,23 @@ function PasswordForm() {
   });
 
   return (
-    <Box py={1} px={2}>
+    <Box py={1}>
       <form onSubmit={onSubmit}>
         <Stack spacing={3}>
           <Stack spacing={4}>
             {/* Password. */}
-            <FormControl
-              isDisabled={isLoading}
-              isInvalid={errors.current_password}
-            >
-              <FormLabel fontWeight={"bold"} htmlFor="current_password">
-                Password
-              </FormLabel>
+            <FormControl isDisabled={isLoading} isInvalid={errors.current_password}>
+              <FormLabel children={"Password"} htmlFor="current_password" fontWeight={"bold"} />
               <InputGroup size="sm">
-                <Input
-                  {...register("current_password", {
-                    required: "This field is required.",
-                  })}
+                <CustomTextInput
+                  name={"current_password"}
                   placeholder="Current password"
+                  register={register}
+                  requirements={{ req: true }}
                   type={showPassword ? "text" : "password"}
                   size={"sm"}
-                  fontWeight={"medium"}
                   borderRadius={"md"}
-                  focusBorderColor={
-                    isDark ? "whiteAlpha.600" : "blackAlpha.700"
-                  }
+                  pr={"40px"}
                 />
                 <InputRightElement width="3rem">
                   <ToggleShowPassword
@@ -98,29 +70,22 @@ function PasswordForm() {
                 </InputRightElement>
               </InputGroup>
               {errors.current_password && (
-                <FormErrorMessage>
-                  {errors.current_password.message}
-                </FormErrorMessage>
+                <FormErrorMessage children={errors.current_password.message} />
               )}
             </FormControl>
             {/* New password. */}
             <FormControl isDisabled={isLoading} isInvalid={errors.new_password}>
-              <FormLabel fontWeight={"bold"} htmlFor="new_password">
-                New password
-              </FormLabel>
+              <FormLabel children={"New password"} htmlFor="new_password" fontWeight={"bold"} />
               <InputGroup size={"sm"}>
-                <Input
-                  {...register("new_password", {
-                    required: "This field is required.",
-                  })}
+                <CustomTextInput
+                  name={"new_password"}
                   placeholder="New password"
+                  register={register}
+                  requirements={{ req: true }}
                   type={showNewPassword ? "text" : "password"}
                   size={"sm"}
-                  fontWeight={"medium"}
                   borderRadius={"md"}
-                  focusBorderColor={
-                    isDark ? "whiteAlpha.600" : "blackAlpha.700"
-                  }
+                  pr={"40px"}
                 />
                 <InputRightElement width="3rem">
                   <ToggleShowPassword
@@ -130,22 +95,17 @@ function PasswordForm() {
                   />
                 </InputRightElement>
               </InputGroup>
-              {errors.new_password && (
-                <FormErrorMessage>
-                  {errors.new_password.message}
-                </FormErrorMessage>
-              )}
+              {errors.new_password && <FormErrorMessage children={errors.new_password.message} />}
             </FormControl>
           </Stack>
           <Box>
-            <Button
+            <CustomButton
+              type="submit"
               isLoading={isLoading}
               loadingText="Save password"
               size={"sm"}
-              type="submit"
-            >
-              Save password
-            </Button>
+              children={"Save password"}
+            />
           </Box>
         </Stack>
       </form>

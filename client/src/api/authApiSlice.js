@@ -1,7 +1,5 @@
-// Redux Toolkit Query config.
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Requests to Auth API.
 export const authApiSlice = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({

@@ -1,33 +1,26 @@
-// Hooks.
 import { useSelector } from "react-redux";
-// Components.
 import { NavLink } from "react-router-dom";
 import { Box, Button, Divider, HStack, Stack, Text } from "@chakra-ui/react";
-// SubComponents.
 import ProfileForm from "./ProfileForm/ProfileForm";
 
-// Page.
 function ProfileSettings() {
   const { user, profile } = useSelector((state) => state.session);
 
   return (
-    <Box opacity={"0.9"} w={"100%"} p={"10"}>
-      <Stack spacing={10}>
-        {/* Profile form. */}
-        <Stack>
-          <HStack justify={"space-between"}>
-            <Text fontWeight={"medium"} fontSize={"2xl"}>
-              Edit profile
-            </Text>
-            <NavLink to={`/${user.username}`}>
-              <Button variant={"outline"} size={"xs"}>
+    <Box w={"100%"} px={{ base: 3, sm: 5, md: 10 }} py={{ base: 4, sm: 8 }}>
+      <Stack>
+        <HStack justify={"space-between"}>
+          <Text children={"Edit profile"} fontWeight={"medium"} fontSize={"2xl"} opacity={0.9} />
+          <NavLink to={`/${user.username}`}>
+            <Button variant={"link"} size={"sm"} borderRadius={"full"}>
+              <Text mt={"1px"} fontWeight={"extrabold"} opacity={0.9}>
                 Go to your profile
-              </Button>
-            </NavLink>
-          </HStack>
-          <Divider />
-          <ProfileForm profile={profile} />
-        </Stack>
+              </Text>
+            </Button>
+          </NavLink>
+        </HStack>
+        <Divider bg={"gothicPurpleAlpha.50"} />
+        <ProfileForm profile={profile} />
       </Stack>
     </Box>
   );

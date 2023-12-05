@@ -7,7 +7,6 @@ import ProfileTag from "./ProfileTag/ProfileTag";
 import { FaRegCalendar, FaLocationDot, FaLink } from "react-icons/fa6";
 import { format } from "date-fns";
 
-// SubComponent ( Profile ).
 function ProfileHeader({ profile }) {
   const { isDark, ThemeColor } = useThemeInfo();
   const { isAuthenticated, user } = useSelector((state) => state.session);

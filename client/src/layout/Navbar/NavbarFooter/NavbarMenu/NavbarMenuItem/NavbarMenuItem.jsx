@@ -1,20 +1,29 @@
-// Hooks.
 import { useThemeInfo } from "../../../../../hooks/Theme";
-// Components
+import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
 import { HStack, MenuItem, Text } from "@chakra-ui/react";
 
-// SubComponent ( NavbarMenu )).
 function NavbarMenuItem({ children, onClick, icon, isLoading }) {
   const { isDark } = useThemeInfo();
   return (
-    <MenuItem onClick={onClick} isDisabled={isLoading} px={4} >
-      <HStack spacing={3} opacity={0.7}>
-        <Text>{icon}</Text>
-        <Text mt={"3px"} fontWeight={"semibold"}>
-          {children}
-        </Text>
+    <CustomButton
+      as={MenuItem}
+      onClick={onClick}
+      isDisabled={isLoading}
+      variant={"ghost"}
+      justifyContent={"start"}
+      borderRadius={0}
+      opacity={0.8}
+      px={4}
+    >
+      <HStack
+        spacing={3}
+        color={isDark ? "gothicPurple.50" : "gothicPurple.900"}
+        opacity={isDark ? 1 : 0.9}
+      >
+        <Text children={icon} />
+        <Text children={children} mt={"3px"} fontWeight={"semibold"} />
       </HStack>
-    </MenuItem>
+    </CustomButton>
   );
 }
 

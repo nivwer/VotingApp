@@ -1,18 +1,10 @@
-// Hooks.
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "../../hooks/Theme";
-// Components.
 import Sidebar from "../Sidebar/Sidebar";
 import Navbar from "../Navbar/Navbar";
 import Aside from "../Aside/Aside";
 import { Outlet } from "react-router-dom";
-import {
-  useBreakpointValue,
-  Grid,
-  GridItem,
-  Container,
-  Box,
-} from "@chakra-ui/react";
+import { useBreakpointValue, Grid, GridItem, Container, Box } from "@chakra-ui/react";
 
 // Layout.
 function GridLayout({ layout = "simple", section = "main" }) {
@@ -59,63 +51,42 @@ function GridLayout({ layout = "simple", section = "main" }) {
   };
 
   // Display the layout when ready.
-  useEffect(() => {
-    setLayoutReady(true);
-  }, [layoutBreakPoint]);
-
-  if (!isLayoutReady) {
-    return null;
-  }
+  useEffect(() => setLayoutReady(true), [layoutBreakPoint]);
+  if (!isLayoutReady) return null;
 
   return (
-    <>
-      <Grid
-        templateAreas={layouts[layoutBreakPoint].area}
-        gridTemplateRows={layouts[layoutBreakPoint].rows}
-        gridTemplateColumns={layouts[layoutBreakPoint].columns}
-      >
-        {/* Header */}
-        <GridItem area={"header"}>
-          <Navbar />
+    <Grid
+      templateAreas={layouts[layoutBreakPoint].area}
+      gridTemplateRows={layouts[layoutBreakPoint].rows}
+      gridTemplateColumns={layouts[layoutBreakPoint].columns}
+    >
+      {/* Header */}
+      <GridItem children={<Navbar />} area={"header"} />
+
+      {/* Right Side */}
+      {!isSimple && !isDouble && (
+        <GridItem area={"right"} display={{ base: "none", lg: "none", xl: "grid" }}>
+          <Aside />
         </GridItem>
+      )}
 
-        {/* Right Side */}
-        {!isSimple && !isDouble && (
-          <GridItem
-            area={"right"}
-            display={{ base: "none", lg: "none", xl: "grid" }}
-          >
-            <Aside></Aside>
-          </GridItem>
-        )}
+      {/* Main */}
+      <GridItem area={"main"} mx={{ base: 0, sm: 3, md: 0 }}>
+        <Container minH={"calc(100vh - 80px)"} p={0} maxW={"608px"}>
+          <Outlet />
+        </Container>
+      </GridItem>
 
-        {/* Main */}
-        <GridItem area={"main"} mx={{ base: 0, sm: 3, md: 0 }}>
-          <Container minH={"calc(100vh - 80px)"} p={0} maxW={"608px"}>
-            <Outlet />
-          </Container>
+      {/* Left Side */}
+      {!isSimple && (
+        <GridItem area={"left"} display={{ base: "none", lg: "grid", xl: "grid" }}>
+          <Sidebar section={section} />
         </GridItem>
+      )}
 
-        {/* Left Side */}
-        {!isSimple && (
-          <GridItem
-            area={"left"}
-            display={{ base: "none", lg: "grid", xl: "grid" }}
-          >
-            <Sidebar section={section} />
-          </GridItem>
-        )}
-
-        {/* Background */}
-        <Box
-          bg={isDark ? "black" : "white"}
-          pos={"fixed"}
-          w={"100vw"}
-          h={"100vh"}
-          zIndex={-1}
-        />
-      </Grid>
-    </>
+      {/* Background */}
+      <Box bg={isDark ? "black" : "white"} pos={"fixed"} w={"100vw"} h={"100vh"} zIndex={-1} />
+    </Grid>
   );
 }
 

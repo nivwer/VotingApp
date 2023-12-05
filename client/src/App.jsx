@@ -1,37 +1,27 @@
-// Hooks.
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "./hooks/Theme";
 import { useDispatch, useSelector } from "react-redux";
 import { useUserSessionCheckQuery } from "./api/authApiSlice";
 import { useProfileMeQuery } from "./api/profileApiSlice";
-// Actions.
 import { login } from "./features/auth/sessionSlice";
-// Components..
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
 import InitialSpinner from "./components/Spinners/InitialSpinner/InitialSpinner";
 import { Container } from "@chakra-ui/react";
 
-// App.
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
   const { isDark } = useThemeInfo();
   const session = useSelector((state) => state.session);
   const [data, setData] = useState(false);
-
-  // Check the user session.
   const {
     data: dataSession,
     status: statusSession,
     isLoading: isCheckSessionLoading,
     isUninitialized: isCheckSessionUninitialized,
   } = useUserSessionCheckQuery();
-
-  // Get user profile data.
-  const { data: dataProfile } = useProfileMeQuery(data, {
-    skip: data ? false : true,
-  });
+  const { data: dataProfile } = useProfileMeQuery(data, { skip: data ? false : true });
 
   // Login.
   useEffect(() => {

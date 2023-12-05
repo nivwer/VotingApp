@@ -1,43 +1,21 @@
-// Hooks.
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { useThemeInfo } from "../../../../../hooks/Theme";
 import { useUpdateUsernameMutation } from "../../../../../api/authApiSlice";
-// Components.
-import {
-  Box,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Stack,
-} from "@chakra-ui/react";
+import { Box, FormControl, FormErrorMessage, FormLabel, Stack } from "@chakra-ui/react";
+import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
+import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
 
-// SubComponent ( AccountSettings ).
 function UsernameForm() {
-  const { isDark } = useThemeInfo();
   const { token, user } = useSelector((state) => state.session);
-
-  // Request to update username.
   const [updateUsername, { isLoading }] = useUpdateUsernameMutation();
+  const { register, handleSubmit, formState, setError } = useForm();
+  const { errors } = formState;
 
-  // React hook form.
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm();
-
-  // Update username onSubmit.
+  // Submit.
   const onSubmit = handleSubmit(async (data) => {
+    const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
     try {
-      const res = await updateUsername({
-        headers: { Authorization: `Token ${token}` },
-        body: data,
-      });
-      // If server error.
+      const res = await updateUsername({ ...dataMutation });
       if (res.error) {
         for (const fieldName in res.error.data) {
           setError(fieldName, { message: res.error.data[fieldName][0] });
@@ -49,39 +27,30 @@ function UsernameForm() {
   });
 
   return (
-    <Box py={1} px={2}>
+    <Box py={1}>
       <form onSubmit={onSubmit}>
         <Stack spacing={3}>
-          <FormControl isDisabled={isLoading} isInvalid={errors.new_username}>
-            <FormLabel fontWeight={"bold"} htmlFor="new_username">
-              Username
-            </FormLabel>
-            <Input
+          <FormControl isInvalid={errors.new_username} isDisabled={isLoading}>
+            <FormLabel children={"Username"} htmlFor="new_username" fontWeight={"bold"} />
+            <CustomTextInput
+              name={"new_username"}
               defaultValue={user.username}
-              {...register("new_username", {
-                required: "This field is required.",
-              })}
-              type="text"
               placeholder="Change username"
+              register={register}
+              requirements={{ req: true }}
               size={"sm"}
-              fontWeight={"medium"}
               borderRadius={"md"}
-              focusBorderColor={isDark ? "whiteAlpha.600" : "blackAlpha.700"}
             />
-            {/* Handle errors. */}
-            {errors.new_username && (
-              <FormErrorMessage>{errors.new_username.message}</FormErrorMessage>
-            )}
+            {errors.new_username && <FormErrorMessage children={errors.new_username.message} />}
           </FormControl>
           <Box>
-            <Button
+            <CustomButton
+              type="submit"
               isLoading={isLoading}
               loadingText="Save username"
               size={"sm"}
-              type="submit"
-            >
-              Save username
-            </Button>
+              children={"Save username"}
+            />
           </Box>
         </Stack>
       </form>

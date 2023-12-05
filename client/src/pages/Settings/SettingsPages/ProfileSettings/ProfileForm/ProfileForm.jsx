@@ -1,4 +1,3 @@
-// Hooks.
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -7,7 +6,6 @@ import {
   useGetCountriesQuery,
   useProfileMeUpdateMutation,
 } from "../../../../../api/profileApiSlice";
-// Components.
 import {
   Avatar,
   Box,
@@ -17,48 +15,34 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
-  Input,
   InputGroup,
-  InputRightElement,
-  Select,
   Stack,
-  Textarea,
 } from "@chakra-ui/react";
-// SubComponents.
-import ProfileInputURL from "./ProfileInputURL/ProfileInputURL";
-// Icons.
-import { FaImage, FaLink } from "react-icons/fa6";
+import { FaLink } from "react-icons/fa6";
+import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
+import CustomSelect from "../../../../../components/Form/CustomSelect/CustomSelect";
+import CustomTextarea from "../../../../../components/Form/CustomTextarea/CustomTextarea";
 
-// SubComponent ( ProfileSettings ).
 function ProfileForm({ profile = false }) {
-  const { isDark, ThemeColor } = useThemeInfo();
+  const { ThemeColor } = useThemeInfo();
   const { token } = useSelector((state) => state.session);
-
-  // React hook form.
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-    setError,
-    setValue,
-  } = useForm();
-
-  // Request to get countries.
+  const { register, handleSubmit, watch, formState, setError, setValue } = useForm();
+  const { errors } = formState;
   const { data: dataCountries } = useGetCountriesQuery();
-
-  // Request to update profile.
   const [profileMeUpdate, { isLoading }] = useProfileMeUpdateMutation();
+  const [countries, setCountries] = useState(false);
+  const selectedCountry = watch("country");
+  const [country, setCountry] = useState(profile.country);
+  const [filteredCities, setFilteredCities] = useState(false);
+  const selectedPicture = watch("profile_picture");
+  const isCities = countries && filteredCities && country !== "";
+  const socialLinks = ["social_link_one", "social_link_two", "social_link_three"];
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
+    const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
     try {
-      const res = await profileMeUpdate({
-        headers: { Authorization: `Token ${token}` },
-        body: data,
-      });
-
-      // If server error.
+      const res = await profileMeUpdate({ ...dataMutation });
       if (res.error) {
         for (const fieldName in res.error.data) {
           setError(fieldName, { message: res.error.data[fieldName][0] });
@@ -69,17 +53,9 @@ function ProfileForm({ profile = false }) {
     }
   });
 
-  // Countries.
-  const [countries, setCountries] = useState(false);
-
-  // Load countries.
   useEffect(() => {
     dataCountries ? setCountries(dataCountries.list) : setCountries(false);
   }, [dataCountries]);
-
-  // Country.
-  const selectedCountry = watch("country");
-  const [country, setCountry] = useState(profile.country);
 
   useEffect(() => {
     if (selectedCountry || selectedCountry === "") {
@@ -88,271 +64,184 @@ function ProfileForm({ profile = false }) {
     }
   }, [selectedCountry]);
 
-  // City.
-  const [filteredCities, setFilteredCities] = useState(false);
-
   useEffect(() => {
     countries && country
       ? setFilteredCities(countries.find((c) => c.name === country)?.cities)
       : setFilteredCities(false);
   }, [country, countries]);
 
-  const isCities = countries && filteredCities && country !== "";
-
-  // Profile Picture.
-  const selectedPicture = watch("profile_picture");
-
-  const profilePicture =
-    selectedPicture || selectedPicture === ""
-      ? selectedPicture
-      : profile.profile_picture;
-
-  // Social Links.
-  const socialLinks = [
-    {
-      label: "Social Links",
-      name: "social_link_one",
-      default_value: profile.social_link_one,
-    },
-    {
-      name: "social_link_two",
-      default_value: profile.social_link_two,
-    },
-    {
-      name: "social_link_three",
-      default_value: profile.social_link_three,
-    },
-  ];
-
-  const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700";
-
   return (
-    <Box py={1} px={2}>
+    <Box py={1}>
       {profile && (
         <form onSubmit={onSubmit}>
-          <Stack spacing={6}>
-            <Stack textAlign="start" spacing={4}>
-              <Flex w={"100%"} justifyContent={"space-between"} flexDir={"row"}>
-                <Flex
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  pr={"30px"}
-                >
-                  <Avatar
-                    w={"150px"}
-                    h={"150px"}
-                    bg={"gray.400"}
-                    size="xl"
-                    src={profilePicture}
-                  />
-                </Flex>
-                <Stack spacing={4} w={"100%"}>
-                  <HStack justifyContent={"center"}>
-                    {/* Name. */}
-                    <FormControl
-                      isDisabled={isLoading}
-                      isInvalid={errors.profile_name}
-                    >
-                      <FormLabel htmlFor="profile_name" fontWeight={"bold"}>
-                        Name
-                      </FormLabel>
-                      <InputGroup size="sm">
-                        <Input
-                          {...register("profile_name", {
-                            required: "This field is required.",
-                            minLength: {
-                              value: 3,
-                              message: "Minimum 3 characters allowed.",
-                            },
-                            maxLength: {
-                              value: 32,
-                              message: "Maximum 32 characters allowed.",
-                            },
-                          })}
-                          type="text"
-                          defaultValue={profile.profile_name}
-                          placeholder="Enter your name."
-                          borderRadius={"md"}
-                          size={"sm"}
-                          fontWeight={"medium"}
-                          focusBorderColor={focusBorderColor}
-                        />
-                        <InputRightElement width="auto" mx={"4px"}>
-                          <FormControl>
-                            <Select
-                              size={"xs"}
-                              opacity={isDark ? 0.9 : 0.7}
-                              fontWeight={"semibold"}
-                              variant={"filled"}
-                              borderRadius={"md"}
-                              {...register("pronouns")}
-                              defaultValue={profile.pronouns}
-                              placeholder="Don't specify"
-                            >
-                              <option value="they/them">they/them</option>
-                              <option value="she/her">she/her</option>
-                              <option value="he/him">he/him</option>
-                            </Select>
-                          </FormControl>
-                        </InputRightElement>
-                      </InputGroup>
-                      {/* Handle errors. */}
-                      {errors.profile_name && (
-                        <FormErrorMessage>
-                          {errors.profile_name.message}
-                        </FormErrorMessage>
-                      )}
-                    </FormControl>
-                  </HStack>
+          <Stack spacing={7}>
+            {/* Name. */}
+            <FormControl isInvalid={errors.profile_name} isDisabled={isLoading}>
+              <FormLabel children={"Name"} htmlFor="profile_name" fontWeight={"bold"} />
+              <CustomTextInput
+                name={"profile_name"}
+                defaultValue={profile.profile_name}
+                placeholder="Enter your name."
+                register={register}
+                requirements={{ req: true, minL: 3, maxL: 32 }}
+                borderRadius={"md"}
+                size={"sm"}
+              />
+              {errors.profile_name && <FormErrorMessage children={errors.profile_name.message} />}
+            </FormControl>
 
-                  {/* Bio. */}
-                  <FormControl isDisabled={isLoading} isInvalid={errors.bio}>
-                    <FormLabel htmlFor="bio" fontWeight={"bold"}>
-                      Biography
-                    </FormLabel>
-                    <Textarea
-                      {...register("bio", {
-                        maxLength: {
-                          value: 513,
-                          message: "Maximum 513 characters allowed.",
-                        },
-                      })}
-                      type="text"
-                      defaultValue={profile.bio}
-                      placeholder="Enter your biography."
-                      size={"sm"}
-                      fontWeight={"medium"}
-                      borderRadius={"md"}
-                      focusBorderColor={focusBorderColor}
-                      resize={"none"}
-                    />
-                    {/* Handle errors. */}
-                    {errors.bio && (
-                      <FormErrorMessage>{errors.bio.message}</FormErrorMessage>
-                    )}
-                  </FormControl>
-                </Stack>
+            {/* Bio. */}
+            <FormControl isInvalid={errors.bio} isDisabled={isLoading}>
+              <FormLabel children={"Biography"} htmlFor="bio" fontWeight={"bold"} />
+              <CustomTextarea
+                name={"bio"}
+                defaultValue={profile.bio}
+                placeholder="Enter your biography."
+                register={register}
+                requirements={{ maxL: 513 }}
+                size={"sm"}
+                borderRadius={"md"}
+              />
+              {errors.bio && <FormErrorMessage children={errors.bio.message} />}
+            </FormControl>
+
+            {/* Profile picture. */}
+            <HStack flexDir={{ base: "column", sm: "row" }} spacing={{ base: 5, sm: 0 }}>
+              <FormControl isInvalid={errors.profile_picture} isDisabled={isLoading}>
+                <FormLabel children={"Picture"} htmlFor="profile_picture" fontWeight={"bold"} />
+                <CustomTextInput
+                  name={"profile_picture"}
+                  defaultValue={profile.profile_picture}
+                  placeholder="Enter your image URL."
+                  register={register}
+                  requirements={{ maxL: 200 }}
+                  type="url"
+                  size={"sm"}
+                />
+                {errors.profile_picture && (
+                  <FormErrorMessage children={errors.profile_picture.message} />
+                )}
+              </FormControl>
+              <Flex justifyContent={"center"} alignItems={"center"} pl={{ base: 0, sm: "30px" }}>
+                <Avatar src={selectedPicture} size="xl" />
               </Flex>
+            </HStack>
 
-              {/* Profile picture. */}
-              <ProfileInputURL
+            {/* Pronouns. */}
+            <FormControl isDisabled={isLoading}>
+              <FormLabel children={"Pronouns"} htmlFor="pronouns" fontWeight={"bold"} />
+              <CustomSelect
+                name={"pronouns"}
                 register={register}
-                label="Profile Picture"
-                name="profile_picture"
-                placeholder="Enter your image URL."
-                defaultValue={profile.profile_picture}
-                isLoading={isLoading}
-                errors={errors}
-                focusBorderColor={focusBorderColor}
-                icon={<FaImage />}
-              />
+                defaultValue={profile.pronouns}
+                placeholder="Don't specify"
+                borderRadius={"md"}
+                size={"sm"}
+              >
+                <option children={"they/them"} value="they/them" />
+                <option children={"she/her"} value="she/her" />
+                <option children={"he/him"} value="he/him" />
+              </CustomSelect>
+            </FormControl>
 
-              {/* Website link. */}
-              <ProfileInputURL
-                register={register}
-                label={"Website Link"}
-                name={"website_link"}
-                placeholder={"Enter your website URL."}
-                defaultValue={profile.website_link}
-                isLoading={isLoading}
-                errors={errors}
-                focusBorderColor={focusBorderColor}
-                icon={<FaLink />}
-              />
+            {/* Website link. */}
+            <FormControl isInvalid={errors.website_link} isDisabled={isLoading}>
+              <FormLabel children={"Website Link"} htmlFor="website_link" fontWeight={"bold"} />
+              <InputGroup>
+                <Flex alignItems="center" opacity={0.8} px="10px" fontSize="lg">
+                  <FaLink />
+                </Flex>
+                <CustomTextInput
+                  name={"website_link"}
+                  defaultValue={profile.website_link}
+                  placeholder="Enter your website URL."
+                  register={register}
+                  requirements={{ maxL: 200 }}
+                  type="url"
+                  size={"sm"}
+                />
+              </InputGroup>
+              {errors.website_link && <FormErrorMessage children={errors.website_link.message} />}
+            </FormControl>
 
-              {/* Social links. */}
+            {/* Social Links. */}
+            <FormControl>
+              <FormLabel children={"Social Links"} fontWeight={"bold"} />
               <Stack>
-                {socialLinks.map((link, index) => (
-                  <ProfileInputURL
-                    key={index}
-                    register={register}
-                    label={link.label}
-                    name={link.name}
-                    placeholder={"Enter your social media URL."}
-                    defaultValue={link.default_value}
-                    isLoading={isLoading}
-                    errors={errors}
-                    focusBorderColor={focusBorderColor}
-                    icon={<FaLink />}
-                  />
+                {socialLinks.map((link, i) => (
+                  <FormControl key={i} isInvalid={errors[link]} isDisabled={isLoading}>
+                    <InputGroup>
+                      <Flex alignItems="center" opacity={0.8} px="10px" fontSize="lg">
+                        <FaLink />
+                      </Flex>
+                      <CustomTextInput
+                        name={link}
+                        defaultValue={profile[link]}
+                        placeholder={"Enter your social media URL."}
+                        register={register}
+                        requirements={{ maxL: 200 }}
+                        type="url"
+                        size={"sm"}
+                      />
+                    </InputGroup>
+                    {errors[link] && <FormErrorMessage children={errors[link].message} />}
+                  </FormControl>
                 ))}
               </Stack>
+            </FormControl>
 
-              {/* Country. */}
-              {countries && (
-                <FormControl isDisabled={isLoading} isInvalid={errors.country}>
-                  <FormLabel htmlFor="country" fontWeight={"bold"}>
-                    Country
-                  </FormLabel>
-                  <Select
-                    {...register("country")}
-                    defaultValue={profile.country}
-                    placeholder="Don't specify"
-                    variant={"filled"}
-                    size="sm"
-                    opacity={isDark ? 0.9 : 0.7}
-                    fontWeight={"semibold"}
-                    borderRadius={"lg"}
-                    focusBorderColor={focusBorderColor}
-                  >
-                    {countries.map((country, index) => (
-                      <option key={index} value={country.name}>
-                        {country.name}
-                      </option>
-                    ))}
-                  </Select>
-                  {/* Handle errors. */}
-                  {errors.country && (
-                    <FormErrorMessage>
-                      {errors.country.message}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-              )}
+            {/* Country. */}
+            {countries && (
+              <FormControl isInvalid={errors.country} isDisabled={isLoading}>
+                <FormLabel children={"Country"} htmlFor="country" fontWeight={"bold"} />
+                <CustomSelect
+                  name={"country"}
+                  defaultValue={profile.country}
+                  placeholder="Don't specify"
+                  register={register}
+                  size="sm"
+                  borderRadius={"md"}
+                >
+                  {countries.map((country, index) => (
+                    <option children={country.name} key={index} value={country.name} />
+                  ))}
+                </CustomSelect>
+                {errors.country && <FormErrorMessage children={errors.country.message} />}
+              </FormControl>
+            )}
 
-              {/* City. */}
-              {isCities && (
-                <FormControl isDisabled={isLoading} isInvalid={errors.city}>
-                  <FormLabel htmlFor="city" fontWeight={"bold"}>
-                    City
-                  </FormLabel>
+            {/* City. */}
+            {isCities && (
+              <FormControl isInvalid={errors.city} isDisabled={isLoading}>
+                <FormLabel children={"City"} htmlFor="city" fontWeight={"bold"} />
+                <CustomSelect
+                  name={"city"}
+                  defaultValue={profile.city}
+                  placeholder="Don't specify"
+                  register={register}
+                  size="sm"
+                  borderRadius={"md"}
+                >
+                  {filteredCities.map((city, index) => (
+                    <option children={city} key={index} value={city} />
+                  ))}
+                </CustomSelect>
+                {errors.city && <FormErrorMessage children={errors.city.message} />}
+              </FormControl>
+            )}
 
-                  <Select
-                    {...register("city")}
-                    defaultValue={profile.city}
-                    placeholder="Don't specify"
-                    variant={"filled"}
-                    size="sm"
-                    opacity={isDark ? 0.9 : 0.7}
-                    fontWeight={"semibold"}
-                    borderRadius={"lg"}
-                    focusBorderColor={focusBorderColor}
-                  >
-                    {filteredCities.map((city, index) => (
-                      <option key={index} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </Select>
-
-                  {/* Handle errors. */}
-                  {errors.city && (
-                    <FormErrorMessage>{errors.city.message}</FormErrorMessage>
-                  )}
-                </FormControl>
-              )}
-            </Stack>
-            <Box>
+            <Flex w={"100%"} justify={"center"}>
               <Button
+                type="submit"
                 isLoading={isLoading}
                 loadingText="Save profile"
-                size={"sm"}
-                type="submit"
                 colorScheme={ThemeColor}
-              >
-                Save profile
-              </Button>
-            </Box>
+                size={"sm"}
+                children={"Save profile"}
+                borderRadius={"3xl"}
+                px={"28px"}
+              />
+            </Flex>
           </Stack>
         </form>
       )}

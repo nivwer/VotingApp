@@ -1,11 +1,7 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
-// Components.
 import { Box, HStack, Heading, IconButton, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-// SubComponents.
 import NavbarBreadcrumb from "./NavbarBreadcrumb/NavbarBreadcrumb";
-// Icons.
 import { FaBars } from "react-icons/fa6";
 
 // SubComponent ( Navbar ).
@@ -26,19 +22,15 @@ function NavbarHeader({ disclosure }) {
       ></IconButton> */}
 
       <HStack opacity={1} spacing={5}>
-        {/* Logotipo. */}
         <NavLink to={"/home"}>
-          <Text fontSize="xl" fontWeight={"bold"}>
-            VotingApp
-          </Text>
+          <Text children={"VotingApp"} fontSize="xl" fontWeight={"bold"} />
         </NavLink>
-
-        {/* Breadcrumb. */}
         <Box
-          bg={isDark ? "gothicPurpleAlpha.100" :"gothicPurpleAlpha.200"}
+          bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           p={"5px"}
           px={"25px"}
           borderRadius={"3xl"}
+          boxShadow={"base"}
         >
           <NavbarBreadcrumb />
         </Box>

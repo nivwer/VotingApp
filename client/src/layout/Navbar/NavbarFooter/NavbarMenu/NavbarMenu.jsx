@@ -1,6 +1,4 @@
-// Hooks.
 import { useThemeInfo } from "../../../../hooks/Theme";
-// Components.
 import {
   Avatar,
   Box,
@@ -14,17 +12,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-// Component.
-function NavbarMenu({ children, profile, user }) {
+function NavbarMenu({ children, profile, user, ...props }) {
   const { isDark } = useThemeInfo();
   return (
     <Menu initialFocusRef>
-      <MenuButton
-        as={IconButton}
-        aria-label={"Options"}
-        borderRadius={"full"}
-        variant={"unstyled"}
-      >
+      <MenuButton as={IconButton} aria-label={"Options"} variant={"unstyled"} {...props}>
         <Avatar
           bg={profile.profile_picture ? "transparent" : "gray.400"}
           size="md"
@@ -52,17 +44,13 @@ function NavbarMenu({ children, profile, user }) {
               src={profile.profile_picture}
             />
             <Stack spacing={0}>
-              <Text h={5} mb={"1px"} fontWeight={"bold"}>
-                {profile.profile_name}
-              </Text>
-              <Text opacity={"0.5"} fontWeight={"medium"}>
-                @{user.username}
-              </Text>
+              <Text children={profile.profile_name} h={5} mb={"1px"} fontWeight={"bold"} />
+              <Text children={`@${user.username}`} opacity={"0.5"} fontWeight={"medium"} />
             </Stack>
           </HStack>
         </Box>
         <Divider my={2} bg={"gothicPurpleAlpha.50"} />
-        <Box>{children}</Box>
+        <Box children={children} />
       </MenuList>
     </Menu>
   );

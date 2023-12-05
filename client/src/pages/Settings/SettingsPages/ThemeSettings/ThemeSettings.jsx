@@ -1,28 +1,21 @@
-// Components.
 import { Box, Divider, Stack, Text } from "@chakra-ui/react";
-// SubComponents.
 import ThemeColorRadioGroup from "./ThemeColorRadioGroup/ThemeColorRadioGroup";
 import ThemeBackgroundRadioGroup from "./ThemeBackgroundRadioGroup/ThemeBackgroundRadioGroup";
 
-// Page
 function ThemeSettings() {
   return (
-    <Box opacity={"0.9"} w={"100%"} p={10}>
+    <Box w={"100%"} px={{ base: 3, sm: 5, md: 10 }} py={{ base: 4, sm: 8 }}>
       <Stack spacing={10}>
         {/* Background mode. */}
         <Stack>
-          <Text fontWeight={"medium"} fontSize={"2xl"}>
-            Background mode
-          </Text>
-          <Divider />
+          <Text children={"Background mode"} fontWeight={"medium"} fontSize={"2xl"} />
+          <Divider bg={"gothicPurpleAlpha.50"} />
           <ThemeBackgroundRadioGroup />
         </Stack>
         {/* Color. */}
         <Stack>
-          <Text fontWeight={"medium"} fontSize={"2xl"}>
-            Color
-          </Text>
-          <Divider />
+          <Text children={"Color"} fontWeight={"medium"} fontSize={"2xl"} />
+          <Divider bg={"gothicPurpleAlpha.50"} />
           <ThemeColorRadioGroup />
         </Stack>
       </Stack>

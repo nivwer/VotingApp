@@ -5,14 +5,14 @@ import { HStack, MenuItem, Text } from "@chakra-ui/react";
 function CardMenuItem({ children, onClick, icon, isLoading }) {
   const { isDark } = useThemeInfo();
   return (
-    <MenuItem
-      as={CustomButton}
+    <CustomButton
+      as={MenuItem}
       onClick={onClick}
       isDisabled={isLoading}
       variant={"ghost"}
       justifyContent={"start"}
       borderRadius={0}
-      opacity={0.7}
+      opacity={0.8}
       px={4}
     >
       <HStack
@@ -23,7 +23,7 @@ function CardMenuItem({ children, onClick, icon, isLoading }) {
         <Text children={icon} />
         <Text children={children} mt={"3px"} fontWeight={"semibold"} />
       </HStack>
-    </MenuItem>
+    </CustomButton>
   );
 }
 
