@@ -20,13 +20,14 @@ function ProfileBody({ profile, username, isLoading }) {
       <Box
         zIndex={1200}
         pos={"sticky"}
-        top={"64px"}
+        top={{base: "60px", md: "80px"}}
         w={"100%"}
         bg={isDark ? "black" : "white"}
         borderBottom={"3px solid"}
         borderRadius={"3px"}
         borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
-        pt={6}
+        mt={{base: 6, lg: 0}}
+        pt={{base: 0, lg: 6}}
         mb={4}
       >
         <Grid

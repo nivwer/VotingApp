@@ -45,7 +45,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
     responsive: {
       area: `"header"
              "main"`,
-      rows: "80px 1fr",
+      rows: "60px 1fr",
       columns: "1fr",
     },
   };
@@ -72,7 +72,11 @@ function GridLayout({ layout = "simple", section = "main" }) {
 
       {/* Main */}
       <GridItem area={"main"} mx={{ base: 0, sm: 3, md: 0 }}>
-        <Container minH={"calc(100vh - 80px)"} p={0} maxW={"608px"}>
+        <Container
+          minH={{ base: "calc(100vh - 60px)", md: "calc(100vh - 80px)" }}
+          p={0}
+          maxW={"608px"}
+        >
           <Outlet />
         </Container>
       </GridItem>

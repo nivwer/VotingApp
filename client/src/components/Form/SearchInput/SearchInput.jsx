@@ -45,7 +45,7 @@ function SearchInput() {
       borderBottom={"3px solid"}
       borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
       borderRadius={{ base: 0, sm: "3px" }}
-      top={"80px"}
+      top={{ base: "60px", md: "80px" }}
       pos={"sticky"}
       mb={4}
       bg={isDark ? "black" : "white"}

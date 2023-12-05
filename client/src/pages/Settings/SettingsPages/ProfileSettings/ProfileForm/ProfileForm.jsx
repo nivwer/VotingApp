@@ -74,7 +74,7 @@ function ProfileForm({ profile = false }) {
     <Box py={1}>
       {profile && (
         <form onSubmit={onSubmit}>
-          <Stack spacing={7}>
+          <Stack spacing={5}>
             {/* Name. */}
             <FormControl isInvalid={errors.profile_name} isDisabled={isLoading}>
               <FormLabel children={"Name"} htmlFor="profile_name" fontWeight={"bold"} />
