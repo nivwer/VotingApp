@@ -1,19 +1,12 @@
-// Hooks.
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "../../../../hooks/Theme";
-import {
-  useGetCategoriesQuery,
-  useGetPollsCategoryQuery,
-} from "../../../../api/pollApiSlice";
-// Components.
+import { useGetCategoriesQuery, useGetPollsCategoryQuery } from "../../../../api/pollApiSlice";
 import Pagination from "../../../../components/Pagination/Pagination";
 import PollCard from "../../../../components/Cards/PollCard/PollCard";
 import { Box, Stack, Text } from "@chakra-ui/react";
-// Icons.
 import { FaHashtag } from "react-icons/fa6";
-// Utils.
 import categoryIcons from "../../../../utils/icons/categoryIcons";
 
 // Page.
@@ -24,32 +17,24 @@ function CategoryPolls() {
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
-
   const { data } = useGetCategoriesQuery();
 
   // Update data to fetchs.
   useEffect(() => {
     if (resetValues) {
-      const headers = isAuthenticated
-        ? { headers: { Authorization: `Token ${token}` } }
-        : {};
-
+      const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
       setDataQuery({ ...headers, category: category, page_size: 4 });
       setResetValues(false);
     }
   }, [resetValues]);
 
-  // Reset the values.
   useEffect(() => {
     setCurrentCategory(null);
     setResetValues(true);
   }, [category, isAuthenticated]);
 
   useEffect(() => {
-    if (data && !resetValues) {
-      const categoryData = data.list.find((item) => item.value === category);
-      setCurrentCategory(categoryData);
-    }
+    if (data && !resetValues) setCurrentCategory(data.list.find((item) => item.value === category));
   }, [data, resetValues]);
 
   return (
@@ -61,13 +46,7 @@ function CategoryPolls() {
         borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
         mb={4}
       >
-        <Stack
-          spacing={4}
-          align={"center"}
-          justify={"center"}
-          h={"200px"}
-          w={"100%"}
-        >
+        <Stack spacing={4} align={"center"} justify={"center"} h={"200px"} w={"100%"}>
           {currentCategory && currentCategory.value === category && (
             <>
               <Box
@@ -81,12 +60,7 @@ function CategoryPolls() {
                   {categoryIcons[currentCategory.value] || <FaHashtag />}
                 </Text>
               </Box>
-              <Text
-                mt={28}
-                fontSize={"xl"}
-                fontWeight={"bold"}
-                opacity={isDark ? 0.9 : 0.8}
-              >
+              <Text mt={28} fontSize={"xl"} fontWeight={"bold"} opacity={isDark ? 0.9 : 0.8}>
                 {currentCategory.text}
               </Text>
             </>

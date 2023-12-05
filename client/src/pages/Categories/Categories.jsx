@@ -1,13 +1,9 @@
-// Hooks.
 import { useThemeInfo } from "../../hooks/Theme";
 import { useGetCategoriesQuery } from "../../api/pollApiSlice";
-// Components.
 import { Box, Stack } from "@chakra-ui/react";
 import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
-// SubComponents.
 import CategoriesLinkButton from "./CategoriesLinkButton/CategoriesLinkButton";
 
-// Page.
 function Categories() {
   const { isDark } = useThemeInfo();
   const { data, isLoading, isFetching } = useGetCategoriesQuery();
@@ -24,7 +20,6 @@ function Categories() {
           </Stack>
         </Box>
       )}
-
       {isLoading || isFetching || (!data && <CustomSpinner />)}
     </>
   );

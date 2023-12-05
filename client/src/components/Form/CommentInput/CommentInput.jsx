@@ -1,9 +1,8 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { useAddCommentMutation } from "../../../api/pollApiSlice";
-// Components.
+import CustomButton from "../../Buttons/CustomButton/CustomButton";
 import {
   Avatar,
   Box,
@@ -23,30 +22,14 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import { useEffect, useState } from "react";
 
-// Component.
-function CommentInput({ id }) {
+function CommentInput({ id, useAddCommentMutation }) {
   const { isDark, ThemeColor } = useThemeInfo();
-  const { isAuthenticated, token, user, profile } = useSelector(
-    (state) => state.session
-  );
+  const { isAuthenticated, token, user, profile } = useSelector((state) => state.session);
   const [commentLength, setCommentLength] = useState(0);
   const [dataMutation, setDataMutation] = useState(false);
-
   const [addComment, { isLoading }] = useAddCommentMutation();
-
-  // React hook form.
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-    setValue,
-    watch,
-    clearErrors,
-  } = useForm();
-
+  const { register, handleSubmit, formState, setError, setValue, watch, clearErrors } = useForm();
   const isWriting = watch("comment");
 
   useEffect(() => {
@@ -61,10 +44,8 @@ function CommentInput({ id }) {
     const body = { body: data };
     try {
       const res = await addComment({ ...dataMutation, ...body });
-      res.data && setValue("comment", "");
-
-      // If server error.
-      if (res.error) {
+      if (res.data) setValue("comment", "");
+      if (res.error && res.error.data) {
         for (const fieldName in res.error.data) {
           setError(fieldName, { message: res.error.data[fieldName][0] });
         }
@@ -74,12 +55,8 @@ function CommentInput({ id }) {
     }
   });
 
-  // Update data to mutations.
   useEffect(() => {
-    const headers = isAuthenticated
-      ? { headers: { Authorization: `Token ${token}` } }
-      : {};
-
+    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
     setDataMutation({ ...headers, id: id });
   }, [id, isAuthenticated]);
 
@@ -96,7 +73,6 @@ function CommentInput({ id }) {
         mb={3}
       >
         <CardHeader as={Flex} pr={3}>
-          {/* Profile Picture. */}
           <Flex flex="1" gap="3" minH={"36px"}>
             <Box h={"100%"}>
               <NavLink to={`/${user.username}`}>
@@ -116,7 +92,7 @@ function CommentInput({ id }) {
 
         <Stack w={"100%"} spacing={0} flexDir={isWriting ? "column" : "row"}>
           <CardBody p={0} pr={10} pt={5} pl={0}>
-            <FormControl isDisabled={isLoading} isInvalid={errors.comment}>
+            <FormControl isDisabled={isLoading} isInvalid={formState.errors.comment}>
               <FormLabel fontWeight={"bold"} htmlFor="comment"></FormLabel>
               <Textarea
                 {...register("comment", { required: true })}
@@ -133,12 +109,12 @@ function CommentInput({ id }) {
                 h={isWriting ? "85px" : "auto"}
                 onBlur={() => clearErrors()}
                 _placeholder={{
-                  color: isDark ? "gothicPurple.100" : "gothicPurple.600",
-                  opacity: isDark ? 0.4 : 0.5,
+                  color: isDark ? "gothicPurple.100" : "gothicPurple.900",
+                  opacity: isDark ? 0.2 : 0.3,
                 }}
               />
-              {errors.comment && (
-                <FormErrorMessage children={errors.comment.message} />
+              {formState.errors.comment && (
+                <FormErrorMessage children={formState.errors.comment.message} />
               )}
             </FormControl>
           </CardBody>
@@ -148,27 +124,21 @@ function CommentInput({ id }) {
               {isWriting && (
                 <HStack fontSize={"sm"} fontWeight={"bold"}>
                   <Text
-                    color={isDark ? "gothicPurple.100" : "gothicPurple.600"}
-                    opacity={isDark ? 0.4 : 0.5}
-                  >
-                    {commentLength} / 143
-                  </Text>
+                    color={isDark ? "gothicPurple.100" : "gothicPurple.900"}
+                    opacity={isDark ? 0.2 : 0.3}
+                    children={`${commentLength} / 143`}
+                  />
                 </HStack>
               )}
               <HStack>
                 {isWriting && (
-                  <Button
+                  <CustomButton
                     size={"sm"}
-                    borderRadius={"full"}
                     isDisabled={isLoading}
-                    opacity={0.8}
-                    color={isDark ? "white" : "black"}
-                    colorScheme={"gothicPurpleAlpha"}
                     p={4}
                     onClick={() => setValue("comment", "")}
-                  >
-                    <Text fontWeight={"extrabold"}>Cancel</Text>
-                  </Button>
+                    children={"Cancel"}
+                  />
                 )}
                 <Button
                   type="submit"
@@ -181,9 +151,8 @@ function CommentInput({ id }) {
                   isLoading={isLoading}
                   isDisabled={!isWriting}
                   loadingText={<Text fontWeight={"extrabold"}>Comment</Text>}
-                >
-                  <Text fontWeight={"extrabold"}>Comment</Text>
-                </Button>
+                  children={"Comment"}
+                />
               </HStack>
             </Flex>
           </CardFooter>

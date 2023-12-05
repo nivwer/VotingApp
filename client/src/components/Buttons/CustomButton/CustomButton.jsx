@@ -11,7 +11,7 @@ function CustomButton({ variant = "solid", ...props }) {
       color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
       colorScheme={"gothicPurpleAlpha"}
       border={"0px  solid"}
-      borderColor={`${c}.200`}
+      // borderColor={`${c}.200`}
       bg={variant == "solid" ? `${c}.200` : "transparents"}
       outline={variant == "outline" ? "1px solid" : "0px solid"}
       outlineColor={`${c}.300`}

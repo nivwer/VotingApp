@@ -1,11 +1,8 @@
-// Components.
 import { Card, CardBody, CardHeader } from "@chakra-ui/react";
-// SubComponents.
 import UserCardHeader from "./UserCardHeader/UserCardHeader";
 import { useThemeInfo } from "../../../hooks/Theme";
 import UserCardBody from "./UserCardBody/UserCardBody";
 
-// Component.
 function UserCard({ item: { user }, variant = "filled", hasBio = true }) {
   const { isDark } = useThemeInfo();
   return (
@@ -26,11 +23,7 @@ function UserCard({ item: { user }, variant = "filled", hasBio = true }) {
       boxShadow={variant == "filled" ? "base" : variant == "unstyled" && "none"}
     >
       {/* Card Header. */}
-      <CardHeader
-        spacing={"4"}
-        pt={variant == "filled" ? 2 : variant == "unstyled" && 0}
-        px={3}
-      >
+      <CardHeader spacing={"4"} pt={variant == "filled" ? 2 : variant == "unstyled" && 0} px={3}>
         <UserCardHeader user={user} />
       </CardHeader>
 

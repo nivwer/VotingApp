@@ -1,16 +1,10 @@
-// Hooks.
 import { useSelector } from "react-redux";
-// Components.
 import CardMenu from "../../../../Menus/CardMenu/CardMenu";
 import CardMenuItem from "../../../../Menus/CardMenu/CardMenuItem/CardMenuItem";
-// Icons.
-import { FaEllipsis, FaTrash } from "react-icons/fa6";
+import { FaTrash } from "react-icons/fa6";
 
-// SubComponent ( CommentCardBody ).
 function CommentCardMenu({ comment, deleteComment, isLoading }) {
-  const { isAuthenticated, token, user } = useSelector(
-    (state) => state.session
-  );
+  const { isAuthenticated, token, user } = useSelector((state) => state.session);
 
   // Delete poll.
   const handleDeleteComment = async (poll_id, id) => {
@@ -33,9 +27,8 @@ function CommentCardMenu({ comment, deleteComment, isLoading }) {
             onClick={() => handleDeleteComment(comment.poll_id, comment.id)}
             isLoading={isLoading}
             icon={<FaTrash />}
-          >
-            Remove
-          </CardMenuItem>
+            children={"Remove"}
+          />
         </CardMenu>
       )}
     </>

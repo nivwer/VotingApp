@@ -1,27 +1,18 @@
-// Components.
 import { NavLink } from "react-router-dom";
-import { Button, HStack, Icon, Text } from "@chakra-ui/react";
-// Icons.
+import { HStack, Icon, Text } from "@chakra-ui/react";
 import { FaHashtag } from "react-icons/fa6";
-// Utils.
 import categoryIcons from "../../../utils/icons/categoryIcons";
+import CustomButton from "../../../components/Buttons/CustomButton/CustomButton";
 
-// SubComponent ( Categories ).
 function CategoriesLinkButton({ category: { value, text } }) {
   return (
     <NavLink to={`/categories/${value}`}>
-      <Button
-        size={"lg"}
-        variant={"ghost"}
-        w={"100%"}
-        justifyContent={"start"}
-        borderRadius={0}
-      >
+      <CustomButton size="lg" variant="ghost" w="100%" justifyContent="start" borderRadius={0}>
         <HStack px={"2"} spacing={"4"} fontSize={"lg"} fontWeight={"medium"}>
-          <Icon fontSize={"2xl"}>{categoryIcons[value] || <FaHashtag />}</Icon>
-          <Text>{text}</Text>
+          <Icon children={categoryIcons[value] || <FaHashtag />} fontSize={"2xl"} />
+          <Text children={text} />
         </HStack>
-      </Button>
+      </CustomButton>
     </NavLink>
   );
 }

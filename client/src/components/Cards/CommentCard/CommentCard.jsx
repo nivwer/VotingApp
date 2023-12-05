@@ -1,9 +1,6 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useDeleteCommentMutation } from "../../../api/pollApiSlice";
-// Components.
 import { Card, CardBody, CardFooter, CardHeader, Flex } from "@chakra-ui/react";
-// SubComponents.
 import CommentCardHeader from "./CommentCardHeader/CommentCardHeader";
 import CommentCardBody from "./CommentCardBody/CommentCardBody";
 
@@ -11,8 +8,6 @@ import CommentCardBody from "./CommentCardBody/CommentCardBody";
 function CommentCard({ item }) {
   const { comment } = item;
   const { isDark } = useThemeInfo();
-
-  // Request to delete the comment.
   const [deleteComment, { isLoading }] = useDeleteCommentMutation();
 
   return (
@@ -33,11 +28,7 @@ function CommentCard({ item }) {
 
       {/* Card Body. */}
       <CardBody py={5} px={0} pr={5}>
-        <CommentCardBody
-          comment={comment}
-          isLoading={isLoading}
-          deleteComment={deleteComment}
-        />
+        <CommentCardBody comment={comment} isLoading={isLoading} deleteComment={deleteComment} />
       </CardBody>
     </Card>
   );

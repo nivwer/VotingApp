@@ -9,15 +9,16 @@ function CardMenuItem({ children, onClick, icon, isLoading }) {
       as={CustomButton}
       onClick={onClick}
       isDisabled={isLoading}
-      variant="ghost"
+      variant={"ghost"}
       justifyContent={"start"}
       borderRadius={0}
+      opacity={0.7}
       px={4}
     >
       <HStack
         spacing={3}
         color={isDark ? "gothicPurple.50" : "gothicPurple.900"}
-        opacity={isDark ? 0.7 : 0.6}
+        opacity={isDark ? 1 : 0.9}
       >
         <Text children={icon} />
         <Text children={children} mt={"3px"} fontWeight={"semibold"} />

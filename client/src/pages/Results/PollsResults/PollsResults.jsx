@@ -1,13 +1,10 @@
-// Hooks.
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSearchPollsQuery } from "../../../api/pollApiSlice";
 import { useSelector } from "react-redux";
-// Components.
 import PollCard from "../../../components/Cards/PollCard/PollCard";
 import Pagination from "../../../components/Pagination/Pagination";
 
-// SubComponent ( Results ).
 function PollsResults() {
   const { isAuthenticated, token } = useSelector((state) => state.session);
   const [searchParams] = useSearchParams();
@@ -16,22 +13,14 @@ function PollsResults() {
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
 
-  // Update data to fetchs.
   useEffect(() => {
     if (resetValues) {
-      const headers = isAuthenticated
-        ? { headers: { Authorization: `Token ${token}` } }
-        : {};
-
+      const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
       setDataQuery({ ...headers, query: query, page_size: 4 });
-      setResetValues(false)
+      setResetValues(false);
     }
   }, [resetValues]);
-
-  // Reset the values.
-  useEffect(() => {
-    setResetValues(true)
-  }, [query, type, isAuthenticated]);
+  useEffect(() => setResetValues(true), [query, type, isAuthenticated]);
 
   return (
     <Pagination

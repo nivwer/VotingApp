@@ -1,49 +1,30 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useSelector } from "react-redux";
-// Components.
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, HStack, Stack, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-// SubComponents.
 import ProfileLink from "./ProfileLink/ProfileLink";
 import ProfileTag from "./ProfileTag/ProfileTag";
-// Icons.
 import { FaRegCalendar, FaLocationDot, FaLink } from "react-icons/fa6";
-// Others.
 import { format } from "date-fns";
 
 // SubComponent ( Profile ).
 function ProfileHeader({ profile }) {
   const { isDark, ThemeColor } = useThemeInfo();
   const { isAuthenticated, user } = useSelector((state) => state.session);
-
-  // Joined date.
-  const dateJoined = format(
-    new Date(profile && profile.date_joined),
-    "MMMM yyyy"
-  );
+  const dateJoined = format(new Date(profile && profile.date_joined), "MMMM yyyy");
 
   return (
     <>
       <Flex spacing="2" flex="1" dir="column" wrap="wrap" align="start">
         <Flex justify="space-between" w="100%" pb={5} px={2}>
-          {/* Avatar. */}
           <Box mt={2}>
+            {/* Avatar. */}
             <Avatar
               bg={profile.profile_picture ? "transparent" : "gray.400"}
               size="2xl"
               src={profile.profile_picture}
             />
           </Box>
-          {/* Button to edit the profile. */}
           <Box>
             {isAuthenticated && user.username === profile.username && (
               <NavLink to={`/settings/profile`}>
@@ -65,29 +46,19 @@ function ProfileHeader({ profile }) {
                 {profile.profile_name}
               </Text>
               {/* Pronouns. */}
-              <Text h={5} opacity={0.5}>
-                {profile.pronouns}
-              </Text>
+              <Text children={profile.pronouns} h={5} opacity={0.5} />
             </HStack>
             {/* Username. */}
-            <Text opacity={0.5}>@{profile.username}</Text>
+            <Text children={`@${profile.username}`} opacity={0.5} />
           </Stack>
           <Stack spacing={3}>
             <Stack spacing={0}>
               {/* Biography. */}
-              {profile.bio && (
-                <Text opacity={0.8} fontWeight="medium">
-                  {profile.bio}
-                </Text>
-              )}
+              {profile.bio && <Text children={profile.bio} opacity={0.8} fontWeight="medium" />}
 
               {/* Tags. */}
               <HStack spacing={0} wrap={"wrap"}>
-                {/* Joined date. */}
-                <ProfileTag icon={<FaRegCalendar />}>
-                  Joined {dateJoined}
-                </ProfileTag>
-                {/* Location. */}
+                <ProfileTag children={`Joined ${dateJoined}`} icon={<FaRegCalendar />} />
                 {profile.country && (
                   <ProfileTag icon={<FaLocationDot />}>
                     {profile.country}
@@ -107,10 +78,7 @@ function ProfileHeader({ profile }) {
               {/* Website Link. */}
               {profile.website_link && (
                 <HStack spacing={1} fontWeight={"semibold"}>
-                  <Box
-                    color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
-                    opacity={0.8}
-                  >
+                  <Box color={isDark ? "whiteAlpha.900" : "blackAlpha.900"} opacity={0.8}>
                     <FaLink />
                   </Box>
                   <ProfileLink link={profile.website_link} website={true} />
