@@ -28,7 +28,6 @@ function CustomTextInput({ name, register, requirements = {}, variant = "filled"
         color: isDark ? "gothicPurple.100" : "gothicPurple.900",
         opacity: isDark ? 0.2 : 0.3,
       }}
-      boxShadow={"base"}
       {...props}
     />
   );

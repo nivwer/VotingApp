@@ -1,8 +1,5 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useState } from "react";
-// Components.
-import CustomProgress from "../../../components/Progress/CustomProgress/CustomProgress";
 import {
   Box,
   Button,
@@ -10,79 +7,57 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Heading,
-  Input,
   InputGroup,
   InputRightElement,
   Stack,
+  Text,
 } from "@chakra-ui/react";
-// Icons.
 import ToggleShowPassword from "../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
+import CustomTextInput from "../../../components/Form/CustomTextInput/CustomTextInput";
+import { NavLink } from "react-router-dom";
 
-// Page.
-function AuthForm({
-  isSignUp = false,
-  register,
-  onSubmit,
-  isLoading,
-  errors,
-  watch,
-}) {
-  const { isDark } = useThemeInfo();
-
-  // Show Password fields.
+function AuthForm({ isSignUp = false, register, onSubmit, isLoading, errors, watch }) {
+  const { ThemeColor } = useThemeInfo();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const focusBorderColor = isDark ? "whiteAlpha.600" : "blackAlpha.700";
 
   return (
     <Box
       w={"100%"}
-      color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
-      outline={"1px solid"}
-      outlineColor={isDark ? "whiteAlpha.300" : "blackAlpha.600"}
-      borderRadius={"xl"}
+      borderRadius={"3xl"}
       textAlign={"center"}
+      outline={"1px solid"}
+      outlineColor={{ base: "transparent", sm: "gothicPurpleAlpha.300" }}
     >
-      {isLoading && <CustomProgress />}
-      {/* Form */}
       <form onSubmit={onSubmit}>
-        <Stack spacing={6} p="14" pb="10" px="8%">
-          <Heading fontSize={"4xl"}>{isSignUp ? "Sign Up" : "Sign In"}</Heading>
-          <Stack textAlign="start" spacing={3}>
+        <Stack spacing={7} p={16} px={{base: 2, sm: 14}} align={"center"}>
+          <Text children={isSignUp ? "Sign Up" : "Sign In"} fontSize={"4xl"} fontWeight={"bold"} />
+          <Stack spacing={5} maxW={"300px"}>
             {/* username. */}
-            <FormControl isDisabled={isLoading} isInvalid={errors.username}>
-              <FormLabel fontWeight={"bold"} htmlFor="username">
-                Username
-              </FormLabel>
-              <Input
-                {...register("username", {
-                  required: "This field is required.",
-                })}
-                type="text"
+            <FormControl isInvalid={errors.username} isDisabled={isLoading}>
+              {/* <FormLabel children={"Username"} htmlFor="username" fontWeight={"bold"} /> */}
+              <CustomTextInput
+                name={"username"}
                 placeholder="Username"
-                focusBorderColor={focusBorderColor}
+                register={register}
+                requirements={{ req: true }}
               />
-              {/* Handle errors. */}
-              {errors.username && (
-                <FormErrorMessage>{errors.username.message}</FormErrorMessage>
-              )}
+              {errors.username && <FormErrorMessage children={errors.username.message} />}
             </FormControl>
 
             {/* Password. */}
-            <FormControl isDisabled={isLoading} isInvalid={errors.password}>
-              <FormLabel fontWeight={"bold"} htmlFor="password">
-                Password
-              </FormLabel>
+            <FormControl isInvalid={errors.password} isDisabled={isLoading}>
+              {/* <FormLabel children={"Password"} htmlFor="password" fontWeight={"bold"} /> */}
               <InputGroup size="md">
-                <Input
-                  {...register("password", {
-                    required: "This field is required.",
-                  })}
+                <CustomTextInput
+                  name={"password"}
                   placeholder="Password"
+                  register={register}
+                  requirements={{ req: true }}
                   type={showPassword ? "text" : "password"}
-                  focusBorderColor={focusBorderColor}
+                  pr={"40px"}
                 />
                 <InputRightElement width="3rem">
                   <ToggleShowPassword
@@ -92,30 +67,26 @@ function AuthForm({
                   />
                 </InputRightElement>
               </InputGroup>
-              {errors.password && (
-                <FormErrorMessage>{errors.password.message}</FormErrorMessage>
-              )}
+              {errors.password && <FormErrorMessage children={errors.password.message} />}
             </FormControl>
 
             {/* Password Validation. */}
             {isSignUp && (
-              <FormControl
-                isDisabled={isLoading}
-                isInvalid={errors.passwordValidation}
-              >
-                <FormLabel fontWeight={"bold"} htmlFor="passwordValidation">
+              <FormControl isInvalid={errors.passwordValidation} isDisabled={isLoading}>
+                {/* <FormLabel htmlFor="passwordValidation" fontWeight={"bold"}>
                   Confirm Password
-                </FormLabel>
+                </FormLabel> */}
                 <InputGroup>
-                  <Input
-                    {...register("passwordValidation", {
-                      required: "This field is required.",
-                      validate: (value) =>
-                        value === watch("password") || "Password not match.",
-                    })}
+                  <CustomTextInput
+                    name={"passwordValidation"}
                     placeholder="Confirm password"
+                    register={register}
+                    requirements={{
+                      req: true,
+                      validate: (value) => value === watch("password") || "Password not match.",
+                    }}
                     type={showConfirmPassword ? "text" : "password"}
-                    focusBorderColor={focusBorderColor}
+                    pr={"40px"}
                   />
                   <InputRightElement width="3rem">
                     <ToggleShowPassword
@@ -126,26 +97,33 @@ function AuthForm({
                   </InputRightElement>
                 </InputGroup>
                 {errors.passwordValidation && (
-                  <FormErrorMessage>
-                    {errors.passwordValidation.message}
-                  </FormErrorMessage>
+                  <FormErrorMessage children={errors.passwordValidation.message} />
                 )}
               </FormControl>
             )}
-          </Stack>
+            {/* Submit. */}
+            <Flex justifyContent="center">
+              <Button
+                type="submit"
+                isLoading={isLoading}
+                loadingText={isSignUp ? "Sign Up" : "Sign In"}
+                colorScheme={ThemeColor}
+                borderRadius={"full"}
+                px={"28px"}
+              >
+                {isSignUp ? "Sign Up" : "Sign In"}
+              </Button>
+            </Flex>
 
-          {/* Submit. */}
-          <Flex justifyContent="center">
-            <Button
-              isDisabled={isLoading}
-              type="submit"
-              colorScheme={"default"}
-              variant={"solid"}
-              opacity={isDark ? 0.9 : 1}
-            >
-              {isSignUp ? "Sign Up" : "Sign In"}
-            </Button>
-          </Flex>
+            <HStack justify={"center"}>
+              <Text opacity={0.7}>
+                {isSignUp ? "Already have an account?" : "Don't have an account?"}
+              </Text>
+              <NavLink to={isSignUp ? "/signin" : "/signup"}>
+                <Button variant={"link"}>{isSignUp ? "Sign In" : "Sign Up"}</Button>
+              </NavLink>
+            </HStack>
+          </Stack>
         </Stack>
       </form>
     </Box>

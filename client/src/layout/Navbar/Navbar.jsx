@@ -32,7 +32,7 @@ function Navbar() {
       // If the logout is successful.
       if (res.data) {
         dispatch(logout());
-        if (disclosureLeft.isOpen) disclosureRight.onClose();
+        if (disclosureRight.isOpen) disclosureRight.onClose();
         navigate("/signin");
       }
     } catch (error) {
