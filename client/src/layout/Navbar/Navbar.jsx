@@ -14,7 +14,7 @@ import { useSignOutMutation } from "../../api/authApiSlice";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../features/auth/sessionSlice";
 
-function Navbar() {
+function Navbar({ section }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isDark, ThemeColor } = useThemeInfo();
@@ -68,7 +68,7 @@ function Navbar() {
             <NavbarBottomBody />
           </Box>
         </Box>
-        {isAuthenticated && (
+        {isAuthenticated && section !== "settings" && (
           <>
             <PollModal disclosure={pollModalDisclosure} />
             <Box

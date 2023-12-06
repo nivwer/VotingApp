@@ -17,6 +17,7 @@ import { FaPlus, FaHouse, FaMagnifyingGlass, FaUser, FaGear } from "react-icons/
 import NavbarMenu from "./NavbarMenu/NavbarMenu";
 import NavbarMenuItem from "./NavbarMenu/NavbarMenuItem/NavbarMenuItem";
 import CustomIconButton from "../../../components/Buttons/CustomIconButton/CustomIconButton";
+import CustomButton from "../../../components/Buttons/CustomButton/CustomButton";
 
 function NavbarFooter({ disclosure, handleLogout }) {
   const { isDark, ThemeColor } = useThemeInfo();
@@ -66,21 +67,29 @@ function NavbarFooter({ disclosure, handleLogout }) {
                 <NavbarMenuItem children={"Settings"} icon={<FaGear />} />
               </NavLink>
 
-              <Divider my={2} bg={"gothicPurpleAlpha.50"} />
+              <Divider my={2} borderColor={"gothicPurpleAlpha.300"} />
               <NavbarMenuItem children={"Sign Out"} onClick={handleLogout} />
             </NavbarMenu>
             <PollModal disclosure={pollModalDisclosure} />
           </Show>
         </HStack>
       ) : (
-        <HStack spacing="3">
-          <NavLink to={"/signin"}>
-            <Button children={"Sign In"} colorScheme={"default"} size="sm" variant={"ghost"} />
-          </NavLink>
-          <NavLink to={"/signup"}>
-            <Button children={"Sign Up"} colorScheme={"default"} size="sm" />
-          </NavLink>
-        </HStack>
+        <Hide below="sm">
+          <HStack spacing="2">
+            <NavLink to={"/signin"}>
+              <CustomButton children={"Sign In"} size="sm" variant={"ghost"} px={4} />
+            </NavLink>
+            <NavLink to={"/signup"}>
+              <Button
+                children={"Sign Up"}
+                colorScheme={ThemeColor}
+                size="sm"
+                borderRadius={"full"}
+                px={4}
+              />
+            </NavLink>
+          </HStack>
+        </Hide>
       )}
     </Box>
   );

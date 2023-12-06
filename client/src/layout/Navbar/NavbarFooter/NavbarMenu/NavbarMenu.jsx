@@ -50,7 +50,7 @@ function NavbarMenu({ children, profile, user, ...props }) {
             </Stack>
           </HStack>
         </Box>
-        <Divider my={2} bg={"gothicPurpleAlpha.50"} />
+        <Divider my={2} borderColor={"gothicPurpleAlpha.300"} />
         <Box children={children} />
       </MenuList>
     </Menu>

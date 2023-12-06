@@ -62,7 +62,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
       gridTemplateColumns={layouts[layoutBreakPoint].columns}
     >
       {/* Header */}
-      <GridItem children={<Navbar />} area={"header"} />
+      <GridItem children={<Navbar section={section} />} area={"header"} />
 
       {/* Right Side */}
       {!isSimple && !isDouble && (

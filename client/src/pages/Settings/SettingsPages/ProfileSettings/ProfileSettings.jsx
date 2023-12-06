@@ -19,7 +19,7 @@ function ProfileSettings() {
             </Button>
           </NavLink>
         </HStack>
-        <Divider bg={"gothicPurpleAlpha.50"} />
+        <Divider borderColor={"gothicPurpleAlpha.300"} />
         <ProfileForm profile={profile} />
       </Stack>
     </Box>

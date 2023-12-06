@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { theme_color: localStorage.getItem("theme-color") || "default" };
+const initialState = { theme_color: localStorage.getItem("theme-color") || "green" };
 
 export const themeSlice = createSlice({
   name: "theme",

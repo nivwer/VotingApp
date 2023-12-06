@@ -26,7 +26,6 @@ function CustomTextarea({ name, register, requirements = {}, ...props }) {
         color: isDark ? "gothicPurple.100" : "gothicPurple.900",
         opacity: isDark ? 0.2 : 0.3,
       }}
-      boxShadow={"base"}
       resize={"none"}
       {...props}
     />

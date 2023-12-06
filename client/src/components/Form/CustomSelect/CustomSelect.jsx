@@ -13,7 +13,6 @@ function CustomSelect({ name, register, requirements = {}, ...props }) {
       color={isDark ? "whiteAlpha.800" : "blackAlpha.700"}
       bg={isDark ? `${c}.100` : `${c}.200`}
       _hover={{ bg: isDark ? `${c}.100` : `${c}.200` }}
-      boxShadow={"base"}
       {...props}
     />
   );

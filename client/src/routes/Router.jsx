@@ -61,7 +61,7 @@ function Router() {
 
       {/* Triple Columns Layout. */}
       <Route element={<GridLayout layout="triple" section="settings" />}>
-        <Route element={<ProtectedRoute isAllowed={!!isAuthenticated} />}>
+        <Route element={<ProtectedRoute isAllowed={isAuthenticated} redirectTo="/signin" />}>
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/account" element={<AccountSettings />} />
           <Route path="/settings/profile" element={<ProfileSettings />} />

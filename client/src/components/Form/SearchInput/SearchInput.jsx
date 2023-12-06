@@ -52,7 +52,7 @@ function SearchInput() {
     >
       <FormControl w={"100%"}>
         <form onSubmit={onSubmit}>
-          <HStack spacing={0} boxShadow={"base"} borderRadius={{ base: 0, sm: "3xl" }}>
+          <HStack spacing={0} borderRadius={{ base: 0, sm: "3xl" }}>
             <InputGroup size={"md"}>
               <InputLeftElement>
                 <IconButton type="submit" p={"auto"} variant={"unstyled"}>

@@ -9,13 +9,13 @@ function AccountSettings() {
         {/* Username. */}
         <Stack>
           <Text children={"Change username"} fontWeight={"medium"} fontSize={"2xl"} />
-          <Divider bg={"gothicPurpleAlpha.50"} />
+          <Divider borderColor={"gothicPurpleAlpha.300"} />
           <UsernameForm />
         </Stack>
         {/* Password. */}
         <Stack>
           <Text children={"Change password"} fontWeight={"medium"} fontSize={"2xl"} />
-          <Divider bg={"gothicPurpleAlpha.50"} />
+          <Divider borderColor={"gothicPurpleAlpha.300"} />
           <PasswordForm />
         </Stack>
       </Stack>

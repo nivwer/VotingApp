@@ -1,13 +1,9 @@
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { useSignUpMutation } from "../../api/authApiSlice";
 import AuthForm from "./AuthForm/AuthForm";
 import { Center, Container } from "@chakra-ui/react";
 
 function SignUp() {
-  const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.session);
   const [signUp, { isLoading }] = useSignUpMutation();
   const { register, handleSubmit, watch, formState, setError } = useForm();
   const { errors } = formState;
@@ -16,7 +12,6 @@ function SignUp() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await signUp(data);
-      if (res.data && isAuthenticated) navigate("/home");
       if (res.error) {
         for (const fieldName in res.error.data) {
           setError(fieldName, { message: res.error.data[fieldName][0] });
@@ -29,7 +24,7 @@ function SignUp() {
 
   return (
     <Container maxW="md">
-      <Center minH="calc(100vh - 200px)">
+      <Center minH="calc(100vh - 220px)">
         <AuthForm
           isSignUp={true}
           onSubmit={onSubmit}

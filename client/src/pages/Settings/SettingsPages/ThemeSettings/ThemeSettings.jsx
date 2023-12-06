@@ -9,13 +9,13 @@ function ThemeSettings() {
         {/* Background mode. */}
         <Stack>
           <Text children={"Background mode"} fontWeight={"medium"} fontSize={"2xl"} />
-          <Divider bg={"gothicPurpleAlpha.50"} />
+          <Divider borderColor={"gothicPurpleAlpha.300"} />
           <ThemeBackgroundRadioGroup />
         </Stack>
         {/* Color. */}
         <Stack>
           <Text children={"Color"} fontWeight={"medium"} fontSize={"2xl"} />
-          <Divider bg={"gothicPurpleAlpha.50"} />
+          <Divider borderColor={"gothicPurpleAlpha.300"} />
           <ThemeColorRadioGroup />
         </Stack>
       </Stack>
