@@ -18,7 +18,7 @@ import NavbarMenu from "./NavbarMenu/NavbarMenu";
 import NavbarMenuItem from "./NavbarMenu/NavbarMenuItem/NavbarMenuItem";
 import CustomIconButton from "../../../components/Buttons/CustomIconButton/CustomIconButton";
 
-function NavbarFooter({ disclosure }) {
+function NavbarFooter({ disclosure, handleLogout }) {
   const { isDark, ThemeColor } = useThemeInfo();
   const { isAuthenticated, user, profile } = useSelector((state) => state.session);
   const { onOpen } = disclosure;
@@ -67,9 +67,7 @@ function NavbarFooter({ disclosure }) {
               </NavLink>
 
               <Divider my={2} bg={"gothicPurpleAlpha.50"} />
-              <NavLink to={"/settings"}>
-                <NavbarMenuItem children={"Sign Out"} />
-              </NavLink>
+              <NavbarMenuItem children={"Sign Out"} onClick={handleLogout} />
             </NavbarMenu>
             <PollModal disclosure={pollModalDisclosure} />
           </Show>

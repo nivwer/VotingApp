@@ -1,76 +1,29 @@
-// Hooks.
 import { useSelector } from "react-redux";
-import { useThemeInfo } from "../../../../hooks/Theme";
-// Components.
 import { Divider, Stack } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-// SubComponents.
 import NavRightDrawerButton from "./NavRightDrawerButton/NavRightDrawerButton";
-// Icons.
-import { FaUser, FaGear, FaHashtag } from "react-icons/fa6";
+import { FaUser, FaGear } from "react-icons/fa6";
 
-// SubComponent ( NavRightDrawer ).
 function NavRightDrawerBody({ handleLogout, onClose }) {
-  const { isDark } = useThemeInfo();
   const { user } = useSelector((state) => state.session);
 
   return (
     <Stack spacing={3}>
-      {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
-      {/* Profile Page. */}
-      <NavLink to={`/${user.username}`}>
-        <NavRightDrawerButton icon={<FaUser />} onClick={onClose}>
-          Profile
-        </NavRightDrawerButton>
-      </NavLink>
-
-      {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
-
-      {/* User Pages. */}
-      <Stack spacing={0}>
+      <Divider borderColor={"gothicPurpleAlpha.300"} />
+      <Stack spacing={1}>
+        {/* Profile Page. */}
         <NavLink to={`/${user.username}`}>
-          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
-            Your Polls
-          </NavRightDrawerButton>
+          <NavRightDrawerButton children={"Profile"} icon={<FaUser />} onClick={onClose} />
         </NavLink>
-        <NavLink to={`/${user.username}?tab=votes`}>
-          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
-            Your Votes
-          </NavRightDrawerButton>
-        </NavLink>
-        <NavLink to={`/${user.username}?tab=shares`}>
-          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
-            Your Shares
-          </NavRightDrawerButton>
-        </NavLink>
-        <NavLink to={`/${user.username}?tab=bookmarks`}>
-          <NavRightDrawerButton icon={<FaHashtag />} onClick={onClose}>
-            Your Bookmarks
-          </NavRightDrawerButton>
-        </NavLink>
-      </Stack>
 
-      {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
-
-      {/* Settings Pages. */}
-      <Stack spacing={0}>
+        {/* Settings Pages. */}
         <NavLink to={"/settings"}>
-          <NavRightDrawerButton icon={<FaGear />} onClick={onClose}>
-            Settings
-          </NavRightDrawerButton>
+          <NavRightDrawerButton children={"Settings"} icon={<FaGear />} onClick={onClose} />
         </NavLink>
       </Stack>
-
-      {/* Divider. */}
-      <Divider borderColor={isDark ? "whiteAlpha.300" : "blackAlpha.300"} />
-
+      <Divider borderColor={"gothicPurpleAlpha.300"} />
       {/* Sign Out. */}
-      <NavRightDrawerButton onClick={handleLogout}>
-        Sign Out
-      </NavRightDrawerButton>
+      <NavRightDrawerButton children={"Sign Out"} onClick={handleLogout} />
     </Stack>
   );
 }

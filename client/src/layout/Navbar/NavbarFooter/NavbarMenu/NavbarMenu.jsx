@@ -15,7 +15,7 @@ import {
 function NavbarMenu({ children, profile, user, ...props }) {
   const { isDark } = useThemeInfo();
   return (
-    <Menu initialFocusRef>
+    <Menu initialFocusRef placement="bottom-end">
       <MenuButton as={IconButton} aria-label={"Options"} variant={"unstyled"} {...props}>
         <Avatar
           bg={profile.profile_picture ? "transparent" : "gray.400"}
@@ -31,6 +31,7 @@ function NavbarMenu({ children, profile, user, ...props }) {
         borderRadius={"2xl"}
         border={"1px solid"}
         borderColor={"gothicPurpleAlpha.300"}
+        w={"100%"}
         py={4}
         boxShadow={"2xl"}
       >

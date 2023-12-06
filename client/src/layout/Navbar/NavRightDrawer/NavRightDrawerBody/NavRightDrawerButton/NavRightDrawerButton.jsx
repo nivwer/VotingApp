@@ -1,23 +1,16 @@
-// Hooks.
-import { useThemeInfo } from "../../../../../hooks/Theme";
-// Components.
-import { Button, HStack, Text } from "@chakra-ui/react";
+import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
+import { HStack, Text } from "@chakra-ui/react";
 
-// SubComponent ( NavRightDrawerBody ).
 function NavRightDrawerButton({ children, icon = null, onClick }) {
-  const { isDark } = useThemeInfo();
   return (
-    <Button
-      colorScheme={"default"}
-      size="sm"
+    <CustomButton
+      onClick={onClick}
       variant={"ghost"}
       w="100%"
-      px={icon ? "3" : "5"}
-      onClick={onClick}
       justifyContent="start"
-      opacity={isDark ? 0.9 : 0.6}
+      borderRadius={0}
     >
-      <HStack spacing={2}>
+      <HStack spacing={2} opacity={0.9}>
         {icon}
         <Text
           fontWeight={"bold"}
@@ -26,11 +19,10 @@ function NavRightDrawerButton({ children, icon = null, onClick }) {
           mt={"2px"}
           justifyContent={"center"}
           alignItems={"center"}
-        >
-          {children}
-        </Text>
+          children={children}
+        />
       </HStack>
-    </Button>
+    </CustomButton>
   );
 }
 

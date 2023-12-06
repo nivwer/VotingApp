@@ -2,13 +2,12 @@ import { useThemeInfo } from "../../../../../hooks/Theme";
 import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
 import { HStack, MenuItem, Text } from "@chakra-ui/react";
 
-function NavbarMenuItem({ children, onClick, icon, isLoading }) {
+function NavbarMenuItem({ children, onClick, icon }) {
   const { isDark } = useThemeInfo();
   return (
     <CustomButton
       as={MenuItem}
       onClick={onClick}
-      isDisabled={isLoading}
       variant={"ghost"}
       justifyContent={"start"}
       borderRadius={0}

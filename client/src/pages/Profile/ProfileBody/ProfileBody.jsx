@@ -20,24 +20,24 @@ function ProfileBody({ profile, username, isLoading }) {
       <Box
         zIndex={1200}
         pos={"sticky"}
-        top={{base: "60px", md: "80px"}}
+        top={{ base: "60px", md: "80px" }}
         w={"100%"}
         bg={isDark ? "black" : "white"}
         borderBottom={"3px solid"}
         borderRadius={"3px"}
         borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
-        mt={{base: 6, lg: 0}}
-        pt={{base: 0, lg: 6}}
+        mt={{ base: 6, lg: 0 }}
+        pt={{ base: 0, lg: 6 }}
         mb={4}
       >
         <Grid
-          templateColumns={user.username == username ? "repeat(4, 1fr)" : "repeat(3, 1fr)"}
+          templateColumns={user && user.username == username ? "repeat(4, 1fr)" : "repeat(3, 1fr)"}
           color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
         >
           <ProfileTabButton children={"Polls"} tab={tab} username={username} />
           <ProfileTabButton children={"Votes"} tab={tab} value={"votes"} username={username} />
           <ProfileTabButton children={"Shares"} tab={tab} value={"shares"} username={username} />
-          {user.username == username && (
+          {user && user.username == username && (
             <ProfileTabButton tab={tab} value={"bookmarks"} username={username}>
               Bookmarks
             </ProfileTabButton>

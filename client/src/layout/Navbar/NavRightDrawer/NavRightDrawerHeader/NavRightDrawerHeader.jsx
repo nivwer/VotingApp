@@ -1,40 +1,22 @@
-// Hooks.
 import { useSelector } from "react-redux";
-import { useThemeInfo } from "../../../../hooks/Theme";
-// Components.
-import { Avatar, Box, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { Avatar, HStack, Stack, Text } from "@chakra-ui/react";
 
-// SubComponent ( NavRightDrawer ).
 function NavRightDrawerHeader() {
-  const { isDark } = useThemeInfo();
   const { user, profile } = useSelector((state) => state.session);
   return (
-    <Flex pl={1}>
-      {/* User Avatar. */}
+    <HStack spacing={3} ml={5} mt={1}>
       <Avatar
-        bg={"gray.400"}
+        bg={profile.profile_picture ? "transparent" : "gray.400"}
         size="md"
-        h={"42px"}
-        w={"42px"}
+        h={"44px"}
+        w={"44px"}
         src={profile.profile_picture}
       />
-      <Box color={isDark ? "whiteAlpha.900" : "blackAlpha.900"} ml={3}>
-        {/* Profile name. */}
-        <Text
-          h={5}
-          opacity={isDark ? 0.9 : 0.8}
-          pt={"3px"}
-          fontSize="sm"
-          fontWeight={"black"}
-        >
-          {profile.profile_name}
-        </Text>
-        {/* Username. */}
-        <Text h={5} pt={"1px"} opacity={0.5} fontWeight="medium" fontSize="sm">
-          @{user.username}
-        </Text>
-      </Box>
-    </Flex>
+      <Stack spacing={0} fontSize={"md"} mt={"2px"}>
+        <Text children={profile.profile_name} h={5} mb={"1px"} fontWeight={"bold"} />
+        <Text children={`@${user.username}`} opacity={"0.5"} fontWeight={"medium"} />
+      </Stack>
+    </HStack>
   );
 }
 

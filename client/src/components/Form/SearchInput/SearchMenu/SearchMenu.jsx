@@ -5,7 +5,7 @@ import { FaHashtag, FaUserGroup } from "react-icons/fa6";
 function SearchMenu({ children, searchType }) {
   const { isDark } = useThemeInfo();
   return (
-    <Menu initialFocusRef>
+    <Menu initialFocusRef placement="bottom-end">
       {searchType && (
         <MenuButton
           as={Button}
@@ -30,11 +30,12 @@ function SearchMenu({ children, searchType }) {
         children={children}
         bg={isDark ? "black" : "white"}
         zIndex={1600}
-        borderRadius={"2xl"}
+        w={{ base: "100vw", md: "100%" }}
+        borderRadius={{ base: 0, md: "2xl" }}
         border={"1px solid"}
         borderColor={"gothicPurpleAlpha.300"}
         py={4}
-        boxShadow={"dark-lg"}
+        boxShadow={"2xl"}
       />
     </Menu>
   );
