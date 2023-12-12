@@ -2,13 +2,19 @@
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib.auth import update_session_auth_hash
+
 # Rest Framework.
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, AuthenticationFailed
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+
 # Models and Serializers.
 from apps.accounts.serializers import UserSerializer
 
@@ -39,7 +45,8 @@ from apps.accounts.serializers import UserSerializer
 # Author: nivwer
 # Last Updated: 2023-11-22
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def user_me(request):
@@ -76,21 +83,22 @@ def user_me(request):
 # Author: nivwer
 # Last Updated: 2023-11-22
 
-@api_view(['PUT'])
+
+@api_view(["PUT"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def user_me_update_username(request):
     try:
-        new_username = request.data['new_username']
+        new_username = request.data["new_username"]
 
         if not new_username:
-            raise ValidationError(
-                detail={'new_username': ['This field is required.']})
+            raise ValidationError(detail={"new_username": ["This field is required."]})
 
         # If the new username is not unique.
         if User.objects.filter(username=new_username).exists():
             raise ValidationError(
-                detail={'new_username': ['Username is already taken.']})
+                detail={"new_username": ["Username is already taken."]}
+            )
 
         # Save the new username.
         user = request.user
@@ -102,26 +110,24 @@ def user_me_update_username(request):
 
         # Response.
         return Response(
-            data={'message': 'Username updated successfully.'},
-            status=status.HTTP_200_OK)
+            data={"message": "Username updated successfully."},
+            status=status.HTTP_200_OK,
+        )
 
     # Handle validation errors.
     except ValidationError as error:
-        return Response(
-            data=error.detail,
-            status=status.HTTP_400_BAD_REQUEST)
+        return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle autentication failed.
     except AuthenticationFailed as error:
-        return Response(
-            data=error.detail,
-            status=status.HTTP_401_UNAUTHORIZED)
+        return Response(data=error.detail, status=status.HTTP_401_UNAUTHORIZED)
 
     # Handle other exceptions.
     except Exception as error:
         return Response(
-            data={'message': 'Internal Server Error'},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            data={"message": "Internal Server Error"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 # Endpoint: "Update User Password"
@@ -158,29 +164,33 @@ def user_me_update_username(request):
 # Author: nivwer
 # Last Updated: 2023-11-21
 
-@api_view(['PUT'])
+
+@api_view(["PUT"])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 @transaction.atomic
 def user_me_update_password(request):
     try:
-        current_password = request.data['current_password']
-        new_password = request.data['new_password']
+        current_password = request.data["current_password"]
+        new_password = request.data["new_password"]
 
         if not current_password:
             raise ValidationError(
-                detail={'current_password': ['This field is required.']})
+                detail={"current_password": ["This field is required."]}
+            )
 
         if not new_password:
             raise ValidationError(
-                detail={'new_password': ['This field is required.']},)
+                detail={"new_password": ["This field is required."]},
+            )
 
         user = request.user
 
         # Check if the current password is correct.
         if not user.check_password(current_password):
             raise ValidationError(
-                detail={'current_password': ['Current password is incorrect.']})
+                detail={"current_password": ["Current password is incorrect."]}
+            )
 
         # Save the password.
         user.set_password(new_password)
@@ -190,23 +200,21 @@ def user_me_update_password(request):
         update_session_auth_hash(request, user)
 
         return Response(
-            data={'message': 'Password updated successfully.'},
-            status=status.HTTP_200_OK)
+            data={"message": "Password updated successfully."},
+            status=status.HTTP_200_OK,
+        )
 
     # Handle validation errors.
     except ValidationError as error:
-        return Response(
-            data=error.detail,
-            status=status.HTTP_400_BAD_REQUEST)
+        return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle autentication failed.
     except AuthenticationFailed as error:
-        return Response(
-            data=error.detail,
-            status=status.HTTP_401_UNAUTHORIZED)
+        return Response(data=error.detail, status=status.HTTP_401_UNAUTHORIZED)
 
     # Handle other exceptions.
     except Exception as error:
         return Response(
-            data={'message': 'Internal Server Error'},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            data={"message": "Internal Server Error"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

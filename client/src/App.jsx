@@ -10,7 +10,7 @@ import InitialSpinner from "./components/Spinners/InitialSpinner/InitialSpinner"
 import { Container } from "@chakra-ui/react";
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); 
   const dispatch = useDispatch();
   const { isDark } = useThemeInfo();
   const session = useSelector((state) => state.session);
