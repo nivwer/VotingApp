@@ -1,13 +1,14 @@
 from django.contrib.auth import update_session_auth_hash
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ValidationError
-from apps.accounts.services.user_service import UserService
+
 from apps.accounts.repositories.user_repository import UserRepository
-from apps.accounts.serializers import UserSerializer
+from apps.accounts.serializers.user_serialziers import UserSerializer
 
 
 class UserCreateAPIView(APIView):
@@ -17,6 +18,7 @@ class UserCreateAPIView(APIView):
     def post(self, request):
         try:
             user = self.user_repository.create_user(data=request.data)
+
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
@@ -33,7 +35,7 @@ class UserAPIView(APIView):
 
 
 class UserUpdateUsernameAPIView(APIView):
-    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
     user_repository = UserRepository()
 
@@ -42,6 +44,7 @@ class UserUpdateUsernameAPIView(APIView):
             user = self.user_repository.update_username(
                 instance=request.user, data=request.data
             )
+
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,7 +53,7 @@ class UserUpdateUsernameAPIView(APIView):
 
 
 class UserUpdatePasswordAPIView(APIView):
-    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
     user_repository = UserRepository()
 

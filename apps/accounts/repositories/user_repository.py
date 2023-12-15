@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from apps.accounts.serializers import (
+from apps.accounts.serializers.user_serialziers import (
     UserSerializer,
     UserNewUsernameSerializer,
     UserNewPasswordSerializer,

@@ -4,12 +4,13 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
-from apps.accounts.services.user_profile_service import UserProfileRepository
-from apps.profiles.serializers import UserProfileSerializer
+
+from apps.accounts.repositories.user_profile_repository import UserProfileRepository
+from apps.accounts.serializers.user_profile_serializers import UserProfileSerializer
 
 
 class UserProfileAPIView(APIView):
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
     user_profile_repository = UserProfileRepository()
 
