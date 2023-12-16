@@ -1,15 +1,22 @@
 from bson import BSON
 
-from django.contrib.auth.models import User
-
 from rest_framework.exceptions import PermissionDenied, ValidationError
-from rest_framework.request import Request
 
 from apps.polls.utils.utils import Utils
 
 
 class PollUtils(Utils):
+    """
+    Utility class with poll-specific helper methods.
+
+    This class extends the base 'Utils' class and adds additional utility methods that are specifically
+    tailored for tasks related to polls. It inherits common utility methods from the 'Utils' class.
+    """
+
     async def simplify_poll_data(self, poll: dict):
+        """
+        Simplifies poll data by converting MongoDB-specific fields.
+        """
         poll["id"] = poll["_id"]["$oid"]
         del poll["_id"]
         poll["created_at"] = poll["created_at"]["$date"]
@@ -23,6 +30,9 @@ class PollUtils(Utils):
         raise_exception: bool = True,
         ownerOnly: bool = False,
     ):
+        """
+        Checks if a user has permission to access a poll based on privacy settings.
+        """
         is_owner = poll["user_id"] == user_id
         is_private = poll["privacy"] == "private"
 
@@ -32,35 +42,3 @@ class PollUtils(Utils):
             return False
 
         return True
-
-    async def process_add_options(
-        self,
-        user_id: int,
-        options: list,
-        add_options: list,
-        raise_exception: bool = True,
-    ):
-        list_options = []
-        for option in add_options or []:
-            if any(o["option_text"] == option for o in options):
-                if raise_exception:
-                    raise ValidationError(
-                        detail={"message": f"This options '{option}' already exist."}
-                    )
-                return None
-            list_options.append({"user_id": user_id, "option_text": option, "votes": 0})
-
-        return list_options
-
-    async def process_del_options(
-        self, options: list, del_options: list, raise_exception: bool = True
-    ):
-        for option in del_options or []:
-            if not any(o["option_text"] == option for o in options):
-                if raise_exception:
-                    raise ValidationError(
-                        detail={"message": f"This option '{option}' not exist."}
-                    )
-                return None
-
-        return del_options
