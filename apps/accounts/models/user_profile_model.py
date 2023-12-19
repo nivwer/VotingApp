@@ -3,8 +3,14 @@ from django.db import models
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_name = models.CharField(max_length=32, blank=True)
+    """
+    User profile model.
+
+    user (Primary Key) and name are required. Other fields are optional.
+    """
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=False)
+    name = models.CharField(max_length=32, blank=False)
     website_link = models.URLField(max_length=200, blank=True)
     social_link_one = models.URLField(max_length=200, blank=True)
     social_link_two = models.URLField(max_length=200, blank=True)
