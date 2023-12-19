@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views.auth_views import UserRegisterAPIView, UserLoginAPIView, UserLogoutAPIView
+from .views.auth_views import (
+    UserRegisterAPIView,
+    UserLoginAPIView,
+    UserLogoutAPIView,
+    UserSessionCheckAPIView,
+)
 from .views.user_views import (
     UserAPIView,
     UserCreateAPIView,
@@ -25,9 +30,22 @@ urlpatterns = [
         view=UserLogoutAPIView.as_view(),
         name="account_logout",
     ),
+    path(
+        route="user/session/check",
+        view=UserSessionCheckAPIView.as_view(),
+        name="user_session_check",
+    ),
     # Other views
-    path(route="user", view=UserAPIView.as_view(), name="user"),
-    path(route="user/create", view=UserCreateAPIView.as_view(), name="user_create"),
+    path(
+        route="user/create",
+        view=UserCreateAPIView.as_view(),
+        name="user_create",
+    ),
+    path(
+        route="user",
+        view=UserAPIView.as_view(),
+        name="user",
+    ),
     path(
         route="user/update/username",
         view=UserUpdateUsernameAPIView.as_view(),
@@ -39,5 +57,9 @@ urlpatterns = [
         name="user_update_password",
     ),
     # Profiles
-    path(route="user/profile", view=UserProfileAPIView.as_view(), name="user_profile"),
+    path(
+        route="user/profile",
+        view=UserProfileAPIView.as_view(),
+        name="user_profile",
+    ),
 ]
