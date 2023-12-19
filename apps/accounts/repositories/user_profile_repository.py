@@ -4,26 +4,13 @@ from rest_framework.exceptions import NotFound
 
 
 class UserProfileRepository:
-    def create(self, data: dict, raise_exception: bool = True):
-        serializer = UserProfileSerializer(data=data)
+    def create(self, user_pk: int, name: str, **kwargs):
+        instance: UserProfile = UserProfile.objects.create(user=user_pk, name=name, **kwargs)
+        return instance
 
-        if raise_exception:
-            serializer.is_valid(raise_exception=raise_exception)
-        elif not serializer.is_valid():
-            return None
-
-        user = serializer.validated_data.get("user")
-        profile_name = serializer.validated_data.get("profile_name")
-        profile = UserProfile.objects.create(user=user, profile_name=profile_name)
-        return profile
-
-    def get_profile_by_user_id(self, id: int, raise_exception: bool = False):
-        try:
-            return UserProfile.objects.get(user=id)
-        except UserProfile.DoesNotExist:
-            if raise_exception:
-                raise NotFound(detail=f"User profile with ID {id} does not exist.")
-            return None
+    def get_by_user_id(self, id: int):
+        instance: UserProfile = UserProfile.objects.get(user=id)
+        return instance
 
     def update(
         self, instance: UserProfile, data: dict, raise_exception: bool = True
