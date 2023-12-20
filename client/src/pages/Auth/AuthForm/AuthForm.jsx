@@ -6,9 +6,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   HStack,
-  Heading,
   InputGroup,
   InputRightElement,
   Stack,
@@ -25,6 +23,7 @@ function AuthForm({ isSignUp = false, register, onSubmit, isLoading, errors, wat
 
   return (
     <Box
+    my={4}
       w={"100%"}
       borderRadius={"3xl"}
       textAlign={"center"}
@@ -32,7 +31,7 @@ function AuthForm({ isSignUp = false, register, onSubmit, isLoading, errors, wat
       outlineColor={{ base: "transparent", sm: "gothicPurpleAlpha.300" }}
     >
       <form onSubmit={onSubmit}>
-        <Stack spacing={7} p={16} px={{base: 2, sm: 14}} align={"center"}>
+        <Stack spacing={7} p={16} px={{ base: 2, sm: 14 }} align={"center"}>
           <Text children={isSignUp ? "Sign Up" : "Sign In"} fontSize={"4xl"} fontWeight={"bold"} />
           <Stack spacing={5} maxW={"300px"}>
             {/* username. */}

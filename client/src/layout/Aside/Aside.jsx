@@ -12,7 +12,9 @@ function Aside() {
   const [dataQuery, setDataQuery] = useState(false);
   const { data, error, isLoading, isFetching, status } = useExploreUsersQuery(
     { ...dataQuery, page: 1, page_size: 3 },
-    { skip: dataQuery ? false : true }
+    // { skip: dataQuery ? false : true }
+    { skip: true }
+
   );
 
   useEffect(() => {

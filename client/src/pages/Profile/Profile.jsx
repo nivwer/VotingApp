@@ -1,33 +1,29 @@
 import { useThemeInfo } from "../../hooks/Theme";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams, useSearchParams } from "react-router-dom";
-import { useProfileByUsernameQuery } from "../../api/profileApiSlice";
+import { useParams } from "react-router-dom";
+import { useUserProfileByUsernameQuery } from "../../api/accountsAPISlice";
 import { Box, Stack } from "@chakra-ui/react";
 import ProfileHeader from "./ProfileHeader/ProfileHeader";
 import ProfileBody from "./ProfileBody/ProfileBody";
 
 function Profile() {
-  const { isDark } = useThemeInfo();
-  const { isAuthenticated, token } = useSelector((state) => state.session);
   const { username } = useParams();
+  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isDark } = useThemeInfo();
   const [dataQuery, setDataQuery] = useState(false);
   const [profile, setProfile] = useState(null);
-  const { data, status, isLoading, isFetching } = useProfileByUsernameQuery(dataQuery, {
+  const { data, status, isLoading, isFetching } = useUserProfileByUsernameQuery(dataQuery, {
     skip: dataQuery ? false : true,
   });
 
   useEffect(() => {
     setProfile(null);
-    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
-    setDataQuery({ ...headers, username: username });
+    setDataQuery({ username: username });
   }, [username, isAuthenticated]);
 
   useEffect(() => {
-    data &&
-      !isFetching &&
-      !isLoading &&
-      data.profile.username === username &&
+    if (data && !isFetching && !isLoading && data.profile.username === username)
       setProfile(data.profile);
   }, [data, status]);
 

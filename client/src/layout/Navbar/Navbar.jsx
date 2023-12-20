@@ -10,27 +10,26 @@ import PollModal from "../../components/Modals/PollModal/PollModal";
 import CustomIconButton from "../../components/Buttons/CustomIconButton/CustomIconButton";
 import { FaPlus } from "react-icons/fa6";
 import Cookies from "js-cookie";
-import { useSignOutMutation } from "../../api/authApiSlice";
+import { useSignOutMutation } from "../../api/accountsAPISlice";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../features/auth/sessionSlice";
 
 function Navbar({ section }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isDark, ThemeColor } = useThemeInfo();
+  const csrftoken = Cookies.get("csrftoken");
   const { isAuthenticated } = useSelector((state) => state.session);
+  const { isDark, ThemeColor } = useThemeInfo();
   const disclosureRight = useDisclosure();
   const disclosureLeft = useDisclosure();
   const pollModalDisclosure = useDisclosure();
-  const csrftoken = Cookies.get("csrftoken");
   const [signOut] = useSignOutMutation();
 
   // Logout.
   const handleLogout = async () => {
     try {
       const res = await signOut({ headers: { "X-CSRFToken": csrftoken } });
-      // If the logout is successful.
-      if (res.data) {
+      if (res && !res.error) {
         dispatch(logout());
         if (disclosureRight.isOpen) disclosureRight.onClose();
         navigate("/signin");
@@ -71,14 +70,7 @@ function Navbar({ section }) {
         {isAuthenticated && section !== "settings" && (
           <>
             <PollModal disclosure={pollModalDisclosure} />
-            <Box
-              pos="fixed"
-              bottom="70px"
-              right="10px"
-              zIndex={1200}
-              bg="black"
-              borderRadius="full"
-            >
+            <Box pos="fixed" bottom="70px" right="10px" zIndex={1200} bg="black" borderRadius="full">
               <CustomIconButton
                 onClick={pollModalDisclosure.onOpen}
                 icon={<FaPlus />}

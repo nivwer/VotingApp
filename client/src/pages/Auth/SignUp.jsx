@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useSignUpMutation } from "../../api/authApiSlice";
+import { useSignUpMutation } from "../../api/accountsAPISlice";
 import AuthForm from "./AuthForm/AuthForm";
 import { Center, Container } from "@chakra-ui/react";
 

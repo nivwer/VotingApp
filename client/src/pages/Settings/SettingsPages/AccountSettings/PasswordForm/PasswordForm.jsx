@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useUpdatePasswordMutation } from "../../../../../api/authApiSlice";
+// import { useUpdatePasswordMutation } from "../../../../../api/authApiSlice";
+import { useUpdatePasswordMutation } from "../../../../../api/accountsAPISlice";
 import {
   Box,
   FormControl,
@@ -25,6 +26,7 @@ function PasswordForm() {
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
+    // CHANGE TOKEN FOR CSRFTOKEN
     const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
     try {
       const res = await updatePassword({ ...dataMutation });

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "./hooks/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { useUserSessionCheckQuery } from "./api/authApiSlice";
-import { useProfileMeQuery } from "./api/profileApiSlice";
+import { useUserQuery, useUserProfileQuery, useCheckSessionQuery } from "./api/accountsAPISlice";
 import { login } from "./features/auth/sessionSlice";
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
@@ -10,47 +9,44 @@ import InitialSpinner from "./components/Spinners/InitialSpinner/InitialSpinner"
 import { Container } from "@chakra-ui/react";
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true); 
   const dispatch = useDispatch();
-  const { isDark } = useThemeInfo();
+  const [isLoading, setIsLoading] = useState(true);
+  const [skip, setSkip] = useState(true);
   const session = useSelector((state) => state.session);
-  const [data, setData] = useState(false);
+  const { isDark } = useThemeInfo();
+
   const {
     data: dataSession,
     status: statusSession,
     isLoading: isCheckSessionLoading,
     isUninitialized: isCheckSessionUninitialized,
-  } = useUserSessionCheckQuery();
-  const { data: dataProfile } = useProfileMeQuery(data, { skip: data ? false : true });
+  } = useCheckSessionQuery();
+
+  const { data: dataUser } = useUserQuery({}, { skip });
+  const { data: dataProfile } = useUserProfileQuery({}, { skip });
 
   // Login.
   useEffect(() => {
-    if (dataSession && dataProfile) {
-      dispatch(
-        login({
-          isAuthenticated: true,
-          token: dataSession.token,
-          user: dataSession.user,
-          profile: dataProfile.profile,
-        })
-      );
+    if (dataSession && dataUser && dataProfile) {
+      dispatch(login({ isAuthenticated: true, user: dataUser.user, profile: dataProfile.profile }));
+   
     }
-  }, [dataSession, dataProfile]);
+  }, [dataSession, dataUser, dataProfile]);
 
   useEffect(() => {
     if (!isCheckSessionUninitialized && !isCheckSessionLoading) {
       if (dataSession) {
-        setData({ headers: { Authorization: `Token ${dataSession.token}` } });
-        !isLoading && !dataProfile && setIsLoading(true);
+        setSkip(false);
+        if (!isLoading && !dataUser && !dataProfile) setIsLoading(true);
       } else {
-        isLoading && setIsLoading(false);
+        if (isLoading) setIsLoading(false);
       }
     }
   }, [dataSession, statusSession]);
 
   // If is Authenticated.
   useEffect(() => {
-    isLoading && session.isAuthenticated && setIsLoading(false);
+    if (isLoading && session.isAuthenticated) setIsLoading(false);
   }, [session]);
 
   return (
