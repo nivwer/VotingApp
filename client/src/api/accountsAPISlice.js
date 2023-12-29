@@ -95,6 +95,22 @@ export const accountsAPISlice = createApi({
       }),
       providesTags: ["UserProfile"],
     }),
+
+    // Search users.
+    userSearch: builder.query({
+      query: ({ query, page = 1, page_size = 4 }) => ({
+        url: `search?query=${query}&page=${page}&page_size=${page_size}`,
+        method: "GET",
+      }),
+    }),
+
+    // Explore users.
+    userExplore: builder.query({
+      query: ({ headers, page = 1, page_size = 4 }) => ({
+        url: `explore?page=${page}&page_size=${page_size}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -108,4 +124,6 @@ export const {
   useUserProfileByUsernameQuery,
   useUpdateUsernameMutation,
   useUpdatePasswordMutation,
+  useUserSearchQuery,
+  useUserExploreQuery,
 } = accountsAPISlice;

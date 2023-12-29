@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSearchUsersQuery } from "../../../api/profileApiSlice";
+// import { useSearchUsersQuery } from "../../../api/profileApiSlice";
+import { useUserSearchQuery } from "../../../api/accountsAPISlice";
 import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import UserCard from "../../../components/Cards/UserCard/UserCard";
@@ -15,8 +16,8 @@ function UsersResults() {
 
   useEffect(() => {
     if (resetValues) {
-      const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
-      setDataQuery({ ...headers, query: query, page_size: 6 });
+      // const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+      setDataQuery({ query: query, page_size: 6 });
       setResetValues(false);
     }
   }, [resetValues]);
@@ -25,7 +26,7 @@ function UsersResults() {
   return (
     <Pagination
       Card={UserCard}
-      usePageQuery={useSearchUsersQuery}
+      usePageQuery={useUserSearchQuery}
       dataQuery={dataQuery}
       reset={{ resetValues: resetValues, setResetValues: setResetValues }}
     />
