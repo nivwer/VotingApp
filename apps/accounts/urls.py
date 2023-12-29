@@ -13,6 +13,12 @@ from .views.user_views import (
     UserUpdatePasswordAPIView,
 )
 from .views.user_profile_views import UserProfileAPIView
+from .views.user_profile_public_views import (
+    UserProfileGetByUsernameAPIView,
+    UserProfileGetByUserIdAPIView,
+)
+from .views.user_search_view import UserSearchAPIView
+
 
 urlpatterns = [
     path(
@@ -61,5 +67,20 @@ urlpatterns = [
         route="user/profile",
         view=UserProfileAPIView.as_view(),
         name="user_profile",
+    ),
+    path(
+        route="user/<str:username>/profile",
+        view=UserProfileGetByUsernameAPIView.as_view(),
+        name="user_profile_by_username",
+    ),
+    path(
+        route="user/<int:id>/profile",
+        view=UserProfileGetByUserIdAPIView.as_view(),
+        name="user_profile_by_user_id",
+    ),
+    path(
+        route="search",
+        view=UserSearchAPIView.as_view(),
+        name="user_search",
     ),
 ]
