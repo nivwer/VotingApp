@@ -1,30 +1,33 @@
 from django.core.paginator import Paginator
+from asgiref.sync import sync_to_async
 
 
 class Pagination:
-    async def paginate(self, object_list: list, page: int, page_size: int):
-        paginator = Paginator(object_list, page_size)
-        total_pages = paginator.num_pages
-        total_items = paginator.count
-
+    def paginate(self, object_list: list, page: int, page_size: int):
         items: list = []
-        message = ""
+        message: str = ""
+        data: dict = {}
+
+        paginator = Paginator(object_list, page_size)
+
+        total_pages: int = paginator.num_pages
+        total_items: int = paginator.count
+        has_next: bool = False
+        has_previous: bool = False
 
         if total_items == 0:
             message = "No result found"
-            has_previous = False
-            has_next = False
         else:
             page_obj = paginator.get_page(page)
-            has_previous = page_obj.has_previous()
-            has_next = page_obj.has_next()
+            has_previous: bool = page_obj.has_previous()
+            has_next: bool = page_obj.has_next()
 
             if not has_next:
                 message = "No more results"
 
             items = page_obj.object_list if page else object_list
 
-        data: dict = {
+        data = {
             "items": items,
             "message": message,
             "paginator": {
@@ -37,3 +40,6 @@ class Pagination:
         }
 
         return data
+
+    async def paginate_async(self, object_list: list, page: int, page_size: int):
+        return sync_to_async(self.paginate)(object_list=object_list, page=page, page_size=page_size)
