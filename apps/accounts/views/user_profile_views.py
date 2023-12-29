@@ -70,7 +70,7 @@ class UserProfileAPIView(APIView):
             - 400 Bad Request: Validation errors in the request payload.
         """
 
-        return_profile: bool = request.data.get("return_user", False)
+        return_profile: bool = request.data.get("return_profile", False)
 
         user_pk: int = request.user.pk
         name: str = request.data.get("name", request.user.username)
@@ -106,7 +106,7 @@ class UserProfileAPIView(APIView):
         {
             "name": "new_name",
             "profile_picture": "new_profile_picture_url",
-            "return_user": true
+            "return_profile": true
         }
         ```
 
@@ -115,7 +115,7 @@ class UserProfileAPIView(APIView):
             - 400 Bad Request: Validation errors in the request payload.
             - 404 Not Found: User profile not found.
         """
-        return_profile: bool = request.data.get("return_user", False)
+        return_profile: bool = request.data.get("return_profile", False)
 
         user_pk = request.user.pk
         profile_data: dict = request.data
@@ -128,7 +128,7 @@ class UserProfileAPIView(APIView):
 
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
-        
+
         except NotFound as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
