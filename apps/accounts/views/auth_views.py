@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
@@ -188,10 +188,11 @@ class UserLogoutAPIView(APIView):
         Responses:
             - 200 OK: Successful logout.
             - 401 Unauthorized:  Authentication failed during the log-out process.
+            - 403 Forbidden: Authentication credentials were not provided.
         """
 
         logout(request=request)
-        return Response(status=status.HTTP_200_OK)
+        return Response(data={"data_example": "dataexampletext"}, status=status.HTTP_202_ACCEPTED)
 
 
 class UserSessionCheckAPIView(APIView):
@@ -211,15 +212,16 @@ class UserSessionCheckAPIView(APIView):
 
         Example Request:
         ```
-        GET /session_check/
+        GET /user/session/check/
         ```
 
         Responses:
             - 200 OK:
             - 401 Unauthorized: Authentication failed.
+            - 403 Forbidden: Authentication credentials were not provided.
         """
         if request.user:
-            TTL = datetime.timedelta(hours=1)
+            TTL = timedelta(hours=1)
             expiration_date = datetime.utcnow() + TTL
 
             response = Response(data={"is_authenticated": True}, status=status.HTTP_200_OK)

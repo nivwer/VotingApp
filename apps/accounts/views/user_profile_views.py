@@ -3,10 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 
 from apps.accounts.models.user_profile_model import UserProfile
-from apps.accounts.repositories.user_profile_repository import UserProfileRepository
 from apps.accounts.serializers.user_profile_serializers import UserProfileSerializer
 from apps.accounts.services.user_profile_service import UserProfileService
 
@@ -20,8 +19,6 @@ class UserProfileAPIView(APIView):
 
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
-    
-    user_profile_repository = UserProfileRepository()
 
     service = UserProfileService()
 
@@ -29,6 +26,7 @@ class UserProfileAPIView(APIView):
         """
         Allows authenticated users to retrieve their user profile information.
 
+        Example Request:
         ```
         GET /user/profile/
         ```
@@ -36,12 +34,18 @@ class UserProfileAPIView(APIView):
         Responses:
             - 200 OK:
             - 401 Unauthorized: Authentication failed.
+            - 404 Not Found: User profile not found.
         """
 
         user_pk: int = request.user.pk
-        instance: UserProfile = self.service.get_by_user_id(id=user_pk)
+        try:
+            instance: UserProfile = self.service.get_by_user_id(id=user_pk)
+
+        except NotFound as error:
+            return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
+
         profile: dict = UserProfileSerializer(instance=instance).data
-        return Response(data=profile, status=status.HTTP_200_OK)
+        return Response(data={"profile": profile}, status=status.HTTP_200_OK)
 
     def post(self, request):
         """
@@ -89,11 +93,49 @@ class UserProfileAPIView(APIView):
         return response
 
     def put(self, request):
+        """
+        Allows users to update their user profile.
+
+        Usage:
+            - To update user profile information: Send a PUT request to the '/profile/' endpoint.
+            - To return profile information: Include 'return_profile' in the request data. ( Optional )
+
+        Example Request:
+        ```
+        PUT /profile/
+        {
+            "name": "new_name",
+            "profile_picture": "new_profile_picture_url",
+            "return_user": true
+        }
+        ```
+
+        Responses:
+            - 200 OK: Successful user profile updated.
+            - 400 Bad Request: Validation errors in the request payload.
+            - 404 Not Found: User profile not found.
+        """
+        return_profile: bool = request.data.get("return_user", False)
+
+        user_pk = request.user.pk
+        profile_data: dict = request.data
+
+        data: dict = {}
+
         try:
-            profile = self.user_profile_repository.get_profile_by_user_id(id=request.user.pk)
-            self.user_profile_repository.update(instance=profile, data=request.data)
+            instance: UserProfile = self.service.get_by_user_id(id=user_pk)
+            instance: UserProfile = self.service.update(instance=instance, data=profile_data)
 
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
+        
+        except NotFound as error:
+            return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(status=status.HTTP_200_OK)
+        if return_profile:
+            profile: dict = UserProfileSerializer(instance=instance).data
+            data["profile"] = profile
+
+        response = Response(status=status.HTTP_201_CREATED)
+        response.data = data
+        return response
