@@ -1,8 +1,7 @@
 from bson import BSON
 
-from asgiref.sync import async_to_sync
-
 from apps.accounts.repositories.user_list_repository import UserListRepository
+from apps.accounts.repositories.user_profile_repository import UserProfileRepository
 from apps.polls.repositories.user_actions_repository import UserActionsRepository
 from utils.utils import Utils
 from utils.pagination import Pagination
@@ -10,6 +9,7 @@ from utils.pagination import Pagination
 
 class UserListService:
     repository = UserListRepository()
+    user_profile_repository = UserProfileRepository()
     user_actions_repository = UserActionsRepository()
     utils = Utils()
     pagination = Pagination()
@@ -24,10 +24,11 @@ class UserListService:
         items: list[dict] = []
         for user in data["items"]:
             item: dict = {}
-            item["user"] = async_to_sync(self.utils.get_owner)(user_id=user["id"])
+            item["user"] = self.user_profile_repository.get_owner(user_id=user["id"])
             items.append(item)
 
         data["items"] = items
+
         return data
 
     async def get_user_list_by_actions(self, page: int, page_size: int, user_id: int | None = None):

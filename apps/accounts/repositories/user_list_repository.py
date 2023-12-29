@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from asgiref.sync import sync_to_async
 
 class UserListRepository:
     def get_by_keyword(self, keyword: str):
