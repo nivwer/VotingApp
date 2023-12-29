@@ -12,9 +12,17 @@ from apps.accounts.repositories.user_repository import UserRepository
 
 
 class UserService:
+    """
+    Service class for user-related operations.
+
+    This class encapsulates business logic related to user management.
+    """
     repository = UserRepository()
 
     def create_user(self, data: dict, raise_exception: bool = True):
+        """
+        Creates a new user.
+        """
         serializer = UserSerializer(data=data)
         is_valid: bool = serializer.is_valid(raise_exception=raise_exception)
 
@@ -29,6 +37,9 @@ class UserService:
         return instance
 
     def get_by_id(self, id: int, raise_exception: bool = True):
+        """
+        Retrieves a user by user ID.
+        """
         try:
             instance: User = self.repository.get_by_id(id=id)
         except User.DoesNotExist:
@@ -40,6 +51,9 @@ class UserService:
         return instance
 
     def get_by_username(self, username: str, raise_exception: bool = True):
+        """
+        Retrieves a user by username.
+        """
         try:
             instance: User = self.repository.get_by_username(username=username)
         except User.DoesNotExist:
@@ -51,6 +65,9 @@ class UserService:
         return instance
 
     def get_by_email(self, email: str, raise_exception: bool = True):
+        """
+        Retrieves a user by email.
+        """
         try:
             instance: User = self.repository.get_by_email(email=email)
         except User.DoesNotExist:
@@ -62,6 +79,9 @@ class UserService:
         return instance
 
     def update_username(self, instance: User, data: dict, raise_exception: bool = True):
+        """
+        Updates the username of a user.
+        """
         serializer = UserNewUsernameSerializer(data=data)
         is_valid: bool = serializer.is_valid(raise_exception=raise_exception)
 
@@ -83,6 +103,9 @@ class UserService:
         return instance
 
     def update_password(self, instance: User, data: dict, raise_exception: bool = True):
+        """
+        Updates the password of a user.
+        """
         serializer = UserNewPasswordSerializer(data=data)
         is_valid: bool = serializer.is_valid(raise_exception=raise_exception)
 
