@@ -2,15 +2,17 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useAddOptionMutation } from "../../../../../api/pollApiSlice";
+import { useAddOptionMutation } from "../../../../../api/pollsAPISlice";
 import { FormControl, FormErrorMessage, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa6";
 import CustomTextInput from "../../../../Form/CustomTextInput/CustomTextInput";
 import CustomIconButton from "../../../../Buttons/CustomIconButton/CustomIconButton";
+import Cookies from "js-cookie";
 
 function PollCardInputOption({ id, setShowInputOption }) {
+  const csrftoken = Cookies.get("csrftoken");
   const navigate = useNavigate();
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { isAuthenticated } = useSelector((state) => state.session);
   const [dataMutation, setDataMutation] = useState(false);
   const { register, handleSubmit, formState, setError } = useForm();
   const [addOption, { isLoading }] = useAddOptionMutation();
@@ -33,7 +35,7 @@ function PollCardInputOption({ id, setShowInputOption }) {
   });
 
   useEffect(() => {
-    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+    const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
     setDataMutation({ ...headers, id: id });
   }, [id, isAuthenticated]);
 

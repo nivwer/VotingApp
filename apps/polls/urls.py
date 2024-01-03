@@ -17,17 +17,18 @@ from .views.search import search_polls
 
 # New views
 from .views.poll_views import PollAPIView
+from .views.option_view import OptionAPIView
 
 
 urlpatterns = [
     # CRUD Poll.
-#     path("poll/create", poll_create, name="create_poll"),
-#     path("poll/<str:id>", poll_read, name="read_poll"),
-#     path("poll/<str:id>/update", poll_update, name="update_Poll"),
-#     path("poll/<str:id>/delete", poll_delete, name="delete_Poll"),
+    #     path("poll/create", poll_create, name="create_poll"),
+    #     path("poll/<str:id>", poll_read, name="read_poll"),
+    #     path("poll/<str:id>/update", poll_update, name="update_Poll"),
+    #     path("poll/<str:id>/delete", poll_delete, name="delete_Poll"),
     # Option manager.
-    path("poll/<str:id>/option", option_add, name="add_option"),
-    path("poll/<str:id>/option/delete", option_delete, name="delete_option"),
+    # path("poll/<str:id>/option", option_add, name="add_option"),
+    # path("poll/<str:id>/option/delete", option_delete, name="delete_option"),
     # CRUD Vote.
     path("poll/<str:id>/vote", vote_add, name="add_vote"),
     path("poll/<str:id>/vote/read", vote_read, name="get_vote"),
@@ -57,9 +58,7 @@ urlpatterns = [
     path("user/<str:id>", user_polls, name="polls_user"),
     path("user/<str:id>/votes", user_voted_polls, name="voted_polls_user"),
     path("user/<str:id>/shares", user_shared_polls, name="shared_polls_user"),
-    path(
-        "user/<str:id>/bookmarks", user_bookmarked_polls, name="bookmarked_polls_user"
-    ),
+    path("user/<str:id>/bookmarks", user_bookmarked_polls, name="bookmarked_polls_user"),
     # Categories.
     path("categories", categories, name="categories"),
     path("categories/data", categories_data, name="data_categories"),
@@ -67,6 +66,20 @@ urlpatterns = [
     # Search.
     path("search", search_polls, name="search_polls"),
     # NEW ROUTES.
-    path(route="poll", view=PollAPIView.as_view(), name="poll_create"),
-    path(route="poll/<str:id>", view=PollAPIView.as_view(), name="poll"),
+    path(
+        route="poll",
+        view=PollAPIView.as_view(),
+        name="poll_create",
+    ),
+    path(
+        route="poll/<str:id>",
+        view=PollAPIView.as_view(),
+        name="poll_get_update_delete",
+    ),
+    path(
+        route="poll/<str:id>/option",
+        view=OptionAPIView.as_view(),
+        name="poll_option",
+    ),
+    
 ]

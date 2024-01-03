@@ -1,8 +1,8 @@
 from bson import BSON
 
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import PermissionDenied
 
-from apps.polls.utils.utils import Utils
+from .utils import Utils
 
 
 class PollUtils(Utils):
@@ -24,21 +24,19 @@ class PollUtils(Utils):
         return poll
 
     async def check_poll_privacy(
-        self,
-        user_id: int,
-        poll: dict | BSON,
-        raise_exception: bool = True,
-        ownerOnly: bool = False,
+        self, user_id: int, poll: dict | BSON, raise_exception: bool = True, ownerOnly: bool = False
     ):
         """
         Checks if a user has permission to access a poll based on privacy settings.
         """
-        is_owner = poll["user_id"] == user_id
-        is_private = poll["privacy"] == "private"
+        is_owner: bool = poll["user_id"] == user_id
+        is_private: bool = poll["privacy"] == "private"
 
         if (not is_owner) and (ownerOnly or is_private):
             if raise_exception:
-                raise PermissionDenied(detail={"message": "Not Authorized."})
+                message: str = "Not Authorized."
+                raise PermissionDenied(detail={"message": message})
+            
             return False
 
         return True

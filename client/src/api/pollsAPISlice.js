@@ -77,6 +77,28 @@ export const pollsAPISlice = createApi({
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
+
+
+    // Option manager //
+
+    // Add option.
+    addOption: builder.mutation({
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/option`,
+        method: "POST",
+        headers: headers,
+        body: body,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
+
+
   }),
 });
 
@@ -85,4 +107,5 @@ export const {
   useReadPollQuery,
   useUpdatePollMutation,
   useDeletePollMutation,
+  useAddOptionMutation,
 } = pollsAPISlice;

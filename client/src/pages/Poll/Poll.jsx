@@ -1,17 +1,19 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useReadPollQuery } from "../../api/pollApiSlice";
+import { useReadPollQuery } from "../../api/pollsAPISlice";
 import PollCard from "../../components/Cards/PollCard/PollCard";
 import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
 import { Box, Center, Stack, Text } from "@chakra-ui/react";
 import PollComments from "./PollComments/PollComments";
 import { FaRegFaceFrown, FaLock, FaCircleExclamation } from "react-icons/fa6";
 import { useThemeInfo } from "../../hooks/Theme";
+import Cookies from "js-cookie";
 
 function Poll() {
+  const csrftoken = Cookies.get("csrftoken");
   const { isDark } = useThemeInfo();
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { isAuthenticated } = useSelector((state) => state.session);
   const { id } = useParams();
   const [dataQuery, setDataQuery] = useState(false);
   const { data, error, isLoading } = useReadPollQuery(dataQuery, {
@@ -19,7 +21,7 @@ function Poll() {
   });
 
   useEffect(() => {
-    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+    const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
     setDataQuery({ ...headers, id: id });
   }, [id, isAuthenticated]);
 

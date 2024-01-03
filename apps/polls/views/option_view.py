@@ -1,3 +1,5 @@
+from bson.objectid import ObjectId
+
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, PermissionDenied, NotFound
 from rest_framework.response import Response
@@ -6,9 +8,9 @@ from rest_framework.authentication import SessionAuthentication
 
 from adrf.views import APIView
 
-from apps.polls.services.poll_services import PollService
+from apps.polls.services.poll_service import PollService
 
- 
+
 class OptionAPIView(APIView):
     """
     Allows authenticated users to add and remove options from a polls.
@@ -19,9 +21,10 @@ class OptionAPIView(APIView):
 
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
+
     service = PollService()
 
-    async def post(self, request, id):
+    async def post(self, request, id: str):
         """
         Allows authenticated users to add new options to a poll.
 
@@ -37,10 +40,11 @@ class OptionAPIView(APIView):
             - 403 Forbidden: Permission denied if the poll is private and the user is not the owner.
             - 404 Not Found: Poll not found.
         """
+        user_id: int = request.user.id
+        data: dict = request.data
+
         try:
-            id = await self.service.add_option(
-                id=id, user_id=request.user.id, data=request.data
-            )
+            id: ObjectId = await self.service.add_option(id=id, user_id=user_id, data=data)
 
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
@@ -53,7 +57,7 @@ class OptionAPIView(APIView):
 
         return Response({"id": str(id)}, status=status.HTTP_200_OK)
 
-    async def delete(self, request, id):
+    async def delete(self, request, id: str):
         """
         Allows authenticated users to remove options from a poll.
 
@@ -68,10 +72,11 @@ class OptionAPIView(APIView):
         - 403 Forbidden: Permission denied if the poll is private and the user is not the owner.
         - 404 Not Found: Poll not found.
         """
+        user_id: int = request.user.id
+        data: dict = request.data
+
         try:
-            id = await self.service.del_option(
-                id=id, user_id=request.user.id, data=request.data
-            )
+            id: ObjectId = await self.service.del_option(id=id, user_id=user_id, data=data)
 
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
