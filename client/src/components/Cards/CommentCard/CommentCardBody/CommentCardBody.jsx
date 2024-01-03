@@ -14,7 +14,7 @@ function CommentCardBody({ comment, isLoading, deleteComment }) {
         <HStack fontSize={"md"} spacing={1}>
           <NavLink to={`/${comment.user_profile.username}`}>
             <Text h={5} fontWeight={"extrabold"} opacity={isDark ? 1 : 0.8}>
-              {comment.user_profile.profile_name}
+              {comment.user_profile.name}
             </Text>
           </NavLink>
           <NavLink to={`/${comment.user_profile.username}`}>

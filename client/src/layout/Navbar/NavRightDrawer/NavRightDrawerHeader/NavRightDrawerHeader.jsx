@@ -13,7 +13,7 @@ function NavRightDrawerHeader() {
         src={profile.profile_picture}
       />
       <Stack spacing={0} fontSize={"md"} mt={"2px"}>
-        <Text children={profile.profile_name} h={5} mb={"1px"} fontWeight={"bold"} />
+        <Text children={profile.name} h={5} mb={"1px"} fontWeight={"bold"} />
         <Text children={`@${user.username}`} opacity={"0.5"} fontWeight={"medium"} />
       </Stack>
     </HStack>

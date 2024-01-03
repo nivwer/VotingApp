@@ -1,7 +1,5 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-// import { useUpdatePasswordMutation } from "../../../../../api/authApiSlice";
 import { useUpdatePasswordMutation } from "../../../../../api/accountsAPISlice";
 import {
   Box,
@@ -15,9 +13,10 @@ import {
 import ToggleShowPassword from "../../../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
 import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
 import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
+import Cookies from "js-cookie";
 
 function PasswordForm() {
-  const { token } = useSelector((state) => state.session);
+  const csrftoken = Cookies.get("csrftoken");
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
   const { register, handleSubmit, formState, setError, setValue } = useForm();
   const { errors } = formState;
@@ -26,8 +25,7 @@ function PasswordForm() {
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
-    // CHANGE TOKEN FOR CSRFTOKEN
-    const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
+    const dataMutation = { headers: { "X-CSRFToken": csrftoken }, body: data };
     try {
       const res = await updatePassword({ ...dataMutation });
       if (res.data) {

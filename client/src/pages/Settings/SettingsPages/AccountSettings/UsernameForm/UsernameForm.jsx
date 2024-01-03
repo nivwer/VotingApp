@@ -1,21 +1,21 @@
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-// import { useUpdateUsernameMutation } from "../../../../../api/authApiSlice";
 import { useUpdateUsernameMutation } from "../../../../../api/accountsAPISlice";
 import { Box, FormControl, FormErrorMessage, FormLabel, Stack } from "@chakra-ui/react";
 import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
 import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
+import Cookies from "js-cookie";
 
 function UsernameForm() {
-  const { token, user } = useSelector((state) => state.session);
+  const csrftoken = Cookies.get("csrftoken");
+  const { user } = useSelector((state) => state.session);
   const [updateUsername, { isLoading }] = useUpdateUsernameMutation();
   const { register, handleSubmit, formState, setError } = useForm();
   const { errors } = formState;
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
-    // CHANGE TOKEN for TOKENCSRF
-    const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
+    const dataMutation = { headers: { "X-CSRFToken": csrftoken }, body: data };
     try {
       const res = await updateUsername({ ...dataMutation });
       if (res.error) {

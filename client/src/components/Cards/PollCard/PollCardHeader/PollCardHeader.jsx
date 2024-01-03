@@ -26,7 +26,7 @@ function PollCardHeader({ poll, deletePoll, isLoading }) {
             <HStack spacing={1}>
               <NavLink to={`/${poll.user_profile.username}`}>
                 <Text h={5} fontWeight="black" opacity={0.9}>
-                  {poll.user_profile.profile_name}
+                  {poll.user_profile.name}
                 </Text>
               </NavLink>
               <NavLink to={`/${poll.user_profile.username}`}>

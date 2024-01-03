@@ -1,15 +1,10 @@
-// Hooks.
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  useCreatePollMutation,
-  useGetCategoriesQuery,
-  useUpdatePollMutation,
-} from "../../../api/pollApiSlice";
-// Components.
+import { useCreatePollMutation, useUpdatePollMutation } from "../../../api/pollsAPISlice";
+import { useGetCategoriesQuery } from "../../../api/pollApiSlice";
 import CustomButton from "../../Buttons/CustomButton/CustomButton";
 import {
   Button,
@@ -23,15 +18,15 @@ import {
   Text,
   HStack,
 } from "@chakra-ui/react";
-// SubComponents.
 import PollFormBody from "./PollFormBody/PollFormBody";
+import Cookies from "js-cookie";
 
-// Component.
 function PollModal({ poll = false, disclosure }) {
+  const csrftoken = Cookies.get("csrftoken");
   const { isOpen, onClose } = disclosure;
   const navigate = useNavigate();
   const { ThemeColor, isDark } = useThemeInfo();
-  const { token, user } = useSelector((state) => state.session);
+  const { user } = useSelector((state) => state.session);
   const { register, handleSubmit, watch, reset, formState, setError } = useForm();
   const [createPoll, { isLoading: isCreateLoading }] = useCreatePollMutation();
   const [updatePoll, { isLoading: isUpdateLoading }] = useUpdatePollMutation();
@@ -61,7 +56,7 @@ function PollModal({ poll = false, disclosure }) {
   const onSubmit = handleSubmit(async (data) => {
     data["privacy"] = privacyValue;
     data["options"] = options;
-    const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
+    const dataMutation = { headers: { "X-CSRFToken": csrftoken }, body: data };
     try {
       let res = "";
       if (poll) {

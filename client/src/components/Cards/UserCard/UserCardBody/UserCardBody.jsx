@@ -7,7 +7,7 @@ function UserCardBody({ user, hasBio }) {
       <HStack justify={"space-between"}>
         <Stack fontSize={"md"} spacing={0}>
           <NavLink to={`/${user.username}`}>
-            <Text children={user.profile_name} h={5} fontWeight={"extrabold"} opacity={0.9} />
+            <Text children={user.name} h={5} fontWeight={"extrabold"} opacity={0.9} />
           </NavLink>
           <NavLink to={`/${user.username}`}>
             <Text children={`@${user.username}`} h={5} fontWeight={"medium"} opacity={0.5} />

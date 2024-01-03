@@ -1,11 +1,10 @@
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useThemeInfo } from "../../../../../hooks/Theme";
 import {
+  useUserProfileUpdateMutation,
   useGetCountriesQuery,
-  useProfileMeUpdateMutation,
-} from "../../../../../api/profileApiSlice";
+} from "../../../../../api/accountsAPISlice";
 import {
   Avatar,
   Box,
@@ -22,14 +21,15 @@ import { FaLink } from "react-icons/fa6";
 import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
 import CustomSelect from "../../../../../components/Form/CustomSelect/CustomSelect";
 import CustomTextarea from "../../../../../components/Form/CustomTextarea/CustomTextarea";
+import Cookies from "js-cookie";
 
 function ProfileForm({ profile = false }) {
   const { ThemeColor } = useThemeInfo();
-  const { token } = useSelector((state) => state.session);
+  const csrftoken = Cookies.get("csrftoken");
   const { register, handleSubmit, watch, formState, setError, setValue } = useForm();
   const { errors } = formState;
   const { data: dataCountries } = useGetCountriesQuery();
-  const [profileMeUpdate, { isLoading }] = useProfileMeUpdateMutation();
+  const [updateProfile, { isLoading }] = useUserProfileUpdateMutation();
   const [countries, setCountries] = useState(false);
   const selectedCountry = watch("country");
   const [country, setCountry] = useState(profile.country);
@@ -40,9 +40,9 @@ function ProfileForm({ profile = false }) {
 
   // Submit.
   const onSubmit = handleSubmit(async (data) => {
-    const dataMutation = { headers: { Authorization: `Token ${token}` }, body: data };
+    const dataMutation = { headers: { "X-CSRFToken": csrftoken }, body: data };
     try {
-      const res = await profileMeUpdate({ ...dataMutation });
+      const res = await updateProfile({ ...dataMutation });
       if (res.error) {
         for (const fieldName in res.error.data) {
           setError(fieldName, { message: res.error.data[fieldName][0] });
@@ -60,7 +60,7 @@ function ProfileForm({ profile = false }) {
   useEffect(() => {
     if (selectedCountry || selectedCountry === "") {
       setCountry(selectedCountry);
-      selectedCountry !== country && setValue("city", "");
+      if (selectedCountry !== country) setValue("city", "");
     }
   }, [selectedCountry]);
 
@@ -76,18 +76,18 @@ function ProfileForm({ profile = false }) {
         <form onSubmit={onSubmit}>
           <Stack spacing={5}>
             {/* Name. */}
-            <FormControl isInvalid={errors.profile_name} isDisabled={isLoading}>
-              <FormLabel children={"Name"} htmlFor="profile_name" fontWeight={"bold"} />
+            <FormControl isInvalid={errors.name} isDisabled={isLoading}>
+              <FormLabel children={"Name"} htmlFor="name" fontWeight={"bold"} />
               <CustomTextInput
-                name={"profile_name"}
-                defaultValue={profile.profile_name}
+                name={"name"}
+                defaultValue={profile.name}
                 placeholder="Enter your name."
                 register={register}
                 requirements={{ req: true, minL: 3, maxL: 32 }}
                 borderRadius={"md"}
                 size={"sm"}
               />
-              {errors.profile_name && <FormErrorMessage children={errors.profile_name.message} />}
+              {errors.name && <FormErrorMessage children={errors.name.message} />}
             </FormControl>
 
             {/* Bio. */}

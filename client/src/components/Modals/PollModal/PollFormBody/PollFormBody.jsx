@@ -1,7 +1,5 @@
-// Hooks.
 import { useThemeInfo } from "../../../../hooks/Theme";
 import { useEffect } from "react";
-// Components.
 import CustomRadio from "../../../../components/Form/CustomRadio/CustomRadio";
 import CustomIconButton from "../../../Buttons/CustomIconButton/CustomIconButton";
 import CustomTextInput from "../../../Form/CustomTextInput/CustomTextInput";
@@ -19,10 +17,8 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-// Icons.
 import { FaPlus, FaTrash } from "react-icons/fa6";
 
-// SubComponent ( PollModal ).
 function PollFormBody({ poll, form, optionState, privacyState, categories, isLoading }) {
   const { isDark } = useThemeInfo();
   const { register, watch, reset, setError, errors } = form;
@@ -80,7 +76,7 @@ function PollFormBody({ poll, form, optionState, privacyState, categories, isLoa
 
       {/* Description */}
       <FormControl isInvalid={errors.description} isDisabled={isLoading}>
-        <FormLabel children={" Description"} htmlFor="description" fontWeight={"bold"} />
+        <FormLabel children={"Description"} htmlFor="description" fontWeight={"bold"} />
         <CustomTextarea
           name={"description"}
           placeholder="This is my description."
@@ -103,9 +99,7 @@ function PollFormBody({ poll, form, optionState, privacyState, categories, isLoa
         >
           {categories &&
             categories.map((category, index) => (
-              <option key={index} value={category.value}>
-                {category.text}
-              </option>
+              <option children={category.text} key={index} value={category.value} />
             ))}
         </CustomSelect>
         {errors.category && <FormErrorMessage children={errors.category.message} />}
@@ -113,7 +107,7 @@ function PollFormBody({ poll, form, optionState, privacyState, categories, isLoa
 
       {/* Privacy. */}
       <FormControl isDisabled={isLoading}>
-        <FormLabel children={"  Privacy"} htmlFor="privacy" fontWeight={"bold"} />
+        <FormLabel children={"Privacy"} htmlFor="privacy" fontWeight={"bold"} />
         <RadioGroup
           onChange={setPrivacyValue}
           value={privacyValue}
@@ -128,9 +122,7 @@ function PollFormBody({ poll, form, optionState, privacyState, categories, isLoa
 
       {/* Options. */}
       <FormControl isInvalid={errors.options} isDisabled={isLoading}>
-        <FormLabel children={"Options"} htmlFor="options" fontWeight={"bold"}>
-          Options
-        </FormLabel>
+        <FormLabel children={"Options"} htmlFor="options" fontWeight={"bold"} />
         <Stack w={"100%"}>
           {options["options"].map((option, index) => (
             <Flex

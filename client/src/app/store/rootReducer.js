@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
 import { accountsAPISlice } from "../../api/accountsAPISlice";
+import { pollsAPISlice } from "../../api/pollsAPISlice";
 
 import { authApiSlice } from "../../api/authApiSlice";
 import { pollApiSlice } from "../../api/pollApiSlice";
@@ -12,6 +13,7 @@ import themeReducer from "../../features/theme/themeSlice";
 export const store = configureStore({
   reducer: {
     accountsAPI: accountsAPISlice.reducer,
+    pollsAPI: pollsAPISlice.reducer,
 
     authApi: authApiSlice.reducer,
     pollsApi: pollApiSlice.reducer,
@@ -25,7 +27,8 @@ export const store = configureStore({
       .concat(authApiSlice.middleware)
       .concat(pollApiSlice.middleware)
       .concat(profileApiSlice.middleware)
-      .concat(accountsAPISlice.middleware),
+      .concat(accountsAPISlice.middleware)
+      .concat(pollsAPISlice.middleware),
 });
 
 setupListeners(store.dispatch);

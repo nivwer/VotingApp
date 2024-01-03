@@ -59,8 +59,8 @@ export const accountsAPISlice = createApi({
     // Update username.
     updateUsername: builder.mutation({
       query: ({ headers, body }) => ({
-        url: "user/me/update/username",
-        method: "PUT",
+        url: "user/update/username",
+        method: "PATCH",
         headers: headers,
         body: body,
       }),
@@ -70,8 +70,8 @@ export const accountsAPISlice = createApi({
     // Update password.
     updatePassword: builder.mutation({
       query: ({ headers, body }) => ({
-        url: "user/me/update/password",
-        method: "PUT",
+        url: "user/update/password",
+        method: "PATCH",
         headers: headers,
         body: body,
       }),
@@ -85,6 +85,25 @@ export const accountsAPISlice = createApi({
         method: "GET",
       }),
       providesTags: ["UserProfile"],
+    }),
+
+    // Update User Profile.
+    userProfileUpdate: builder.mutation({
+      query: ({ headers, body }) => ({
+        url: "user/profile",
+        method: "PUT",
+        headers: headers,
+        body: body,
+      }),
+      invalidatesTags: ["UserProfile"],
+    }),
+
+    getCountries: builder.query({
+      query: () => ({
+        url: "countries",
+        method: "GET",
+      }),
+      providesTags: ["Countries"],
     }),
 
     // GET User Profile By Username.
@@ -111,6 +130,7 @@ export const accountsAPISlice = createApi({
         method: "GET",
       }),
     }),
+
   }),
 });
 
@@ -120,10 +140,12 @@ export const {
   useSignOutMutation,
   useCheckSessionQuery,
   useUserQuery,
-  useUserProfileQuery,
-  useUserProfileByUsernameQuery,
   useUpdateUsernameMutation,
   useUpdatePasswordMutation,
+  useUserProfileQuery,
+  useUserProfileByUsernameQuery,
+  useUserProfileUpdateMutation,
   useUserSearchQuery,
   useUserExploreQuery,
+  useGetCountriesQuery,
 } = accountsAPISlice;
