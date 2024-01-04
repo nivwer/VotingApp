@@ -116,3 +116,115 @@ class UserActionsService:
         id: ObjectId = await self.repository.delete_vote(id=id, user_id=user_id, del_vote=del_vote)
 
         return id
+
+    async def share(self, id: str, user_id: int):
+        id_is_valid: bool = await self.utils.validate_id(id=id)
+        if not id_is_valid:
+            return None
+
+        poll: BSON = await self.poll_repository.get_by_id(id=id)
+        if not poll:
+            return None
+
+        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
+        if not has_permissions:
+            return None
+
+        projection: dict = {"_id": 0, "poll_id": 1, "has_shared": 1}
+        result: BSON = await self.repository.get_user_actions(
+            id=ObjectId(id), user_id=user_id, projection=projection
+        )
+
+        if result is None:
+            # Create a user actions document if it doesn't exist.
+            await self.repository.create(id=id, user_id=user_id)
+
+        elif "has_shared" in result:
+            message: str = "The user has already shared in this poll."
+            raise ValidationError(detail={"message": message})
+
+        id: ObjectId = await self.repository.share(id=id, user_id=user_id)
+
+        return id
+
+    async def unshare(self, id: str, user_id: int):
+        id_is_valid: bool = await self.utils.validate_id(id=id)
+        if not id_is_valid:
+            return None
+
+        poll: BSON = await self.poll_repository.get_by_id(id=id)
+        if not poll:
+            return None
+
+        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
+        if not has_permissions:
+            return None
+
+        projection: dict = {"_id": 0, "poll_id": 1, "has_shared": 1}
+        result: BSON = await self.repository.get_user_actions(
+            id=ObjectId(id), user_id=user_id, projection=projection
+        )
+
+        if (result is None) or (not result["has_shared"]):
+            message: str = "The user has not shared in this poll."
+            raise ValidationError(detail={"message": message})
+
+        id: ObjectId = await self.repository.unshare(id=id, user_id=user_id)
+
+        return id
+
+    async def bookmark(self, id: str, user_id: int):
+        id_is_valid: bool = await self.utils.validate_id(id=id)
+        if not id_is_valid:
+            return None
+
+        poll: BSON = await self.poll_repository.get_by_id(id=id)
+        if not poll:
+            return None
+
+        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
+        if not has_permissions:
+            return None
+
+        projection: dict = {"_id": 0, "poll_id": 1, "has_bookmarked": 1}
+        result: BSON = await self.repository.get_user_actions(
+            id=ObjectId(id), user_id=user_id, projection=projection
+        )
+
+        if result is None:
+            # Create a user actions document if it doesn't exist.
+            await self.repository.create(id=id, user_id=user_id)
+
+        elif "has_bookmarked" in result:
+            message: str = "The user has already bookmarked this poll."
+            raise ValidationError(detail={"message": message})
+
+        id: ObjectId = await self.repository.bookmark(id=id, user_id=user_id)
+
+        return id
+
+    async def unbookmark(self, id: str, user_id: int):
+        id_is_valid: bool = await self.utils.validate_id(id=id)
+        if not id_is_valid:
+            return None
+
+        poll: BSON = await self.poll_repository.get_by_id(id=id)
+        if not poll:
+            return None
+
+        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
+        if not has_permissions:
+            return None
+        
+        projection: dict = {"_id": 0, "poll_id": 1, "has_bookmarked": 1}
+        result: BSON = await self.repository.get_user_actions(
+            id=ObjectId(id), user_id=user_id, projection=projection
+        )
+
+        if (result is None) or (not result["has_bookmarked"]):
+            message: str = 'The user has not bookmarked in this poll.'
+            raise ValidationError(detail={"message": message})
+
+        id: ObjectId = await self.repository.unbookmark(id=id, user_id=user_id)
+
+        return id

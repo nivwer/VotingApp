@@ -148,6 +148,74 @@ export const pollsAPISlice = createApi({
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
+
+    // Share manager. //
+
+    // Share action.
+    sharePoll: builder.mutation({
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/share`,
+        method: "POST",
+        headers: headers,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
+
+    // UnShare action.
+    unSharePoll: builder.mutation({
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/share`,
+        method: "DELETE",
+        headers: headers,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
+
+    // Bookmark manager. //
+
+    // Bookmark action.
+    bookmarkPoll: builder.mutation({
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/bookmark`,
+        method: "POST",
+        headers: headers,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
+
+    // UnBookmark action.
+    unBookmarkPoll: builder.mutation({
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/bookmark`,
+        method: "DELETE",
+        headers: headers,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
   }),
 });
 
@@ -160,4 +228,8 @@ export const {
   useAddUserVoteMutation,
   useUpdateUserVoteMutation,
   useDeleteUserVoteMutation,
+  useSharePollMutation,
+  useUnSharePollMutation,
+  useBookmarkPollMutation,
+  useUnBookmarkPollMutation,
 } = pollsAPISlice;

@@ -126,11 +126,97 @@ class UserActionsRepository:
                     ],
                     session=session,
                 )
+
                 await session.commit_transaction()
             await session.end_session()
         return ObjectId(id)
-    
-    
+
+    async def share(self, id: str, user_id: int):
+        async with await MongoDBSingleton().client.start_session() as session:
+            async with session.start_transaction():
+                # Update share action if user actions document exist.
+                await self.polls_db.user_actions.update_one(
+                    {"user_id": user_id, "poll_id": ObjectId(id)},
+                    {"$set": {"has_shared": {"shared_at": datetime.now()}}},
+                    upsert=True,
+                    session=session,
+                )
+
+                # Add count to shared counter in the poll document.
+                await self.polls_db.polls.update_one(
+                    {"_id": ObjectId(id)},
+                    {"$inc": {"shares_counter": 1}},
+                    session=session,
+                )
+
+                await session.commit_transaction()
+            await session.end_session()
+        return ObjectId(id)
+
+    async def unshare(self, id: str, user_id: int):
+        async with await MongoDBSingleton().client.start_session() as session:
+            async with session.start_transaction():
+                # Remove share action if user actions document exist.
+                await self.polls_db.user_actions.update_one(
+                    {"user_id": user_id, "poll_id": ObjectId(id)},
+                    {"$unset": {"has_shared": ""}},
+                    session=session,
+                )
+
+                # Remove count to shared counter in the poll document.
+                await self.polls_db.polls.update_one(
+                    {"_id": ObjectId(id)},
+                    {"$inc": {"shares_counter": -1}},
+                    session=session,
+                )
+
+                await session.commit_transaction()
+            await session.end_session()
+        return ObjectId(id)
+
+    async def bookmark(self, id: str, user_id: int):
+        async with await MongoDBSingleton().client.start_session() as session:
+            async with session.start_transaction():
+                # Update bookmark action if user actions document exist.
+                await self.polls_db.user_actions.update_one(
+                    {"user_id": user_id, "poll_id": ObjectId(id)},
+                    {"$set": {"has_bookmarked": {"bookmarked_at": datetime.now()}}},
+                    upsert=True,
+                    session=session,
+                )
+
+                # Add count to bookmarked counter in the poll document.
+                await self.polls_db.polls.update_one(
+                    {"_id": ObjectId(id)},
+                    {"$inc": {"bookmarks_counter": 1}},
+                    session=session,
+                )
+
+                await session.commit_transaction()
+            await session.end_session()
+        return ObjectId(id)
+
+    async def unbookmark(self, id: str, user_id: int):
+        async with await MongoDBSingleton().client.start_session() as session:
+            async with session.start_transaction():
+                # Remove bookmark action if user actions document exist.
+                await self.polls_db.user_actions.update_one(
+                    {"user_id": user_id, "poll_id": ObjectId(id)},
+                    {"$unset": {"has_bookmarked": ""}},
+                    session=session,
+                )
+
+                # Remove count to bookmarked counter in the poll document.
+                await self.polls_db.polls.update_one(
+                    {"_id": ObjectId(id)},
+                    {"$inc": {"bookmarks_counter": -1}},
+                    session=session,
+                )
+
+                await session.commit_transaction()
+            await session.end_session()
+        return ObjectId(id)
+
     ## ??????????
 
     async def get_user_id_list(self):

@@ -19,7 +19,8 @@ from .views.search import search_polls
 from .views.poll_views import PollAPIView
 from .views.option_view import OptionAPIView
 from .views.vote_view import VoteAPIView
-
+from .views.share_view import ShareAPIView
+from .views.bookmark_view import BookmarkAPIView
 
 urlpatterns = [
     # CRUD Poll.
@@ -36,11 +37,11 @@ urlpatterns = [
     # path("poll/<str:id>/vote/update", vote_update, name="update_vote"),
     # path("poll/<str:id>/vote/delete", vote_delete, name="delete_vote"),
     # Share manager.
-    path("poll/<str:id>/share", share_action, name="share_action"),
-    path("poll/<str:id>/unshare", unshare_action, name="unshare_action"),
+    # path("poll/<str:id>/share", share_action, name="share_action"),
+    # path("poll/<str:id>/unshare", unshare_action, name="unshare_action"),
     # Bookmark manager.
-    path("poll/<str:id>/bookmark", bookmark_action, name="bookmark_action"),
-    path("poll/<str:id>/unbookmark", unbookmark_action, name="unbookmark_action"),
+    # path("poll/<str:id>/bookmark", bookmark_action, name="bookmark_action"),
+    # path("poll/<str:id>/unbookmark", unbookmark_action, name="unbookmark_action"),
     # CRUD Comment.
     path("poll/<str:id>/comment", comment_add, name="add_comment"),
     path(
@@ -87,6 +88,17 @@ urlpatterns = [
         route="poll/<str:id>/vote",
         view=VoteAPIView.as_view(),
         name="poll_vote",
+    ),
+    path(
+        route="poll/<str:id>/share",
+        view=ShareAPIView.as_view(),
+        name="poll_share",
+    ),
+
+    path(
+        route="poll/<str:id>/bookmark",
+        view=BookmarkAPIView.as_view(),
+        name="poll_bookmark",
     ),
     
 ]

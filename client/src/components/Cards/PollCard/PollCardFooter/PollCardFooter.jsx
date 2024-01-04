@@ -5,7 +5,7 @@ import {
   useSharePollMutation,
   useUnBookmarkPollMutation,
   useUnSharePollMutation,
-} from "../../../../api/pollApiSlice";
+} from "../../../../api/pollsAPISlice";
 import { Link, useNavigate } from "react-router-dom";
 import { Box, HStack } from "@chakra-ui/react";
 import PollCardButton from "./PollCardButton.jsx/PollCardButton";
@@ -17,10 +17,12 @@ import {
   FaBookmark,
   FaRegBookmark,
 } from "react-icons/fa6";
+import Cookies from "js-cookie";
 
 function PollCardFooter({ poll, userActions, isLoading, state }) {
   const { showInputOption, setShowInputOption } = state;
   const navigate = useNavigate();
+  const csrftoken = Cookies.get("csrftoken");
   const { isAuthenticated, token } = useSelector((state) => state.session);
   const [dataMutation, setDataMutation] = useState(false);
   const [hasShared, setHasShared] = useState(userActions.has_shared ?? false);
@@ -63,7 +65,7 @@ function PollCardFooter({ poll, userActions, isLoading, state }) {
   };
 
   useEffect(() => {
-    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+    const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
     setDataMutation({ ...headers, id: poll.id });
   }, [poll, isAuthenticated]);
 
