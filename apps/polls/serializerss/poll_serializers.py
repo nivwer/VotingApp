@@ -4,9 +4,7 @@ from rest_framework import serializers
 
 class PollSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=113, required=True)
-    description = serializers.CharField(
-        max_length=313, required=False, allow_blank=True
-    )
+    description = serializers.CharField(max_length=313, required=False, allow_blank=True)
     privacy = serializers.CharField(max_length=14, required=True)
     category = serializers.CharField(max_length=50, required=True)
 
@@ -25,7 +23,8 @@ class PollSerializer(serializers.Serializer):
     def validate_privacy(self, value):
         privacy_list = ["public", "private"]
         if not value in privacy_list:
-            raise serializers.ValidationError("Field 'privacy' is required.")
+            message: str = "Field 'privacy' is required."
+            raise serializers.ValidationError(message)
 
         return value
 
@@ -37,9 +36,11 @@ class OptionsSerializer(serializers.Serializer):
 
     def validate_options(self, value):
         if len(value) <= 1:
-            raise serializers.ValidationError("Minimum 2 options allowed.")
+            message: str = "Minimum 2 options allowed."
+            raise serializers.ValidationError(message)
         elif len(value) >= 18:
-            raise serializers.ValidationError("Maximum 18 options allowed.")
+            message: str = "Maximum 18 options allowed."
+            raise serializers.ValidationError(message)
 
         return value
 

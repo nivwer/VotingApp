@@ -41,5 +41,7 @@ class Pagination:
 
         return data
 
-    async def paginate_async(self, object_list: list, page: int, page_size: int):
-        return sync_to_async(self.paginate)(object_list=object_list, page=page, page_size=page_size)
+    async def a_paginate(self, object_list: list, page: int, page_size: int):
+        return await sync_to_async(self.paginate)(
+            object_list=object_list, page=page, page_size=page_size
+        )
