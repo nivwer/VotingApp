@@ -81,8 +81,9 @@ class PollService:
 
         user_actions: dict = {}
         if user_id:
+            projection: dict = {"_id": 0, "has_voted": 1, "has_shared": 1, "has_bookmarked": 1}
             result: BSON = await self.user_actions_repository.get_user_actions(
-                id=ObjectId(poll["id"]), user_id=user_id
+                id=ObjectId(poll["id"]), user_id=user_id, projection=projection
             )
 
             if result != None:

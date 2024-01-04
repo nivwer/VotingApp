@@ -6,14 +6,16 @@ import {
   useAddUserVoteMutation,
   useDeleteUserVoteMutation,
   useUpdateUserVoteMutation,
-} from "../../../../../api/pollApiSlice";
+} from "../../../../../api/pollsAPISlice";
 import { Button, HStack, Text } from "@chakra-ui/react";
 import CustomButton from "../../../../Buttons/CustomButton/CustomButton";
+import Cookies from "js-cookie";
 
 function PollCardOptionButton({ poll, userActions, option, voteState, disabledState }) {
   const navigate = useNavigate();
+  const csrftoken = Cookies.get("csrftoken");
   const { ThemeColor } = useThemeInfo();
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { isAuthenticated } = useSelector((state) => state.session);
   const { has_voted } = userActions;
   const { vote, setVote } = voteState;
   const { isDisabled, setIsDisabled } = disabledState;
@@ -46,7 +48,7 @@ function PollCardOptionButton({ poll, userActions, option, voteState, disabledSt
   useEffect(() => setVote(has_voted ? has_voted.vote : ""), [poll]);
 
   useEffect(() => {
-    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+    const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
     setDataMutation({ ...headers, id: poll.id });
   }, [poll, isAuthenticated]);
 

@@ -18,6 +18,7 @@ from .views.search import search_polls
 # New views
 from .views.poll_views import PollAPIView
 from .views.option_view import OptionAPIView
+from .views.vote_view import VoteAPIView
 
 
 urlpatterns = [
@@ -30,10 +31,10 @@ urlpatterns = [
     # path("poll/<str:id>/option", option_add, name="add_option"),
     # path("poll/<str:id>/option/delete", option_delete, name="delete_option"),
     # CRUD Vote.
-    path("poll/<str:id>/vote", vote_add, name="add_vote"),
-    path("poll/<str:id>/vote/read", vote_read, name="get_vote"),
-    path("poll/<str:id>/vote/update", vote_update, name="update_vote"),
-    path("poll/<str:id>/vote/delete", vote_delete, name="delete_vote"),
+    # path("poll/<str:id>/vote", vote_add, name="add_vote"),
+    # path("poll/<str:id>/vote/read", vote_read, name="get_vote"),
+    # path("poll/<str:id>/vote/update", vote_update, name="update_vote"),
+    # path("poll/<str:id>/vote/delete", vote_delete, name="delete_vote"),
     # Share manager.
     path("poll/<str:id>/share", share_action, name="share_action"),
     path("poll/<str:id>/unshare", unshare_action, name="unshare_action"),
@@ -80,6 +81,12 @@ urlpatterns = [
         route="poll/<str:id>/option",
         view=OptionAPIView.as_view(),
         name="poll_option",
+    ),
+
+    path(
+        route="poll/<str:id>/vote",
+        view=VoteAPIView.as_view(),
+        name="poll_vote",
     ),
     
 ]

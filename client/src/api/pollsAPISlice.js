@@ -78,7 +78,6 @@ export const pollsAPISlice = createApi({
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
-
     // Option manager //
 
     // Add option.
@@ -98,7 +97,57 @@ export const pollsAPISlice = createApi({
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
+    // Vote manager //
 
+    // Add user vote.
+    addUserVote: builder.mutation({
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/vote`,
+        method: "POST",
+        headers: headers,
+        body: body,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
+
+    // Update user vote.
+    updateUserVote: builder.mutation({
+      query: ({ headers, body, id }) => ({
+        url: `poll/${id}/vote`,
+        method: "PATCH",
+        headers: headers,
+        body: body,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
+
+    // Delete user vote.
+    deleteUserVote: builder.mutation({
+      query: ({ headers, id }) => ({
+        url: `poll/${id}/vote`,
+        method: "DELETE",
+        headers: headers,
+      }),
+      invalidatesTags: (res, error) =>
+        res
+          ? [
+              { type: "Polls", id: res.id },
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
   }),
 });
 
@@ -108,4 +157,7 @@ export const {
   useUpdatePollMutation,
   useDeletePollMutation,
   useAddOptionMutation,
+  useAddUserVoteMutation,
+  useUpdateUserVoteMutation,
+  useDeleteUserVoteMutation,
 } = pollsAPISlice;
