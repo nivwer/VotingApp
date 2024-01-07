@@ -16,10 +16,8 @@ class CategoryPollListAPIView(APIView):
         page_size: int = int(request.GET.get("page_size", "4"))
         user_id: int = request.user.id
 
-        data: dict = await self.service.get_category_poll_list(
+        data: dict = await self.service.get_by_category(
             category=category, page=page, page_size=page_size, user_id=user_id
         )
 
         return Response(data=data, status=status.HTTP_200_OK)
-
-

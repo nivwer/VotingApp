@@ -204,8 +204,7 @@ async def poll_read(request, id):
 
     # If poll ID is invalid.
     if len(id) != 24:
-        raise ValidationError(
-            detail={'message': 'Invalid poll ID'})
+        raise ValidationError(detail={'message': 'Invalid poll ID'})
 
     try:
         # Connect to the MongoDB databases.

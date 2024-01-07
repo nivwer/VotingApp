@@ -16,7 +16,7 @@ class UserPollListAPIView(APIView):
         page_size: int = int(request.GET.get("page_size", "4"))
         user_id: int = request.user.id
 
-        data: dict = await self.service.get_user_poll_list(
+        data: dict = await self.service.get_by_user_id(
             id=id, page=page, page_size=page_size, user_id=user_id
         )
 
@@ -33,7 +33,7 @@ class UserVotedPollListAPIView(APIView):
         page_size: int = int(request.GET.get("page_size", "4"))
         user_id: int = request.user.id
 
-        data: dict = await self.service.get_user_voted_poll_list(
+        data: dict = await self.service.get_by_user_votes(
             id=id, page=page, page_size=page_size, user_id=user_id
         )
 
@@ -50,7 +50,7 @@ class UserSharedPollListAPIView(APIView):
         page_size: int = int(request.GET.get("page_size", "4"))
         user_id: int = request.user.id
 
-        data: dict = await self.service.get_user_shared_poll_list(
+        data: dict = await self.service.get_by_user_shares(
             id=id, page=page, page_size=page_size, user_id=user_id
         )
 
@@ -67,7 +67,7 @@ class UserBookmarkedPollListAPIView(APIView):
         page_size: int = int(request.GET.get("page_size", "4"))
         user_id: int = request.user.id
 
-        data: dict = await self.service.get_user_bookmarked_poll_list(
+        data: dict = await self.service.get_by_user_bookmarks(
             id=id, page=page, page_size=page_size, user_id=user_id
         )
 

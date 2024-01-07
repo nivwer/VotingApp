@@ -19,7 +19,7 @@ class PollListRepository:
 
         return polls
 
-    async def get_user_poll_list(self, id: int, user_id: int) -> list[BSON]:
+    async def get_by_user_id(self, id: int, user_id: int) -> list[BSON]:
         polls: list = await self.polls_db.polls.find(
             {
                 "user_id": id,
@@ -33,7 +33,7 @@ class PollListRepository:
 
         return polls
 
-    async def get_user_voted_poll_list(self, id: int, user_id: int) -> list[BSON]:
+    async def get_by_user_votes(self, id: int, user_id: int) -> list[BSON]:
         polls: list = await self.polls_db.user_actions.aggregate(
             [
                 {"$match": {"user_id": id, "has_voted": {"$exists": True}}},
@@ -62,7 +62,7 @@ class PollListRepository:
 
         return polls
 
-    async def get_user_shared_poll_list(self, id: int, user_id: int) -> list[BSON]:
+    async def get_by_user_shares(self, id: int, user_id: int) -> list[BSON]:
         polls: list = await self.polls_db.user_actions.aggregate(
             [
                 {"$match": {"user_id": int(id), "has_shared": {"$exists": True}}},
@@ -91,7 +91,7 @@ class PollListRepository:
 
         return polls
 
-    async def get_user_bookmarked_poll_list(self, id: int, user_id: int) -> list[BSON]:
+    async def get_by_user_bookmarks(self, id: int, user_id: int) -> list[BSON]:
         polls: list = await self.polls_db.user_actions.aggregate(
             [
                 {"$match": {"user_id": int(id), "has_bookmarked": {"$exists": True}}},
@@ -120,7 +120,7 @@ class PollListRepository:
 
         return polls
 
-    async def get_category_poll_list(self, category: str, user_id: int) -> list[BSON]:
+    async def get_by_category(self, category: str, user_id: int) -> list[BSON]:
         polls: list = await self.polls_db.polls.find(
             {
                 "category": category,
