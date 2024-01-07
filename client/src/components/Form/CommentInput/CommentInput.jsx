@@ -22,10 +22,12 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function CommentInput({ id, useAddCommentMutation }) {
+  const csrftoken = Cookies.get("csrftoken");
   const { isDark, ThemeColor } = useThemeInfo();
-  const { isAuthenticated, token, user, profile } = useSelector((state) => state.session);
+  const { isAuthenticated, user, profile } = useSelector((state) => state.session);
   const [commentLength, setCommentLength] = useState(0);
   const [dataMutation, setDataMutation] = useState(false);
   const [addComment, { isLoading }] = useAddCommentMutation();
@@ -56,7 +58,7 @@ function CommentInput({ id, useAddCommentMutation }) {
   });
 
   useEffect(() => {
-    const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+    const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
     setDataMutation({ ...headers, id: id });
   }, [id, isAuthenticated]);
 

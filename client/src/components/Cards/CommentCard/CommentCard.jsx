@@ -1,5 +1,5 @@
 import { useThemeInfo } from "../../../hooks/Theme";
-import { useDeleteCommentMutation } from "../../../api/pollApiSlice";
+import { useDeleteCommentMutation } from "../../../api/pollsAPISlice";
 import { Card, CardBody, CardFooter, CardHeader, Flex } from "@chakra-ui/react";
 import CommentCardHeader from "./CommentCardHeader/CommentCardHeader";
 import CommentCardBody from "./CommentCardBody/CommentCardBody";

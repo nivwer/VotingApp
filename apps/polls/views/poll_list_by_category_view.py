@@ -6,7 +6,7 @@ from adrf.views import APIView
 from apps.polls.services.poll_list_service import PollListService
 
 
-class CategoryPollListAPIView(APIView):
+class PollListByCategoryAPIView(APIView):
     permission_classes = [AllowAny]
 
     service = PollListService()

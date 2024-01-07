@@ -45,6 +45,7 @@ class PollAPIView(APIView):
             - 201 Created: Poll created successfully. Includes the ID of the created poll.
             - 400 Bad Request: Validation errors in the request data.
         """
+
         user_id: int = request.user.id
         data: dict = request.data
 
@@ -73,6 +74,7 @@ class PollAPIView(APIView):
             - 403 Forbidden: Permission issues (private poll access).
             - 404 Not Found: Poll not found.
         """
+
         user_id: int = request.user.id
 
         try:
@@ -123,6 +125,7 @@ class PollAPIView(APIView):
             - 403 Forbidden: Permission denied if the authenticated user is not the owner.
             - 404 Not Found: Poll not found.
         """
+
         user_id: int = request.user.id
         data: dict = request.data
 
@@ -156,6 +159,7 @@ class PollAPIView(APIView):
             - 403 Forbidden: Permission denied if the authenticated user is not the owner.
             - 404 Not Found: Poll not found.
         """
+
         user_id: int = request.user.id
 
         try:

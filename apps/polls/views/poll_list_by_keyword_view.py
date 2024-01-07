@@ -7,7 +7,7 @@ from adrf.views import APIView
 from apps.polls.services.poll_list_service import PollListService
 
 
-class SearchPollListAPIView(APIView):
+class PollListByKeywordAPIView(APIView):
     permission_classes = [AllowAny]
 
     service = PollListService()

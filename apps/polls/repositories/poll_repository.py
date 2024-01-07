@@ -3,8 +3,6 @@ from bson.objectid import ObjectId
 
 from rest_framework.exceptions import NotFound
 
-from pymongo import DESCENDING
-
 from utils.mongo_connection import MongoDBSingleton
 
 
@@ -23,7 +21,9 @@ class PollRepository:
         Creates a new poll.
         """
         result = await self.polls_db.polls.insert_one(data)
-        return result.inserted_id
+        
+        id: ObjectId = result.inserted_id
+        return id
 
     async def get_by_id(self, id: str, raise_exception: bool = True) -> BSON | None:
         """
@@ -33,7 +33,8 @@ class PollRepository:
 
         if not poll:
             if raise_exception:
-                raise NotFound(detail={"message": "Poll not found"})
+                message: str = "Poll not found"
+                raise NotFound(detail={"message": message})
             return None
 
         return poll
@@ -77,8 +78,7 @@ class PollRepository:
 
                 # Save transaction.
                 await session.commit_transaction()
-                await session.end_session()
-
+            await session.end_session()
         return ObjectId(id)
 
     async def delete(self, id: str, poll: dict):
@@ -102,8 +102,7 @@ class PollRepository:
 
                 # Save transaction.
                 await session.commit_transaction()
-                await session.end_session()
-
+            await session.end_session()
         return ObjectId(id)
 
     async def add_option(self, id: str, option: dict):
@@ -123,4 +122,3 @@ class PollRepository:
         )
 
         return ObjectId(id)
-

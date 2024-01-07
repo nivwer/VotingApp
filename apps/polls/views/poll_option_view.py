@@ -11,7 +11,7 @@ from adrf.views import APIView
 from apps.polls.services.poll_service import PollService
 
 
-class OptionAPIView(APIView):
+class PollOptionAPIView(APIView):
     """
     Allows authenticated users to add and remove options from a polls.
 

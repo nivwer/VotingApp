@@ -6,7 +6,7 @@ from adrf.views import APIView
 from apps.polls.services.poll_list_service import PollListService
 
 
-class UserPollListAPIView(APIView):
+class PollListByUserIdAPIView(APIView):
     permission_classes = [AllowAny]
 
     service = PollListService()
@@ -23,7 +23,7 @@ class UserPollListAPIView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class UserVotedPollListAPIView(APIView):
+class PollListByUserVotesAPIView(APIView):
     permission_classes = [AllowAny]
 
     service = PollListService()
@@ -40,7 +40,7 @@ class UserVotedPollListAPIView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class UserSharedPollListAPIView(APIView):
+class PollListByUserSharesAPIView(APIView):
     permission_classes = [AllowAny]
 
     service = PollListService()
@@ -57,7 +57,7 @@ class UserSharedPollListAPIView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class UserBookmarkedPollListAPIView(APIView):
+class PollListByUserBookmarksAPIView(APIView):
     permission_classes = [AllowAny]
 
     service = PollListService()

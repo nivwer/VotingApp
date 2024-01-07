@@ -1,6 +1,6 @@
 from bson import json_util, BSON
 
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 
 
 class Utils:
@@ -23,7 +23,18 @@ class Utils:
             if raise_exception:
                 message: str = "Invalid poll ID"
                 raise ValidationError(detail={"message": message})
-            
+
+            return False
+
+        return True
+
+    async def is_owner(self, object: dict | BSON, user_id: int, raise_exception: bool = True):
+        is_owner: bool = object["user_id"] == user_id
+        if not is_owner:
+            if raise_exception:
+                message: str = "Not authorized."
+                raise PermissionDenied(detail={"message": message})
+
             return False
 
         return True

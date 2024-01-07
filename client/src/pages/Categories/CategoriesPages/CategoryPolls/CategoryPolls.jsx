@@ -2,17 +2,19 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "../../../../hooks/Theme";
-import { useGetCategoriesQuery, useGetPollsCategoryQuery } from "../../../../api/pollApiSlice";
+import { useGetCategoriesQuery, useGetPollsCategoryQuery } from "../../../../api/pollsAPISlice";
 import Pagination from "../../../../components/Pagination/Pagination";
 import PollCard from "../../../../components/Cards/PollCard/PollCard";
 import { Box, Stack, Text } from "@chakra-ui/react";
 import { FaHashtag } from "react-icons/fa6";
 import categoryIcons from "../../../../utils/icons/categoryIcons";
+import Cookies from "js-cookie";
 
 // Page.
 function CategoryPolls() {
   const { isDark } = useThemeInfo();
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const csrftoken = Cookies.get("csrftoken");
+  const { isAuthenticated } = useSelector((state) => state.session);
   const { category } = useParams();
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
@@ -22,7 +24,7 @@ function CategoryPolls() {
   // Update data to fetchs.
   useEffect(() => {
     if (resetValues) {
-      const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+      const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
       setDataQuery({ ...headers, category: category, page_size: 4 });
       setResetValues(false);
     }

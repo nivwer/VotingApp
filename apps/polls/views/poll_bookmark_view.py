@@ -10,8 +10,7 @@ from adrf.views import APIView
 
 from apps.polls.services.user_actions_service import UserActionsService
 
-
-class ShareAPIView(APIView):
+class PollBookmarkAPIView(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -21,7 +20,7 @@ class ShareAPIView(APIView):
         user_id: int = request.user.id
 
         try:
-            id: ObjectId = await self.service.share(id=id, user_id=user_id)
+            id: ObjectId = await self.service.bookmark(id=id, user_id=user_id)
 
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
@@ -38,7 +37,7 @@ class ShareAPIView(APIView):
         user_id: int = request.user.id
 
         try:
-            id: ObjectId = await self.service.unshare(id=id, user_id=user_id)
+            id: ObjectId = await self.service.unbookmark(id=id, user_id=user_id)
 
         except ValidationError as error:
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)

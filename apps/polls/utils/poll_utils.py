@@ -24,7 +24,7 @@ class PollUtils(Utils):
         return poll
 
     async def check_poll_privacy(
-        self, user_id: int, poll: dict | BSON, raise_exception: bool = True, ownerOnly: bool = False
+        self, user_id: int, poll: dict | BSON, ownerOnly: bool = False, raise_exception: bool = True
     ):
         """
         Checks if a user has permission to access a poll based on privacy settings.
@@ -36,7 +36,7 @@ class PollUtils(Utils):
             if raise_exception:
                 message: str = "Not Authorized."
                 raise PermissionDenied(detail={"message": message})
-            
+
             return False
 
         return True

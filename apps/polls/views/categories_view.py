@@ -8,7 +8,7 @@ from adrf.views import APIView
 from apps.polls.utils.categorys import CATEGORIES
 
 
-class GetCategoriesAPIView(APIView):
+class CategoriesAPIView(APIView):
     permission_classes = [AllowAny]
 
     async def get(self, request):

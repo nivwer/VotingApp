@@ -3,7 +3,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from .utils import Utils
 
 
-class OptionUtils(Utils):
+class PollOptionUtils(Utils):
     async def process_add_one_option(
         self, user_id: int, is_owner: bool, options: list, option: str, raise_exception: bool = True
     ):

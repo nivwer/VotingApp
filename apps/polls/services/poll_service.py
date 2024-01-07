@@ -2,14 +2,14 @@ from bson.objectid import ObjectId
 from bson import BSON
 
 from apps.polls.repositories.user_actions_repository import UserActionsRepository
-from apps.polls.serializerss.poll_serializers import (
+from apps.polls.serializers.poll_serializers import (
     PollSerializer,
     OptionsSerializer,
     OptionSerializer,
 )
 from apps.polls.repositories.poll_repository import PollRepository
 from apps.polls.utils.poll_utils import PollUtils
-from apps.polls.utils.option_utils import OptionUtils
+from apps.polls.utils.poll_option_utils import PollOptionUtils
 from apps.accounts.services.user_profile_service import UserProfileService
 
 
@@ -24,7 +24,7 @@ class PollService:
 
     repository = PollRepository()
     utils = PollUtils()
-    option_utils = OptionUtils()
+    option_utils = PollOptionUtils()
     user_actions_repository = UserActionsRepository()
     user_profile_service = UserProfileService()
 
@@ -62,22 +62,14 @@ class PollService:
             id (str): The ID of the poll to retrieve.
             user_id (int): The ID of the user requesting the poll information.
         """
-        id_is_valid: bool = await self.utils.validate_id(id=id)
-        if not id_is_valid:
-            return None
-
+        await self.utils.validate_id(id=id)
         poll: BSON = await self.repository.get_by_id(id=id)
-        if not poll:
-            return None
-
-        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
-        if not has_permissions:
-            return None
+        await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
 
         poll: dict = await self.utils.bson_to_json(bson=poll)
         poll = await self.utils.simplify_poll_data(poll=poll)
-        user_poll_data: dict = await self.user_profile_service.a_get_owner(user_id=poll["user_id"])
-        poll["user_profile"] = user_poll_data
+        user_profile: dict = await self.user_profile_service.a_get_owner(user_id=poll["user_id"])
+        poll["user_profile"] = user_profile
 
         user_actions: dict = {}
         if user_id:
@@ -101,17 +93,9 @@ class PollService:
             data (dict): The data for updating the poll, including options to add or remove.
             user_id (int): The ID of the user attempting to update the poll.
         """
-        id_is_valid: bool = await self.utils.validate_id(id=id)
-        if not id_is_valid:
-            return None
-
+        await self.utils.validate_id(id=id)
         poll: BSON = await self.repository.get_by_id(id=id)
-        if not poll:
-            return None
-
-        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
-        if not has_permissions:
-            return None
+        await self.utils.is_owner(object=poll, user_id=user_id)
 
         # before serialization.
         del_options: list = await self.option_utils.process_del_options(
@@ -126,9 +110,9 @@ class PollService:
             options["options"].remove(option)
 
         poll_serializer = PollSerializer(data=data)
-        options_serializer = OptionsSerializer(data=options)
-
         poll_serializer.is_valid(raise_exception=True)
+
+        options_serializer = OptionsSerializer(data=options)
         options_serializer.is_valid(raise_exception=True)
 
         # after serialization.
@@ -155,33 +139,17 @@ class PollService:
             id (str): The ID of the poll to delete.
             user_id (int): The ID of the user attempting to delete the poll.
         """
-        id_is_valid: bool = await self.utils.validate_id(id=id)
-        if not id_is_valid:
-            return None
-
+        await self.utils.validate_id(id=id)
         poll: BSON = await self.repository.get_by_id(id=id)
-        if not poll:
-            return None
-
-        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
-        if not has_permissions:
-            return None
+        await self.utils.is_owner(object=poll, user_id=user_id)
 
         object_id: ObjectId = await self.repository.delete(id=id, poll=poll)
         return object_id
 
     async def add_option(self, id: str, user_id: int, data: dict):
-        id_is_valid: bool = await self.utils.validate_id(id=id)
-        if not id_is_valid:
-            return None
-
+        await self.utils.validate_id(id=id)
         poll: BSON = await self.repository.get_by_id(id=id)
-        if not poll:
-            return None
-
-        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
-        if not has_permissions:
-            return None
+        await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
 
         option_serializer = OptionSerializer(data=data, partial=True)
         option_serializer.is_valid(raise_exception=True)
@@ -197,17 +165,9 @@ class PollService:
         return object_id
 
     async def del_option(self, id: str, data: dict, user_id: int):
-        id_is_valid: bool = await self.utils.validate_id(id=id)
-        if not id_is_valid:
-            return None
-
+        await self.utils.validate_id(id=id)
         poll: BSON = await self.repository.get_by_id(id=id)
-        if not poll:
-            return None
-
-        has_permissions: bool = await self.utils.check_poll_privacy(user_id=user_id, poll=poll)
-        if not has_permissions:
-            return None
+        await self.utils.is_owner(object=poll, user_id=user_id)
 
         option: str = await self.option_utils.process_del_one_option(
             user_id=user_id,

@@ -1,37 +1,24 @@
 from django.urls import path
-from .views.poll import poll_create, poll_read, poll_update, poll_delete
-from .views.option import option_add, option_delete
-from .views.vote import vote_add, vote_read, vote_update, vote_delete
-from .views.comment import comment_add, comment_update, comment_delete, comments_read
-from .views.share import share_action, unshare_action
-from .views.bookmark import bookmark_action, unbookmark_action
-from .views.user import (
-    user_polls,
-    user_voted_polls,
-    user_shared_polls,
-    user_bookmarked_polls,
-)
-from .views.categories import categories, categories_data
-from .views.category import category_polls
-from .views.search import search_polls
 
-# New views
-from .views.poll_views import PollAPIView
-from .views.option_view import OptionAPIView
-from .views.vote_view import VoteAPIView
-from .views.share_view import ShareAPIView
-from .views.bookmark_view import BookmarkAPIView
+from .views.poll_view import PollAPIView
 
-from .views.user_poll_list_views import (
-    UserPollListAPIView,
-    UserVotedPollListAPIView,
-    UserSharedPollListAPIView,
-    UserBookmarkedPollListAPIView,
+from .views.poll_option_view import PollOptionAPIView
+from .views.poll_vote_view import PollVoteAPIView
+from .views.poll_share_view import PollShareAPIView
+from .views.poll_bookmark_view import PollBookmarkAPIView
+from .views.poll_comment_view import PollCommentAPIView
+from .views.poll_comment_list_view import PollCommentListAPIVIew
+
+from .views.poll_list_by_user_views import (
+    PollListByUserIdAPIView,
+    PollListByUserVotesAPIView,
+    PollListByUserSharesAPIView,
+    PollListByUserBookmarksAPIView,
 )
 
-from .views.category_poll_list_view import CategoryPollListAPIView
-from .views.categories_data_view import GetCategoriesAPIView
-from .views.search_view import SearchPollListAPIView
+from .views.poll_list_by_category_view import PollListByCategoryAPIView
+from .views.categories_view import CategoriesAPIView
+from .views.poll_list_by_keyword_view import PollListByKeywordAPIView
 
 urlpatterns = [
     # CRUD Poll.
@@ -54,19 +41,11 @@ urlpatterns = [
     # path("poll/<str:id>/bookmark", bookmark_action, name="bookmark_action"),
     # path("poll/<str:id>/unbookmark", unbookmark_action, name="unbookmark_action"),
     # CRUD Comment.
-    path("poll/<str:id>/comment", comment_add, name="add_comment"),
-    path(
-        "poll/<str:id>/comment/<str:comment_id>/update",
-        comment_update,
-        name="update_comment",
-    ),
-    path(
-        "poll/<str:id>/comment/<str:comment_id>/delete",
-        comment_delete,
-        name="delete_comment",
-    ),
+    # path("poll/<str:id>/comment", comment_add, name="add_comment"),
+    # path("poll/<str:id>/comment/<str:comment_id>/update", comment_update, name="update_comment"),
+    # path("poll/<str:id>/comment/<str:comment_id>/delete", comment_delete, name="delete_comment"),
     # Get Comments.
-    path("poll/<str:id>/comments", comments_read, name="read_comments"),
+    # path("poll/<str:id>/comments", comments_read, name="read_comments"),
     # User Polls.
     # path("user/<str:id>", user_polls, name="polls_user"),
     # path("user/<str:id>/votes", user_voted_polls, name="voted_polls_user"),
@@ -88,70 +67,85 @@ urlpatterns = [
     path(
         route="poll/<str:id>",
         view=PollAPIView.as_view(),
-        name="poll_get_update_delete",
+        name="poll",
     ),
     # Option manager.
     path(
         route="poll/<str:id>/option",
-        view=OptionAPIView.as_view(),
+        view=PollOptionAPIView.as_view(),
         name="poll_option",
     ),
-    # CRUD Vote.
+    # Vote manager.
     path(
         route="poll/<str:id>/vote",
-        view=VoteAPIView.as_view(),
+        view=PollVoteAPIView.as_view(),
         name="poll_vote",
     ),
     # Share manager.
     path(
         route="poll/<str:id>/share",
-        view=ShareAPIView.as_view(),
+        view=PollShareAPIView.as_view(),
         name="poll_share",
     ),
     # Bookmark manager.
     path(
         route="poll/<str:id>/bookmark",
-        view=BookmarkAPIView.as_view(),
+        view=PollBookmarkAPIView.as_view(),
         name="poll_bookmark",
     ),
     # CRUD Comment.
-    # Get Comments.
+    path(
+        route="poll/<str:id>/comment",
+        view=PollCommentAPIView.as_view(),
+        name="poll_comment_create",
+    ),
+    path(
+        route="poll/<str:id>/comment/<str:comment_id>",
+        view=PollCommentAPIView.as_view(),
+        name="poll_comment",
+    ),
+    # Poll Comments.
+    path(
+        route="poll/<str:id>/comments",
+        view=PollCommentListAPIVIew.as_view(),
+        name="poll_comments",
+    ),
     # User Polls.
     path(
         route="user/<int:id>",
-        view=UserPollListAPIView.as_view(),
+        view=PollListByUserIdAPIView.as_view(),
         name="polls_user",
     ),
     path(
         route="user/<int:id>/votes",
-        view=UserVotedPollListAPIView.as_view(),
+        view=PollListByUserVotesAPIView.as_view(),
         name="polls_user_votes",
     ),
     path(
         route="user/<int:id>/shares",
-        view=UserSharedPollListAPIView.as_view(),
+        view=PollListByUserSharesAPIView.as_view(),
         name="polls_user_shares",
     ),
     path(
         route="user/<int:id>/bookmarks",
-        view=UserBookmarkedPollListAPIView.as_view(),
+        view=PollListByUserBookmarksAPIView.as_view(),
         name="polls_user_bookmarks",
     ),
     # Categories.
     path(
         route="categories",
-        view=GetCategoriesAPIView.as_view(),
+        view=CategoriesAPIView.as_view(),
         name="categories",
     ),
     path(
         route="category/<str:category>",
-        view=CategoryPollListAPIView.as_view(),
+        view=PollListByCategoryAPIView.as_view(),
         name="polls_category",
     ),
     # Search.
     path(
         route="search",
-        view=SearchPollListAPIView.as_view(),
+        view=PollListByKeywordAPIView.as_view(),
         name="polls_search",
     ),
 ]
