@@ -41,6 +41,21 @@ class PollListService:
 
         return items
 
+    async def get_by_keyword(
+        self, keyword: str, page: int, page_size: int, user_id: int | None = None
+    ):
+        polls: list[BSON] = await self.repository.get_by_keyword(keyword=keyword, user_id=user_id)
+        polls: list[dict] = await self.utils.bson_to_json(bson=polls)
+
+        data: dict = await self.pagination.a_paginate(
+            object_list=polls, page=page, page_size=page_size
+        )
+
+        items = await self.filter_poll_list(polls=data["items"], user_id=user_id)
+        data["items"] = items
+
+        return data
+
     async def get_user_poll_list(
         self, id: int, page: int, page_size: int, user_id: int | None = None
     ):
@@ -91,11 +106,32 @@ class PollListService:
         data["items"] = items
 
         return data
-    
+
     async def get_user_bookmarked_poll_list(
         self, id: int, page: int, page_size: int, user_id: int | None = None
     ):
-        polls: list[BSON] = await self.repository.get_user_bookmarked_poll_list(id=id, user_id=user_id)
+        polls: list[BSON] = await self.repository.get_user_bookmarked_poll_list(
+            id=id, user_id=user_id
+        )
+
+        polls: list[dict] = await self.utils.bson_to_json(bson=polls)
+
+        data: dict = await self.pagination.a_paginate(
+            object_list=polls, page=page, page_size=page_size
+        )
+
+        items = await self.filter_poll_list(polls=data["items"], user_id=user_id)
+
+        data["items"] = items
+
+        return data
+
+    async def get_category_poll_list(
+        self, category: str, page: int, page_size: int, user_id: int | None = None
+    ):
+        polls: list[BSON] = await self.repository.get_category_poll_list(
+            category=category, user_id=user_id
+        )
 
         polls: list[dict] = await self.utils.bson_to_json(bson=polls)
 

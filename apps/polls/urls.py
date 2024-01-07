@@ -29,6 +29,9 @@ from .views.user_poll_list_views import (
     UserBookmarkedPollListAPIView,
 )
 
+from .views.category_poll_list_view import CategoryPollListAPIView
+from .views.categories_data_view import GetCategoriesAPIView
+
 urlpatterns = [
     # CRUD Poll.
     #     path("poll/create", poll_create, name="create_poll"),
@@ -69,12 +72,14 @@ urlpatterns = [
     # path("user/<str:id>/shares", user_shared_polls, name="shared_polls_user"),
     # path("user/<str:id>/bookmarks", user_bookmarked_polls, name="bookmarked_polls_user"),
     # Categories.
-    path("categories", categories, name="categories"),
-    path("categories/data", categories_data, name="data_categories"),
-    path("category/<str:category>", category_polls, name="category_polls"),
+    # path("categories", categories, name="categories"),
+    # path("categories/data", categories_data, name="data_categories"),
+    # path("category/<str:category>", category_polls, name="category_polls"),
     # Search.
-    path("search", search_polls, name="search_polls"),
+    # path("search", search_polls, name="search_polls"),
     # NEW ROUTES.
+
+    # CRUD Poll.
     path(
         route="poll",
         view=PollAPIView.as_view(),
@@ -85,27 +90,33 @@ urlpatterns = [
         view=PollAPIView.as_view(),
         name="poll_get_update_delete",
     ),
+    # Option manager.
     path(
         route="poll/<str:id>/option",
         view=OptionAPIView.as_view(),
         name="poll_option",
     ),
+    # CRUD Vote.
     path(
         route="poll/<str:id>/vote",
         view=VoteAPIView.as_view(),
         name="poll_vote",
     ),
+    # Share manager.
     path(
         route="poll/<str:id>/share",
         view=ShareAPIView.as_view(),
         name="poll_share",
     ),
+    # Bookmark manager.
     path(
         route="poll/<str:id>/bookmark",
         view=BookmarkAPIView.as_view(),
         name="poll_bookmark",
     ),
-    ### LIST Views routes
+    # CRUD Comment.
+    # Get Comments.
+    # User Polls.
     path(
         route="user/<int:id>",
         view=UserPollListAPIView.as_view(),
@@ -125,5 +136,23 @@ urlpatterns = [
         route="user/<int:id>/bookmarks",
         view=UserBookmarkedPollListAPIView.as_view(),
         name="polls_user_bookmarks",
+    ),
+    # Categories.
+    path(
+        route="categories",
+        view=GetCategoriesAPIView.as_view(),
+        name="categories",
+    ),
+    path(
+        route="category/<str:category>",
+        view=CategoryPollListAPIView.as_view(),
+        name="polls_category",
+    ),
+
+    # Search.
+    path(
+        route="search",
+        view=CategoryPollListAPIView.as_view(),
+        name="polls_search",
     ),
 ]
