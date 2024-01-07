@@ -217,8 +217,6 @@ export const pollsAPISlice = createApi({
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
-
-
     // GET Polls. //
 
     // Get User Polls.
@@ -237,7 +235,53 @@ export const pollsAPISlice = createApi({
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
 
+    // Get User voted Polls.
+    getUserVotedPolls: builder.query({
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `user/${id}/votes?page=${page}&page_size=${page_size}`,
+        method: "GET",
+        headers: headers,
+      }),
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
 
+    // Get User shared Polls.
+    getUserSharedPolls: builder.query({
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `user/${id}/shares?page=${page}&page_size=${page_size}`,
+        method: "GET",
+        headers: headers,
+      }),
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
+
+    // Get User bookmarked Polls.
+    getUserBookmarkedPolls: builder.query({
+      query: ({ headers, id, page = 1, page_size = 4 }) => ({
+        url: `user/${id}/bookmarks?page=${page}&page_size=${page_size}`,
+        method: "GET",
+        headers: headers,
+      }),
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
   }),
 });
 
@@ -256,4 +300,7 @@ export const {
   useUnBookmarkPollMutation,
 
   useGetUserPollsQuery,
+  useGetUserVotedPollsQuery,
+  useGetUserSharedPollsQuery,
+  useGetUserBookmarkedPollsQuery,
 } = pollsAPISlice;

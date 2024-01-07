@@ -1,17 +1,19 @@
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { useGetUserVotedPollsQuery } from "../../../../../api/pollApiSlice";
+import { useGetUserVotedPollsQuery } from "../../../../../api/pollsAPISlice";
 import Pagination from "../../../../../components/Pagination/Pagination";
 import PollCard from "../../../../../components/Cards/PollCard/PollCard";
+import Cookies from "js-cookie";
 
 function ProfileVotedPolls({ id }) {
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const csrftoken = Cookies.get("csrftoken");
+  const { isAuthenticated } = useSelector((state) => state.session);
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
 
   useEffect(() => {
     if (resetValues) {
-      const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
+      const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
       setDataQuery({ ...headers, id: id, page_size: 4 });
       setResetValues(false);
     }

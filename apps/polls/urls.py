@@ -22,7 +22,12 @@ from .views.vote_view import VoteAPIView
 from .views.share_view import ShareAPIView
 from .views.bookmark_view import BookmarkAPIView
 
-from .views.user_poll_list_views import UserPollListAPIView
+from .views.user_poll_list_views import (
+    UserPollListAPIView,
+    UserVotedPollListAPIView,
+    UserSharedPollListAPIView,
+    UserBookmarkedPollListAPIView,
+)
 
 urlpatterns = [
     # CRUD Poll.
@@ -60,9 +65,9 @@ urlpatterns = [
     path("poll/<str:id>/comments", comments_read, name="read_comments"),
     # User Polls.
     # path("user/<str:id>", user_polls, name="polls_user"),
-    path("user/<str:id>/votes", user_voted_polls, name="voted_polls_user"),
-    path("user/<str:id>/shares", user_shared_polls, name="shared_polls_user"),
-    path("user/<str:id>/bookmarks", user_bookmarked_polls, name="bookmarked_polls_user"),
+    # path("user/<str:id>/votes", user_voted_polls, name="voted_polls_user"),
+    # path("user/<str:id>/shares", user_shared_polls, name="shared_polls_user"),
+    # path("user/<str:id>/bookmarks", user_bookmarked_polls, name="bookmarked_polls_user"),
     # Categories.
     path("categories", categories, name="categories"),
     path("categories/data", categories_data, name="data_categories"),
@@ -102,8 +107,23 @@ urlpatterns = [
     ),
     ### LIST Views routes
     path(
-        route="user/<str:id>",
+        route="user/<int:id>",
         view=UserPollListAPIView.as_view(),
         name="polls_user",
+    ),
+    path(
+        route="user/<int:id>/votes",
+        view=UserVotedPollListAPIView.as_view(),
+        name="polls_user_votes",
+    ),
+    path(
+        route="user/<int:id>/shares",
+        view=UserSharedPollListAPIView.as_view(),
+        name="polls_user_shares",
+    ),
+    path(
+        route="user/<int:id>/bookmarks",
+        view=UserBookmarkedPollListAPIView.as_view(),
+        name="polls_user_bookmarks",
     ),
 ]
