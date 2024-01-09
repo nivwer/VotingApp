@@ -1,36 +1,39 @@
-# Standard.
 import os
-# Virtualenv.
 from dotenv import load_dotenv
-# MongoDB connection.
 from pymongo import MongoClient
+from pymongo.database import Database
 
-# Load the virtual environment.
 load_dotenv()
-# Environment variable for MongoDB database.
-MONGO_URI = os.getenv('MONGO_URI')
 
-# Get database.
-client = MongoClient(MONGO_URI)
-db = client['polls_db']
+MONGO_URI: str = os.getenv("MONGO_URI")
+client: MongoClient = MongoClient(MONGO_URI)
+polls_db: Database = client["polls_db"]
+
+
+def create_collection():
+    if "polls" not in polls_db.list_collection_names():
+        polls_db.create_collection(name="polls")
+
+    if "comments" not in polls_db.list_collection_names():
+        polls_db.create_collection(name="comments")
+
+    if "user_actions" not in polls_db.list_collection_names():
+        polls_db.create_collection(name="user_actions")
 
 
 def create_index_text():
-    # Retrieve the list of indexes before creating the new index.
-    before_indexes = db.polls.index_information()
-    # Check if exist.
-    text_index_exists = before_indexes['title_text_description_text_category_text']
+    before_indexes = polls_db.polls.index_information()
+    print("Índices existentes:", before_indexes)
+
+    clave_text_index = "title_text_description_text_category_text"
+    text_index_exists = clave_text_index in before_indexes
 
     if not text_index_exists:
-        # Create index.
-        db.polls.create_index([
-            ('title', 'text'),
-            ('description', 'text'),
-            ('category', 'text')
-        ])
-        print('Text index created successfully.')
-    else:
-        print('The text index already exists. No action was taken.')
+        polls_db.polls.create_index(
+            [("title", "text"), ("description", "text"), ("category", "text")]
+        )
+        print("Text index created successfully.")
 
 
+create_collection()
 create_index_text()
