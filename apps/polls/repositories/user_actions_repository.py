@@ -216,20 +216,3 @@ class UserActionsRepository:
                 await session.commit_transaction()
             await session.end_session()
         return ObjectId(id)
-
-    ## ??????????
-
-    async def get_user_id_list(self):
-        poll_id_list: list[BSON] = await self.polls_db.user_actions.find(
-            {},
-            {"_id": 0, "poll_id": 1},
-        ).to_list(None)
-
-        user_id_list: list[BSON] = await self.polls_db.user_actions.aggregate(
-            [
-                {"$match": {"poll_id": {"$in": [x["poll_id"] for x in poll_id_list]}}},
-                {"$group": {"_id": "$user_id"}},
-            ]
-        ).to_list(None)
-
-        return user_id_list
