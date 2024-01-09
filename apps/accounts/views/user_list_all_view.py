@@ -6,16 +6,16 @@ from adrf.views import APIView
 from apps.accounts.services.user_list_service import UserListService
 
 
-class ExploreUsersAPIView(APIView):
+class UserListAllAPIView(APIView):
     permission_classes = [AllowAny]
+
     service = UserListService()
 
-    async def get(self, request):
-        page: int = int(request.GET.get("page")) or 1
-        page_size: int = int(request.GET.get("page_size")) or 4
+    def get(self, request):
+        page: int = int(request.GET.get("page", "1"))
+        page_size: int = int(request.GET.get("page_size", "4"))
+        user_id: int = request.user.id
 
-        data: dict = await self.service.explore_user_list(
-            user_id=request.user.id, page=page, page_size=page_size
-        )
+        data: dict = self.service.get_all(user_id=user_id, page=page, page_size=page_size)
 
         return Response(data=data, status=status.HTTP_200_OK)

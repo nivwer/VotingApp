@@ -29,7 +29,6 @@ function App() {
   useEffect(() => {
     if (dataSession && dataUser && dataProfile) {
       dispatch(login({ isAuthenticated: true, user: dataUser.user, profile: dataProfile.profile }));
-   
     }
   }, [dataSession, dataUser, dataProfile]);
 

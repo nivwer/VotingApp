@@ -116,21 +116,22 @@ export const accountsAPISlice = createApi({
     }),
 
     // Search users.
-    userSearch: builder.query({
-      query: ({ query, page = 1, page_size = 4 }) => ({
+    searchUsers: builder.query({
+      query: ({ headers, query, page = 1, page_size = 4 }) => ({
         url: `search?query=${query}&page=${page}&page_size=${page_size}`,
         method: "GET",
+        headers: headers,
       }),
     }),
 
     // Explore users.
-    userExplore: builder.query({
+    exploreUsers: builder.query({
       query: ({ headers, page = 1, page_size = 4 }) => ({
-        url: `explore?page=${page}&page_size=${page_size}`,
+        url: `users/all?page=${page}&page_size=${page_size}`,
         method: "GET",
+        headers: headers,
       }),
     }),
-
   }),
 });
 
@@ -145,7 +146,7 @@ export const {
   useUserProfileQuery,
   useUserProfileByUsernameQuery,
   useUserProfileUpdateMutation,
-  useUserSearchQuery,
-  useUserExploreQuery,
+  useSearchUsersQuery,
+  useExploreUsersQuery,
   useGetCountriesQuery,
 } = accountsAPISlice;

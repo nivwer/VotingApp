@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useExploreUsersQuery } from "../../api/profileApiSlice";
+import { useExploreUsersQuery } from "../../api/accountsAPISlice";
 import { useSelector } from "react-redux";
 import UserCard from "../../components/Cards/UserCard/UserCard";
 import { Box, Stack, Text } from "@chakra-ui/react";
@@ -12,9 +12,7 @@ function Aside() {
   const [dataQuery, setDataQuery] = useState(false);
   const { data, error, isLoading, isFetching, status } = useExploreUsersQuery(
     { ...dataQuery, page: 1, page_size: 3 },
-    // { skip: dataQuery ? false : true }
-    { skip: true }
-
+    { skip: dataQuery ? false : true }
   );
 
   useEffect(() => {

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-// import { useSearchUsersQuery } from "../../../api/profileApiSlice";
-import { useUserSearchQuery } from "../../../api/accountsAPISlice";
+import { useSearchUsersQuery } from "../../../api/accountsAPISlice";
 import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import UserCard from "../../../components/Cards/UserCard/UserCard";
 import Pagination from "../../../components/Pagination/Pagination";
+import Cookies from "js-cookie";
 
 function UsersResults() {
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const csrftoken = Cookies.get("csrftoken");
+  const { isAuthenticated } = useSelector((state) => state.session);
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
   const type = searchParams.get("type") || "";
@@ -16,8 +17,8 @@ function UsersResults() {
 
   useEffect(() => {
     if (resetValues) {
-      // const headers = isAuthenticated ? { headers: { Authorization: `Token ${token}` } } : {};
-      setDataQuery({ query: query, page_size: 6 });
+      const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
+      setDataQuery({ ...headers, query: query, page_size: 6 });
       setResetValues(false);
     }
   }, [resetValues]);
@@ -26,7 +27,7 @@ function UsersResults() {
   return (
     <Pagination
       Card={UserCard}
-      usePageQuery={useUserSearchQuery}
+      usePageQuery={useSearchUsersQuery}
       dataQuery={dataQuery}
       reset={{ resetValues: resetValues, setResetValues: setResetValues }}
     />
