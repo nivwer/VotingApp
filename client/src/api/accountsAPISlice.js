@@ -118,7 +118,7 @@ export const accountsAPISlice = createApi({
     // Search users.
     searchUsers: builder.query({
       query: ({ headers, query, page = 1, page_size = 4 }) => ({
-        url: `search?query=${query}&page=${page}&page_size=${page_size}`,
+        url: `users/search?query=${query}&page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
