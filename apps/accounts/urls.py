@@ -12,12 +12,14 @@ from .views.user_views import (
     UserUpdateUsernameAPIView,
     UserUpdatePasswordAPIView,
 )
-from .views.user_profile_views import UserProfileAPIView
+from .views.user_profile_view import UserProfileAPIView
 from .views.user_profile_public_views import (
-    UserProfileGetByUsernameAPIView,
-    UserProfileGetByUserIdAPIView,
+    UserProfileByUsernameAPIView,
+    UserProfileByUserIdAPIView,
 )
-from .views.user_search_view import UserSearchAPIView
+from .views.user_list_by_keyword_view import UserListByKeywordAPIView
+from .views.countries_view import CountriesAPIView
+from .views.user_list_all_view import UserListAllAPIView
 
 
 urlpatterns = [
@@ -41,7 +43,6 @@ urlpatterns = [
         view=UserSessionCheckAPIView.as_view(),
         name="user_session_check",
     ),
-    # Other views
     path(
         route="user/create",
         view=UserCreateAPIView.as_view(),
@@ -62,25 +63,34 @@ urlpatterns = [
         view=UserUpdatePasswordAPIView.as_view(),
         name="user_update_password",
     ),
-    # Profiles
     path(
         route="user/profile",
         view=UserProfileAPIView.as_view(),
         name="user_profile",
     ),
     path(
+        route="countries",
+        view=CountriesAPIView.as_view(),
+        name="countries",
+    ),
+    path(
         route="user/<str:username>/profile",
-        view=UserProfileGetByUsernameAPIView.as_view(),
+        view=UserProfileByUsernameAPIView.as_view(),
         name="user_profile_by_username",
     ),
     path(
         route="user/<int:id>/profile",
-        view=UserProfileGetByUserIdAPIView.as_view(),
+        view=UserProfileByUserIdAPIView.as_view(),
         name="user_profile_by_user_id",
     ),
     path(
-        route="search",
-        view=UserSearchAPIView.as_view(),
-        name="user_search",
+        route="users/search",
+        view=UserListByKeywordAPIView.as_view(),
+        name="users_search",
+    ),
+    path(
+        route="users/all",
+        view=UserListAllAPIView.as_view(),
+        name="users_all",
     ),
 ]

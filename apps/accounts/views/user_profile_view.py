@@ -38,6 +38,7 @@ class UserProfileAPIView(APIView):
         """
 
         user_pk: int = request.user.pk
+
         try:
             instance: UserProfile = self.service.get_by_user_id(id=user_pk)
 
@@ -115,9 +116,10 @@ class UserProfileAPIView(APIView):
             - 400 Bad Request: Validation errors in the request payload.
             - 404 Not Found: User profile not found.
         """
+
         return_profile: bool = request.data.get("return_profile", False)
 
-        user_pk = request.user.pk
+        user_pk: int = request.user.pk
         profile_data: dict = request.data
 
         data: dict = {}

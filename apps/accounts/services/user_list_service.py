@@ -4,11 +4,19 @@ from utils.pagination import Pagination
 
 
 class UserListService:
+    """
+    Service class for retrieving user lists based on different criteria.
+    """
+
     repository = UserListRepository()
     user_profile_repository = UserProfileRepository()
     pagination = Pagination()
 
     def get_by_keyword(self, keyword: str, page: int, page_size: int):
+        """
+        Retrieves a paginated user list based on a keyword search.
+        """
+
         user_id_list: list[dict] = self.repository.get_by_keyword(keyword=keyword)
 
         data: dict = self.pagination.paginate(
@@ -25,7 +33,11 @@ class UserListService:
 
         return data
 
-    def get_all(self, page: int, page_size: int, user_id: int | None = None):
+    def get_all(self, page: int, page_size: int):
+        """
+        Retrieves a paginated list of all users.
+        """
+
         user_id_list: list[dict] = self.repository.get_all()
 
         data: dict = self.pagination.paginate(

@@ -7,11 +7,31 @@ from apps.accounts.services.user_list_service import UserListService
 
 
 class UserListAllAPIView(APIView):
+    """
+    API view for retrieving a paginated list of all users.
+    """
+
     permission_classes = [AllowAny]
 
     service = UserListService()
 
     def get(self, request):
+        """
+        Handles the retrieval of a paginated list of all users.
+
+        Usage:
+            - To retrieve a paginated list of all users: Send a GET request to the '/users/all/' endpoint.
+            Optional parameters: 'page' for pagination and 'page_size' to set the number of results per page.
+
+        Example Request:
+            ```
+            GET /users/all/?page=1&page_size=4
+            ```
+
+        Responses:
+            - 200 OK:
+        """
+
         page: int = int(request.GET.get("page", "1"))
         page_size: int = int(request.GET.get("page_size", "4"))
         user_id: int = request.user.id

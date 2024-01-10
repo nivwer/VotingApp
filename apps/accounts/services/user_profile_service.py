@@ -1,8 +1,10 @@
+from rest_framework.exceptions import NotFound
+
+from asgiref.sync import sync_to_async
+
 from apps.accounts.repositories.user_profile_repository import UserProfileRepository
 from apps.accounts.models.user_profile_model import UserProfile
 from apps.accounts.serializers.user_profile_serializers import UserProfileSerializer
-
-from rest_framework.exceptions import NotFound
 
 
 class UserProfileService:
@@ -90,3 +92,6 @@ class UserProfileService:
         data: dict = self.repository.get_owner(user_id=user_id)
 
         return data
+
+    async def a_get_owner(self, user_id: int):
+        return await sync_to_async(self.get_owner)(user_id=user_id)

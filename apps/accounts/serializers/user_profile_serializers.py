@@ -9,7 +9,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value):
         if len(value) < 3:
-            raise serializers.ValidationError("Minimum 3 characters allowed.")
+            message: str = "Minimum 3 characters allowed."
+            raise serializers.ValidationError(detail=message)
         if len(value) > 32:
-            raise serializers.ValidationError("Maximum 32 characters allowed.")
+            message: str = "Maximum 32 characters allowed."
+            raise serializers.ValidationError(detail=message)
         return value

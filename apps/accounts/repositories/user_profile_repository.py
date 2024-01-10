@@ -12,22 +12,37 @@ class UserProfileRepository:
     """
 
     def create(self, user: int, name: str, **kwargs):
+        """
+        Creates a user profile.
+        """
         instance: UserProfile = UserProfile.objects.create(user=user, name=name, **kwargs)
         return instance
 
     def get_by_user_id(self, id: int):
+        """
+        Retrieves a user profile by user ID.
+        """
         instance: UserProfile = UserProfile.objects.get(user=id)
         return instance
 
     def get_by_username(self, username: str):
+        """
+        Retrieves a user profile by username.
+        """
         instance: UserProfile = UserProfile.objects.get(user__username=username)
         return instance
 
     def update(self, serializer: UserProfileSerializer):
+        """
+        Updates a user profile.
+        """
         instance: UserProfile = serializer.save()
         return instance
 
     def get_owner(self, user_id: int):
+        """
+        Retrieves owner details based on user ID.
+        """
         f = ["username", "userprofile__profile_picture", "userprofile__name"]
         result: dict = User.objects.filter(id=user_id).values(*f).first()
 

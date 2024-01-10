@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny
 from apps.accounts.utils.countries import COUNTRIES
 
 
-class GetCountriesAPIView(APIView):
+class CountriesAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):

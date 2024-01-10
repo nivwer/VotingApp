@@ -9,7 +9,7 @@ from apps.accounts.services.user_profile_service import UserProfileService
 from apps.accounts.models.user_profile_model import UserProfile
 
 
-class UserProfileGetByUserIdAPIView(APIView):
+class UserProfileByUserIdAPIView(APIView):
     """
     API view for retrieving user profiles by user ID.
     """
@@ -42,13 +42,14 @@ class UserProfileGetByUserIdAPIView(APIView):
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
         profile: dict = UserProfileSerializer(instance=instance).data
+        profile["id"] = instance.user.id
         profile["username"] = instance.user.username
         profile["date_joined"] = instance.user.date_joined
 
         return Response(data={"profile": profile}, status=status.HTTP_200_OK)
 
 
-class UserProfileGetByUsernameAPIView(APIView):
+class UserProfileByUsernameAPIView(APIView):
     """
     API view for retrieving user profiles by username.
     """
@@ -81,6 +82,7 @@ class UserProfileGetByUsernameAPIView(APIView):
             return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
 
         profile: dict = UserProfileSerializer(instance=instance).data
+        profile["id"] = instance.user.id
         profile["username"] = instance.user.username
         profile["date_joined"] = instance.user.date_joined
 

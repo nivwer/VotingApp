@@ -21,7 +21,7 @@ class UserProfile(models.Model):
         choices=[
             ("they/them", "They/Them"),
             ("she/her", "She/Her"),
-            ("he/him", "He/Him"),
+            ("he/him", "He/Him")
         ],
         blank=True,
     )
