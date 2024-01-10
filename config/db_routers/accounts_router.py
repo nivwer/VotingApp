@@ -4,7 +4,6 @@ class AccountsRouter:
         "contenttypes",
         "sessions",
         "admin",
-        "authtoken",
         "accounts",
     }
 
