@@ -1,5 +1,5 @@
 import { useThemeInfo } from "../../hooks/Theme";
-import { useGetCategoriesQuery } from "../../api/pollApiSlice";
+import { useGetCategoriesQuery } from "../../api/pollsAPISlice";
 import { Box, Stack } from "@chakra-ui/react";
 import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
 import CategoriesLinkButton from "./CategoriesLinkButton/CategoriesLinkButton";

@@ -53,7 +53,7 @@ class PollBookmarkAPIView(APIView):
 
     service = UserActionsService()
 
-    async def post(self, request, id: str):
+    async def post(self, request, id: str, *args, **kwargs):
         """
         Bookmark a specific poll.
 
@@ -80,7 +80,7 @@ class PollBookmarkAPIView(APIView):
 
         return Response(data={"id": str(id)}, status=status.HTTP_200_OK)
 
-    async def delete(self, request, id: str):
+    async def delete(self, request, id: str, *args, **kwargs):
         """
         Unbookmark a previously bookmarked poll.
 

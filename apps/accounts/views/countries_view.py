@@ -37,7 +37,7 @@ class CountriesAPIView(APIView):
 
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """
         Retrieve a list of countries.
 

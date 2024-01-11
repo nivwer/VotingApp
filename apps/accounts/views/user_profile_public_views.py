@@ -38,11 +38,12 @@ class UserProfileByUserIdAPIView(APIView):
 
     Note: This endpoint allows any user to access user profiles by providing the user ID.
     """
+
     permission_classes = [AllowAny]
 
     service = UserProfileService()
 
-    def get(self, request, id: int):
+    def get(self, request, id: int, *args, **kwargs):
         """
         Retrieve a user's profile by user ID.
 
@@ -53,7 +54,7 @@ class UserProfileByUserIdAPIView(APIView):
         Returns:
             Response: A response containing the user's profile data.
         """
-        
+
         try:
             instance: UserProfile = self.service.get_by_user_id(id=id)
 
@@ -97,11 +98,12 @@ class UserProfileByUsernameAPIView(APIView):
 
     Note: This endpoint allows any user to access user profiles by providing the username.
     """
+
     permission_classes = [AllowAny]
 
     service = UserProfileService()
 
-    def get(self, request, username: str):
+    def get(self, request, username: str, *args, **kwargs):
         """
         Retrieve a user's profile by username.
 

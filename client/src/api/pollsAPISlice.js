@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const pollsAPISlice = createApi({
   reducerPath: "pollsAPI",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/polls/",
+    baseUrl: "http://localhost:8000/polls/api/v1/",
     credentials: "include",
   }),
   tagTypes: ["Polls"],

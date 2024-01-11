@@ -33,7 +33,7 @@ class UserListService:
 
         return data
 
-    def get_all(self, page: int, page_size: int):
+    def get_all(self, page: int, page_size: int, user_id: int | None = None):
         """
         Retrieves a paginated list of all users.
         """

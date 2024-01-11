@@ -47,7 +47,7 @@ class PollCommentListAPIVIew(APIView):
 
     service = PollCommentListService()
 
-    async def get(self, request, id: str):
+    async def get(self, request, id: str, *args, **kwargs):
         """
         Retrieve a paginated list of comments associated with a poll.
 

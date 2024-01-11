@@ -89,7 +89,7 @@ class PollAPIView(APIView):
 
     service = PollService()
 
-    async def post(self, request):
+    async def post(self, request, *args, **kwargs):
         """
         Create a new poll.
 
@@ -110,7 +110,7 @@ class PollAPIView(APIView):
 
         return Response(data={"id": str(id)}, status=status.HTTP_201_CREATED)
 
-    async def get(self, request, id: str):
+    async def get(self, request, id: str, *args, **kwargs):
         """
         Retrieve details of a specific poll.
 
@@ -140,7 +140,7 @@ class PollAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
-    async def patch(self, request, id: str):
+    async def patch(self, request, id: str, *args, **kwargs):
         """
         Update details of a specific poll.
 
@@ -168,7 +168,7 @@ class PollAPIView(APIView):
 
         return Response(data={"id": str(id)}, status=status.HTTP_200_OK)
 
-    async def delete(self, request, id: str):
+    async def delete(self, request, id: str, *args, **kwargs):
         """
         Delete a specific poll.
 

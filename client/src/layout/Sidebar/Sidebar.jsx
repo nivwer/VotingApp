@@ -1,5 +1,5 @@
 import { useThemeInfo } from "../../hooks/Theme";
-import { useGetCategoriesQuery } from "../../api/pollApiSlice";
+import { useGetCategoriesQuery } from "../../api/pollsAPISlice";
 import { NavLink } from "react-router-dom";
 import { Box, Flex, Grid, GridItem, Heading, Stack } from "@chakra-ui/react";
 import SidebarCategoryButton from "./SidebarCategoryButton/SidebarCategoryButton";

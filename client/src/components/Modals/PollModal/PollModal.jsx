@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useCreatePollMutation, useUpdatePollMutation } from "../../../api/pollsAPISlice";
-import { useGetCategoriesQuery } from "../../../api/pollApiSlice";
+import { useCreatePollMutation, useUpdatePollMutation, useGetCategoriesQuery } from "../../../api/pollsAPISlice";
 import CustomButton from "../../Buttons/CustomButton/CustomButton";
 import {
   Button,

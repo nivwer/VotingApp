@@ -48,7 +48,7 @@ class UserListByKeywordAPIView(APIView):
 
     service = UserListService()
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """
         Retrieve a list of users based on a keyword search.
 

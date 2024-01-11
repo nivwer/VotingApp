@@ -64,15 +64,16 @@ class UserProfileAPIView(APIView):
         "return_profile": true
     }
     ```
-    
+
     Note: Authentication is required to access these endpoints.
     """
+
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     service = UserProfileService()
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """
         Retrieve the user's profile.
 
@@ -93,7 +94,7 @@ class UserProfileAPIView(APIView):
         profile: dict = UserProfileSerializer(instance=instance).data
         return Response(data={"profile": profile}, status=status.HTTP_200_OK)
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """
         Create a new user profile.
 
@@ -125,7 +126,7 @@ class UserProfileAPIView(APIView):
         response.data = data
         return response
 
-    def put(self, request):
+    def put(self, request, *args, **kwargs):
         """
         Update the existing user profile.
 
@@ -159,50 +160,3 @@ class UserProfileAPIView(APIView):
         response = Response(status=status.HTTP_201_CREATED)
         response.data = data
         return response
-
-
-"""
-        Allows users to create a user profile.
-
-        Usage:
-            - To create a new user profile: Send a POST request with user profile data. ( Optional )
-            - To return profile information: Include 'return_profile' in the request data. ( Optional )
-
-        Example Request:
-        ```
-        POST /user/profile/
-        {
-            "name": "example_name",
-            "bio": "example_bio",
-            "return_profile": true
-        }
-        ```
-
-        Responses:
-            - 200 OK: Successful user profile creation.
-            - 400 Bad Request: Validation errors in the request payload.
-        """
-
-
-"""
-        Allows users to update their user profile.
-
-        Usage:
-            - To update user profile information: Send a PUT request to the '/profile/' endpoint.
-            - To return profile information: Include 'return_profile' in the request data. ( Optional )
-
-        Example Request:
-        ```
-        PUT /profile/
-        {
-            "name": "new_name",
-            "profile_picture": "new_profile_picture_url",
-            "return_profile": true
-        }
-        ```
-
-        Responses:
-            - 200 OK: Successful user profile updated.
-            - 400 Bad Request: Validation errors in the request payload.
-            - 404 Not Found: User profile not found.
-        """

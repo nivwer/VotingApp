@@ -37,7 +37,7 @@ class CategoriesAPIView(APIView):
 
     permission_classes = [AllowAny]
 
-    async def get(self, request):
+    async def get(self, request, *args, **kwargs):
         """
         Retrieve a list of categories.
 

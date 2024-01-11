@@ -52,7 +52,7 @@ class UserCreateAPIView(APIView):
     permission_classes = [AllowAny]
     service = UserService()
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """
         Create a new user.
 
@@ -77,7 +77,7 @@ class UserCreateAPIView(APIView):
             user: dict = UserSerializer(instance=instance).data
             data["user"] = user
 
-        response = Response(status=status.HTTP_201_CREATED)
+        response: Response = Response(status=status.HTTP_201_CREATED)
         response.data = data
         return response
 
@@ -109,7 +109,7 @@ class UserAPIView(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """
         Retrieve details of the authenticated user.
 
@@ -119,6 +119,7 @@ class UserAPIView(APIView):
         Returns:
             Response: A response containing user details.
         """
+
         instance: User = request.user
         user: dict = UserSerializer(instance=instance).data
         return Response(data={"user": user}, status=status.HTTP_200_OK)
@@ -158,7 +159,7 @@ class UserUpdateUsernameAPIView(APIView):
 
     service = UserService()
 
-    def patch(self, request):
+    def patch(self, request, *args, **kwargs):
         """
         Update the username of the authenticated user.
 
@@ -219,7 +220,7 @@ class UserUpdatePasswordAPIView(APIView):
 
     service = UserService()
 
-    def patch(self, request):
+    def patch(self, request, *args, **kwargs):
         """
         Update the password of the authenticated user.
 

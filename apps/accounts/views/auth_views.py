@@ -79,7 +79,7 @@ class UserRegisterAPIView(APIView):
     user_service = UserService()
     user_profile_service = UserProfileService()
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """
         Register a new user.
 
@@ -176,7 +176,7 @@ class UserLoginAPIView(APIView):
     user_service = UserService()
     user_profile_service = UserProfileService()
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """
         Log in an existing user.
 
@@ -243,7 +243,7 @@ class UserLogoutAPIView(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """
         Log out the authenticated user.
 
@@ -287,7 +287,7 @@ class UserSessionCheckAPIView(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """
         Check the status of the authenticated user's session.
 

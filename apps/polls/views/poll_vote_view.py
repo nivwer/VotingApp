@@ -63,7 +63,7 @@ class PollVoteAPIView(APIView):
 
     service = UserActionsService()
 
-    async def post(self, request, id: str):
+    async def post(self, request, id: str, *args, **kwargs):
         """
         Add a vote to the poll.
 
@@ -92,7 +92,7 @@ class PollVoteAPIView(APIView):
 
         return Response(data={"id": str(id)}, status=status.HTTP_200_OK)
 
-    async def get(self, request, id: str):
+    async def get(self, request, id: str, *args, **kwargs):
         """
         Read the user's vote on the poll.
 
@@ -119,7 +119,7 @@ class PollVoteAPIView(APIView):
 
         return Response(data={"vote": vote, "id": id}, status=status.HTTP_200_OK)
 
-    async def patch(self, request, id: str):
+    async def patch(self, request, id: str, *args, **kwargs):
         """
         Update the user's vote on the poll.
 
@@ -147,7 +147,7 @@ class PollVoteAPIView(APIView):
 
         return Response(data={"id": str(id)}, status=status.HTTP_200_OK)
 
-    async def delete(self, request, id: str):
+    async def delete(self, request, id: str, *args, **kwargs):
         """
         Delete the user's vote on the poll.
 

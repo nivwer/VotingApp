@@ -53,7 +53,7 @@ class PollShareAPIView(APIView):
 
     service = UserActionsService()
 
-    async def post(self, request, id: str):
+    async def post(self, request, id: str, *args, **kwargs):
         """
         Share a poll by adding it to the user's shared polls list.
 
@@ -81,7 +81,7 @@ class PollShareAPIView(APIView):
 
         return Response(data={"id": str(id)}, status=status.HTTP_200_OK)
 
-    async def delete(self, request, id: str):
+    async def delete(self, request, id: str, *args, **kwargs):
         """
         Unshare a poll by removing it from the user's shared polls list.
 

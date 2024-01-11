@@ -43,7 +43,7 @@ class PollListByUserIdAPIView(APIView):
 
     service = PollListService()
 
-    async def get(self, request, id: int):
+    async def get(self, request, id: int, *args, **kwargs):
         """
         Retrieve a paginated list of polls created by the user.
 
@@ -102,7 +102,7 @@ class PollListByUserVotesAPIView(APIView):
 
     service = PollListService()
 
-    async def get(self, request, id: int):
+    async def get(self, request, id: int, *args, **kwargs):
         """
         Retrieve a paginated list of polls voted on by the user.
 
@@ -162,7 +162,7 @@ class PollListByUserSharesAPIView(APIView):
 
     service = PollListService()
 
-    async def get(self, request, id: int):
+    async def get(self, request, id: int, *args, **kwargs):
         """
         Retrieve a paginated list of polls shared by the user.
 
@@ -221,7 +221,7 @@ class PollListByUserBookmarksAPIView(APIView):
 
     service = PollListService()
 
-    async def get(self, request, id: int):
+    async def get(self, request, id: int, *args, **kwargs):
         """
         Retrieve a paginated list of polls bookmarked by the user.
 

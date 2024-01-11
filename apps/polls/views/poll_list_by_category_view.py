@@ -48,7 +48,7 @@ class PollListByCategoryAPIView(APIView):
 
     service = PollListService()
 
-    async def get(self, request, category: str):
+    async def get(self, request, category: str, *args, **kwargs):
         """
         Retrieve a paginated list of polls based on a category.
 

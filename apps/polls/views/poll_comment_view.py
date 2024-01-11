@@ -60,7 +60,7 @@ class PollCommentAPIView(APIView):
 
     service = PollCommentService()
 
-    async def post(self, request, id: str):
+    async def post(self, request, id: str, *args, **kwargs):
         """
         Create a new comment on a poll.
 
@@ -91,7 +91,7 @@ class PollCommentAPIView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
-    async def patch(self, request, id: str, comment_id: str):
+    async def patch(self, request, id: str, comment_id: str, *args, **kwargs):
         """
         Update an existing comment on a poll.
 
@@ -125,7 +125,7 @@ class PollCommentAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
-    async def delete(self, request, id: str, comment_id: str):
+    async def delete(self, request, id: str, comment_id: str, *args, **kwargs):
         """
         Delete an existing comment on a poll.
 

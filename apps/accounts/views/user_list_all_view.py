@@ -44,7 +44,7 @@ class UserListAllAPIView(APIView):
 
     service = UserListService()
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         page: int = int(request.GET.get("page", "1"))
         page_size: int = int(request.GET.get("page_size", "4"))
         user_id: int = request.user.id

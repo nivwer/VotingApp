@@ -46,7 +46,7 @@ class PollListByKeywordAPIView(APIView):
 
     service = PollListService()
 
-    async def get(self, request):
+    async def get(self, request, *args, **kwargs):
         """
         Retrieve a paginated list of polls based on a keyword.
 

@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const accountsAPISlice = createApi({
   reducerPath: "accountsAPI",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/accounts/",
+    baseUrl: "http://localhost:8000/accounts/api/v1/",
     credentials: "include",
   }),
   tagTypes: ["User", "UserProfile"],

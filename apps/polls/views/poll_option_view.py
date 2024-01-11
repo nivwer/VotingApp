@@ -59,7 +59,7 @@ class PollOptionAPIView(APIView):
 
     service = PollService()
 
-    async def post(self, request, id: str):
+    async def post(self, request, id: str, *args, **kwargs):
         """
         Add an option to a specific poll.
 
@@ -87,7 +87,7 @@ class PollOptionAPIView(APIView):
 
         return Response({"id": str(id)}, status=status.HTTP_200_OK)
 
-    async def delete(self, request, id: str):
+    async def delete(self, request, id: str, *args, **kwargs):
         """
         Delete an option from a specific poll.
 
