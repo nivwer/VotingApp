@@ -22,43 +22,6 @@ from .views.poll_list_by_keyword_view import PollListByKeywordAPIView
 
 urlpatterns = [
     # CRUD Poll.
-    #     path("poll/create", poll_create, name="create_poll"),
-    #     path("poll/<str:id>", poll_read, name="read_poll"),
-    #     path("poll/<str:id>/update", poll_update, name="update_Poll"),
-    #     path("poll/<str:id>/delete", poll_delete, name="delete_Poll"),
-    # Option manager.
-    # path("poll/<str:id>/option", option_add, name="add_option"),
-    # path("poll/<str:id>/option/delete", option_delete, name="delete_option"),
-    # CRUD Vote.
-    # path("poll/<str:id>/vote", vote_add, name="add_vote"),
-    # path("poll/<str:id>/vote/read", vote_read, name="get_vote"),
-    # path("poll/<str:id>/vote/update", vote_update, name="update_vote"),
-    # path("poll/<str:id>/vote/delete", vote_delete, name="delete_vote"),
-    # Share manager.
-    # path("poll/<str:id>/share", share_action, name="share_action"),
-    # path("poll/<str:id>/unshare", unshare_action, name="unshare_action"),
-    # Bookmark manager.
-    # path("poll/<str:id>/bookmark", bookmark_action, name="bookmark_action"),
-    # path("poll/<str:id>/unbookmark", unbookmark_action, name="unbookmark_action"),
-    # CRUD Comment.
-    # path("poll/<str:id>/comment", comment_add, name="add_comment"),
-    # path("poll/<str:id>/comment/<str:comment_id>/update", comment_update, name="update_comment"),
-    # path("poll/<str:id>/comment/<str:comment_id>/delete", comment_delete, name="delete_comment"),
-    # Get Comments.
-    # path("poll/<str:id>/comments", comments_read, name="read_comments"),
-    # User Polls.
-    # path("user/<str:id>", user_polls, name="polls_user"),
-    # path("user/<str:id>/votes", user_voted_polls, name="voted_polls_user"),
-    # path("user/<str:id>/shares", user_shared_polls, name="shared_polls_user"),
-    # path("user/<str:id>/bookmarks", user_bookmarked_polls, name="bookmarked_polls_user"),
-    # Categories.
-    # path("categories", categories, name="categories"),
-    # path("categories/data", categories_data, name="data_categories"),
-    # path("category/<str:category>", category_polls, name="category_polls"),
-    # Search.
-    # path("search", search_polls, name="search_polls"),
-    # NEW ROUTES.
-    # CRUD Poll.
     path(
         route="poll",
         view=PollAPIView.as_view(),
@@ -112,22 +75,22 @@ urlpatterns = [
     ),
     # User Polls.
     path(
-        route="user/<int:id>",
+        route="polls/user/<int:id>",
         view=PollListByUserIdAPIView.as_view(),
         name="polls_user",
     ),
     path(
-        route="user/<int:id>/votes",
+        route="polls/user/<int:id>/votes",
         view=PollListByUserVotesAPIView.as_view(),
         name="polls_user_votes",
     ),
     path(
-        route="user/<int:id>/shares",
+        route="polls/user/<int:id>/shares",
         view=PollListByUserSharesAPIView.as_view(),
         name="polls_user_shares",
     ),
     path(
-        route="user/<int:id>/bookmarks",
+        route="polls/user/<int:id>/bookmarks",
         view=PollListByUserBookmarksAPIView.as_view(),
         name="polls_user_bookmarks",
     ),
@@ -138,13 +101,13 @@ urlpatterns = [
         name="categories",
     ),
     path(
-        route="category/<str:category>",
+        route="polls/category/<str:category>",
         view=PollListByCategoryAPIView.as_view(),
         name="polls_category",
     ),
     # Search.
     path(
-        route="search",
+        route="polls/search",
         view=PollListByKeywordAPIView.as_view(),
         name="polls_search",
     ),

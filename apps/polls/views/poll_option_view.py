@@ -13,10 +13,45 @@ from apps.polls.services.poll_service import PollService
 
 class PollOptionAPIView(APIView):
     """
-    Allows authenticated users to add and remove options from a polls.
+    API view for managing options in a poll.
 
+    This view allows authenticated users to add or delete options for a specific poll.
+
+    Endpoints:
+    - POST /poll/{id}/option: Add an option to a poll.
+    - DELETE /poll/{id}/option: Delete an option from a poll.
+    
     Authentication:
-        Requires session-based authentication using SessionAuthentication.
+    - SessionAuthentication: Users must be authenticated.
+
+    Permissions:
+    - IsAuthenticated: Only accessible to authenticated users.
+
+    Path Parameters:
+    - id (str): The unique identifier of the poll to which the options belong.
+
+    Request Format:
+    - POST: Send a JSON object with the option details.
+    - DELETE: Send a JSON object with the option details to be deleted.
+
+    Usage:
+    - To add an option to a poll, send a POST request to /poll/{id}/option with the option details.
+    - To delete an option from a poll, send a DELETE request to /poll/{id}/option with the option details.
+
+    Example Usage:
+    ```
+    # Add an option to a poll with ID '6123456789abcdef01234567'
+    POST /poll/6123456789abcdef01234567/option
+    headers: { "X-CSRFToken": csrftoken }
+    body: { "option_text": "Option A" }
+
+    # Delete an option with text 'Option A' from a poll with ID '6123456789abcdef01234567'
+    DELETE /poll/6123456789abcdef01234567/option
+    headers: { "X-CSRFToken": csrftoken }
+    body: { "option_text": "Option A" }
+    ```
+
+    Note: The 'id' parameter in the URL represents the unique identifier of the poll to which the options belong.
     """
 
     authentication_classes = [SessionAuthentication]
@@ -26,19 +61,14 @@ class PollOptionAPIView(APIView):
 
     async def post(self, request, id: str):
         """
-        Allows authenticated users to add new options to a poll.
+        Add an option to a specific poll.
 
-        Path Parameters:
-            id (required): The ID of the poll for which options are being added.
+        Args:
+            request: The HTTP request object.
+            id (str): The unique identifier of the poll to which the option will be added.
 
-        User Option Limitation:
-            Restricts users to add only one option if they are not the owner of the poll.
-
-        Responses:
-            - 200 OK: Option added successfully, includes the ID of the poll.
-            - 400 Bad Request: Invalid poll ID or other validation errors.
-            - 403 Forbidden: Permission denied if the poll is private and the user is not the owner.
-            - 404 Not Found: Poll not found.
+        Returns:
+            Response: A response indicating the success of the option addition.
         """
         user_id: int = request.user.id
         data: dict = request.data
@@ -59,18 +89,14 @@ class PollOptionAPIView(APIView):
 
     async def delete(self, request, id: str):
         """
-        Allows authenticated users to remove options from a poll.
+        Delete an option from a specific poll.
 
-        Path Parameters:
-            id (required): The ID of the poll from which options are being removed.
+        Args:
+            request: The HTTP request object.
+            id (str): The unique identifier of the poll from which the option will be deleted.
 
-        Poll Privacy:
-            Ensures that only the owner of the poll is authorized to remove options.
-
-        - 200 OK: Option removed successfully, includes the ID of the poll.
-        - 400 Bad Request: Invalid poll ID, option not found, or other validation errors.
-        - 403 Forbidden: Permission denied if the poll is private and the user is not the owner.
-        - 404 Not Found: Poll not found.
+        Returns:
+            Response: A response indicating the success of the option deletion.
         """
         user_id: int = request.user.id
         data: dict = request.data

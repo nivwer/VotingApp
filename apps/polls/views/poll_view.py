@@ -13,10 +13,75 @@ from apps.polls.services.poll_service import PollService
 
 class PollAPIView(APIView):
     """
-    Allows authenticated users to create, read, update, and delete polls.
+    API view for managing polls.
 
-    Requires session-based authentication using SessionAuthentication.
-    Unauthenticated users have read-only permissions.
+    This view allows users to create, retrieve, update, or delete polls. Authenticated users
+    can perform all CRUD operations, while unauthenticated users can only view polls.
+
+    Endpoints:
+    - POST /poll: Create a new poll.
+    - GET /poll/{id}: Retrieve details of a specific poll.
+    - PATCH /poll/{id}: Update details of a specific poll.
+    - DELETE /poll/{id}: Delete a specific poll.
+
+    Authentication:
+    - SessionAuthentication: Users must be authenticated.
+
+    Permissions:
+    - IsAuthenticatedOrReadOnly: Authenticated users have full access, while unauthenticated users have read-only access.
+
+    Path Parameters:
+    - id (str): The unique identifier of the poll.
+
+    Request Format:
+    - POST: Send a JSON object with the poll details.
+    - PATCH: Send a JSON object with the updated poll details.
+
+    Usage:
+    - To create a new poll, send a POST request to /poll with the poll details.
+    - To retrieve details of a poll, send a GET request to /poll/{id}.
+    - To update details of a poll, send a PATCH request to /poll/{id} with the updated poll details.
+    - To delete a poll, send a DELETE request to /poll/{id}.
+
+    Example Usage:
+    ```
+    # Create a new poll
+    POST /poll
+    headers: { "X-CSRFToken": csrftoken }
+    body: {
+        "title": "Title",
+        "description": "Description",
+        "privacy": "public/private",
+        "category": "Category",
+        "options": {
+            "add_options": ["Option 1", "Option 2", ...]
+        }
+    }
+
+
+    # Retrieve details of a poll with ID '/poll/6123456789abcdef01234567'
+    GET /poll/6123456789abcdef01234567
+
+    # Update details of a poll with ID '/poll/6123456789abcdef01234567'
+    PATCH /poll/6123456789abcdef01234567
+    headers: { "X-CSRFToken": csrftoken }
+    body: {
+        "title": "Updated Poll Title",
+        "description": "Updated Poll Description",
+        "privacy": "public/private",
+        "category": "Updated Poll Category",
+        "options": {
+            "add_options": ["New Option 1", "New Option 2", ...],
+            "del_options": ["Option to Remove 1", "Option to Remove 2", ...]
+        }
+    }
+
+    # Delete a poll with ID '/poll/6123456789abcdef01234567'
+    DELETE /poll/6123456789abcdef01234567
+    headers: { "X-CSRFToken": csrftoken }
+    ```
+
+    Note: The 'id' parameter in the URL represents the unique identifier of the poll.
     """
 
     authentication_classes = [SessionAuthentication]
@@ -26,26 +91,14 @@ class PollAPIView(APIView):
 
     async def post(self, request):
         """
-        Allows authenticated users to create a new poll with specified options.
+        Create a new poll.
 
-        Request Data:
-            Expects JSON data with the following structure...
+        Args:
+            request: The HTTP request object.
 
-            {
-                "title": "Title",
-                "description": "Description",
-                "privacy": "public/private",
-                "category": "Category",
-                "options": {
-                    "add_options": ["Option 1", "Option 2", ...]
-                }
-            }
-
-        Responses:
-            - 201 Created: Poll created successfully. Includes the ID of the created poll.
-            - 400 Bad Request: Validation errors in the request data.
+        Returns:
+            Response: A response indicating the success of the poll creation.
         """
-
         user_id: int = request.user.id
         data: dict = request.data
 
@@ -59,22 +112,15 @@ class PollAPIView(APIView):
 
     async def get(self, request, id: str):
         """
-        Fetches and displays details of a poll using the provided poll ID.
-         Returns a JSON response with poll details and user actions.
+        Retrieve details of a specific poll.
 
-        Path Parameters:
-            id (required): The ID of the poll.
+        Args:
+            request: The HTTP request object.
+            id (str): The unique identifier of the poll to be retrieved.
 
-        Access Control:
-            For private polls, only the owner can access the information.
-
-        Responses:
-            - 200 OK: Poll details and actions of the authenticated user.
-            - 400 Bad Request: Invalid poll ID.
-            - 403 Forbidden: Permission issues (private poll access).
-            - 404 Not Found: Poll not found.
+        Returns:
+            Response: A response containing the poll details.
         """
-
         user_id: int = request.user.id
 
         try:
@@ -96,36 +142,15 @@ class PollAPIView(APIView):
 
     async def patch(self, request, id: str):
         """
-        Allows authenticated users who own a poll to update its details, including adding or removing options.
+        Update details of a specific poll.
 
-        Path Parameters:
-            id (required): The ID of the poll.
+        Args:
+            request: The HTTP request object.
+            id (str): The unique identifier of the poll to be updated.
 
-        Request Data:
-            Expects JSON data with the following structure...
-
-            {
-                "title": "Updated Poll Title",
-                "description": "Updated Poll Description",
-                "privacy": "public/private",
-                "category": "Updated Poll Category",
-                "options": {
-                    "add_options": ["New Option 1", "New Option 2", ...],
-                    "del_options": ["Option to Remove 1", "Option to Remove 2", ...]
-                }
-            }
-
-        Add and Remove Options:
-            : Adds new options to the poll document.
-            : Removes specified options from the poll document.
-
-        Responses:
-            - 200 OK: Poll updated successfully. Includes the ID of the updated poll.
-            - 400 Bad Request: Validation errors in the request data.
-            - 403 Forbidden: Permission denied if the authenticated user is not the owner.
-            - 404 Not Found: Poll not found.
+        Returns:
+            Response: A response indicating the success of the poll update.
         """
-
         user_id: int = request.user.id
         data: dict = request.data
 
@@ -145,21 +170,15 @@ class PollAPIView(APIView):
 
     async def delete(self, request, id: str):
         """
-        Allows authenticated users who own a poll to delete it, along with its associated comments.
+        Delete a specific poll.
 
-        Path Parameters:
-            id (required): The ID of the poll.
+        Args:
+            request: The HTTP request object.
+            id (str): The unique identifier of the poll to be deleted.
 
-        Remove Comment Documents:
-            Deletes comment documents associated with the poll from the comments collection.
-
-        Responses:
-            - 200 OK: Poll and associated comments removed successfully. Includes the ID of the deleted poll.
-            - 400 Bad Request: Validation errors in the request data.
-            - 403 Forbidden: Permission denied if the authenticated user is not the owner.
-            - 404 Not Found: Poll not found.
+        Returns:
+            Response: A response indicating the success of the poll deletion.
         """
-
         user_id: int = request.user.id
 
         try:
