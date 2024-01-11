@@ -286,7 +286,7 @@ export const pollsAPISlice = createApi({
     // Get User Polls.
     getUserPolls: builder.query({
       query: ({ headers, id, page = 1, page_size = 4 }) => ({
-        url: `user/${id}?page=${page}&page_size=${page_size}`,
+        url: `polls/user/${id}?page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
@@ -302,7 +302,7 @@ export const pollsAPISlice = createApi({
     // Get User voted Polls.
     getUserVotedPolls: builder.query({
       query: ({ headers, id, page = 1, page_size = 4 }) => ({
-        url: `user/${id}/votes?page=${page}&page_size=${page_size}`,
+        url: `polls/user/${id}/votes?page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
@@ -318,7 +318,7 @@ export const pollsAPISlice = createApi({
     // Get User shared Polls.
     getUserSharedPolls: builder.query({
       query: ({ headers, id, page = 1, page_size = 4 }) => ({
-        url: `user/${id}/shares?page=${page}&page_size=${page_size}`,
+        url: `polls/user/${id}/shares?page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
@@ -334,7 +334,7 @@ export const pollsAPISlice = createApi({
     // Get User bookmarked Polls.
     getUserBookmarkedPolls: builder.query({
       query: ({ headers, id, page = 1, page_size = 4 }) => ({
-        url: `user/${id}/bookmarks?page=${page}&page_size=${page_size}`,
+        url: `polls/user/${id}/bookmarks?page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
@@ -350,7 +350,7 @@ export const pollsAPISlice = createApi({
     // Get category polls.
     getPollsCategory: builder.query({
       query: ({ headers, category, page = 1, page_size = 4 }) => ({
-        url: `category/${category}?page=${page}&page_size=${page_size}`,
+        url: `polls/category/${category}?page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
@@ -377,7 +377,7 @@ export const pollsAPISlice = createApi({
     // Search Polls.
     searchPolls: builder.query({
       query: ({ headers, query, page = 1, page_size = 4 }) => ({
-        url: `search?query=${query}&page=${page}&page_size=${page_size}`,
+        url: `polls/search?query=${query}&page=${page}&page_size=${page_size}`,
         method: "GET",
         headers: headers,
       }),
