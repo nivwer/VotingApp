@@ -11,7 +11,37 @@ class UserListByKeywordAPIView(APIView):
     """
     API view for retrieving a list of users based on a keyword search.
 
-    This view allows any user to search for users based on a provided keyword.
+    This view allows any user, authenticated or not, to retrieve a list of users whose usernames contain the specified keyword.
+
+    Endpoint:
+    - GET /users/search: Retrieve a list of users based on a keyword search.
+
+    Permissions:
+    - AllowAny: Any user, authenticated or not, is allowed to access this endpoint.
+
+    Usage:
+    - To retrieve a list of users based on a keyword search, send a GET request to /users/search with the 'query' parameter.
+
+    Request Query Parameters:
+    - query (str): The keyword used for searching users.
+
+    Optional Query Parameters:
+    - page (int): The page number for paginated results (default: 1).
+    - page_size (int): The number of items per page in the result set (default: 4).
+
+    Response:
+    - A JSON response containing the paginated list of users based on the keyword search.
+
+    Example Usage:
+    ```
+    # Retrieve a list of users by keyword
+    GET /users/search?query=john
+
+    # Retrieve a list of users with custom pagination settings (page=2, page_size=10)
+    GET /users/search?query=john&page=2&page_size=10
+    ```
+
+    Note: This endpoint allows any user to search for users by providing a keyword.
     """
 
     permission_classes = [AllowAny]
@@ -20,23 +50,14 @@ class UserListByKeywordAPIView(APIView):
 
     def get(self, request):
         """
-        Handles the retrieval of a list of users based on a keyword search.
+        Retrieve a list of users based on a keyword search.
 
-        Usage:
-            - To retrieve a list of users by keyword: Send a GET request to the '/users/search/' endpoint.
-            Include the 'query' parameter in the URL to specify the keyword.
-            Optional parameters: 'page' for pagination and 'page_size' to set the number of results per page.
+        Args:
+            request: The HTTP request object.
 
-        Example Request:
-        ```
-        GET /users/search/?query=john&page=1&page_size=4
-        ```
-
-        Responses:
-            - 200 OK:
-            - 400 Bad Request: Keyword is not provided.
+        Returns:
+            Response: A response containing the paginated list of users based on the keyword search.
         """
-
         keyword: str = request.GET.get("query")
         page: int = int(request.GET.get("page", "1"))
         page_size: int = int(request.GET.get("page_size", "4"))

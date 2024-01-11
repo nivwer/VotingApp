@@ -15,6 +15,38 @@ from apps.accounts.services.user_service import UserService
 class UserCreateAPIView(APIView):
     """
     API view for user creation.
+
+    This view allows new users to create by providing necessary information.
+    It supports creating a new user account and optionally returning user details.
+
+    Endpoints:
+    - POST /user/create: Create a new user.
+
+    Permissions:
+    - AllowAny: Unauthenticated users are allowed to access this endpoint.
+
+    Request Format:
+    - POST: Send a JSON object with user creation details.
+
+    Query Parameters:
+    - return_user (bool, optional): If set to True, the API response includes user details.
+
+    Usage:
+    - To create a new user, send a POST request to /user/create with user creation details.
+
+    Example Usage:
+    ```
+    # Create a new user
+    POST /user/create
+    headers: { "X-CSRFToken": csrftoken }
+    body: {
+        "username": "example_user",
+        "password": "secure_password",
+        "return_user": true
+    }
+    ```
+
+    Note: The 'return_user' query parameter is optional and can be used to request user details in the response.
     """
 
     permission_classes = [AllowAny]
@@ -22,32 +54,17 @@ class UserCreateAPIView(APIView):
 
     def post(self, request):
         """
-        Allows to create users.
+        Create a new user.
 
-        Supports custom parameters in the request data to control the creation process.
+        Args:
+            request: The HTTP request object.
 
-        Usage:
-            - To create a user: Send a POST request with user data.
-            - To return user information: Include 'return_user' in the request. ( Optional )
-
-         Example Request:
-        ```
-        POST /create_user/
-        {
-            "username": "example_user",
-            "password": "secure_password",
-            "return_user": true
-        }
-        ```
-
-        Responses:
-            - 200 OK: Successful account creation.
-            - 400 Bad Request: Validation errors in the request payload.
+        Returns:
+            Response: A response indicating the success of the user account creation.
         """
-
         return_user: bool = request.data.get("return_user", False)
         user_data: dict = request.data
-        
+
         data: dict = {}
 
         try:
@@ -67,9 +84,26 @@ class UserCreateAPIView(APIView):
 
 class UserAPIView(APIView):
     """
-    API view for retrieving authenticated user information.
+    API view for retrieving authenticated user details.
 
-    Requires session-based authentication using SessionAuthentication.
+    This view allows authenticated users to retrieve their own user details.
+
+    Endpoints:
+    - GET /user: Retrieve details of the authenticated user.
+
+    Permissions:
+    - IsAuthenticated: Only authenticated users are allowed to access this endpoint.
+
+    Usage:
+    - To retrieve user details, send a GET request to /user with valid authentication.
+
+    Example Usage:
+    ```
+    # Retrieve user details
+    GET /user
+    ```
+
+    Note: Authentication is required to access this endpoint.
     """
 
     authentication_classes = [SessionAuthentication]
@@ -77,18 +111,14 @@ class UserAPIView(APIView):
 
     def get(self, request):
         """
-        Allows authenticated users to retrieve information about themselves.
+        Retrieve details of the authenticated user.
 
-        Example Request:
-        ```
-        GET /user/
-        ```
+        Args:
+            request: The HTTP request object.
 
-        Responses:
-            - 200 OK:
-            - 401 Unauthorized: Authentication failed.
+        Returns:
+            Response: A response containing user details.
         """
-
         instance: User = request.user
         user: dict = UserSerializer(instance=instance).data
         return Response(data={"user": user}, status=status.HTTP_200_OK)
@@ -98,7 +128,29 @@ class UserUpdateUsernameAPIView(APIView):
     """
     API view for updating the username of the authenticated user.
 
-    Requires session-based authentication using SessionAuthentication.
+    This view allows authenticated users to update their own usernames.
+
+    Endpoints:
+    - PATCH /user/update/username: Update the username of the authenticated user.
+
+    Permissions:
+    - IsAuthenticated: Only authenticated users are allowed to access this endpoint.
+
+    Usage:
+    - To update the username, send a PATCH request to /user/update/username with valid authentication.
+
+    Request Data:
+    - username (str): The new username for the user.
+
+    Example Usage:
+    ```
+    # Update username
+    PATCH /user/update/username
+    headers: { "X-CSRFToken": csrftoken }
+    body: { "username": "new_username" }
+    ```
+
+    Note: Authentication is required to access this endpoint.
     """
 
     authentication_classes = [SessionAuthentication]
@@ -108,25 +160,14 @@ class UserUpdateUsernameAPIView(APIView):
 
     def patch(self, request):
         """
-        Allows authenticated users to update their username.
+        Update the username of the authenticated user.
 
-        Usage:
-            - To update the username: Send a PATCH request to the '/update_username/' endpoint.
+        Args:
+            request: The HTTP request object.
 
-        Example Request:
-        ```
-        PATCH /update_username/
-        {
-            "username": "new_username"
-        }
-        ```
-
-        Responses:
-            - 200 OK: Successful username update.
-            - 400 Bad Request: Validation errors in the request (e.g., missing or non-unique username).
-            - 401 Unauthorized: Authentication failed.
+        Returns:
+            Response: A response indicating the success or failure of the update operation.
         """
-
         instance: User = request.user
         data: dict = request.data
 
@@ -145,7 +186,32 @@ class UserUpdatePasswordAPIView(APIView):
     """
     API view for updating the password of the authenticated user.
 
-    Requires session-based authentication using SessionAuthentication.
+    This view allows authenticated users to update their own passwords.
+
+    Endpoints:
+    - PATCH /user/update/password: Update the password of the authenticated user.
+
+    Permissions:
+    - IsAuthenticated: Only authenticated users are allowed to access this endpoint.
+
+    Usage:
+    - To update the password, send a PATCH request to /user/update/password with valid authentication.
+
+    Request Data:
+    - password (str): The new password for the user.
+
+    Example Usage:
+    ```
+    # Update password
+    PATCH /user/update/password
+    headers: { "X-CSRFToken": csrftoken }
+    body: {
+        "current_password": "current_secure_password",
+        "new_password": "new_secure_password"
+    }
+    ```
+
+    Note: Authentication is required to access this endpoint.
     """
 
     authentication_classes = [SessionAuthentication]
@@ -155,26 +221,14 @@ class UserUpdatePasswordAPIView(APIView):
 
     def patch(self, request):
         """
-        Allows authenticated users to update their password.
+        Update the password of the authenticated user.
 
-        Usage:
-            - To update the password: Send a PATCH request to the '/update_password/' endpoint.
+        Args:
+            request: The HTTP request object.
 
-        Example Request:
-        ```
-        PATCH /update_password/
-        {
-            "current_password": "current_secure_password",
-            "new_password": "new_secure_password"
-        }
-        ```
-
-        Responses:
-            - 200 OK: Successful password update.
-            - 400 Bad Request: Validation errors in the request.
-            - 401 Unauthorized: Authentication failed.
+        Returns:
+            Response: A response indicating the success or failure of the update operation.
         """
-
         instance: User = request.user
         data: dict = request.data
 
@@ -187,4 +241,3 @@ class UserUpdatePasswordAPIView(APIView):
         update_session_auth_hash(request=request, user=user)
 
         return Response(status=status.HTTP_200_OK)
- 

@@ -20,7 +20,57 @@ from apps.accounts.serializers.user_profile_serializers import UserProfileSerial
 
 class UserRegisterAPIView(APIView):
     """
-    API view for user registration and optional profile creation.
+    API view for user registration.
+
+    This view allows users to register with the system. Users can choose to log in immediately
+    after registration and, optionally, create a user profile.
+
+    Endpoint:
+    - POST /register: Register a new user.
+
+    Permissions:
+    - AllowAny: Any user, authenticated or not, is allowed to access this endpoint.
+
+    Usage:
+    - To register a new user, send a POST request to /register.
+
+    Request Body Parameters:
+    - username (str): The username for the new user.
+    - password (str): The password for the new user.
+
+    Optional Request Body Parameters:
+    - login_user (bool): If true, automatically log in the user after registration (default: False).
+    - create_profile (bool): If true, create a user profile after registration (default: False).
+    - return_user (bool): If true, include the user data in the response (default: False).
+    - return_profile (bool): If true, include the user profile data in the response (default: False).
+
+    Response:
+    - A JSON response containing the registered user data and, if requested, the user profile data.
+
+    Example Usage:
+    ```
+    # Register a new user and automatically log in
+    POST /register
+    headers: { "X-CSRFToken": csrftoken }
+    body: {
+        "username": "example_user",
+        "password": "secure_password",
+        "login_user": true
+    }
+
+    # Register a new user, create a profile, and return user and profile data
+    POST /register
+    headers: { "X-CSRFToken": csrftoken }
+    body: {
+        "username": "example_user",
+        "password": "secure_password",
+        "create_profile": true,
+        "return_user": true,
+        "return_profile": true
+    }
+    ```
+
+    Note: This endpoint allows any user to register, and additional options are available for login and profile creation.
     """
 
     permission_classes = [AllowAny]
@@ -31,35 +81,14 @@ class UserRegisterAPIView(APIView):
 
     def post(self, request):
         """
-        Allows users to register, and optionally create a user profile.
+        Register a new user.
 
-        Supports custom parameters in the request data to control the registration process.
+        Args:
+            request: The HTTP request object.
 
-        Usage:
-            - To register a new user: Send a POST request with user data.
-            - To log in the registered user: Include 'login_user' in the request data. ( Optional )
-            - To create a user profile: Include 'create_profile' in the request data. ( Optional )
-            - To return user information: Include 'return_user' in the request data. ( Optional )
-            - To return profile information: Include 'return_profile' in the request data. ( Optional )
-
-        Example Request:
-        ```
-        POST /register/
-        {
-            "username": "example_user",
-            "password": "secure_password",
-            "login_user": true,
-            "create_profile": true,
-            "return_user": true,
-            "return_profile": true
-        }
-        ```
-
-        Responses:
-            - 200 OK: Successful account creation.
-            - 400 Bad Request: Validation errors in the request payload.
+        Returns:
+            Response: A response containing the registered user data and, if requested, the user profile data.
         """
-
         login_user: bool = request.data.get("login_user", False)
         create_profile: bool = request.data.get("create_profile", False)
         return_user: bool = request.data.get("return_user", False)
@@ -102,6 +131,43 @@ class UserRegisterAPIView(APIView):
 class UserLoginAPIView(APIView):
     """
     API view for user login.
+
+    This view allows users to log in and, optionally, retrieve user and user profile data.
+
+    Endpoint:
+    - POST /login: Log in an existing user.
+
+    Permissions:
+    - AllowAny: Any user, authenticated or not, is allowed to access this endpoint.
+
+    Usage:
+    - To log in an existing user, send a POST request to /login.
+
+    Request Body Parameters:
+    - username (str): The username of the user attempting to log in.
+    - password (str): The password of the user attempting to log in.
+
+    Optional Request Body Parameters:
+    - return_user (bool): If true, include the user data in the response (default: False).
+    - return_profile (bool): If true, include the user profile data in the response (default: False).
+
+    Response:
+    - A JSON response containing the user data and, if requested, the user profile data.
+
+    Example Usage:
+    ```
+    # Log in an existing user and return user and profile data
+    POST /login
+    headers: { "X-CSRFToken": csrftoken }
+    body: {
+        "username": "existing_user",
+        "password": "existing_password",
+        "return_user": true,
+        "return_profile": true
+    }
+    ```
+
+    Note: This endpoint allows any user to log in, and additional options are available for returning user and profile data.
     """
 
     permission_classes = [AllowAny]
@@ -112,30 +178,13 @@ class UserLoginAPIView(APIView):
 
     def post(self, request):
         """
-        Allows users to log in.
+        Log in an existing user.
 
-        Supports custom parameters in the request data.
+        Args:
+            request: The HTTP request object.
 
-        Usage:
-            - To log in a user: Send a POST request with user credentials.
-            - To return user information: Include 'return_user' in the request data. ( Optional )
-            - To return profile information: Include 'return_profile' in the request data. ( Optional )
-
-        Example Request:
-        ```
-        POST /login/
-        {
-            "username": "example_user",
-            "password": "secure_password",
-            "return_user": true,
-            "return_profile": true
-        }
-        ```
-
-        Responses:
-            - 200 OK: Successful login.
-            - 400 Bad Request: Validation errors in the request payload.
-            - 401 Unauthorized: Authentication failed during the log-in process.
+        Returns:
+            Response: A response containing the user data and, if requested, the user profile data.
         """
 
         return_user: bool = request.data.get("return_user", False)
@@ -167,7 +216,28 @@ class UserLogoutAPIView(APIView):
     """
     API view for user logout.
 
-    Requires session-based authentication using SessionAuthentication.
+    This view allows an authenticated user to log out, ending their session.
+
+    Endpoint:
+    - POST /logout: Log out the authenticated user.
+
+    Permissions:
+    - IsAuthenticated: Only authenticated users are allowed to access this endpoint.
+
+    Usage:
+    - To log out the authenticated user, send a POST request to /logout.
+
+    Response:
+    - A JSON response indicating a successful logout.
+
+    Example Usage:
+    ```
+    # Log out the authenticated user
+    POST /logout
+    headers: { "X-CSRFToken": csrftoken }
+    ```
+
+    Note: This endpoint requires the user to be authenticated, and it will end the user's current session.
     """
 
     authentication_classes = [SessionAuthentication]
@@ -175,29 +245,43 @@ class UserLogoutAPIView(APIView):
 
     def post(self, request):
         """
-        Allows authenticated users to log out.
+        Log out the authenticated user.
 
-        Usage:
-            - To log out a user: Send a POST request to the '/logout/' endpoint.
+        Args:
+            request: The HTTP request object.
 
-        Example Request:
-        ```
-        POST /logout/
-        ```
-
-        Responses:
-            - 200 OK: Successful logout.
-            - 401 Unauthorized:  Authentication failed during the log-out process.
-            - 403 Forbidden: Authentication credentials were not provided.
+        Returns:
+            Response: A response indicating a successful logout.
         """
-
         logout(request=request)
-        return Response(data={"data_example": "dataexampletext"}, status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class UserSessionCheckAPIView(APIView):
     """
-    API view for checking the validity of the user session.
+    API view for checking user session status.
+
+    This view allows an authenticated user to check the status of their session.
+
+    Endpoint:
+    - GET /user/session/check: Check the status of the authenticated user's session.
+
+    Permissions:
+    - IsAuthenticated: Only authenticated users are allowed to access this endpoint.
+
+    Usage:
+    - To check the status of the authenticated user's session, send a GET request to /user/session/check.
+
+    Response:
+    - A JSON response indicating the authentication status and setting session-related headers.
+
+    Example Usage:
+    ```
+    # Check the status of the authenticated user's session
+    GET /user/session/check
+    ```
+
+    Note: This endpoint requires the user to be authenticated and provides information about the current session's status.
     """
 
     authentication_classes = [SessionAuthentication]
@@ -205,27 +289,19 @@ class UserSessionCheckAPIView(APIView):
 
     def get(self, request):
         """
-        Allows authenticated users to check if their session is still valid.
+        Check the status of the authenticated user's session.
 
-        Usage:
-            - To check session validity: Send a GET request to the '/session_check/' endpoint.
+        Args:
+            request: The HTTP request object.
 
-        Example Request:
-        ```
-        GET /user/session/check/
-        ```
-
-        Responses:
-            - 200 OK:
-            - 401 Unauthorized: Authentication failed.
-            - 403 Forbidden: Authentication credentials were not provided.
+        Returns:
+            Response: A response indicating the authentication status and setting session-related headers.
         """
-        if request.user:
-            TTL = timedelta(hours=1)
-            expiration_date = datetime.utcnow() + TTL
+        TTL = timedelta(hours=1)
+        expiration_date = datetime.utcnow() + TTL
 
-            response = Response(data={"is_authenticated": True}, status=status.HTTP_200_OK)
-            response["Cache-Control"] = f"max-age={int(TTL.total_seconds())}"
-            response["Expires"] = expiration_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        response = Response(data={"is_authenticated": True}, status=status.HTTP_200_OK)
+        response["Cache-Control"] = f"max-age={int(TTL.total_seconds())}"
+        response["Expires"] = expiration_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-            return response
+        return response

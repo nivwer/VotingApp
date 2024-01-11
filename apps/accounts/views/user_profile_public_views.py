@@ -12,29 +12,48 @@ from apps.accounts.models.user_profile_model import UserProfile
 class UserProfileByUserIdAPIView(APIView):
     """
     API view for retrieving user profiles by user ID.
-    """
 
+    This view allows any user, authenticated or not, to retrieve a user profile by providing the user ID.
+
+    Endpoint:
+    - GET /user/{id}/profile: Retrieve a user's profile by user ID.
+
+    Permissions:
+    - AllowAny: Any user, authenticated or not, is allowed to access this endpoint.
+
+    Usage:
+    - To retrieve a user's profile by user ID, send a GET request to /user/{id}/profile.
+
+    Request URL Parameters:
+    - id (int): The user ID for which the profile needs to be retrieved.
+
+    Response:
+    - A JSON response containing the user profile data.
+
+    Example Usage:
+    ```
+    # Retrieve user profile by user ID
+    GET /user/123/profile
+    ```
+
+    Note: This endpoint allows any user to access user profiles by providing the user ID.
+    """
     permission_classes = [AllowAny]
 
     service = UserProfileService()
 
     def get(self, request, id: int):
         """
-        Allows any user to retrieve user profiles by providing the user ID.
+        Retrieve a user's profile by user ID.
 
-        Usage:
-            - To retrieve a user profile by user ID: Send a GET request to the '/user/{id}/profile/' endpoint.
+        Args:
+            request: The HTTP request object.
+            id (int): The user ID for which the profile needs to be retrieved.
 
-        Example Request:
-        ```
-        GET /user/{id}/profile/
-        ```
-
-        Responses:
-            - 200 OK:
-            - 404 Not Found: User profile not found.
+        Returns:
+            Response: A response containing the user's profile data.
         """
-
+        
         try:
             instance: UserProfile = self.service.get_by_user_id(id=id)
 
@@ -52,27 +71,46 @@ class UserProfileByUserIdAPIView(APIView):
 class UserProfileByUsernameAPIView(APIView):
     """
     API view for retrieving user profiles by username.
-    """
 
+    This view allows any user, authenticated or not, to retrieve a user profile by providing the username.
+
+    Endpoint:
+    - GET /user/{username}/profile: Retrieve a user's profile by username.
+
+    Permissions:
+    - AllowAny: Any user, authenticated or not, is allowed to access this endpoint.
+
+    Usage:
+    - To retrieve a user's profile by username, send a GET request to /user/{username}/profile.
+
+    Request URL Parameters:
+    - username (str): The username for which the profile needs to be retrieved.
+
+    Response:
+    - A JSON response containing the user profile data.
+
+    Example Usage:
+    ```
+    # Retrieve user profile by username
+    GET /user/johndoe/profile
+    ```
+
+    Note: This endpoint allows any user to access user profiles by providing the username.
+    """
     permission_classes = [AllowAny]
 
     service = UserProfileService()
 
     def get(self, request, username: str):
         """
-        Allows any user to retrieve user profiles by providing the username.
+        Retrieve a user's profile by username.
 
-        Usage:
-            - To retrieve a user profile by username: Send a GET request to the '/user/{username}/profile/' endpoint.
+        Args:
+        request: The HTTP request object.
+        username (str): The username for which the profile needs to be retrieved.
 
-        Example Request:
-        ```
-        GET /user/{username}/profile/
-        ```
-
-        Responses:
-            - 200 OK:
-            - 404 Not Found: User profile not found.
+        Returns:
+        Response: A response containing the user's profile data.
         """
 
         try:
