@@ -389,6 +389,23 @@ export const pollsAPISlice = createApi({
             ]
           : [{ type: "Polls", id: "PARTIAL-LIST" }],
     }),
+
+
+    // All Polls.
+    allPolls: builder.query({
+      query: ({ headers, page = 1, page_size = 4 }) => ({
+        url: `polls/all?page=${page}&page_size=${page_size}`,
+        method: "GET",
+        headers: headers,
+      }),
+      providesTags: (res, error) =>
+        res
+          ? [
+              ...res.items.map(({ poll: { id } }) => ({ type: "Polls", id: id })),
+              { type: "Polls", id: "PARTIAL-LIST" },
+            ]
+          : [{ type: "Polls", id: "PARTIAL-LIST" }],
+    }),
   }),
 });
 
@@ -415,4 +432,5 @@ export const {
   useGetPollsCategoryQuery,
   useGetCategoriesQuery,
   useSearchPollsQuery,
+  useAllPollsQuery,
 } = pollsAPISlice;

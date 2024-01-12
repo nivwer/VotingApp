@@ -8,6 +8,14 @@ from utils.mongo_connection import MongoDBSingleton
 class PollListRepository:
     polls_db = MongoDBSingleton().client["polls_db"]
 
+    async def get_all(self):
+        polls: list = await self.polls_db.polls.find(
+            {"privacy": "public"},
+            sort=[("created_at", DESCENDING)],
+        ).to_list(None)
+
+        return polls
+
     async def get_by_keyword(self, keyword: str, user_id: int) -> list[BSON]:
         polls: list = await self.polls_db.polls.find(
             {

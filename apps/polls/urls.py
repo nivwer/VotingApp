@@ -19,6 +19,7 @@ from .views.poll_list_by_user_views import (
 from .views.poll_list_by_category_view import PollListByCategoryAPIView
 from .views.categories_view import CategoriesAPIView
 from .views.poll_list_by_keyword_view import PollListByKeywordAPIView
+from .views.poll_list_all_view import PollListAllAPIView
 
 urlpatterns = [
     # CRUD Poll.
@@ -110,5 +111,11 @@ urlpatterns = [
         route="polls/search",
         view=PollListByKeywordAPIView.as_view(),
         name="polls_search",
+    ),
+    # All
+    path(
+        route="polls/all",
+        view=PollListAllAPIView.as_view(),
+        name="polls_all",
     ),
 ]

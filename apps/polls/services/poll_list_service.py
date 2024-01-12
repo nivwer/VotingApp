@@ -41,6 +41,19 @@ class PollListService:
 
         return items
 
+    async def get_all(self, page: int, page_size: int, user_id: int | None = None):
+        polls: list[BSON] = await self.repository.get_all()
+        polls: list[dict] = await self.utils.bson_to_json(bson=polls)
+
+        data: dict = await self.pagination.a_paginate(
+            object_list=polls, page=page, page_size=page_size
+        )
+
+        items = await self.filter_poll_list(polls=data["items"], user_id=user_id)
+        data["items"] = items
+
+        return data
+
     async def get_by_keyword(
         self, keyword: str, page: int, page_size: int, user_id: int | None = None
     ):
