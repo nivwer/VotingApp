@@ -31,7 +31,7 @@ function Aside() {
           boxShadow={"base"}
         >
           <Box px={8} py={1}>
-            <NavLink>
+            <NavLink to={"/explore?type=users"}>
               <Text fontWeight={"black"} fontSize={"md"} opacity={0.9}>
                 Explore users
               </Text>

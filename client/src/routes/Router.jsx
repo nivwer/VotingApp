@@ -17,6 +17,7 @@ import GridLayout from "../layout/GridLayout/GridLayout";
 import ThemeSettings from "../pages/Settings/SettingsPages/ThemeSettings/ThemeSettings";
 import AccountSettings from "../pages/Settings/SettingsPages/AccountSettings/AccountSettings";
 import ProfileSettings from "../pages/Settings/SettingsPages/ProfileSettings/ProfileSettings";
+import Explore from "../pages/Explore/Explore";
 
 // Router.
 function Router() {
@@ -47,6 +48,8 @@ function Router() {
 
         <Route path="/search" element={<Search />} />
         <Route path="/results" element={<Results />} />
+
+        <Route path="/explore" element={<Explore />} />
       </Route>
 
       {/* ### USER SECTION ### */}
