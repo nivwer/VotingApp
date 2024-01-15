@@ -77,6 +77,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
           minH={{ base: "calc(100vh - 120px)", md: "calc(100vh - 80px)" }}
           p={0}
           maxW={"608px"}
+          pb={5}
         >
           <Outlet />
         </Container>

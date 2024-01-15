@@ -22,7 +22,7 @@ function Aside() {
 
   return (
     <Box pos={"fixed"} w={"343px"} h={"calc(100vh - 64px)"}>
-      <Stack mx={4}>
+      <Stack ml={4}>
         <Box
           bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           borderRadius={"3xl"}
@@ -31,7 +31,7 @@ function Aside() {
           boxShadow={"base"}
         >
           <Box px={8} py={1}>
-            <NavLink to={"/explore?type=users"}>
+            <NavLink to={"/search?type=users"}>
               <Text fontWeight={"black"} fontSize={"md"} opacity={0.9}>
                 Explore users
               </Text>

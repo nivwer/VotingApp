@@ -9,18 +9,6 @@ function NavbarHeader({ disclosure }) {
   const { onOpen } = disclosure;
   const location = useLocation();
   return (
-    <HStack spacing={3}>
-      {/* Open Left Drawer */}
-      {/* <IconButton
-        opacity={isDark ? 0.9 : 0.8}
-        onClick={onOpen}
-        variant={"ghost"}
-        borderRadius={"full"}
-        size={"md"}
-        fontSize={"xl"}
-        icon={<FaBars />}
-      ></IconButton> */}
-
       <HStack opacity={1} spacing={5}>
         <NavLink to={"/home"}>
           <Text children={"VotingApp"} fontSize="xl" fontWeight={"bold"} />
@@ -39,7 +27,6 @@ function NavbarHeader({ disclosure }) {
           </Show>
         )}
       </HStack>
-    </HStack>
   );
 }
 

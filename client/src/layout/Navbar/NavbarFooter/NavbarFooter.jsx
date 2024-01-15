@@ -1,4 +1,4 @@
-import { useThemeInfo } from "../../../hooks/Theme";
+import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   Avatar,
@@ -11,9 +11,10 @@ import {
   Show,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NavLink } from "react-router-dom";
+import { FaPlus, FaHouse, FaMagnifyingGlass, FaUser, FaGear, FaIcons } from "react-icons/fa6";
+
+import { useThemeInfo } from "../../../hooks/Theme";
 import PollModal from "../../../components/Modals/PollModal/PollModal";
-import { FaPlus, FaHouse, FaMagnifyingGlass, FaUser, FaGear } from "react-icons/fa6";
 import NavbarMenu from "./NavbarMenu/NavbarMenu";
 import NavbarMenuItem from "./NavbarMenu/NavbarMenuItem/NavbarMenuItem";
 import CustomIconButton from "../../../components/Buttons/CustomIconButton/CustomIconButton";
@@ -31,18 +32,21 @@ function NavbarFooter({ disclosure, handleLogout }) {
         <HStack spacing={6}>
           <Show above="sm">
             <HStack>
-              <CustomIconButton
-                onClick={pollModalDisclosure.onOpen}
-                variant={"ghost"}
-                icon={<FaPlus />}
-                color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
-              />
               <NavLink to={"/home"}>
                 <CustomIconButton variant={"ghost"} icon={<FaHouse />} />
               </NavLink>
               <NavLink to={"/search"}>
                 <CustomIconButton variant={"ghost"} icon={<FaMagnifyingGlass />} />
               </NavLink>
+              <NavLink to={"/categories"}>
+                <CustomIconButton variant={"ghost"} icon={<FaIcons />} />
+              </NavLink>
+              <CustomIconButton
+                onClick={pollModalDisclosure.onOpen}
+                variant={"ghost"}
+                icon={<FaPlus />}
+                color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
+              />
             </HStack>
           </Show>
 

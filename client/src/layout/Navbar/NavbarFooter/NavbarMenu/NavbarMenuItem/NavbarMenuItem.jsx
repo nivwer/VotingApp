@@ -13,6 +13,7 @@ function NavbarMenuItem({ children, onClick, icon }) {
       borderRadius={0}
       opacity={0.8}
       px={4}
+      bg={isDark ? "black" : "white"}
     >
       <HStack
         spacing={3}
