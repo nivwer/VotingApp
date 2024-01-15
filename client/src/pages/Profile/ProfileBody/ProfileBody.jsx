@@ -1,56 +1,66 @@
-import { useThemeInfo } from "../../../hooks/Theme";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
-import { Box, Flex, Grid } from "@chakra-ui/react";
-import ProfileTabButton from "./ProfileTabButton/ProfileTabButton";
-import ProfileUserPolls from "./ProfileTabs/ProfileUserPolls/ProfileUserPolls";
-import ProfileVotedPolls from "./ProfileTabs/ProfileVotedPolls/ProfileVotedPolls";
-import ProfileSharedPolls from "./ProfileTabs/ProfileSharedPolls/ProfileSharedPolls";
-import ProfileBookmarkedPolls from "./ProfileTabs/ProfileBookmarkedPolls/ProfileBookmarkedPolls";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Box, Flex } from "@chakra-ui/react";
+import Cookies from "js-cookie";
+
+import {
+  useGetUserPollsQuery,
+  useGetUserVotedPollsQuery,
+  useGetUserSharedPollsQuery,
+  useGetUserBookmarkedPollsQuery,
+} from "../../../api/pollsAPISlice";
+import TabButtonsGroup from "../../../components/TabButtonsGroup/TabButtonsGroup";
+import TabButtonItem from "../../../components/TabButtonsGroup/TabButtonItem/TabButtonItem";
+import PollList from "../../../components/PollList/PollList";
 
 function ProfileBody({ profile, username, isLoading }) {
-  const { isDark } = useThemeInfo();
-  const { user } = useSelector((state) => state.session);
+  const csrftoken = Cookies.get("csrftoken");
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useSelector((state) => state.session);
+  const [dataQuery, setDataQuery] = useState({});
   const [searchParams] = useSearchParams();
-  const tab = searchParams.get("tab") || "";
+  const tabParam = searchParams.get("tab") || "";
+  const [tab, setTab] = useState(tabParam);
+
+  useEffect(() => (tabParam ? setTab(tabParam) : setTab("polls")), [tabParam]);
+
+  useEffect(() => {
+    navigate(tab !== "polls" ? `/${username}?tab=${tab}` : `/${username}`);
+  }, [tab]);
+
+  useEffect(() => {
+    if (profile) {
+      const headers = isAuthenticated ? { headers: { "X-CSRFToken": csrftoken } } : {};
+      setDataQuery({ ...headers, id: profile.id });
+    }
+  }, [profile, isAuthenticated]);
 
   return (
     <>
       {/* Profile Tabs. */}
-      <Box
-        zIndex={1200}
-        pos={"sticky"}
-        top={{ base: "60px", md: "80px" }}
-        w={"100%"}
-        bg={isDark ? "black" : "white"}
-        borderBottom={"3px solid"}
-        borderRadius={"3px"}
-        borderColor={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
-        mt={{ base: 6, lg: 0 }}
-        pt={{ base: 0, lg: 6 }}
-        mb={4}
-      >
-        <Grid
-          templateColumns={user && user.username == username ? "repeat(4, 1fr)" : "repeat(3, 1fr)"}
-          color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+      <Box zIndex={1200} pos={"sticky"} top={{ base: "60px", md: "80px" }}>
+        <TabButtonsGroup
+          columns={user && user.username == username ? 4 : 3}
+          mt={{ base: 6, lg: 0 }}
         >
-          <ProfileTabButton children={"Polls"} tab={tab} username={username} />
-          <ProfileTabButton children={"Votes"} tab={tab} value={"votes"} username={username} />
-          <ProfileTabButton children={"Shares"} tab={tab} value={"shares"} username={username} />
+          <TabButtonItem children={"Polls"} tab={tab} value={"polls"} setValue={setTab} />
+          <TabButtonItem children={"Votes"} tab={tab} value={"votes"} setValue={setTab} />
+          <TabButtonItem children={"Shares"} tab={tab} value={"shares"} setValue={setTab} />
           {user && user.username == username && (
-            <ProfileTabButton tab={tab} value={"bookmarks"} username={username}>
-              Bookmarks
-            </ProfileTabButton>
+            <TabButtonItem children={"Bookmarks"} tab={tab} value={"bookmarks"} setValue={setTab} />
           )}
-        </Grid>
+        </TabButtonsGroup>
       </Box>
 
       {!isLoading && (
         <Flex>
-          {!tab && <ProfileUserPolls id={profile && profile.id} />}
-          {tab === "votes" && <ProfileVotedPolls id={profile && profile.id} />}
-          {tab === "shares" && <ProfileSharedPolls id={profile && profile.id} />}
-          {tab === "bookmarks" && <ProfileBookmarkedPolls id={profile && profile.id} />}
+          {tab === "polls" && <PollList useQuery={useGetUserPollsQuery} data={dataQuery} />}
+          {tab === "votes" && <PollList useQuery={useGetUserVotedPollsQuery} data={dataQuery} />}
+          {tab === "shares" && <PollList useQuery={useGetUserSharedPollsQuery} data={dataQuery} />}
+          {tab === "bookmarks" && (
+            <PollList useQuery={useGetUserBookmarkedPollsQuery} data={dataQuery} />
+          )}
         </Flex>
       )}
     </>
