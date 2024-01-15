@@ -48,8 +48,6 @@ function Router() {
 
         <Route path="/search" element={<Search />} />
         <Route path="/results" element={<Results />} />
-
-        <Route path="/explore" element={<Explore />} />
       </Route>
 
       {/* ### USER SECTION ### */}

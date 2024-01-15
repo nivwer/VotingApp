@@ -1,10 +1,13 @@
-import { useSearchParams } from "react-router-dom";
+import PollsExplore from "./PollsExplore/PollsExplore";
 import UsersExplore from "./UsersExplore/UsersExplore";
 
-function Explore() {
-  const [searchParams] = useSearchParams();
-  const type = searchParams.get("type") || "";
-  return <>{type == "users" && <UsersExplore />}</>;
+function Explore({ type }) {
+  return (
+    <>
+      {type == "users" && <UsersExplore />}
+      {type == "polls" && <PollsExplore />}
+    </>
+  );
 }
 
 export default Explore;
