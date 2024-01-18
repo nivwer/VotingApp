@@ -1,8 +1,9 @@
 import { HStack, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { FaHashtag } from "react-icons/fa6";
-import categoryIcons from "../../../utils/icons/categoryIcons";
-import CustomButton from "../../../components/Buttons/CustomButton/CustomButton";
+
+import categoryIcons from "../../../../utils/icons/categoryIcons";
+import CustomButton from "../../../../components/Buttons/CustomButton/CustomButton";
 
 function SidebarCategoryButton({ category }) {
   return (
