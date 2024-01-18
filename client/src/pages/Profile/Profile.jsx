@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useUserProfileByUsernameQuery } from "../../api/accountsAPISlice";
-import { Box, Stack } from "@chakra-ui/react";
+import { Box, Center, Stack, Text } from "@chakra-ui/react";
 import ProfileHeader from "./ProfileHeader/ProfileHeader";
 import ProfileBody from "./ProfileBody/ProfileBody";
+import { FaRegFaceFrown } from "react-icons/fa6";
 
 function Profile() {
   const { username } = useParams();
@@ -13,9 +14,12 @@ function Profile() {
   const { isDark } = useThemeInfo();
   const [dataQuery, setDataQuery] = useState(false);
   const [profile, setProfile] = useState(null);
-  const { data, status, isLoading, isFetching } = useUserProfileByUsernameQuery(dataQuery, {
-    skip: dataQuery ? false : true,
-  });
+  const { data, status, isLoading, isFetching, isError, error } = useUserProfileByUsernameQuery(
+    dataQuery,
+    {
+      skip: dataQuery ? false : true,
+    }
+  );
 
   useEffect(() => {
     setProfile(null);
@@ -26,6 +30,8 @@ function Profile() {
     if (data && !isFetching && !isLoading && data.profile.username === username)
       setProfile(data.profile);
   }, [data, status]);
+
+  console.log(error);
 
   return (
     <Stack spacing={4}>
@@ -43,6 +49,17 @@ function Profile() {
       >
         {!isLoading && !isFetching && profile && profile.username === username && (
           <ProfileHeader profile={profile} />
+        )}
+
+        {isError && (
+          <Center opacity={isDark ? 0.7 : 0.5} w={"100%"} h={"100%"} minHeight={"250px"}>
+            <Stack>
+              <Text children={error.data} fontWeight={"semibold"} />
+              <Center fontSize={"4xl"}>
+                <Box children={error.status === 404 && <FaRegFaceFrown />} />
+              </Center>
+            </Stack>
+          </Center>
         )}
       </Box>
 

@@ -1,7 +1,6 @@
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useState } from "react";
 import { useDeletePollMutation } from "../../../api/pollsAPISlice";
-import CustomProgress from "../../Progress/CustomProgress/CustomProgress";
 import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
 import PollCardHeader from "./PollCardHeader/PollCardHeader";
 import PollCardBody from "./PollCardBody/PollCardBody";
@@ -25,8 +24,6 @@ function PollCard({ item }) {
           mx={"auto"}
           boxShadow={"base"}
         >
-          {isLoading && <CustomProgress />}
-
           {/* Card Header. */}
           <CardHeader pt={0}>
             <PollCardHeader poll={poll} isLoading={isLoading} deletePoll={deletePoll} />

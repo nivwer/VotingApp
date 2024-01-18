@@ -35,7 +35,6 @@ export const pollsAPISlice = createApi({
         method: "GET",
         headers: headers,
       }),
-      providesTags: ["Polls"],
       providesTags: (res, error) =>
         res
           ? [

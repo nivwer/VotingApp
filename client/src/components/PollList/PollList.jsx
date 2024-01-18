@@ -7,13 +7,9 @@ function PollList({ useQuery, data }) {
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
 
-  useEffect(() => {
-    console.log("primer efect");
-    setResetValues(true);
-  }, [data]);
+  useEffect(() => setResetValues(true), [data]);
 
   useEffect(() => {
-    console.log("segun efect");
     if (resetValues) {
       setDataQuery({ ...data, page_size: 4 });
       setResetValues(false);

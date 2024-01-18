@@ -19,10 +19,10 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
   const disclosure = useDisclosure();
 
   // Delete poll.
-  const handleDeletePoll = async (poll_id) => {
+  const handleDeletePoll = async (poll_id, username) => {
     try {
       const res = await deletePoll({ ...dataMutation, id: poll_id });
-      if (res.data && id) navigate(`/${poll.profile.username}`);
+      if (res.data && id) navigate(`/${username}`);
     } catch (error) {
       console.log(error);
     }
@@ -41,7 +41,7 @@ function PollCardMenu({ poll, deletePoll, isLoading }) {
             Edit
           </CardMenuItem>
           <CardMenuItem
-            onClick={() => handleDeletePoll(poll.id)}
+            onClick={() => handleDeletePoll(poll.id, poll.user_profile.username)}
             icon={<FaTrash />}
             isLoading={isLoading}
           >

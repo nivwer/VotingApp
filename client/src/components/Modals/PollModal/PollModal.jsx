@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useCreatePollMutation, useUpdatePollMutation, useGetCategoriesQuery } from "../../../api/pollsAPISlice";
+import {
+  useCreatePollMutation,
+  useUpdatePollMutation,
+  useGetCategoriesQuery,
+} from "../../../api/pollsAPISlice";
 import CustomButton from "../../Buttons/CustomButton/CustomButton";
 import {
   Button,
@@ -118,7 +122,8 @@ function PollModal({ poll = false, disclosure }) {
             <HStack>
               <Button
                 type="submit"
-                isDisabled={isLoading}
+                isLoading={isLoading}
+                loadingText={poll ? "Save" : "Create"}
                 colorScheme={ThemeColor}
                 borderRadius={"full"}
                 children={poll ? "Save" : "Create"}
