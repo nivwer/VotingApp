@@ -59,7 +59,7 @@ class UserProfileByUserIdAPIView(APIView):
             instance: UserProfile = self.service.get_by_user_id(id=id)
 
         except NotFound as error:
-            return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=error.detail, status=status.HTTP_404_NOT_FOUND)
 
         profile: dict = UserProfileSerializer(instance=instance).data
         profile["id"] = instance.user.id
@@ -119,7 +119,7 @@ class UserProfileByUsernameAPIView(APIView):
             instance: UserProfile = self.service.get_by_username(username=username)
 
         except NotFound as error:
-            return Response(data=error.detail, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=error.detail, status=status.HTTP_404_NOT_FOUND)
 
         profile: dict = UserProfileSerializer(instance=instance).data
         profile["id"] = instance.user.id
