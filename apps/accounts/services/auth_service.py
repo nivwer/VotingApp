@@ -25,12 +25,12 @@ class AuthService:
         if user is None:
             if raise_exception:
                 message: str = "Failed authentication."
-                raise AuthenticationFailed(detail=message)
+                raise AuthenticationFailed(detail={"password": [message]})
             return None
 
         return user
 
-    def authenticateAndLogin(self, request: Request, raise_exception: bool = False):
+    def authenticateAndLogin(self, request: Request, raise_exception: bool = True):
         """
         Authenticates and logs in a user based on provided credentials.
         """

@@ -254,7 +254,7 @@ class UserLogoutAPIView(APIView):
             Response: A response indicating a successful logout.
         """
         logout(request=request)
-        return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserSessionCheckAPIView(APIView):

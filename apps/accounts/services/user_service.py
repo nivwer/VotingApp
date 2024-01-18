@@ -17,6 +17,7 @@ class UserService:
 
     This class encapsulates business logic related to user management.
     """
+
     repository = UserRepository()
 
     def create_user(self, data: dict, raise_exception: bool = True):
@@ -99,7 +100,7 @@ class UserService:
             return None
 
         instance: User = self.repository.update_username(instance=instance, username=new_username)
-        
+
         return instance
 
     def update_password(self, instance: User, data: dict, raise_exception: bool = True):
@@ -113,7 +114,9 @@ class UserService:
             return None
 
         current_password: str = serializer._validated_data["current_password"]
-        password_is_valid: bool = self.check_password(user=instance, password=current_password)
+        password_is_valid: bool = self.repository.check_password(
+            instance=instance, password=current_password
+        )
 
         if not password_is_valid:
             if raise_exception:
