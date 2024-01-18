@@ -14,3 +14,22 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 } */
+
+/* Scroll. */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #00000000;
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #c1c1c120;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #c1c1c140;
+}

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Home from "../pages/Home/Home";
 import About from "../pages/About";
@@ -17,7 +17,6 @@ import GridLayout from "../layout/GridLayout/GridLayout";
 import ThemeSettings from "../pages/Settings/SettingsPages/ThemeSettings/ThemeSettings";
 import AccountSettings from "../pages/Settings/SettingsPages/AccountSettings/AccountSettings";
 import ProfileSettings from "../pages/Settings/SettingsPages/ProfileSettings/ProfileSettings";
-import Explore from "../pages/Explore/Explore";
 
 // Router.
 function Router() {
@@ -25,6 +24,8 @@ function Router() {
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/home" />} />
+
       {/* ### MAIN SECTION ### */}
 
       {/* Simple Column Layout. */}
