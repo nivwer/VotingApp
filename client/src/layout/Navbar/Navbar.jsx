@@ -10,7 +10,6 @@ import { useSignOutMutation } from "../../api/accountsAPISlice";
 import NavRightDrawer from "./NavRightDrawer/NavRightDrawer";
 import NavbarFooter from "./NavbarFooter/NavbarFooter";
 import NavbarHeader from "./NavbarHeader/NavbarHeader";
-import NavLeftDrawer from "./NavLeftDrawer/NavLeftDrawer";
 import NavbarBottomBody from "./NavbarBottomBody/NavbarBottomBody";
 import PollModal from "../../components/Modals/PollModal/PollModal";
 import CustomIconButton from "../../components/Buttons/CustomIconButton/CustomIconButton";
@@ -22,7 +21,6 @@ function Navbar({ section }) {
   const { isAuthenticated } = useSelector((state) => state.session);
   const { isDark, ThemeColor } = useThemeInfo();
   const disclosureRight = useDisclosure();
-  const disclosureLeft = useDisclosure();
   const pollModalDisclosure = useDisclosure();
   const [signOut] = useSignOutMutation();
 
@@ -47,12 +45,10 @@ function Navbar({ section }) {
         {/* Toolbar. */}
         <Flex minH={{ base: "60px", md: "80px" }} w={"100%"} justify={"center"}>
           <Flex maxW="1248px" px={4} w="100%" align="center" justify="space-between">
-            <NavbarHeader disclosure={disclosureLeft} />
+            <NavbarHeader />
             <NavbarFooter handleLogout={handleLogout} disclosure={disclosureRight} />
           </Flex>
 
-          {/* LeftDrawer. */}
-          {isAuthenticated && <NavLeftDrawer disclosure={disclosureLeft} />}
           {/* RightDrawer. */}
           {isAuthenticated && (
             <NavRightDrawer handleLogout={handleLogout} disclosure={disclosureRight} />
