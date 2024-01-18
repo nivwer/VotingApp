@@ -67,7 +67,7 @@ function GridLayout({ layout = "simple", section = "main" }) {
       {/* Right Side */}
       {!isSimple && !isDouble && (
         <GridItem area={"right"} display={{ base: "none", lg: "none", xl: "grid" }}>
-          <Aside />
+          <Aside  section={section} />
         </GridItem>
       )}
 

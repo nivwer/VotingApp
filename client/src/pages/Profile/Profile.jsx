@@ -31,8 +31,6 @@ function Profile() {
       setProfile(data.profile);
   }, [data, status]);
 
-  console.log(error);
-
   return (
     <Stack spacing={4}>
       {/* Profile Header. */}
