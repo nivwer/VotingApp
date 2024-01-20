@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "adrf",  # Async Rest Framework support.
-    "apps.accounts",
-    "apps.polls",
+    "apps.accountsAPI",
+    "apps.pollsAPI",
 ]
 
 MIDDLEWARE = [
