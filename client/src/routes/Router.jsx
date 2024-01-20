@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Home from "../pages/Home/Home";
-import About from "../pages/About";
 import SignUp from "../pages/Auth/SignUp";
 import SignIn from "../pages/Auth/SignIn";
 import NotFoundPage from "../pages/NotFoundPage";
@@ -34,8 +33,6 @@ function Router() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
         </Route>
-
-        <Route path="/about" element={<About />} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>

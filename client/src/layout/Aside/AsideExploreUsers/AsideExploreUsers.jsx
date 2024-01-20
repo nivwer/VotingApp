@@ -24,32 +24,28 @@ function AsideExploreUsers() {
   }, [isAuthenticated]);
 
   return (
-    <Box pos={"fixed"} w={"343px"} h={"calc(100vh - 64px)"}>
-      <Stack ml={4}>
-        <Box
-          bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
-          borderRadius={"3xl"}
-          w={"100%"}
-          py={6}
-          boxShadow={"base"}
-          minH={"200px"}
-        >
-          {data && (
-            <>
-              <Box px={8} py={1}>
-                <NavLink to={"/search?type=users"}>
-                  <Text children="Explore users" fontWeight="black" fontSize="md" opacity={0.9} />
-                </NavLink>
-              </Box>
-              <Stack spacing={0}>
-                {data.items.map((item, index) => (
-                  <UserCard key={index} item={item} variant="unstyled" hasBio={false} />
-                ))}
-              </Stack>
-            </>
-          )}
-        </Box>
-      </Stack>
+    <Box
+      bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
+      borderRadius={"3xl"}
+      w={"100%"}
+      py={6}
+      boxShadow={"base"}
+      minH={"200px"}
+    >
+      {data && (
+        <>
+          <Box px={8} py={1}>
+            <NavLink to={"/search?type=users"}>
+              <Text children="Explore users" fontWeight="black" fontSize="md" opacity={0.9} />
+            </NavLink>
+          </Box>
+          <Stack spacing={0}>
+            {data.items.map((item, index) => (
+              <UserCard key={index} item={item} variant="unstyled" hasBio={false} />
+            ))}
+          </Stack>
+        </>
+      )}
     </Box>
   );
 }

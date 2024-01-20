@@ -8,7 +8,7 @@ function Sidebar({ section }) {
   const { isDark } = useThemeInfo();
 
   return (
-    <Box pos={"fixed"} w={"295px"} h={"96%"}>
+    <Box pos={"fixed"} w={"295px"} h={"100%"} pb={8}>
       <Grid gridTemplateRows={"1fr 70px"} gridTemplateColumns={"100%"} gap="1" h={"100%"}>
         <GridItem
           overflow={"auto"}
