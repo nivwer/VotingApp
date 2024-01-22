@@ -12,13 +12,14 @@ function CommentCard({ item }) {
 
   return (
     <Card
-      w="100%"
+      w="99%"
       direction={"row"}
       bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
-      borderRadius="3xl"
+      borderRadius={{ base: 0, sm: "3xl" }}
       mb={3}
       opacity={isLoading ? 0.6 : 1}
       px={2}
+      mx={"auto"}
       boxShadow={"base"}
     >
       {/* Card Header. */}
