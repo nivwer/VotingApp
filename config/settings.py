@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "adrf",  # Async Rest Framework support.
+    "apps.serverAPI",
     "apps.accountsAPI",
     "apps.pollsAPI",
 ]

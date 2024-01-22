@@ -15,12 +15,37 @@ function App() {
   const session = useSelector((state) => state.session);
   const { isDark } = useThemeInfo();
 
+  const healthCheckURL = "http://localhost:8000/server/api/v1/health-check";
+
+  const [serverStatus, setServerStatus] = useState(null);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
+
+  useEffect(() => {
+    const checkServerStatus = async () => {
+      if (!initialCheckDone) {
+        try {
+          const response = await fetch(healthCheckURL);
+          if (response.status === 200) {
+            setServerStatus(200);
+            setInitialCheckDone(true);
+          }
+        } catch (error) {
+          console.error("Error checking server status:", error);
+        }
+      }
+    };
+
+    const checkInterval = setInterval(checkServerStatus, 5000);
+
+    return () => clearInterval(checkInterval);
+  }, [initialCheckDone]);
+
   const {
     data: dataSession,
     status: statusSession,
     isLoading: isCheckSessionLoading,
     isUninitialized: isCheckSessionUninitialized,
-  } = useCheckSessionQuery();
+  } = useCheckSessionQuery({}, { skip: serverStatus === 200 ? false : true });
 
   const { data: dataUser } = useUserQuery({}, { skip });
   const { data: dataProfile } = useUserProfileQuery({}, { skip });
@@ -28,7 +53,13 @@ function App() {
   // Login.
   useEffect(() => {
     if (dataSession && dataUser && dataProfile) {
-      dispatch(login({ isAuthenticated: true, user: dataUser.user, profile: dataProfile.profile }));
+      dispatch(
+        login({
+          isAuthenticated: true,
+          user: dataUser.user,
+          profile: dataProfile.profile,
+        })
+      );
     }
   }, [dataSession, dataUser, dataProfile]);
 
