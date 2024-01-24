@@ -1,9 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
+
 export const accountsAPISlice = createApi({
   reducerPath: "accountsAPI",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/accounts/api/v1/",
+    baseUrl: `${backendUrl}/accounts/api/v1/`,
     credentials: "include",
   }),
   tagTypes: ["User", "UserProfile"],

@@ -8,6 +8,8 @@ import { BrowserRouter } from "react-router-dom";
 import InitialSpinner from "./components/Spinners/InitialSpinner/InitialSpinner";
 import { Container } from "@chakra-ui/react";
 
+const backendUrl = import.meta.env.VITE_APP_BACKEND_URL;
+
 function App() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -15,7 +17,7 @@ function App() {
   const session = useSelector((state) => state.session);
   const { isDark } = useThemeInfo();
 
-  const healthCheckURL = "http://localhost:8000/server/api/v1/health-check";
+  const healthCheckURL = `${backendUrl}/server/api/v1/health-check`;
 
   const [serverStatus, setServerStatus] = useState(null);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
