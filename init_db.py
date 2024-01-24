@@ -23,7 +23,6 @@ def create_collection():
 
 def create_index_text():
     before_indexes = polls_db.polls.index_information()
-    print("Índices existentes:", before_indexes)
 
     clave_text_index = "title_text_description_text_category_text"
     text_index_exists = clave_text_index in before_indexes
