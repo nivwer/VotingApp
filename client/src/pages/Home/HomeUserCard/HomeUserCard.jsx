@@ -30,7 +30,7 @@ function HomeUserCard() {
       mb={4}
       mx={"auto"}
       px={2}
-      boxShadow={"base"}
+      boxShadow={"none"}
     >
       <CardHeader spacing={"4"} pt={2} px={3}>
         <HStack flex={1} mt={3}>

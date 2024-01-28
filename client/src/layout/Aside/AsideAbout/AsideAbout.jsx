@@ -14,7 +14,7 @@ function AsideAbout() {
       borderRadius={"3xl"}
       w={"100%"}
       py={6}
-      boxShadow={"base"}
+      boxShadow={"none"}
     >
       <Box px={8} py={1}>
         <NavLink to={repositoryURL} target="_blank">

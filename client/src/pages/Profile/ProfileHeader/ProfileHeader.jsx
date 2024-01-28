@@ -26,7 +26,13 @@ function ProfileHeader({ profile }) {
           {isAuthenticated && user.username === profile.username && (
             <NavLink to={`/settings/profile`}>
               <Button variant={"link"} size={"sm"} borderRadius={"full"}>
-                <Text children={"Edit profile"} mt="1px" fontWeight="extrabold" opacity={0.9} />
+                <Text
+                  children={"Edit profile"}
+                  mt="1px"
+                  fontWeight="extrabold"
+                  opacity={0.9}
+                  color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+                />
               </Button>
             </NavLink>
           )}

@@ -1,7 +1,9 @@
 import { NavLink } from "react-router-dom";
 import { Button, Flex, HStack, Stack, Text } from "@chakra-ui/react";
+import { useThemeInfo } from "../../../../hooks/Theme";
 
 function UserCardBody({ user, hasBio }) {
+  const { isDark } = useThemeInfo();
   return (
     <>
       <HStack justify={"space-between"}>
@@ -15,7 +17,13 @@ function UserCardBody({ user, hasBio }) {
         </Stack>
         <NavLink to={`/${user.username}`}>
           <Button variant={"link"} size={"sm"} borderRadius={"full"}>
-            <Text children={"Profile"} mx={3} fontWeight={"extrabold"} opacity={0.9} />
+            <Text
+              children={"Profile"}
+              mx={3}
+              fontWeight={"extrabold"}
+              opacity={0.9}
+              color={isDark ? "whiteAlpha.900" : "blackAlpha.900"}
+            />
           </Button>
         </NavLink>
       </HStack>

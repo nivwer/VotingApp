@@ -20,7 +20,7 @@ function UserCard({ item: { user }, variant = "filled", hasBio = true }) {
       px={2}
       mb={variant == "filled" ? 3 : variant == "unstyled" && 0}
       mx={"auto"}
-      boxShadow={variant == "filled" ? "base" : variant == "unstyled" && "none"}
+      boxShadow={"none"}
     >
       {/* Card Header. */}
       <CardHeader spacing={"4"} pt={variant == "filled" ? 2 : variant == "unstyled" && 0} px={3}>

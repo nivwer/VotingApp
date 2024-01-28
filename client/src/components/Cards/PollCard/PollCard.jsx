@@ -22,7 +22,7 @@ function PollCard({ item }) {
           opacity={isLoading ? 0.6 : 1}
           mb={4}
           mx={"auto"}
-          boxShadow={"base"}
+          boxShadow={"none"}
         >
           {/* Card Header. */}
           <CardHeader pt={0}>

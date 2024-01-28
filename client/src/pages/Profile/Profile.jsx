@@ -44,7 +44,7 @@ function Profile() {
         px={7}
         borderRadius={{ base: 0, sm: "3xl" }}
         overflow={"hidden"}
-        boxShadow={"base"}
+        boxShadow={"none"}
       >
         {!isLoading && !isFetching && profile && profile.username === username && (
           <ProfileHeader profile={profile} />

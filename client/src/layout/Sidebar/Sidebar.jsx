@@ -15,7 +15,7 @@ function Sidebar({ section }) {
           bg={isDark ? "gothicPurpleAlpha.100" : "gothicPurpleAlpha.200"}
           mr={4}
           borderRadius={"3xl"}
-          boxShadow={"base"}
+          boxShadow={"none"}
           py={6}
         >
           {["main", "user"].includes(section) && <SidebarCategories />}

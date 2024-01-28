@@ -18,7 +18,7 @@ function NavbarHeader() {
             p={"5px"}
             px={"25px"}
             borderRadius={"3xl"}
-            boxShadow={"base"}
+            boxShadow={"none"}
             children={<NavbarBreadcrumb />}
           />
         </Show>

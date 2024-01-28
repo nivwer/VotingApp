@@ -20,7 +20,7 @@ function CommentCard({ item }) {
       opacity={isLoading ? 0.6 : 1}
       px={2}
       mx={"auto"}
-      boxShadow={"base"}
+      boxShadow={"none"}
     >
       {/* Card Header. */}
       <CardHeader spacing={"4"} pt={2} px={3}>

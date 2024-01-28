@@ -27,7 +27,7 @@ function AsideExploreUsers() {
       borderRadius={"3xl"}
       w={"100%"}
       py={6}
-      boxShadow={"base"}
+      boxShadow={"none"}
       minH={"200px"}
     >
       {data && (
