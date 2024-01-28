@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDisclosure, Box, Flex, Hide } from "@chakra-ui/react";
+import { useDisclosure, Box, Flex, Show } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa6";
 
 import { useThemeInfo } from "../../hooks/Theme";
@@ -55,7 +55,7 @@ function Navbar({ section }) {
       </Box>
 
       {/* Bottom. */}
-      <Hide above="sm">
+      <Show below="sm">
         <Box w={"100%"} pos={"fixed"} bg={isDark ? "black" : "white"} zIndex={1300} bottom={0}>
           {/* Toolbar. */}
           <Box children={<NavbarBottomBody />} minH="60px" w="100%" h="100%" align="center" />
@@ -71,7 +71,7 @@ function Navbar({ section }) {
             />
           </Box>
         )}
-      </Hide>
+      </Show>
     </>
   );
 }

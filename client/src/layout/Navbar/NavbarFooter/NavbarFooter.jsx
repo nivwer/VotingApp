@@ -50,7 +50,7 @@ function NavbarFooter({ disclosure, handleLogout }) {
             </HStack>
           </Show>
 
-          <Hide above="sm">
+          <Show below="sm">
             <IconButton variant={"unstyled"} size={"md"} onClick={onOpen} borderRadius={"full"}>
               <Avatar
                 bg={profile.profile_picture ? "transparent" : "gray.400"}
@@ -60,7 +60,7 @@ function NavbarFooter({ disclosure, handleLogout }) {
                 src={profile.profile_picture}
               />
             </IconButton>
-          </Hide>
+          </Show>
 
           <Show above="sm">
             <NavbarMenu profile={profile} user={user}>
@@ -78,7 +78,7 @@ function NavbarFooter({ disclosure, handleLogout }) {
           </Show>
         </HStack>
       ) : (
-        <Hide below="sm">
+        <Show above="sm">
           <HStack spacing="2">
             <NavLink to={"/signin"}>
               <CustomButton children={"Sign In"} size="sm" variant={"ghost"} px={4} />
@@ -93,7 +93,7 @@ function NavbarFooter({ disclosure, handleLogout }) {
               />
             </NavLink>
           </HStack>
-        </Hide>
+        </Show>
       )}
     </Box>
   );
