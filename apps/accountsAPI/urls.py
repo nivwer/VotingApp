@@ -20,6 +20,7 @@ from .views.user_profile_public_views import (
 from .views.user_list_by_keyword_view import UserListByKeywordAPIView
 from .views.countries_view import CountriesAPIView
 from .views.user_list_all_view import UserListAllAPIView
+from .views.csrf_token_view import CSRFTokenAPIView
 
 
 urlpatterns = [
@@ -92,5 +93,10 @@ urlpatterns = [
         route="users/all",
         view=UserListAllAPIView.as_view(),
         name="users_all",
+    ),
+    path(
+        route="csrf-token",
+        view=CSRFTokenAPIView.as_view(),
+        name="csrf_token",
     ),
 ]

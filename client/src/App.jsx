@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "./hooks/Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { useUserQuery, useUserProfileQuery, useCheckSessionQuery } from "./api/accountsAPISlice";
+import {
+  useUserQuery,
+  useUserProfileQuery,
+  useCheckSessionQuery,
+  useCSRFTokenQuery,
+} from "./api/accountsAPISlice";
 import { login } from "./features/auth/sessionSlice";
 import Router from "./routes/Router";
 import { BrowserRouter } from "react-router-dom";
@@ -51,25 +56,27 @@ function App() {
 
   const { data: dataUser } = useUserQuery({}, { skip });
   const { data: dataProfile } = useUserProfileQuery({}, { skip });
+  const { data: dataCSRFToken } = useCSRFTokenQuery({}, { skip });
 
   // Login.
   useEffect(() => {
-    if (dataSession && dataUser && dataProfile) {
+    if (dataSession && dataUser && dataProfile && dataCSRFToken) {
       dispatch(
         login({
           isAuthenticated: true,
           user: dataUser.user,
           profile: dataProfile.profile,
+          csrftoken: dataCSRFToken.csrftoken,
         })
       );
     }
-  }, [dataSession, dataUser, dataProfile]);
+  }, [dataSession, dataUser, dataProfile, dataCSRFToken]);
 
   useEffect(() => {
     if (!isCheckSessionUninitialized && !isCheckSessionLoading) {
       if (dataSession) {
         setSkip(false);
-        if (!isLoading && !dataUser && !dataProfile) setIsLoading(true);
+        if (!isLoading && !dataUser && !dataProfile && !dataCSRFToken) setIsLoading(true);
       } else {
         if (isLoading) setIsLoading(false);
       }

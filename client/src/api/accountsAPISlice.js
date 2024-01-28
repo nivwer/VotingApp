@@ -8,7 +8,7 @@ export const accountsAPISlice = createApi({
     baseUrl: `${backendUrl}/accounts/api/v1/`,
     credentials: "include",
   }),
-  tagTypes: ["User", "UserProfile"],
+  tagTypes: ["User", "UserProfile", "CSRFToken"],
   endpoints: (builder) => ({
     // Register.
     signUp: builder.mutation({
@@ -17,7 +17,7 @@ export const accountsAPISlice = createApi({
         method: "POST",
         body: { ...data, login_user: true, create_profile: true },
       }),
-      invalidatesTags: ["User", "UserProfile"],
+      invalidatesTags: ["User", "UserProfile", "CSRFToken"],
     }),
 
     // Login.
@@ -27,7 +27,7 @@ export const accountsAPISlice = createApi({
         method: "POST",
         body: { ...data },
       }),
-      invalidatesTags: ["User", "UserProfile"],
+      invalidatesTags: ["User", "UserProfile", "CSRFToken"],
     }),
 
     // Logout.
@@ -37,7 +37,7 @@ export const accountsAPISlice = createApi({
         method: "POST",
         headers: headers,
       }),
-      invalidatesTags: ["User", "UserProfile"],
+      invalidatesTags: ["User", "UserProfile", "CSRFToken"],
     }),
 
     // User session check.
@@ -46,7 +46,7 @@ export const accountsAPISlice = createApi({
         url: "user/session/check",
         method: "GET",
       }),
-      providesTags: ["User", "UserProfile"],
+      providesTags: ["User", "UserProfile", "CSRFToken"],
     }),
 
     // GET User.
@@ -134,6 +134,16 @@ export const accountsAPISlice = createApi({
         headers: headers,
       }),
     }),
+
+
+    // GET CSRF Token.
+    CSRFToken: builder.query({
+      query: () => ({
+        url: "csrf-token",
+        method: "GET",
+      }),
+      providesTags: ["CSRFToken"],
+    }),
   }),
 });
 
@@ -151,4 +161,5 @@ export const {
   useSearchUsersQuery,
   useExploreUsersQuery,
   useGetCountriesQuery,
+  useCSRFTokenQuery,
 } = accountsAPISlice;

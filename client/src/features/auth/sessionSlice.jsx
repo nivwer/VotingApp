@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { isAuthenticated: false, user: null, profile: null };
+const initialState = { isAuthenticated: false, user: null, profile: null, csrftoken: null };
 
 export const sessionSlice = createSlice({
   name: "session",
@@ -10,11 +10,14 @@ export const sessionSlice = createSlice({
       state.isAuthenticated = action.payload.isAuthenticated;
       state.user = action.payload.user;
       state.profile = action.payload.profile;
+      state.csrftoken = action.payload.csrftoken;
+      console.log(action.payload.csrftoken);
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.profile = null;
+      state.csrftoken = null;
     },
     updateUserAction: (state, action) => (state.user = action.payload.user),
     updateProfileAction: (state, action) => (state.profile = action.payload.profile),

@@ -165,26 +165,20 @@ SESSION_COOKIE_AGE = 30 * 24 * 60 * 60
 
 # CSRF Token settings.
 
-CSRF_USE_SESSIONS = False
+CSRF_USE_SESSIONS = True
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
-CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_AGE = 30 * 24 * 60 * 60
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    CLIENT_URL,
-]
+CSRF_TRUSTED_ORIGINS = [CLIENT_URL] if not DEBUG else ["http://localhost:5173"]
 
 
 # CORS settings.
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    CLIENT_URL,
-]
+CORS_ALLOWED_ORIGINS = [CLIENT_URL] if not DEBUG else ["http://localhost:5173"]
 
 
 # REST Framework settings.
