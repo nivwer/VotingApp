@@ -297,11 +297,5 @@ class UserSessionCheckAPIView(APIView):
         Returns:
             Response: A response indicating the authentication status and setting session-related headers.
         """
-        TTL = timedelta(hours=1)
-        expiration_date = datetime.utcnow() + TTL
 
-        response = Response(data={"is_authenticated": True}, status=status.HTTP_200_OK)
-        response["Cache-Control"] = f"max-age={int(TTL.total_seconds())}"
-        response["Expires"] = expiration_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
-
-        return response
+        return Response(data={"is_authenticated": True}, status=status.HTTP_200_OK)
