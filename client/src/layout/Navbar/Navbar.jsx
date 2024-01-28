@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDisclosure, Box, Flex, Show } from "@chakra-ui/react";
+import { useDisclosure, Box, Flex, Show, Button, IconButton } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa6";
 
 import { useThemeInfo } from "../../hooks/Theme";
@@ -11,7 +11,6 @@ import NavbarFooter from "./NavbarFooter/NavbarFooter";
 import NavbarHeader from "./NavbarHeader/NavbarHeader";
 import NavbarBottomBody from "./NavbarBottomBody/NavbarBottomBody";
 import PollModal from "../../components/Modals/PollModal/PollModal";
-import CustomIconButton from "../../components/Buttons/CustomIconButton/CustomIconButton";
 
 function Navbar({ section }) {
   const navigate = useNavigate();
@@ -61,13 +60,22 @@ function Navbar({ section }) {
           <Box children={<NavbarBottomBody />} minH="60px" w="100%" h="100%" align="center" />
         </Box>
         {isAuthenticated && section !== "settings" && (
-          <Box pos="fixed" bottom="70px" right="10px" zIndex={1200} bg="black" borderRadius="full">
+          <Box
+            pos="fixed"
+            bottom="70px"
+            right="10px"
+            zIndex={1200}
+            bg="transparent"
+            borderRadius="full"
+          >
             <PollModal disclosure={pollModalDisclosure} />
-            <CustomIconButton
+            <IconButton
               onClick={pollModalDisclosure.onOpen}
-              icon={<FaPlus />}
-              color={isDark ? `${ThemeColor}.200` : `${ThemeColor}.500`}
+              colorScheme={ThemeColor}
+              color={isDark ? "blackAlpha.900" : "whiteAlpha.900"}
               size={"lg"}
+              borderRadius={"full"}
+              icon={<FaPlus />}
             />
           </Box>
         )}
