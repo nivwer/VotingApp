@@ -1,3 +1,5 @@
+from django.middleware.csrf import get_token
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,7 +14,7 @@ class CSRFTokenAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            csrf_token: str = request.COOKIES.get("csrftoken", None)
+            csrf_token: str = get_token(request)
 
             if not csrf_token:
                 message: str = "CSRF token not found in the request cookies"
