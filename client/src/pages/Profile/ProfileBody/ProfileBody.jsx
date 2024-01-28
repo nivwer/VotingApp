@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Flex } from "@chakra-ui/react";
-import Cookies from "js-cookie";
 
 import {
   useGetUserPollsQuery,
@@ -15,9 +14,8 @@ import TabButtonItem from "../../../components/TabButtonsGroup/TabButtonItem/Tab
 import PollList from "../../../components/PollList/PollList";
 
 function ProfileBody({ profile, username, isLoading }) {
-  const csrftoken = Cookies.get("csrftoken");
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useSelector((state) => state.session);
+  const { isAuthenticated, user, csrftoken } = useSelector((state) => state.session);
   const [dataQuery, setDataQuery] = useState({});
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get("tab") || "";

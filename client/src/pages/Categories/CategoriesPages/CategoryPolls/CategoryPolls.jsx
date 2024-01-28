@@ -8,13 +8,11 @@ import PollCard from "../../../../components/Cards/PollCard/PollCard";
 import { Box, Stack, Text } from "@chakra-ui/react";
 import { FaHashtag } from "react-icons/fa6";
 import categoryIcons from "../../../../utils/icons/categoryIcons";
-import Cookies from "js-cookie";
 
 // Page.
 function CategoryPolls() {
   const { isDark } = useThemeInfo();
-  const csrftoken = Cookies.get("csrftoken");
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const { category } = useParams();
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);

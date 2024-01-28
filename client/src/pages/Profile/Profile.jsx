@@ -1,12 +1,13 @@
-import { useThemeInfo } from "../../hooks/Theme";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useUserProfileByUsernameQuery } from "../../api/accountsAPISlice";
 import { Box, Center, Stack, Text } from "@chakra-ui/react";
+import { FaRegFaceFrown } from "react-icons/fa6";
+
+import { useThemeInfo } from "../../hooks/Theme";
+import { useUserProfileByUsernameQuery } from "../../api/accountsAPISlice";
 import ProfileHeader from "./ProfileHeader/ProfileHeader";
 import ProfileBody from "./ProfileBody/ProfileBody";
-import { FaRegFaceFrown } from "react-icons/fa6";
 
 function Profile() {
   const { username } = useParams();

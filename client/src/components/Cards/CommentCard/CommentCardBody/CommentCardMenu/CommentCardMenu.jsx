@@ -2,11 +2,9 @@ import { useSelector } from "react-redux";
 import CardMenu from "../../../../Menus/CardMenu/CardMenu";
 import CardMenuItem from "../../../../Menus/CardMenu/CardMenuItem/CardMenuItem";
 import { FaTrash } from "react-icons/fa6";
-import Cookies from "js-cookie";
 
 function CommentCardMenu({ comment, deleteComment, isLoading }) {
-  const csrftoken = Cookies.get("csrftoken");
-  const { isAuthenticated, user } = useSelector((state) => state.session);
+  const { isAuthenticated, user, csrftoken } = useSelector((state) => state.session);
 
   // Delete poll.
   const handleDeleteComment = async (poll_id, id) => {

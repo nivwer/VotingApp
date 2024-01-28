@@ -7,12 +7,10 @@ import { FormControl, FormErrorMessage, InputGroup, InputRightElement } from "@c
 import { FaPlus } from "react-icons/fa6";
 import CustomTextInput from "../../../../Form/CustomTextInput/CustomTextInput";
 import CustomIconButton from "../../../../Buttons/CustomIconButton/CustomIconButton";
-import Cookies from "js-cookie";
 
 function PollCardInputOption({ id, setShowInputOption }) {
-  const csrftoken = Cookies.get("csrftoken");
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const [dataMutation, setDataMutation] = useState(false);
   const { register, handleSubmit, formState, setError } = useForm();
   const [addOption, { isLoading }] = useAddOptionMutation();

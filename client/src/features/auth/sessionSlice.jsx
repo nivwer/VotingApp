@@ -11,7 +11,6 @@ export const sessionSlice = createSlice({
       state.user = action.payload.user;
       state.profile = action.payload.profile;
       state.csrftoken = action.payload.csrftoken;
-      console.log(action.payload.csrftoken);
     },
     logout: (state) => {
       state.isAuthenticated = false;

@@ -1,19 +1,18 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Box, Center, Stack, Text } from "@chakra-ui/react";
+import { FaRegFaceFrown, FaLock, FaCircleExclamation } from "react-icons/fa6";
+
 import { useReadPollQuery } from "../../api/pollsAPISlice";
 import PollCard from "../../components/Cards/PollCard/PollCard";
-import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
-import { Box, Center, Stack, Text } from "@chakra-ui/react";
 import PollComments from "./PollComments/PollComments";
-import { FaRegFaceFrown, FaLock, FaCircleExclamation } from "react-icons/fa6";
 import { useThemeInfo } from "../../hooks/Theme";
-import Cookies from "js-cookie";
+import CustomSpinner from "../../components/Spinners/CustomSpinner/CustomSpinner";
 
 function Poll() {
-  const csrftoken = Cookies.get("csrftoken");
   const { isDark } = useThemeInfo();
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const { id } = useParams();
   const [dataQuery, setDataQuery] = useState(false);
   const { data, error, isLoading } = useReadPollQuery(dataQuery, {

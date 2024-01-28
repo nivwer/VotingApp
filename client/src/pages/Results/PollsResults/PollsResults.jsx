@@ -4,11 +4,9 @@ import { useSearchPollsQuery } from "../../../api/pollsAPISlice";
 import { useSelector } from "react-redux";
 import PollCard from "../../../components/Cards/PollCard/PollCard";
 import Pagination from "../../../components/Pagination/Pagination";
-import Cookies from "js-cookie";
 
 function PollsResults() {
-  const csrftoken = Cookies.get("csrftoken");
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
   const type = searchParams.get("type") || "";

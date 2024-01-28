@@ -4,11 +4,9 @@ import { useUpdateUsernameMutation } from "../../../../../api/accountsAPISlice";
 import { Box, FormControl, FormErrorMessage, FormLabel, Stack } from "@chakra-ui/react";
 import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
 import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
-import Cookies from "js-cookie";
 
 function UsernameForm() {
-  const csrftoken = Cookies.get("csrftoken");
-  const { user } = useSelector((state) => state.session);
+  const { user, csrftoken } = useSelector((state) => state.session);
   const [updateUsername, { isLoading }] = useUpdateUsernameMutation();
   const { register, handleSubmit, formState, setError } = useForm();
   const { errors } = formState;

@@ -7,13 +7,11 @@ import CardMenu from "../../../../Menus/CardMenu/CardMenu";
 import CardMenuItem from "../../../../Menus/CardMenu/CardMenuItem/CardMenuItem";
 import { FaPenToSquare, FaTrash } from "react-icons/fa6";
 import { useThemeInfo } from "../../../../../hooks/Theme";
-import Cookies from "js-cookie";
 
 function PollCardMenu({ poll, deletePoll, isLoading }) {
-  const csrftoken = Cookies.get("csrftoken");
   const { isDark } = useThemeInfo();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useSelector((state) => state.session);
+  const { isAuthenticated, user, csrftoken } = useSelector((state) => state.session);
   const [dataMutation, setDataMutation] = useState(false);
   const { id } = useParams();
   const disclosure = useDisclosure();

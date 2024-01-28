@@ -22,14 +22,12 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import PollFormBody from "./PollFormBody/PollFormBody";
-import Cookies from "js-cookie";
 
 function PollModal({ poll = false, disclosure }) {
-  const csrftoken = Cookies.get("csrftoken");
   const { isOpen, onClose } = disclosure;
   const navigate = useNavigate();
   const { ThemeColor, isDark } = useThemeInfo();
-  const { user } = useSelector((state) => state.session);
+  const { user, csrftoken } = useSelector((state) => state.session);
   const { register, handleSubmit, watch, reset, formState, setError } = useForm();
   const [createPoll, { isLoading: isCreateLoading }] = useCreatePollMutation();
   const [updatePoll, { isLoading: isUpdateLoading }] = useUpdatePollMutation();

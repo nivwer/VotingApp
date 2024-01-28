@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Box, Stack, Text } from "@chakra-ui/react";
-import Cookies from "js-cookie";
 
 import { useThemeInfo } from "../../../hooks/Theme";
 import { useExploreUsersQuery } from "../../../api/accountsAPISlice";
 import UserCard from "../../../components/Cards/UserCard/UserCard";
 
 function AsideExploreUsers() {
-  const csrftoken = Cookies.get("csrftoken");
   const { isDark } = useThemeInfo();
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const [dataQuery, setDataQuery] = useState(false);
   const { data } = useExploreUsersQuery(
     { ...dataQuery, page: 1, page_size: 3 },

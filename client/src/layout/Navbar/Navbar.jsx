@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDisclosure, Box, Flex, Hide } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa6";
-import Cookies from "js-cookie";
 
 import { useThemeInfo } from "../../hooks/Theme";
 import { logout } from "../../features/auth/sessionSlice";
@@ -17,8 +16,7 @@ import CustomIconButton from "../../components/Buttons/CustomIconButton/CustomIc
 function Navbar({ section }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const csrftoken = Cookies.get("csrftoken");
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const { isDark, ThemeColor } = useThemeInfo();
   const disclosureRight = useDisclosure();
   const pollModalDisclosure = useDisclosure();

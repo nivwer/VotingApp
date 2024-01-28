@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { useAllPollsQuery } from "../../../api/pollsAPISlice";
 import { useSelector } from "react-redux";
+
+import { useAllPollsQuery } from "../../../api/pollsAPISlice";
 import Pagination from "../../../components/Pagination/Pagination";
-import Cookies from "js-cookie";
 import PollCard from "../../../components/Cards/PollCard/PollCard";
 
 function PollsHome() {
-  const csrftoken = Cookies.get("csrftoken");
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
 

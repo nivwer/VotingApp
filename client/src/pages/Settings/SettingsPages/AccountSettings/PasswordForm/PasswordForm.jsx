@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useUpdatePasswordMutation } from "../../../../../api/accountsAPISlice";
 import {
   Box,
@@ -13,10 +14,9 @@ import {
 import ToggleShowPassword from "../../../../../components/Toggles/ToggleShowPassword/ToggleShowPassword";
 import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
 import CustomButton from "../../../../../components/Buttons/CustomButton/CustomButton";
-import Cookies from "js-cookie";
 
 function PasswordForm() {
-  const csrftoken = Cookies.get("csrftoken");
+  const { csrftoken } = useSelector((state) => state.session);
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
   const { register, handleSubmit, formState, setError, setValue } = useForm();
   const { errors } = formState;

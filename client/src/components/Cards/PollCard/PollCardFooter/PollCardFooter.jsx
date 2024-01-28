@@ -17,13 +17,11 @@ import {
   FaBookmark,
   FaRegBookmark,
 } from "react-icons/fa6";
-import Cookies from "js-cookie";
 
 function PollCardFooter({ poll, userActions, isLoading, state }) {
   const { showInputOption, setShowInputOption } = state;
   const navigate = useNavigate();
-  const csrftoken = Cookies.get("csrftoken");
-  const { isAuthenticated, token } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const [dataMutation, setDataMutation] = useState(false);
   const [hasShared, setHasShared] = useState(userActions.has_shared ?? false);
   const [hasBookmarked, setHasBookmarked] = useState(userActions.has_bookmarked ?? false);

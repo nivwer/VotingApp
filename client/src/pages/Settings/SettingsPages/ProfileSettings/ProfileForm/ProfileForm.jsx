@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useThemeInfo } from "../../../../../hooks/Theme";
@@ -21,11 +22,10 @@ import { FaLink } from "react-icons/fa6";
 import CustomTextInput from "../../../../../components/Form/CustomTextInput/CustomTextInput";
 import CustomSelect from "../../../../../components/Form/CustomSelect/CustomSelect";
 import CustomTextarea from "../../../../../components/Form/CustomTextarea/CustomTextarea";
-import Cookies from "js-cookie";
 
 function ProfileForm({ profile = false }) {
   const { ThemeColor } = useThemeInfo();
-  const csrftoken = Cookies.get("csrftoken");
+  const { csrftoken } = useSelector((state) => state.session);
   const { register, handleSubmit, watch, formState, setError, setValue } = useForm();
   const { errors } = formState;
   const { data: dataCountries } = useGetCountriesQuery();

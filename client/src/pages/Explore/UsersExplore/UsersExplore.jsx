@@ -3,11 +3,9 @@ import { useExploreUsersQuery } from "../../../api/accountsAPISlice";
 import { useSelector } from "react-redux";
 import UserCard from "../../../components/Cards/UserCard/UserCard";
 import Pagination from "../../../components/Pagination/Pagination";
-import Cookies from "js-cookie";
 
 function UsersExplore() {
-  const csrftoken = Cookies.get("csrftoken");
-  const { isAuthenticated } = useSelector((state) => state.session);
+  const { isAuthenticated, csrftoken } = useSelector((state) => state.session);
   const [dataQuery, setDataQuery] = useState(false);
   const [resetValues, setResetValues] = useState(false);
 
