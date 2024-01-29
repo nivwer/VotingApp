@@ -91,14 +91,14 @@ function CommentInput({ id, useAddCommentMutation }) {
         </CardHeader>
 
         <Stack w={"100%"} spacing={0} flexDir={isWriting ? "column" : "row"}>
-          <CardBody p={0} pr={10} pt={5} pl={0}>
+          <CardBody p={0} pr={isWriting ? 10 : 0} pt={5} pl={0}>
             <FormControl isDisabled={isLoading} isInvalid={formState.errors.comment}>
-              <FormLabel fontWeight={"bold"} htmlFor="comment"></FormLabel>
+              <FormLabel fontWeight={"bold"} htmlFor="comment" />
               <Textarea
                 {...register("comment", { required: true })}
                 placeholder="Write your comment"
                 fontWeight={"medium"}
-                fontSize={"lg"}
+                fontSize={{ base: "md", sm: "lg" }}
                 borderRadius={"md"}
                 p={1}
                 variant={"unstyled"}
@@ -119,7 +119,7 @@ function CommentInput({ id, useAddCommentMutation }) {
             </FormControl>
           </CardBody>
 
-          <CardFooter py={isWriting ? 2 : "auto"} pb={5} pl={0} pr={10}>
+          <CardFooter py={isWriting ? 2 : "auto"} pb={5} pl={0} pr={{ base: 7, sm: 10 }}>
             <Flex w={"100%"} justify={"space-between"}>
               {isWriting && (
                 <HStack fontSize={"sm"} fontWeight={"bold"}>

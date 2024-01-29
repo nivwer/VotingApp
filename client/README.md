@@ -1,8 +1,33 @@
-# React + Vite
+# Voting App Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Documentation for the Voting App ReactJS client. This client provides an interactive and responsive user interface for end-users. 
 
-Currently, two official plugins are available:
+## Some Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Grid Layout
+- Responsive
+- Infinite Scroll
+- Data Invalidation with Tags
+- Changes Reflected Instantly
+- Dark and Light Themes
+- Theme Color
+
+
+## To run the client
+```shell
+cd client
+
+# Development.
+npm run dev
+
+# Preview
+npm run preview
+
+# Production
+npm run build
+```
+
+The client will be available at `http://localhost:5173`.
+
+
+
