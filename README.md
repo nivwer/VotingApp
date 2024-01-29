@@ -11,6 +11,8 @@ cd VotingApp
 
 # Install Django dependencies
 pip install -r requirements.txt
+
+# Django initial setup
 python manage.py collectstatic --no-input
 python manage.py migrate
 python init_db.py
