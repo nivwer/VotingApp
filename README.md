@@ -11,6 +11,9 @@ cd VotingApp
 
 # Install Django dependencies
 pip install -r requirements.txt
+python manage.py collectstatic --no-input
+python manage.py migrate
+python init_db.py
 
 # Install ReactJS dependencies
 cd client
@@ -23,22 +26,6 @@ npm install
 Set up the necessary environment variables for the project. Copy the `.env.example` file and rename it to `.env`, then modify the variables according to your needs.
 
 ## Django Server
-
-Before running the Django server, ensure to perform the necessary initial setup.
-
-```shell
-cd VotingApp
-
-# Collect static files for Django
-python manage.py collectstatic --no-input
-
-# Migrate the database
-python manage.py migrate
-
-# Initialize the database for MongoDB
-python init_db.py
-```
-
 
 To run the Django Server:
 
