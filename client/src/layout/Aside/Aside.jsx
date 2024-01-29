@@ -17,7 +17,7 @@ function Aside({ section }) {
         <NavLink to={"https://github.com/nivwer"} target="_blank">
           <Button variant={"link"}>
             <Text
-              children={"© 2024 nivwer"}
+              children={"© 2023-2024 nivwer"}
               fontWeight={"medium"}
               fontSize="sm"
               color={isDark ? "gothicPurple.100" : "gothicPurple.900"}
