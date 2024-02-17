@@ -189,3 +189,10 @@ REST_FRAMEWORK = {
     "ALLOWED_VERSIONS": ["v1", "v2"],
     "DEFAULT_VERSION": "v1",
 }
+
+
+import atexit
+from mdb_singleton import MongoDBSingleton
+
+# Register connection closure on application exit
+atexit.register(MongoDBSingleton.close_all_connections)
