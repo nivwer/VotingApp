@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 
 from rest_framework.exceptions import NotFound
 
-from utils.mongo_connection import MongoDBSingleton
+from mdb_singleton import MongoDBSingletonAsync
 
 
 class PollRepository:
@@ -14,14 +14,15 @@ class PollRepository:
     allowing the application to fetch, create, update, and delete poll data.
     """
 
-    polls_db = MongoDBSingleton().client["polls_db"]
+    client = MongoDBSingletonAsync().client
+    polls_db = client["polls_db"]
 
     async def create(self, data: dict) -> ObjectId | None:
         """
         Creates a new poll.
         """
         result = await self.polls_db.polls.insert_one(data)
-        
+
         id: ObjectId = result.inserted_id
         return id
 
@@ -51,7 +52,7 @@ class PollRepository:
 
         Option object example: { user_id: int, option_text: str, votes: 0 }
         """
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Update poll document in polls collection.
                 await self.polls_db.polls.update_one(
@@ -85,7 +86,7 @@ class PollRepository:
         """
         Deletes a poll and its associated comments.
         """
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Remove the poll document in the polls collection.
                 await self.polls_db.polls.delete_one(

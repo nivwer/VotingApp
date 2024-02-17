@@ -5,17 +5,18 @@ from bson.objectid import ObjectId
 
 from rest_framework.exceptions import NotFound
 
-from utils.mongo_connection import MongoDBSingleton
+from mdb_singleton import MongoDBSingletonAsync
 
 
 class PollCommentRepository:
-    polls_db = MongoDBSingleton().client["polls_db"]
+    client = MongoDBSingletonAsync().client
+    polls_db = client["polls_db"]
 
     async def create(self, poll_id: str, user_id: int, comment: str):
         """
         Creates a new poll comment.
         """
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Add the comment document in comments collection.
                 result: BSON = await self.polls_db.comments.insert_one(
@@ -64,7 +65,7 @@ class PollCommentRepository:
         return ObjectId(id)
 
     async def delete(self, id: str, poll_id: str):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Remove the comment document in comments collection.
                 await self.polls_db.comments.delete_one(

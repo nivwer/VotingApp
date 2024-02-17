@@ -6,11 +6,9 @@ from rest_framework.exceptions import ValidationError
 from apps.pollsAPI.repositories.user_actions_repository import UserActionsRepository
 from apps.pollsAPI.repositories.poll_repository import PollRepository
 from apps.pollsAPI.utils.poll_utils import PollUtils
-from utils.mongo_connection import MongoDBSingleton
 
 
 class UserActionsService:
-    polls_db = MongoDBSingleton().client["polls_db"]
     repository = UserActionsRepository()
     poll_repository = PollRepository()
     utils = PollUtils()

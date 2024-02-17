@@ -5,7 +5,7 @@ from bson.objectid import ObjectId
 
 from pymongo import UpdateOne
 
-from utils.mongo_connection import MongoDBSingleton
+from mdb_singleton import MongoDBSingletonAsync
 
 
 class UserActionsRepository:
@@ -16,7 +16,8 @@ class UserActionsRepository:
     allowing for the retrieval and storage of user-specific actions such as voting, sharing, and bookmarking.
     """
 
-    polls_db = MongoDBSingleton().client["polls_db"]
+    client = MongoDBSingletonAsync().client
+    polls_db = client["polls_db"]
 
     async def get_user_actions(self, id: str, user_id: int, projection: dict = {"_id": 1}):
         """
@@ -42,7 +43,7 @@ class UserActionsRepository:
         return ObjectId(id)
 
     async def insert_vote(self, id: str, user_id: int, vote: str):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Update vote action if user actions document exist.
                 await self.polls_db.user_actions.update_one(
@@ -73,7 +74,7 @@ class UserActionsRepository:
         return ObjectId(id)
 
     async def update_vote(self, id: str, user_id: int, vote: str, del_vote: str):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 await self.polls_db.user_actions.update_one(
                     {"user_id": user_id, "poll_id": ObjectId(id)},
@@ -102,7 +103,7 @@ class UserActionsRepository:
         return ObjectId(id)
 
     async def delete_vote(self, id: str, user_id: int, del_vote: str):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Remove vote action if user actions document exist.
                 await self.polls_db.user_actions.update_one(
@@ -132,7 +133,7 @@ class UserActionsRepository:
         return ObjectId(id)
 
     async def share(self, id: str, user_id: int):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Update share action if user actions document exist.
                 await self.polls_db.user_actions.update_one(
@@ -154,7 +155,7 @@ class UserActionsRepository:
         return ObjectId(id)
 
     async def unshare(self, id: str, user_id: int):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Remove share action if user actions document exist.
                 await self.polls_db.user_actions.update_one(
@@ -175,7 +176,7 @@ class UserActionsRepository:
         return ObjectId(id)
 
     async def bookmark(self, id: str, user_id: int):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Update bookmark action if user actions document exist.
                 await self.polls_db.user_actions.update_one(
@@ -197,7 +198,7 @@ class UserActionsRepository:
         return ObjectId(id)
 
     async def unbookmark(self, id: str, user_id: int):
-        async with await MongoDBSingleton().client.start_session() as session:
+        async with await self.client.start_session() as session:
             async with session.start_transaction():
                 # Remove bookmark action if user actions document exist.
                 await self.polls_db.user_actions.update_one(

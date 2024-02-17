@@ -2,11 +2,12 @@ from bson import BSON
 
 from pymongo import DESCENDING
 
-from utils.mongo_connection import MongoDBSingleton
+from mdb_singleton import MongoDBSingletonAsync
 
 
 class PollListRepository:
-    polls_db = MongoDBSingleton().client["polls_db"]
+    client = MongoDBSingletonAsync().client
+    polls_db = client["polls_db"]
 
     async def get_all(self):
         polls: list = await self.polls_db.polls.find(
