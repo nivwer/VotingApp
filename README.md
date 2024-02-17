@@ -10,7 +10,7 @@ git clone https://github.com/nivwer/VotingApp.git
 cd VotingApp
 
 # Install Django dependencies
-pip install -r requirements.txt
+poetry install
 
 # Django initial setup
 python manage.py collectstatic --no-input
@@ -72,14 +72,8 @@ To run the client:
 ```shell
 cd client
 
-# Development.
+# Development
 npm run dev
-
-# Preview
-npm run preview
-
-# Production
-npm run build
 ```
 
 The client will be available at `http://localhost:5173`.
@@ -99,7 +93,8 @@ Ensure your databases are configured correctly in the .env file.
 - Utilizes anti-CSRF protection with tokens.
 - It is recommended to set up HTTPS to ensure secure communication between the client and the server.
 
-## About
+## License
 
-- License: [MIT](/LICENSE).
-- Copyright © 2023-2024 [nivwer](https://github.com/nivwer).
+Copyright © 2024 [nivwer](https://github.com/nivwer).  
+This package is licensed under the [MIT License](/LICENSE). 
+
