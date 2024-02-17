@@ -19,12 +19,6 @@ cd client
 
 # Development.
 npm run dev
-
-# Preview
-npm run preview
-
-# Production
-npm run build
 ```
 
 The client will be available at `http://localhost:5173`.
