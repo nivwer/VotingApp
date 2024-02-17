@@ -1,8 +1,9 @@
 [tool.poetry]
 name = "votingapp"
 version = "0.1.0"
-description = ""
+description = "This project is a prototype app for creating interactive polls."
 authors = ["nivwer"]
+license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
